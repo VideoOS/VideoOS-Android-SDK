@@ -1,0 +1,29 @@
+{
+  "creativeId": 276,
+  "data": {
+    "creativeName": "口令红包+有广告&有关闭&有规则说明",
+    "infoTitle": "蒙牛酸酸乳的口令红包",
+    "interactionTypeName": "三期口令红包",
+    "creativeIdList": [
+      709,
+      710
+    ],
+    "infoWord": "蒙牛酸酸乳回家的感觉",
+    "interactionTemplateId": 198,
+    "infoInstructions": "蒙牛酸酸乳回家的感觉，蒙牛酸酸乳回家的感觉，蒙牛酸酸乳回家的感觉，蒙牛酸酸乳回家的感觉，呵呵呵呵呵呵",
+    "title": "红包来啦！点击快抢",
+    "infoImageUrl": "http://os-open-static.videojj.com/test/25a0ef81-1376-4f59-8214-db7b778ee763.jpeg",
+    "infoTrackLink": 1,
+    "readonly": false,
+    "imageUrl": "http://os-open-static.videojj.com/test/bde896b0-fc23-4f47-9f8e-3f15aa097319.gif",
+    "interactionTypeId": "169",
+    "errorSchema": {}
+  },
+  "duration": 15000,
+  "hotspotOrder": 0,
+  "id": "360757a3-7f4e-4775-87c8-e0d9497c9d22",
+  "sumHotspot": 1,
+  "template": "os_red2_envelope_hotspot.lua",
+  "videoEndTime": 37000,
+  "videoStartTime": 22000
+}

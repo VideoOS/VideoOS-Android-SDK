@@ -1,0 +1,20 @@
+<resources>
+
+    <!-- 动画Dialog -->
+    <style name="venvy_library_dialog_dg_style" parent="venvy_library_dialog_dg">
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="venvy_library_dialog_dg" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+</resources>

@@ -1,0 +1,101 @@
+{
+    "id": "138525f1-a496-49de-885f-f91b34162637",
+    "template": "template-dev-video-manage-platformd47f999f.lua",
+    "videoStartTime": 20000,
+    "videoEndTime": 40000,
+    "clockStartTime": null,
+    "clockEndTime": null,
+    "duration": 20000,
+    "data": {
+        "isShowAds": true,
+        "creativeName": "气泡测试素材",
+        "readonly": false,
+        "interactionTemplateId": 99,
+        "roles": [{
+            "roleAvatar": "http://os-open-static.videojj.com/dev/6e7d6627-1fb2-45b7-b242-9cceb537c2db.png",
+            "roleName": "测试一"
+        }, {
+            "roleAvatar": "http://os-open-static.videojj.com/dev/de6940ef-37bc-43b0-ab4e-be8ee33fbb9c.jpg",
+            "roleName": "测试二"
+        }],
+        "messages": [{
+            "duration": 3,
+            "messageType": 1,
+            "name": "测试一",
+            "userType": 1,
+            "avatar": "http://os-open-static.videojj.com/dev/6e7d6627-1fb2-45b7-b242-9cceb537c2db.png",
+            "content": "（0998595984¥¥@@% \n2、一一三四五六七\n3、哦\n4、呵\n5、恩\n6、什么\n7、八了\n8、啦拉啦啦啦kurkru啦啦啦，超过一行吧。哈哈。\n9、哦好\n10、十行字，妖孽往哪走"
+        }, {
+            "duration": 2,
+            "messageType": 1,
+            "name": "测试二",
+            "userType": 1,
+            "avatar": "http://os-open-static.videojj.com/dev/de6940ef-37bc-43b0-ab4e-be8ee33fbb9c.jpg",
+            "content": "阿斯顿聚隆科技阿拉山口的进口量卡死了的进口量氨，基酸考虑考虑将卢卡斯大立科技"
+        }, {
+            "duration": 2,
+            "messageType": 1,
+            "userType": 2,
+            "content": "熬枯受淡看见爱上即可很快就按时，圣诞节卢卡斯来看待傻傻的就离开"
+        }, {
+            "duration": 3,
+            "messageType": 1,
+            "userType": 2,
+            "content": "撒谎的拉回来好可怜的流量卡圣诞快乐骷髅精灵会计师的考虑了考虑开始的"
+        }, {
+            "duration": 3,
+            "messageType": 2,
+            "clickTrackLink": "http://www.baidu.com",
+            "exposureTrackLink": "http://www.baidu.com",
+            "name": "测试一",
+            "link": "http://www.baidu.com",
+            "userType": 1,
+            "avatar": "http://os-open-static.videojj.com/dev/6e7d6627-1fb2-45b7-b242-9cceb537c2db.png",
+            "content": {
+                "attachInfo": null,
+                "creativeFileId": 220,
+                "width": 362,
+                "resCode": "00",
+                "fileUrl": "http://os-open-static.videojj.com/dev/5b6a169f-5544-4acd-9464-63f24c25d846.png",
+                "resMsg": "处理成功",
+                "height": 543
+            }
+        }, {
+            "duration": 3,
+            "messageType": 2,
+            "clickTrackLink": "http://www.baidu.com",
+            "exposureTrackLink": "http://www.baidu.com",
+            "link": "http://www.baidu.com",
+            "userType": 2,
+            "content": {
+                "attachInfo": null,
+                "creativeFileId": 221,
+                "width": 500,
+                "resCode": "00",
+                "fileUrl": "http://os-open-static.videojj.com/dev/7d172652-c0ff-4311-b05c-773ae2ba4c89.jpg",
+                "resMsg": "处理成功",
+                "height": 313
+            }
+        }, {
+            "duration": 2,
+            "messageButtons": [{
+                "clickTrackLink": "http://www.baidu.com",
+                "exposureTrackLink": "http://www.baidu.com",
+                "link": "http://www.baidu.com",
+                "title": "测试一"
+            }, {
+                "clickTrackLink": "http://www.baidu.com",
+                "exposureTrackLink": "http://www.baidu.com",
+                "link": "http://www.baidu.com",
+                "title": "测试二"
+            }],
+            "messageType": 3,
+            "name": "测试二",
+            "userType": 1,
+            "avatar": "http://os-open-static.videojj.com/dev/de6940ef-37bc-43b0-ab4e-be8ee33fbb9c.jpg"
+        }],
+        "interactionTypeId": 121,
+        "isShowClose": true,
+        "errorSchema": {}
+    }
+}

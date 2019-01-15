@@ -1,0 +1,14 @@
+build
+target
+.idea
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+github_sync.sh
+package

@@ -1,0 +1,63 @@
+<resources>
+
+    <declare-styleable name="ShadowLayout">
+        <attr name="sl_cornerRadius" format="dimension" />
+        <attr name="sl_shadowRadius" format="dimension" />
+        <attr name="sl_shadowColor" format="color" />
+        <attr name="sl_dx" format="dimension" />
+        <attr name="sl_dy" format="dimension" />
+    </declare-styleable>
+
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="style_home_item">
+        <item name="android:layout_marginTop">@dimen/home_item_margin</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:elevation">@dimen/home_item_elevation</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+    </style>
+
+    <style name="style_home_setting_menu_item">
+        <item name="android:textSize">10sp</item>
+        <item name="android:background">@drawable/shape_home_setting_menu_normal_bg</item>
+        <item name="android:layout_marginBottom">@dimen/home_setting_menu_margin</item>
+        <item name="android:layout_width">@dimen/home_setting_menu</item>
+        <item name="android:layout_height">@dimen/home_setting_menu</item>
+    </style>
+
+    <style name="style_setting_spinner">
+        <item name="android:background">@drawable/et_bg</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/setting_spinner_height</item>
+    </style>
+
+    <style name="style_media_bt_bg">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/shape_media_mall_bg</item>
+        <item name="android:layout_marginRight">@dimen/media_play_margin_left</item>
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">30dp</item>
+    </style>
+
+    <style name="style_dialog" parent="style_dialog_dg">
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="style_dialog_dg" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+</resources>

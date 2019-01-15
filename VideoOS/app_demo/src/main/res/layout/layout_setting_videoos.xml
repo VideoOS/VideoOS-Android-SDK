@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.04"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.07"/>
+
+    <TextView
+        android:id="@+id/tv_layout_setting_app_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting_layout_creative_name"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/guideline2"/>
+
+    <TextView
+        android:id="@+id/tv_layout_setting_video_path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting_layout_videoId"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline6"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline"/>
+
+    <EditText
+        app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_app_id"
+        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_app_id"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline8"
+        android:id="@+id/sp_setting_creative_name_id"
+        style="@style/style_setting_spinner">
+    </EditText>
+
+    <EditText
+        app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_video_path"
+        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_video_path"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline8"
+        android:id="@+id/sp_setting_app_video_path"
+        android:text="http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4"
+        style="@style/style_setting_spinner">
+    </EditText>
+
+    <include
+        android:id="@+id/layout_setting_change_environment"
+        layout="@layout/layout_change_environment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/layout_change_environ_margin_top"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintTop_toBottomOf="@+id/guideline6"/>
+
+    <Button
+        android:id="@+id/bt_setting_cancel"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/setting_button_cancel"
+        android:layout_marginBottom="@dimen/setting_button_margin_top"
+        android:layout_marginRight="@dimen/setting_button_margin"
+        android:layout_marginTop="@dimen/setting_button_margin_top"
+        android:background="@drawable/shape_setting_cancel_bg"
+        android:text="@string/setting_cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline"
+        app:layout_constraintRight_toLeftOf="@+id/bt_setting_apply"
+        app:layout_constraintTop_toBottomOf="@+id/layout_setting_change_environment"/>
+
+    <Button
+        android:id="@+id/bt_setting_apply"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/setting_button_cancel"
+        android:layout_marginLeft="@dimen/setting_button_margin"
+        android:background="@drawable/shape_setting_apply_bg"
+        android:text="@string/setting_apply"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toRightOf="@+id/bt_setting_cancel"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/bt_setting_cancel"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.45"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.96"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25"/>
+
+</android.support.constraint.ConstraintLayout>

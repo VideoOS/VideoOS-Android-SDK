@@ -1,0 +1,36 @@
+{
+	"id": "5aa5fa5133edbf375fe43fff",
+	"videoStartTime": 1000,
+	"videoEndTime": 38968,
+	"duration": 20000,
+	"template": "os_vote.lua",
+	"creativeId": "",
+	"sumHotPoint": 1,
+	"hotPointOrde": 0,
+	"data": {
+		"imageUrl": "http://os-open-static.videojj.com/dev/7d172652-c0ff-4311-b05c-773ae2ba4c89.jpg",
+		"exposureTrackLink": "http://www.baidu.com",
+		"clickTrackLink": "http://www.baidu.com",
+		"voteTitle": "快来选择你喜欢的小姐姐吧",
+		"voteImageUrl": "http://os-open-static.videojj.com/dev/6e7d6627-1fb2-45b7-b242-9cceb537c2db.png",
+		"voteList": [{
+			"imageUrl": "http://os-open-static.videojj.com/dev/6e7d6627-1fb2-45b7-b242-9cceb537c2db.png",
+			"title": "第一位",
+			"voteNumber": 10
+		}, {
+			"imageUrl": "http://os-open-static.videojj.com/dev/de6940ef-37bc-43b0-ab4e-be8ee33fbb9c.jpg",
+			"title": "第二位",
+			"voteNumber": 0
+		}, {
+			"imageUrl": "http://os-open-static.videojj.com/dev/6e7d6627-1fb2-45b7-b242-9cceb537c2db.png",
+			"title": "第三位",
+			"voteNumber": 0
+		}],
+		"voteBtnImage": "http://os-open-static.videojj.com/dev/de6940ef-37bc-43b0-ab4e-be8ee33fbb9c.jpg",
+		"voteBtnExposureTrackLink": "http://www.baidu.com",
+		"voteBtnClickTrackLink": "http://www.baidu.com",
+		"voteRule": "每个人只有一次投票机会，请大家选择好了，在投递！",
+		"isShowClose": true,
+		"repeatTimes": 5
+	}
+}
