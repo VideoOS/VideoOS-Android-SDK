@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.venvy.App;
+import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
@@ -26,7 +27,6 @@ import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyGzipUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyPreferenceHelper;
-import cn.com.venvy.common.utils.VenvyRSAUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 
 /*
@@ -41,8 +41,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
     private static final String LUA_CACHE_VERSION = "venvy_lua_version";
     private static final String UNZIP_LUA_ASYNC_TAG = "unzip_lua";
     private static final String LOCAL_ASSETS_PATH = "lua";
-    private static final String UPDATE_VERSION_HOST = "http://os-open.videojj.com/videoos-api/api/fileVersion";
-    private static final String UPDATE_DEV_VERSION_HOST = "http://dev-videopublicapi.videojj.com/videoos-api/api/fileVersion";
+    private static final String UPDATE_VERSION = "/api/fileVersion";
     private DownloadTaskRunner mDownloadTaskRunner;
     private LuaUpdateCallback mUpdateCallback;
 
@@ -140,7 +139,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-        return HttpRequest.post(UPDATE_VERSION_HOST, createBody());
+        return HttpRequest.post(Config.HOST_VIDEO_OS+UPDATE_VERSION, createBody());
     }
 
     private Map<String, String> createBody() {
