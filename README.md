@@ -44,9 +44,9 @@ dependencies {
 3. 依赖的第三方库(具体视平台不同而不一致)
 
 ```
- compile "com.github.bumptech.glide:glide:3.7.0"
- compile "com.squareup.okhttp3:okhttp:3.8.0"
- compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
+compile "com.github.bumptech.glide:glide:3.7.0"
+compile "com.squareup.okhttp3:okhttp:3.8.0"
+compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
 ```
 	  
 ## 互动层对接	
@@ -57,7 +57,7 @@ dependencies {
 示例代码：
 
 ```
- VideoPlus.appCreate(Application application);
+VideoPlus.appCreate(Application application);
 ```
 ### 对接`VideoPlusView`
 	
@@ -155,15 +155,19 @@ public class PlusAdapter extends VideoPlusAdapter {
 3. 接着设置适配器，代码如下所示
 
 ```
- VideoPlusView plusView = new VideoOsView(Context context);
- PlusAdapter plusAdapter = new PlusAdapter(MediaPlay play);
- plusView.setVideoOSAdapter(plusAdapter);
+VideoPlusView plusView = new VideoOsView(Context context);
+PlusAdapter plusAdapter = new PlusAdapter(MediaPlay play);
+plusView.setVideoOSAdapter(plusAdapter);
 ```
 
-4. 全部完成之后调用 `start` ，开启互动层。
-   plusView.start();  
+4. 全部完成之后调用 `start` ，开启互动层
+```java
+plusView.start();
+```
 5. 如退出播放页面或直播间，调用`stop`方法
-	 plusView.stop();
+```java
+plusView.stop();
+```
 6. 其它
 
    6.1屏幕旋转处理（注：FULL_VERTICAL,SMALL_VERTICAL,LANDSCAPE分别代表平台方播放器界面调用）：
