@@ -56,7 +56,7 @@ compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
 
 示例代码：
 
-```
+```java
 VideoPlus.appCreate(Application application);
 ```
 ### 对接`VideoPlusView`
@@ -149,12 +149,12 @@ public class PlusAdapter extends VideoPlusAdapter {
         return VenvyMqtt.class;
     }
 }
-详细调用请查看 VideoOS/app_demo 项目。
+/* 详细调用请查看 VideoOS/app_demo 项目 */
 ```
  
 3. 接着设置适配器，代码如下所示
 
-```
+```java
 VideoPlusView plusView = new VideoOsView(Context context);
 PlusAdapter plusAdapter = new PlusAdapter(MediaPlay play);
 plusView.setVideoOSAdapter(plusAdapter);
@@ -171,12 +171,12 @@ plusView.stop();
 6. 其它
 
    6.1屏幕旋转处理（注：FULL_VERTICAL,SMALL_VERTICAL,LANDSCAPE分别代表平台方播放器界面调用）：
-   ```
+   ```java
    plusAdapter.notifyVideoScreenChanged(ScreenStatus.SMALL_VERTICAL);
    ```
    
    6.2中插视频广告暂停唤醒调用:
-   ```
+   ```java
    plusAdapter.notifyMediaStatusChanged(MediaStatus.PLAYING);
    ```
 7. 互动层状态相关参数说明 		
