@@ -18,8 +18,7 @@ public class LVHostPlugin {
     }
 
     /**
-     * key,iv,content
-     * aes解密
+     * 获取本地Host
      */
     private static class GetHost extends VarArgFunction {
         @Override
