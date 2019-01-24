@@ -10,6 +10,7 @@ require "os_config"
 require "os_string"
 require "os_constant"
 require "os_util"
+require "os_track"
 redEnvelope = object:new()
 local adTypeName = "redEnvelope"
 local scale = getScale()
@@ -511,6 +512,9 @@ local function onCreate(data)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
+        if (redEnvelope.launchPlanId ~= nil) then
+            osTrack(redEnvelope.launchPlanId, 3, 2)
+        end
         Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_red_envelope_window.lua" .. "&id=" .. "os_red_envelope_window" .. tostring(redEnvelope.id) .. tostring(redEnvelope.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
     redEnvelope.redEnvelopeFlexView:onClick(function()
@@ -519,6 +523,9 @@ local function onCreate(data)
         local clickLinkUrl = getHotspotClickTrackLink(redEnvelope.data, 1)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
+        end
+        if (redEnvelope.launchPlanId ~= nil) then
+            osTrack(redEnvelope.launchPlanId, 3, 2)
         end
         Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_red_envelope_window.lua" .. "&id=" .. "os_red_envelope_window" .. tostring(redEnvelope.id) .. tostring(redEnvelope.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
@@ -581,10 +588,15 @@ function show(args)
     end
     redEnvelope.data = args.data
 
-    redEnvelope.id = args.data.id
+    redEnvelope.id = redEnvelope.data.id
+    redEnvelope.launchPlanId = redEnvelope.data.launchPlanId
     local showLinkUrl = getHotspotExposureTrackLink(redEnvelope.data, 1)
     if (showLinkUrl ~= nil) then
         Native:get(showLinkUrl)
+    end
+    if (redEnvelope.launchPlanId ~= nil) then
+        osTrack(redEnvelope.launchPlanId, 1, 2)
+        osTrack(redEnvelope.launchPlanId, 2, 2)
     end
     getRedEnvelopeInfo(function()
         onCreate(redEnvelope.data)

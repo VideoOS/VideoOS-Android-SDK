@@ -9,6 +9,7 @@ require "os_config"
 require "os_string"
 require "os_constant"
 require "os_util"
+require "os_track"
 vote = object:new()
 local adTypeName = "vote"
 local scale = getScale()
@@ -457,6 +458,9 @@ local function onCreate(args)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
+        if (vote.launchPlanId ~= nil) then
+            osTrack(vote.launchPlanId, 3, 2)
+        end
         Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_vote_window.lua" .. "&id=" .. "os_vote_window" .. tostring(vote.id) .. "&priority=2"), args)
     end)
     local dataTable = args.data
@@ -488,9 +492,14 @@ function show(args)
         return
     end
     vote.id = args.data.id
+    vote.launchPlanId = args.data.launchPlanId
     local showLinkUrl = getHotspotExposureTrackLink(args.data, 1)
     if (showLinkUrl ~= nil) then
         Native:get(showLinkUrl)
+    end
+    if (vote.launchPlanId ~= nil) then
+        osTrack(vote.launchPlanId, 1, 2)
+        osTrack(vote.launchPlanId, 2, 2)
     end
     onCreate(args.data)
     getVoteCountInfo()

@@ -9,6 +9,7 @@ require "os_config"
 require "os_string"
 require "os_constant"
 require "os_util"
+require "os_track"
 voteWindow = object:new()
 local adTypeName = "voteWindow"
 local scale = getScale()
@@ -138,6 +139,13 @@ local function getUserVoteInfo(callback)
         end
         local dataTable = response.businessInfo
         if (dataTable == nil) then
+            local showLinkUrl = getHotspotExposureTrackLink(voteWindow.data, 1)
+            if (showLinkUrl ~= nil) then
+                Native:get(showLinkUrl)
+            end
+            if (voteWindow.launchPlanId ~= nil) then
+                osTrack(voteWindow.launchPlanId, 2, 1)
+            end
             if callback ~= nil then
                 callback()
             end
@@ -146,6 +154,14 @@ local function getUserVoteInfo(callback)
         if dataTable.isVote == true then
             voteWindow.section = dataTable.vote
             showVoteResult()
+        else
+            local showLinkUrl = getHotspotExposureTrackLink(voteWindow.data, 1)
+            if (showLinkUrl ~= nil) then
+                Native:get(showLinkUrl)
+            end
+            if (voteWindow.launchPlanId ~= nil) then
+                osTrack(voteWindow.launchPlanId, 2, 1)
+            end
         end
     end)
 end
@@ -267,6 +283,9 @@ function showVoteResult(index)
     local clickLinkUrl = getHotspotClickTrackLink(voteWindow.data, 1)
     if (clickLinkUrl ~= nil) then
         Native:get(clickLinkUrl)
+    end
+    if (voteWindow.launchPlanId ~= nil) then
+        osTrack(voteWindow.launchPlanId, 3, 1)
     end
     if voteWindow.voteCount == nil then
         voteWindow.isVoted = true
@@ -1129,6 +1148,10 @@ function show(args)
     print("LuaView os vote window" .. Native:tableToJson(args))
     voteWindow.loadingCount = 0
     voteWindow.id = "os_vote_window" .. tostring(args.data.id)
+    voteWindow.launchPlanId = args.data.launchPlanId
+    if (voteWindow.launchPlanId ~= nil) then
+        osTrack(voteWindow.launchPlanId, 1, 1)
+    end
     setConfig(args.data)
     onCreate(args.data)
 
@@ -1159,6 +1182,9 @@ function show(args)
             local showLinkUrl = getHotspotExposureTrackLink(args.data, 1)
             if (showLinkUrl ~= nil) then
                 Native:get(showLinkUrl)
+            end
+            if (voteWindow.launchPlanId ~= nil) then
+                osTrack(voteWindow.launchPlanId, 2, 1)
             end
         end
     else
