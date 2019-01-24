@@ -34,7 +34,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
     protected FrameLayout mVideoContentView;
     //自动选择屏幕类
     private ScreenOrientationSwitcher mScreenOrientationSwitcher;
-
+    protected static final String TAG_CREATIVE_NAME="creativeName";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.squareup.leakcanary.RefWatcher;
 
 import org.json.JSONObject;
+import org.luaj.vm2.ast.Str;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -320,9 +321,18 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     }
 
     private Provider changeProvider(String videoId, String creativeName) {
-        Provider provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
-                .setVideoID(videoId)//视频地址
-                .build();
+        Provider provider;
+        if (TextUtils.isEmpty(creativeName)) {
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+                    .setVideoID(videoId)//视频地址
+                    .build();
+        } else {
+            Map<String, String> extendParams = new HashMap<>();
+            extendParams.put(TAG_CREATIVE_NAME, creativeName);
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+                    .setVideoID(videoId)//视频地址
+                    .setExtendJSONString(new JSONObject(extendParams).toString()).build();
+        }
         return provider;
     }
 

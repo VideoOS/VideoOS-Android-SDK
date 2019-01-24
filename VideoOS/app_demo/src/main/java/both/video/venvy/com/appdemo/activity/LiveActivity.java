@@ -12,7 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.Map;
 
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
@@ -318,9 +321,18 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
 
     private Provider changeProvider(String videoId, String creativeName) {
 
-        Provider provider = new Provider.Builder().setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
-                .setVideoID(videoId).setVideoType(VideoType.LIVEOS)//视频地址
-                .build();
+        Provider provider;
+        if (TextUtils.isEmpty(creativeName)) {
+            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+                    .setVideoID(videoId)//视频地址
+                    .build();
+        } else {
+            Map<String, String> extendParams = new HashMap<>();
+            extendParams.put(TAG_CREATIVE_NAME, creativeName);
+            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+                    .setVideoID(videoId)//视频地址
+                    .setExtendJSONString(new JSONObject(extendParams).toString()).build();
+        }
         return provider;
     }
 
