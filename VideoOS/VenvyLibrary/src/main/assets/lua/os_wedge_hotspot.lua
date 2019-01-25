@@ -3,7 +3,7 @@ require "os_config"
 require "os_string"
 require "os_constant"
 require "os_util"
-
+require "os_track"
 wedge = object:new()
 local adTypeName = "wedge"
 local scale = getScale()
@@ -1056,6 +1056,9 @@ local function onCreate(data)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
+        if (wedge.launchPlanId ~= nil) then
+            osTrack(wedge.launchPlanId, 3, 2)
+        end
         local adId = wedgeID(wedge.data)
         local adType = "os_wedge.lua"
         local linkTable = { link = linkUrl, adType = adType, adId = adId }
@@ -1122,13 +1125,20 @@ function show(args)
             return
         end
     end
+    setDefaultValue(dataTable)
+    wedgeConfig(dataTable)
+    wedge.id = dataTable.id
+    wedge.launchPlanId = dataTable.launchPlanId
     local showLinkUrl = getHotspotExposureTrackLink(dataTable, 1)
     if (showLinkUrl ~= nil) then
         Native:get(showLinkUrl)
     end
-    setDefaultValue(dataTable)
-    wedgeConfig(dataTable)
-    wedge.id = dataTable.id
+    if (wedge.launchPlanId ~= nil) then
+        osTrack(wedge.launchPlanId, 1, 2)
+        if(wedgeLinkUrl(dataTable)~=nil)then
+            osTrack(wedge.launchPlanId, 2, 2)
+        end
+    end
     Native:widgetEvent(eventTypeShow, wedge.id, adTypeName, actionTypePauseVideo, "")
     Native:saveCacheData(wedge.id, tostring(eventTypeShow))
     wedge.data = dataTable
@@ -1139,10 +1149,10 @@ function show(args)
         onStart = function(url)
             --开始播放
             wedge.voice = wedge.mediaPlayer:voice()
-            if (wedge.voice <= 0) then
-                wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
-            else
+            if (wedge.voice > 0) then
                 wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
+            else
+                wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
             end
             wedge.mediaPlayPaused = false
             local videoDuration = getVideoDuration(dataTable)
@@ -1185,12 +1195,10 @@ function show(args)
             if (wedge.guideVoiceImage == nil) then
                 return
             end
-            if (volme <= 0) then
-                --                wedge.mediaPlayer:voice(wedge.voice)
-                wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
-            else
-                --                wedge.mediaPlayer:voice(0)
+            if (volme > 0) then
                 wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
+            else
+                wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
             end
         end
     })

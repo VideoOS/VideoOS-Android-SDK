@@ -9,6 +9,7 @@ require "os_config"
 require "os_string"
 require "os_constant"
 require "os_util"
+require "os_track"
 redEnvelopeWindow = object:new()
 local adTypeName = "redEnvelopeWindow"
 local scale = getScale()
@@ -34,6 +35,7 @@ local function startViewTranslationAnim(view, x, y, table)
         translationAnim(x, y):with(view):start()
     end
 end
+
 local function getHotspotExposureTrackLink(data, index)
     if (data == nil or index == nil) then
         return nil
@@ -63,6 +65,7 @@ local function getHotspotClickTrackLink(data, index)
     end
     return indexHotspotTrackLinkTable.clickTrackLink
 end
+
 local function postUserRedEnvelopeInfo()
 
     local businessInfoTable = {
@@ -109,13 +112,13 @@ local function postUserRedEnvelopeInfo()
 end
 
 local function closeView()
-	for key, value in pairs(redEnvelopeWindow.requestIds) do
-	   if (value ~= nil) then
-	       Native:abort(value)
-	   end
-	end
-	Native:widgetEvent(eventTypeClose, redEnvelopeWindow.id, adTypeName, actionTypeNone, "")
-	Native:destroyView()
+    for key, value in pairs(redEnvelopeWindow.requestIds) do
+        if (value ~= nil) then
+            Native:abort(value)
+        end
+    end
+    Native:widgetEvent(eventTypeClose, redEnvelopeWindow.id, adTypeName, actionTypeNone, "")
+    Native:destroyView()
 end
 
 local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
@@ -205,7 +208,7 @@ local function setRedEnvelopeCommandViewSize(data, redEnvelopeCommandLayout, red
 
         redEnvelopeCommandLayout:frame(redEnvelopeWindow.portraitWidth * 0.1935, redEnvelopeWindow.portraitHeight * 0.380, viewWidth, viewHight)
         redEnvelopeCommandBackgroundView:frame(0, 0, viewWidth, viewHight)
-        redEnvelopeCommandView:frame(20 * scale, 0, viewWidth-40 * scale, viewHight)
+        redEnvelopeCommandView:frame(20 * scale, 0, viewWidth - 40 * scale, viewHight)
         redEnvelopeCommandView:textSize(18)
     else
         redEnvelopeCommandLayout:frame(21 * scale, 140 * scale, 163 * scale, 55 * scale)
@@ -251,32 +254,32 @@ local function setRedEnvelopeCommendTitleViewSize(data, createredEnvelopeCommend
     if (isPortrait) then
         if (System.android()) then
             createredEnvelopeCommendTitleView:textSize(8)
-        	createredEnvelopeCommendTitleView:frame(redEnvelopeWindow.portraitWidth * 0.277, redEnvelopeWindow.portraitHeight * 0.655, redEnvelopeWindow.portraitWidth * 0.446, redEnvelopeWindow.portraitHeight * 0.093)
+            createredEnvelopeCommendTitleView:frame(redEnvelopeWindow.portraitWidth * 0.277, redEnvelopeWindow.portraitHeight * 0.655, redEnvelopeWindow.portraitWidth * 0.446, redEnvelopeWindow.portraitHeight * 0.093)
         else
             createredEnvelopeCommendTitleView:textSize(12)
-        	local width = 1
-        	local height = redEnvelopeWindow.portraitHeight * 0.093
-        	if createredEnvelopeCommendTitleView:text() ~= nil then
-        		width, height = Native:stringSizeWithWidth(createredEnvelopeCommendTitleView:text(), redEnvelopeWindow.portraitWidth * 0.646, 12)
-        		height = height + 12
-        	end
-        	createredEnvelopeCommendTitleView:frame(redEnvelopeWindow.portraitWidth * 0.177, redEnvelopeWindow.portraitHeight * 0.655, redEnvelopeWindow.portraitWidth * 0.646, height)
+            local width = 1
+            local height = redEnvelopeWindow.portraitHeight * 0.093
+            if createredEnvelopeCommendTitleView:text() ~= nil then
+                width, height = Native:stringSizeWithWidth(createredEnvelopeCommendTitleView:text(), redEnvelopeWindow.portraitWidth * 0.646, 12)
+                height = height + 12
+            end
+            createredEnvelopeCommendTitleView:frame(redEnvelopeWindow.portraitWidth * 0.177, redEnvelopeWindow.portraitHeight * 0.655, redEnvelopeWindow.portraitWidth * 0.646, height)
         end
     else
         if (System.android()) then
             createredEnvelopeCommendTitleView:textSize(8)
-	        createredEnvelopeCommendTitleView:frame(27 * scale, 251 * scale, 150 * scale, 50 * scale)
+            createredEnvelopeCommendTitleView:frame(27 * scale, 251 * scale, 150 * scale, 50 * scale)
         else
             createredEnvelopeCommendTitleView:textSize(10)
-        	local width = 1
-        	local height = 40 * scale
-        	if createredEnvelopeCommendTitleView:text() ~= nil then
-        		width, height = Native:stringSizeWithWidth(createredEnvelopeCommendTitleView:text(), 120 * scale, 10)
-        		height = height + 10
-        	end
-        	createredEnvelopeCommendTitleView:frame(28 * scale, 251 * scale, 140 * scale, height)
+            local width = 1
+            local height = 40 * scale
+            if createredEnvelopeCommendTitleView:text() ~= nil then
+                width, height = Native:stringSizeWithWidth(createredEnvelopeCommendTitleView:text(), 120 * scale, 10)
+                height = height + 10
+            end
+            createredEnvelopeCommendTitleView:frame(28 * scale, 251 * scale, 140 * scale, height)
         end
-    end 
+    end
 end
 
 --全局父控件
@@ -375,10 +378,10 @@ local function createredEnvelopeCommendTitleView(data, isPortrait)
     local redEnvelopeCommendTitleView = Label()
     redEnvelopeCommendTitleView:textColor(0xB8B8B8)
     redEnvelopeCommendTitleView:lines(100)
-	if (System.android()) then
-		redEnvelopeCommendTitleView:gravity(Gravity.START)
-	end
-    
+    if (System.android()) then
+        redEnvelopeCommendTitleView:gravity(Gravity.START)
+    end
+
     setRedEnvelopeCommendTitleViewSize(data, redEnvelopeCommendTitleView, isPortrait)
 
     return redEnvelopeCommendTitleView
@@ -544,6 +547,9 @@ local function onCreate(data)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
+        if (redEnvelopeWindow.launchPlanId ~= nil) then
+            osTrack(redEnvelopeWindow.launchPlanId, 3, 1)
+        end
     end)
     fillData(data)
 end
@@ -552,9 +558,14 @@ function show(args)
     if (args == nil or args.data == nil or redEnvelopeWindow.luaView ~= nil) then
         return
     end
+    redEnvelopeWindow.launchPlanId = args.data.launchPlanId
     local showLinkUrl = getHotspotExposureTrackLink(args.data, 1)
     if (showLinkUrl ~= nil) then
         Native:get(showLinkUrl)
+    end
+    if (redEnvelopeWindow.launchPlanId ~= nil) then
+        osTrack(redEnvelopeWindow.launchPlanId, 1, 1)
+        osTrack(redEnvelopeWindow.launchPlanId, 2, 1)
     end
     setConfig(args.data)
     onCreate(args.data)

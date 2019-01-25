@@ -3,6 +3,7 @@ require "os_config"
 require "os_string"
 require "os_constant"
 require "os_util"
+require "os_track"
 cloud = object:new()
 local adTypeName = "cloud"
 local scale = getScale()
@@ -539,6 +540,9 @@ local function onCreate(data)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
+        if (cloud.launchPlanId ~= nil) then
+            osTrack(cloud.launchPlanId, 3, 2)
+        end
     end)
 end
 
@@ -550,12 +554,19 @@ function show(args)
     if (dataTable == nil) then
         return
     end
+    cloud.id = dataTable.id
+    cloud.launchPlanId = dataTable.launchPlanId
     local showLinkUrl = getHotspotExposureTrackLink(dataTable, 1)
     if (showLinkUrl ~= nil) then
         Native:get(showLinkUrl)
     end
+    if (cloud.launchPlanId ~= nil) then
+        osTrack(cloud.launchPlanId, 1, 2)
+        if (getLinkUrl(dataTable) ~= nil) then
+            osTrack(cloud.launchPlanId, 2, 2)
+        end
+    end
     setDefaultValue(dataTable)
-    cloud.id = dataTable.id
     Native:widgetEvent(eventTypeShow, cloud.id, adTypeName, actionTypeNone, "") --todo 修改参数为table
     Native:saveCacheData(cloud.id, tostring(eventTypeShow))
     cloud.data = dataTable

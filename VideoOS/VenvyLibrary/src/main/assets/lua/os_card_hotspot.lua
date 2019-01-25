@@ -9,6 +9,7 @@ require "os_config"
 require "os_string"
 require "os_constant"
 require "os_util"
+require "os_track"
 card = object:new()
 local adTypeName = "card"
 local scale = getScale()
@@ -478,18 +479,24 @@ local function onCreate(data)
     card.cardImageLayout:onClick(function()
         Native:widgetEvent(eventTypeClick, card.id, adTypeName, actionTypeNone, "")
         closeView()
-        local clickLinkUrl = getHotspotClickTrackLink(data, 1)
+        local clickLinkUrl = getHotspotClickTrackLink(data, card.hotspotOrder)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
+        end
+        if (card.launchPlanId ~= nil) then
+            osTrack(card.launchPlanId, 3, 2)
         end
         Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_card_window.lua" .. "&id=" .. "os_card_window" .. tostring(card.id) .. tostring(card.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
     card.cardFlexView:onClick(function()
         Native:widgetEvent(eventTypeClick, card.id, adTypeName, actionTypeNone, "")
         closeView()
-        local clickLinkUrl = getHotspotClickTrackLink(data, 1)
+        local clickLinkUrl = getHotspotClickTrackLink(data, card.hotspotOrder)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
+        end
+        if (card.launchPlanId ~= nil) then
+            osTrack(card.launchPlanId, 3, 2)
         end
         Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_card_window.lua" .. "&id=" .. "os_card_window" .. tostring(card.id) .. tostring(card.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
@@ -603,12 +610,24 @@ function show(args)
         return
     end
     card.data = args.data
-
-    card.id = args.data.id
+    card.launchPlanId = card.data.launchPlanId
+    card.id = card.data.id
     print("LuaView card id " .. card.id)
-    local showLinkUrl = getHotspotExposureTrackLink(card.data, 1)
+    if (card.hotspotOrder == nil) then
+        local hotspotOrder = card.data.hotspotOrder
+        if (hotspotOrder == nil) then
+            hotspotOrder = 0
+        end
+        hotspotOrder = hotspotOrder + 1
+        card.hotspotOrder = hotspotOrder
+    end
+    local showLinkUrl = getHotspotExposureTrackLink(card.data, card.hotspotOrder)
     if (showLinkUrl ~= nil) then
         Native:get(showLinkUrl)
+    end
+    if (card.launchPlanId ~= nil) then
+        osTrack(card.launchPlanId, 1, 2)
+        osTrack(card.launchPlanId, 2, 2)
     end
     getUserCardInfo(function(dataTable)
         if dataTable ~= nil then

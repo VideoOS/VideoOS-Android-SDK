@@ -9,6 +9,7 @@ require "os_config"
 require "os_string"
 require "os_constant"
 require "os_util"
+require "os_track"
 cardWindow = object:new()
 local adTypeName = "cardWindow"
 local scale = getScale()
@@ -454,6 +455,8 @@ local function setCardCloseImageView(data, cardCloseLayout, cardCloseImageView, 
         cardCloseLayout:frame(0, 0, size, size)
         cardCloseImageView:frame(0, 0, 15 * scale, 15 * scale)
         cardCloseImageView:show()
+        cardCloseLayout:align(Align.RIGHT)
+        cardCloseImageView:align(Align.CENTER)
     else
         cardCloseImageView:hide()
     end
@@ -822,6 +825,9 @@ local function collectState(data)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
+        if (cardWindow.launchPlanId ~= nil) then
+            osTrack(cardWindow.launchPlanId, 3, 1)
+        end
         if collectTable.linkType == 2 then
             Native:widgetEvent(eventTypeClick, cardWindow.id, adTypeName, actionTypeOpenUrl, collectTable.linkUrl)
             performWithDelay(function()
@@ -1058,6 +1064,7 @@ local function setConfig(data)
     cardWindow.collectStatus = 1
     cardWindow.collectCount = 1
     cardWindow.id = "os_card_window" .. tostring(data.id) .. tostring(data.hotspotOrder)
+    cardWindow.launchPlanId = data.launchPlanId
     cardWindow.isHotOrder1 = false
     cardWindow.isHotOrder2 = false
     cardWindow.isHotOrder3 = false
@@ -1084,6 +1091,9 @@ local function setConfig(data)
             local showLinkUrl = getHotspotExposureTrackLink(data, 1)
             if (showLinkUrl ~= nil) then
                 Native:get(showLinkUrl)
+            end
+            if (cardWindow.launchPlanId ~= nil) then
+                osTrack(cardWindow.launchPlanId, 2, 1)
             end
         end
     else
@@ -1122,6 +1132,9 @@ function show(args)
         return
     end
     setConfig(args.data)
+    if (cardWindow.launchPlanId ~= nil) then
+        osTrack(cardWindow.launchPlanId, 1, 1)
+    end
     onCreate(args.data)
     -- postUserCardInfo()
 end
