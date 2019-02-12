@@ -157,10 +157,8 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
             if (mVideoPlusView == null)
                 return;
             mVideoPlusView.stop();
-            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_red_envelope_hotspot111.lua&id=os_wedge");
-//            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_card_hotspot.lua&id=os_bubble_hotspot");
+            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_red_envelope_hotspot.lua&id=os_red_envelope_hotspot");
             HashMap<String, String> params = new HashMap<>();
-//            params.put("data", AssetsUtil.readFileAssets("local_bubble.json", OsActivity.this));
             params.put("data", AssetsUtil.readFileAssets("local_red.json", OsActivity.this));
             mVideoPlusView.navigation(uri, params, new IRouterCallback() {
                 @Override

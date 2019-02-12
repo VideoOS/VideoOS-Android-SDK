@@ -44,7 +44,8 @@ public class UITextViewMethodMapper<U extends UDTextView> extends UIViewMethodMa
             "ellipsize",//12
             "adjustTextSize",//13
             "adjustFontSize",//14
-            "textShadow"//15
+            "textShadow",//15
+            "textBold"//16
     };
 
     @Override
@@ -88,6 +89,8 @@ public class UITextViewMethodMapper<U extends UDTextView> extends UIViewMethodMa
                 return adjustFontSize(target, varargs);
             case 15:
                 return textShadow(target, varargs);
+            case 16:
+                return setfontBold(target, varargs);
         }
         return super.invoke(code, target, varargs);
     }
@@ -204,6 +207,16 @@ public class UITextViewMethodMapper<U extends UDTextView> extends UIViewMethodMa
         } else {
             return getFontName(view, varargs);
         }
+    }
+
+    /***
+     * 设置字体加粗
+     * @param view
+     * @param varargs
+     * @return
+     */
+    public LuaValue setfontBold(U view, Varargs varargs) {
+        return view.setfontBold();
     }
 
     public LuaValue setFontName(U view, Varargs varargs) {

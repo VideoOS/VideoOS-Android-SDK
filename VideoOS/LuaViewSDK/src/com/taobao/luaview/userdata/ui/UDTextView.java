@@ -10,6 +10,7 @@ package com.taobao.luaview.userdata.ui;
 
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.widget.TextView;
 
@@ -129,6 +130,22 @@ public class UDTextView<T extends TextView> extends UDView<T> {
             T view = getView();
             if (view != null) {
                 view.setTextSize(textSize);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * 设置字体加粗
+     *
+     * @return
+     */
+    public UDTextView setfontBold() {
+        T view = getView();
+        if (view != null) {
+            TextPaint textPaint = view.getPaint();
+            if (textPaint != null) {
+                textPaint.setFakeBoldText(true);
             }
         }
         return this;

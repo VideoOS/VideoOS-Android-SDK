@@ -1315,6 +1315,13 @@ function itemClick(data)
 end
 
 local function onCreate(data)
+    local showLinkUrl = getHotspotExposureTrackLink(data, 1)
+    if (showLinkUrl ~= nil) then
+        Native:get(showLinkUrl)
+    end
+    if (bubble.launchPlanId ~= nil) then
+        osTrack(bubble.launchPlanId, 1, 2)
+    end
     getScrollViewLocation(data)
     bubble.luaview = createParent()
     performWithDelay(function()
@@ -1374,13 +1381,7 @@ function show(args)
     end
     bubble.launchPlanId = dataTable.launchPlanId
     bubble.id = dataTable.id
-    local showLinkUrl = getHotspotExposureTrackLink(dataTable, 1)
-    if (showLinkUrl ~= nil) then
-        Native:get(showLinkUrl)
-    end
-    if (bubble.launchPlanId ~= nil) then
-        osTrack(bubble.launchPlanId, 1, 2)
-    end
+
     setBubbleTime(dataTable)
     Native:widgetEvent(eventTypeShow, bubble.id, bubble.id, adTypeBubble, "") --todo 修改参数为table
     Native:saveCacheData(bubble.id, tostring(eventTypeShow))
