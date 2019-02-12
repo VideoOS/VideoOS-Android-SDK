@@ -502,6 +502,16 @@ local function createCloseButton(data, isPortrait)
 end
 
 local function onCreate(data)
+    local showLinkUrl = getHotspotExposureTrackLink(data, 1)
+    if (showLinkUrl ~= nil) then
+        Native:get(showLinkUrl)
+    end
+    if (cloud.launchPlanId ~= nil) then
+        osTrack(cloud.launchPlanId, 1, 2)
+        if (getLinkUrl(data) ~= nil) then
+            osTrack(cloud.launchPlanId, 2, 2)
+        end
+    end
     cloud.needShowOnPortrait = isNeedShowOnPortrait(data)
     local isPortrait = Native:isPortraitScreen()
     cloud.luaView = createParent(isPortrait)
@@ -556,16 +566,7 @@ function show(args)
     end
     cloud.id = dataTable.id
     cloud.launchPlanId = dataTable.launchPlanId
-    local showLinkUrl = getHotspotExposureTrackLink(dataTable, 1)
-    if (showLinkUrl ~= nil) then
-        Native:get(showLinkUrl)
-    end
-    if (cloud.launchPlanId ~= nil) then
-        osTrack(cloud.launchPlanId, 1, 2)
-        if (getLinkUrl(dataTable) ~= nil) then
-            osTrack(cloud.launchPlanId, 2, 2)
-        end
-    end
+
     setDefaultValue(dataTable)
     Native:widgetEvent(eventTypeShow, cloud.id, adTypeName, actionTypeNone, "") --todo 修改参数为table
     Native:saveCacheData(cloud.id, tostring(eventTypeShow))

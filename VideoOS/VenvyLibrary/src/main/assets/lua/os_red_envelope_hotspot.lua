@@ -469,6 +469,15 @@ local function fillData(data)
 end
 
 local function onCreate(data)
+    local showLinkUrl = getHotspotExposureTrackLink(redEnvelope.data, 1)
+    if (showLinkUrl ~= nil) then
+        Native:get(showLinkUrl)
+    end
+    if (redEnvelope.launchPlanId ~= nil) then
+        osTrack(redEnvelope.launchPlanId, 1, 2)
+        osTrack(redEnvelope.launchPlanId, 2, 2)
+    end
+
     configSize(data)
     local isPortrait = Native:isPortraitScreen()
     redEnvelope.luaview = createLuaView(isPortrait)
@@ -590,14 +599,6 @@ function show(args)
 
     redEnvelope.id = redEnvelope.data.id
     redEnvelope.launchPlanId = redEnvelope.data.launchPlanId
-    local showLinkUrl = getHotspotExposureTrackLink(redEnvelope.data, 1)
-    if (showLinkUrl ~= nil) then
-        Native:get(showLinkUrl)
-    end
-    if (redEnvelope.launchPlanId ~= nil) then
-        osTrack(redEnvelope.launchPlanId, 1, 2)
-        osTrack(redEnvelope.launchPlanId, 2, 2)
-    end
     getRedEnvelopeInfo(function()
         onCreate(redEnvelope.data)
     end)

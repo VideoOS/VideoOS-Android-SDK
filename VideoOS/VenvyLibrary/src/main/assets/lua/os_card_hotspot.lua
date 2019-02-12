@@ -439,6 +439,15 @@ local function registerWindow()
 end
 
 local function onCreate(data)
+    local showLinkUrl = getHotspotExposureTrackLink(card.data, card.hotspotOrder)
+    if (showLinkUrl ~= nil) then
+        Native:get(showLinkUrl)
+    end
+    if (card.launchPlanId ~= nil) then
+        osTrack(card.launchPlanId, 1, 2)
+        osTrack(card.launchPlanId, 2, 2)
+    end
+
     configSize(data)
     local isPortrait = Native:isPortraitScreen()
     card.luaview = createLuaView(isPortrait)
@@ -621,14 +630,7 @@ function show(args)
         hotspotOrder = hotspotOrder + 1
         card.hotspotOrder = hotspotOrder
     end
-    local showLinkUrl = getHotspotExposureTrackLink(card.data, card.hotspotOrder)
-    if (showLinkUrl ~= nil) then
-        Native:get(showLinkUrl)
-    end
-    if (card.launchPlanId ~= nil) then
-        osTrack(card.launchPlanId, 1, 2)
-        osTrack(card.launchPlanId, 2, 2)
-    end
+
     getUserCardInfo(function(dataTable)
         if dataTable ~= nil then
             if dataTable.collectStatus ~= collectStatusGet then

@@ -1024,6 +1024,16 @@ function createLoadingView()
 end
 
 local function onCreate(data)
+    local showLinkUrl = getHotspotExposureTrackLink(data, 1)
+    if (showLinkUrl ~= nil) then
+        Native:get(showLinkUrl)
+    end
+    if (wedge.launchPlanId ~= nil) then
+        osTrack(wedge.launchPlanId, 1, 2)
+        if(wedgeLinkUrl(data)~=nil)then
+            osTrack(wedge.launchPlanId, 2, 2)
+        end
+    end
     wedge.luaView = createParent(Native:isPortraitScreen())
     wedge.mediaPlayer = createMediaPlay(data, Native:isPortraitScreen())
     wedge.backView = createBack(data, Native:isPortraitScreen())
@@ -1129,16 +1139,7 @@ function show(args)
     wedgeConfig(dataTable)
     wedge.id = dataTable.id
     wedge.launchPlanId = dataTable.launchPlanId
-    local showLinkUrl = getHotspotExposureTrackLink(dataTable, 1)
-    if (showLinkUrl ~= nil) then
-        Native:get(showLinkUrl)
-    end
-    if (wedge.launchPlanId ~= nil) then
-        osTrack(wedge.launchPlanId, 1, 2)
-        if(wedgeLinkUrl(dataTable)~=nil)then
-            osTrack(wedge.launchPlanId, 2, 2)
-        end
-    end
+
     Native:widgetEvent(eventTypeShow, wedge.id, adTypeName, actionTypePauseVideo, "")
     Native:saveCacheData(wedge.id, tostring(eventTypeShow))
     wedge.data = dataTable

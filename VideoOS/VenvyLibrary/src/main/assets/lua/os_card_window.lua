@@ -917,6 +917,10 @@ local function successState(data)
 end
 
 local function onCreate(data)
+    if (cardWindow.launchPlanId ~= nil) then
+        osTrack(cardWindow.launchPlanId, 1, 1)
+    end
+
     local isPortrait = Native:isPortraitScreen()
     cardWindow.media = registerMedia()
     cardWindow.window = registerWindow()
@@ -1132,9 +1136,7 @@ function show(args)
         return
     end
     setConfig(args.data)
-    if (cardWindow.launchPlanId ~= nil) then
-        osTrack(cardWindow.launchPlanId, 1, 1)
-    end
+
     onCreate(args.data)
     -- postUserCardInfo()
 end

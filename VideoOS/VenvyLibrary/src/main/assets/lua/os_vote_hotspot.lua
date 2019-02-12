@@ -432,6 +432,14 @@ local function configSize(data)
 end
 
 local function onCreate(args)
+    local showLinkUrl = getHotspotExposureTrackLink(args, 1)
+    if (showLinkUrl ~= nil) then
+        Native:get(showLinkUrl)
+    end
+    if (vote.launchPlanId ~= nil) then
+        osTrack(vote.launchPlanId, 1, 2)
+        osTrack(vote.launchPlanId, 2, 2)
+    end
     vote.data = args
     configSize(args)
     local isPortrait = Native:isPortraitScreen()
@@ -493,14 +501,7 @@ function show(args)
     end
     vote.id = args.data.id
     vote.launchPlanId = args.data.launchPlanId
-    local showLinkUrl = getHotspotExposureTrackLink(args.data, 1)
-    if (showLinkUrl ~= nil) then
-        Native:get(showLinkUrl)
-    end
-    if (vote.launchPlanId ~= nil) then
-        osTrack(vote.launchPlanId, 1, 2)
-        osTrack(vote.launchPlanId, 2, 2)
-    end
+
     onCreate(args.data)
     getVoteCountInfo()
     getUserVoteInfo()

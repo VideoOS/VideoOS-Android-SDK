@@ -192,9 +192,15 @@ local function setRedEnvelopeTitleViewSize(data, redEnvelopeTitleView, isPortrai
     end
     if (isPortrait) then
         redEnvelopeTitleView:textSize(24)
+        if (System.ios()) then
+        	redEnvelopeTitleView:font("HelveticaNeue-Bold", 24)
+        end
         redEnvelopeTitleView:frame(0, 28 * scale, redEnvelopeWindow.portraitWidth, 35 * scale)
     else
         redEnvelopeTitleView:textSize(14)
+        if (System.ios()) then
+        	redEnvelopeTitleView:font("HelveticaNeue-Bold", 14)
+        end
         redEnvelopeTitleView:frame(0, 12 * scale, 200 * scale, 30 * scale)
     end
 end
@@ -204,17 +210,17 @@ local function setRedEnvelopeCommandViewSize(data, redEnvelopeCommandLayout, red
         return
     end
     if (isPortrait) then
-        local viewWidth, viewHight = redEnvelopeWindow.portraitWidth * 0.613, redEnvelopeWindow.portraitHeight * 0.127
+        local viewWidth, viewHight = redEnvelopeWindow.portraitWidth * 0.619, redEnvelopeWindow.portraitHeight * 0.178
 
-        redEnvelopeCommandLayout:frame(redEnvelopeWindow.portraitWidth * 0.1935, redEnvelopeWindow.portraitHeight * 0.380, viewWidth, viewHight)
+        redEnvelopeCommandLayout:frame(redEnvelopeWindow.portraitWidth * 0.190, redEnvelopeWindow.portraitHeight * 0.363, viewWidth, viewHight)
         redEnvelopeCommandBackgroundView:frame(0, 0, viewWidth, viewHight)
-        redEnvelopeCommandView:frame(20 * scale, 0, viewWidth - 40 * scale, viewHight)
+        redEnvelopeCommandView:frame(0, 0, viewWidth, viewHight)
         redEnvelopeCommandView:textSize(18)
     else
-        redEnvelopeCommandLayout:frame(21 * scale, 140 * scale, 163 * scale, 55 * scale)
-        redEnvelopeCommandBackgroundView:frame(0, 0, 163 * scale, 55 * scale)
-        redEnvelopeCommandView:frame(20 * scale, 0, 112 * scale, 55 * scale)
-        redEnvelopeCommandView:textSize(16)
+        redEnvelopeCommandLayout:frame(11 * scale, 130 * scale, 182 * scale, 61 * scale)
+        redEnvelopeCommandBackgroundView:frame(0, 0, 182 * scale, 61 * scale)
+        redEnvelopeCommandView:frame(0, 0, 182 * scale, 61 * scale)
+        redEnvelopeCommandView:textSize(15)
     end
 end
 
@@ -253,31 +259,27 @@ local function setRedEnvelopeCommendTitleViewSize(data, createredEnvelopeCommend
     end
     if (isPortrait) then
         if (System.android()) then
-            createredEnvelopeCommendTitleView:textSize(8)
+            createredEnvelopeCommendTitleView:textSize(12)
             createredEnvelopeCommendTitleView:frame(redEnvelopeWindow.portraitWidth * 0.277, redEnvelopeWindow.portraitHeight * 0.655, redEnvelopeWindow.portraitWidth * 0.446, redEnvelopeWindow.portraitHeight * 0.093)
         else
             createredEnvelopeCommendTitleView:textSize(12)
-            local width = 1
-            local height = redEnvelopeWindow.portraitHeight * 0.093
-            if createredEnvelopeCommendTitleView:text() ~= nil then
-                width, height = Native:stringSizeWithWidth(createredEnvelopeCommendTitleView:text(), redEnvelopeWindow.portraitWidth * 0.646, 12)
-                height = height + 12
+            local y = redEnvelopeWindow.portraitHeight * 0.655
+            if redEnvelopeWindow.redEnvelopeCopyView ~= nil then
+            	y = redEnvelopeWindow.redEnvelopeCopyView:y() + redEnvelopeWindow.redEnvelopeCopyView:height() + 8 * scale
             end
-            createredEnvelopeCommendTitleView:frame(redEnvelopeWindow.portraitWidth * 0.177, redEnvelopeWindow.portraitHeight * 0.655, redEnvelopeWindow.portraitWidth * 0.646, height)
+            createredEnvelopeCommendTitleView:frame(redEnvelopeWindow.redEnvelopeCopyView:x(), y, redEnvelopeWindow.redEnvelopeCopyView:width(), 40)
         end
     else
         if (System.android()) then
-            createredEnvelopeCommendTitleView:textSize(8)
+            createredEnvelopeCommendTitleView:textSize(10)
             createredEnvelopeCommendTitleView:frame(27 * scale, 251 * scale, 150 * scale, 50 * scale)
         else
             createredEnvelopeCommendTitleView:textSize(10)
-            local width = 1
-            local height = 40 * scale
-            if createredEnvelopeCommendTitleView:text() ~= nil then
-                width, height = Native:stringSizeWithWidth(createredEnvelopeCommendTitleView:text(), 120 * scale, 10)
-                height = height + 10
+            local y = 251 * scale
+            if redEnvelopeWindow.redEnvelopeCopyView ~= nil then
+            	y = redEnvelopeWindow.redEnvelopeCopyView:y() + redEnvelopeWindow.redEnvelopeCopyView:height() + 8 * scale
             end
-            createredEnvelopeCommendTitleView:frame(28 * scale, 251 * scale, 140 * scale, height)
+            createredEnvelopeCommendTitleView:frame(redEnvelopeWindow.redEnvelopeCopyView:x(), y, redEnvelopeWindow.redEnvelopeCopyView:width(), 30)
         end
     end
 end
@@ -324,6 +326,9 @@ local function createredEnvelopeTitleView(data, isPortrait)
     local redEnvelopeTitleView = Label()
     redEnvelopeTitleView:textColor(0xFFFFFF)
     redEnvelopeTitleView:textAlign(TextAlign.CENTER)
+    if (redEnvelopeTitleView.textBold) and (System.android()) then
+        redEnvelopeTitleView:textBold()
+    end
     setRedEnvelopeTitleViewSize(data, redEnvelopeTitleView, isPortrait)
     return redEnvelopeTitleView
 end
@@ -377,14 +382,42 @@ end
 local function createredEnvelopeCommendTitleView(data, isPortrait)
     local redEnvelopeCommendTitleView = Label()
     redEnvelopeCommendTitleView:textColor(0xB8B8B8)
-    redEnvelopeCommendTitleView:lines(100)
+    redEnvelopeCommendTitleView:lines(2)
+    redEnvelopeCommendTitleView:ellipsize(Ellipsize.END)
     if (System.android()) then
-        redEnvelopeCommendTitleView:gravity(Gravity.START)
+        redEnvelopeCommendTitleView:gravity(Gravity.H_CENTER)
+    else
+        redEnvelopeCommendTitleView:textAlign(TextAlign.CENTER)
     end
 
     setRedEnvelopeCommendTitleViewSize(data, redEnvelopeCommendTitleView, isPortrait)
 
     return redEnvelopeCommendTitleView
+end
+
+local function showToastView(message, view) 
+	if message == nil or view == nil then
+		return
+	end
+	local label = Label()
+	label:textColor(0xFFFFFF)
+    label:textAlign(TextAlign.CENTER)
+    label:text(message)
+    label:lines(0)
+    label:textSize(14)
+    local width, height = Native:stringSizeWithWidth(message, view:width() - 20 * 2 - 12, 14)
+    view:addView(label)
+    if width < 100 then
+    	width = 100
+    end
+    label:frame((view:width() - width - 12) * 0.5, (view:height() - height - 12) * 0.5, width + 12, height + 12)
+	label:cornerRadius(5)
+	label:borderWidth(1)
+	label:borderColor(0x808080, 0.5)
+	label:backgroundColor(0x343434, 0.75)
+	performWithDelay(function() 
+		label:removeFromSuper()
+		end, 1000)
 end
 
 --屏幕旋转--
@@ -464,6 +497,15 @@ local function fillData(data)
 end
 
 local function onCreate(data)
+    local showLinkUrl = getHotspotExposureTrackLink(data, 1)
+    if (showLinkUrl ~= nil) then
+        Native:get(showLinkUrl)
+    end
+    if (redEnvelopeWindow.launchPlanId ~= nil) then
+        osTrack(redEnvelopeWindow.launchPlanId, 1, 1)
+        osTrack(redEnvelopeWindow.launchPlanId, 2, 1)
+    end
+
     redEnvelopeWindow.media = registerMedia()
     local isPortrait = Native:isPortraitScreen()
     redEnvelopeWindow.luaView = createLuaView(isPortrait)
@@ -537,12 +579,20 @@ local function onCreate(data)
     redEnvelopeWindow.redEnvelopeCopyView:onClick(function()
         local infoWord = redEnvelopeWindow.redEnvelopeCommandView:text()
         if (infoWord == nil) then
-            Toast("未获取到口令，请稍后重试")
+        	if (System.android()) then
+        		Toast("未获取到口令，请稍后重试")
+        	else
+        		showToastView("未获取到口令，请稍后重试", redEnvelopeWindow.redEnvelopeWindowView)
+        	end
             return
         end
         Native:copyStringToPasteBoard(infoWord)
         postUserRedEnvelopeInfo()
-        Toast("复制成功")
+        if (System.android()) then
+    		Toast("复制成功")
+    	else
+    		showToastView("复制成功", redEnvelopeWindow.redEnvelopeWindowView)
+    	end
         local clickLinkUrl = getHotspotClickTrackLink(data, 1)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
@@ -559,14 +609,7 @@ function show(args)
         return
     end
     redEnvelopeWindow.launchPlanId = args.data.launchPlanId
-    local showLinkUrl = getHotspotExposureTrackLink(args.data, 1)
-    if (showLinkUrl ~= nil) then
-        Native:get(showLinkUrl)
-    end
-    if (redEnvelopeWindow.launchPlanId ~= nil) then
-        osTrack(redEnvelopeWindow.launchPlanId, 1, 1)
-        osTrack(redEnvelopeWindow.launchPlanId, 2, 1)
-    end
+
     setConfig(args.data)
     onCreate(args.data)
 end
