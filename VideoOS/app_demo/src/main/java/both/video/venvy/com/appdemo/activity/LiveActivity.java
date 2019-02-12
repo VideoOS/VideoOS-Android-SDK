@@ -152,9 +152,9 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
             if (mVideoPlusView == null)
                 return;
             mVideoPlusView.stop();
-            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_card_hotspot&id=os_cloud");
+            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_cloud_hotspot.lua&id=os_cloud_hotspot");
             HashMap<String, String> params = new HashMap<>();
-            params.put("data", AssetsUtil.readFileAssets("local_card.json", LiveActivity.this));
+            params.put("data", AssetsUtil.readFileAssets("local_cloud.json", LiveActivity.this));
             mVideoPlusView.navigation(uri, params, new IRouterCallback() {
                 @Override
                 public void arrived() {
