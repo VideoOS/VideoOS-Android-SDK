@@ -29,6 +29,8 @@ android {
 //            jniLibs.srcDirs = ['libs']
         }
     }
+    enforceUniquePackageName = false
+    packageBuildConfig(false)
 }
 
 dependencies {
