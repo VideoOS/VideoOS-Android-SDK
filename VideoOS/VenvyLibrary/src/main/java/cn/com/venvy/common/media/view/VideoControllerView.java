@@ -25,7 +25,8 @@ import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
 
-import cn.com.videopls.venvy.library.R;
+import cn.com.videopls.pub.R;
+
 
 public class VideoControllerView extends RelativeLayout {
     private static final String TAG = "VideoControllerView";

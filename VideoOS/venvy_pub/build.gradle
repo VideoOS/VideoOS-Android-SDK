@@ -47,6 +47,8 @@ android {
             assets.srcDirs = ['src/main/assets']
         }
     }
+    enforceUniquePackageName = false
+    packageBuildConfig(false)
 }
 
 //apply from: 'fat-aar.gradle'
