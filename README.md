@@ -12,11 +12,9 @@ repositories {
   maven { url 'https://dl.bintray.com/videoli/maven/' }
 }
 dependencies {
-  implementation 'cn.com.videopls.pub:1.1.0'
+  implementation 'com.videoli:VideoOS-Android-SDK:1.0.0'
 }
 ```
-(注：发布地址待定，请联系作者)
-
 ##### 兼容性
 ```
 向下兼容 Android SDK: 16
@@ -31,7 +29,9 @@ repositories {
   maven { url 'https://dl.bintray.com/videoli/maven/' }
 }
 dependencies {
-  implementation 'cn.com.videopls.pub:1.1.0'
+  implementation 'com.videoli:VideoOS-Android-SDK:1.0.0'
+  implementation 'com.videoli:venvy_processor_annotation:1.0.0'
+  annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
 }
 ```
 
@@ -41,7 +41,7 @@ dependencies {
 <uses-permission android:name="android.permission.INTERNET" />
 ```
    
-3. 依赖的第三方库(具体视平台不同而不一致)
+3. 依赖的第三方库(具体视平台不同版本而不一致)
 
 ```
 compile "com.github.bumptech.glide:glide:3.7.0"
