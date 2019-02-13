@@ -13,7 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 
-import com.taobao.android.luaview.R;
+import cn.com.videopls.pub.R;
 import com.taobao.luaview.global.Constants;
 import com.taobao.luaview.userdata.base.UDLuaTable;
 import com.taobao.luaview.userdata.indicator.UDCustomViewPagerIndicator;

@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import cn.com.venvy.Config;
 import cn.com.venvy.common.observer.ObservableManager;
-import cn.com.videopls.venvy.library.BuildConfig;
 
 /**
  * Created by Arthur on 2017/4/28.

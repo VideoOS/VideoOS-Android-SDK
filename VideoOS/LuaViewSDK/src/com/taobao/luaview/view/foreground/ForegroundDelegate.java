@@ -20,7 +20,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 
-import com.taobao.android.luaview.R;
+import cn.com.videopls.pub.R;
 
 /**
  * Delegate that actually does the foreground things, so that the logic can be shared between views
@@ -52,7 +52,7 @@ public class ForegroundDelegate {
     static void setupForeground(View view, Drawable drawable, Integer color, Integer alpha) {
         if (view instanceof IForeground) {
             if (color != null) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (drawable instanceof RippleDrawable) {
                         RippleDrawable rippleDrawable = (RippleDrawable) drawable;
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

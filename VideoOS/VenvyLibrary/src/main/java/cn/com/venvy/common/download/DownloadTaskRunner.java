@@ -18,7 +18,6 @@ import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.utils.VenvyIOUtils;
 import cn.com.venvy.common.utils.VenvyLog;
-import cn.com.videopls.venvy.library.BuildConfig;
 
 /**
  * Created by yanjiangbo on 2017/6/21.

@@ -9,7 +9,7 @@ package com.taobao.luaview.global;
 
 import android.content.Context;
 
-import com.taobao.android.luaview.R;
+import cn.com.videopls.pub.R;
 import com.taobao.luaview.util.AndroidUtil;
 
 

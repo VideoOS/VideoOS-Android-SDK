@@ -15,7 +15,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
-import com.taobao.android.luaview.R;
+import cn.com.videopls.pub.R;
 import com.taobao.luaview.userdata.list.UDBaseRecyclerView;
 import com.taobao.luaview.userdata.list.UDRecyclerView;
 import com.taobao.luaview.userdata.ui.UDView;
