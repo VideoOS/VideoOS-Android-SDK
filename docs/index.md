@@ -12,10 +12,9 @@ repositories {
   maven { url 'https://dl.bintray.com/videoli/maven/' }
 }
 dependencies {
-  implementation 'com.videoli:VideoOS-Android-SDK:1.0.0'
+  implementation 'com.videoli:VideoOS:1.0.0'
 }
 ```
-(注：发布地址待定，请联系作者)
 
 ##### 兼容性
 ```
@@ -31,7 +30,7 @@ repositories {
   maven { url 'https://dl.bintray.com/videoli/maven/' }
 }
 dependencies {
-  implementation 'cn.com.videopls.pub:1.1.0'
+  implementation 'com.videoli:VideoOS:1.0.0'
 }
 ```
 
