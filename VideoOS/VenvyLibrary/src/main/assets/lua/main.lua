@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
-
 --OS入口 TODO是否可在此处判断类型？？？进行跳转--
 require "os_string"
 require "os_config"
@@ -408,6 +407,7 @@ function show(args)
     end
     --加载网络请求通用参数
     local paramData = {
+        videoId = Native:nativeVideoID(),
         commonParam = Native:commonParam()
     }
     local paramDataString = Native:tableToJson(paramData)
