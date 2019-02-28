@@ -10,10 +10,12 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.utils.ScreenOrientationSwitcher;
 import both.video.venvy.com.appdemo.widget.CustomVideoView;
 import both.video.venvy.com.appdemo.widget.VideoControllerView;
+import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.VideoPlusAdapter;
 import cn.com.videopls.pub.VideoPlusView;
@@ -34,7 +36,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
     protected FrameLayout mVideoContentView;
     //自动选择屏幕类
     private ScreenOrientationSwitcher mScreenOrientationSwitcher;
-    protected static final String TAG_CREATIVE_NAME="creativeName";
+    protected static final String TAG_CREATIVE_NAME = "creativeName";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +64,15 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mVideoPlusView != null) {
+            VideoPositionHelper.getInstance().cancel();
+            mVideoPlusView.stop();
+        }
+    }
+
     /***
      *
      * @param newConfig 屏幕切换回调此生命周期
@@ -72,7 +84,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (mCustomVideoView!=null&&mController!=null) {
+        if (mCustomVideoView != null && mController != null) {
             mController.onConfigurationChanged(newConfig);
         }
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
