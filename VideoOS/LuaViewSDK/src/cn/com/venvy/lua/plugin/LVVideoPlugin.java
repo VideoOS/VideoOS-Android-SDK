@@ -7,6 +7,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.bean.VideoPlayerSize;
@@ -22,7 +23,6 @@ public class LVVideoPlugin {
     private static IsDebug sIsDebug;
     private static ChangeEnvironment sChangeEnvironment;
 
-
     public static void install(VenvyLVLibBinder venvyLVLibBinder, Platform platform) {
         venvyLVLibBinder.set("sdkVersion", sSdkVersion == null ? sSdkVersion = new SdkVersion() : sSdkVersion);
         venvyLVLibBinder.set("isDebug", sIsDebug == null ? sIsDebug = new IsDebug() : sIsDebug);
@@ -31,6 +31,7 @@ public class LVVideoPlugin {
         venvyLVLibBinder.set("currentDirection", new CurrentScreenDirection(platform));
         venvyLVLibBinder.set("isFullScreen", new IsFullScreen(platform));
         venvyLVLibBinder.set("appKey", new AppKey(platform));
+        venvyLVLibBinder.set("appSecret", new AppSecret(platform));
         venvyLVLibBinder.set("nativeVideoID", new GetVideoID(platform));
         venvyLVLibBinder.set("platformID", new GetPlatformId(platform));
         venvyLVLibBinder.set("getVideoCategory", new GetCategory(platform));
@@ -150,6 +151,22 @@ public class LVVideoPlugin {
         @Override
         public Varargs invoke(Varargs args) {
             return mPlatform != null ? LuaValue.valueOf(mPlatform.getPlatformInfo().getAppKey()) : LuaValue.NIL;
+        }
+    }
+
+    /**
+     * 获取AppSecret
+     */
+    private static class AppSecret extends VarArgFunction {
+        private Platform mPlatform;
+
+        AppSecret(Platform platform) {
+            this.mPlatform = platform;
+        }
+
+        @Override
+        public Varargs invoke(Varargs args) {
+            return mPlatform != null ? LuaValue.valueOf(mPlatform.getPlatformInfo().getAppSecret()) : LuaValue.valueOf(cn.com.venvy.AppSecret.getAppSecret(mPlatform));
         }
     }
 
