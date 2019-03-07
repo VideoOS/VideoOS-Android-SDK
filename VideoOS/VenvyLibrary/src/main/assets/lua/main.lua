@@ -192,7 +192,15 @@ local function registerMqtt(data)
 
     local mqtt = Mqtt()
     local topic = {}
-    topic[Native:nativeVideoID()] = 0
+    local appKey = Native:appKey()
+    local nativeVideoID = Native:nativeVideoID()
+    local topicString
+    if (appKey ~= '' and appKey ~= nil) then
+        topicString = appKey .. "-" .. nativeVideoID
+    else
+        topicString = nativeVideoID
+    end
+    topic[topicString] = 0
     --print("register "..Native:nativeVideoID())
 
     onMqttMessage = function(message)
@@ -267,7 +275,7 @@ local function getTaglist()
                 end
             end
         end
-    end)
+    end, mainNode.media)
 end
 
 local function getSimulationTag()
@@ -312,7 +320,7 @@ local function getSimulationTag()
             end
         end
         --print("getSimulationTag success")
-    end)
+    end, mainNode.media)
 end
 
 function getTag()
@@ -380,13 +388,13 @@ local function getResourcelist()
         if (table_leng(imageList) > 0) then
             Native:preloadImage(imageList)
         end
-    end)
+    end, mainNode.media)
 end
 
 --预加载接口重试5次，服务器错误也算失败
 function reloadGetResourcelist()
     preloadCount = preloadCount + 1
-    
+
     if preloadCount > 5 then
         return
     end
@@ -431,7 +439,7 @@ function show(args)
         getTag()
         getResourcelist()
         --TODO 连接MQTT
-    end)
+    end, mainNode.media)
     --获取广告--
     --[[
     Native:get("http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/getAds", {}, function(response, errorInfo)
