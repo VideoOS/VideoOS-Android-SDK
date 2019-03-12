@@ -210,6 +210,9 @@ public abstract class BaseImageView extends ForegroundImageView {
      */
     public void setStrokeWidth(int width) {
         getStyleDrawable().setStrokeWidth(width);
+        LVGradientDrawable drawable = this.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) this.getBackground() : new LVGradientDrawable();
+        drawable.setStrokeWidth(width);
+        LuaViewUtil.setBackground(this, drawable);
     }
 
     public int getStrokeWidth() {
@@ -223,6 +226,9 @@ public abstract class BaseImageView extends ForegroundImageView {
      */
     public void setStrokeColor(int color) {
         getStyleDrawable().setStrokeColor(color);
+        LVGradientDrawable drawable = this.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) this.getBackground() : new LVGradientDrawable();
+        drawable.setStrokeColor(color);
+        LuaViewUtil.setBackground(this, drawable);
     }
 
     public int getStrokeColor() {
