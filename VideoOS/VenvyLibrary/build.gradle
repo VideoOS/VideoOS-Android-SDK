@@ -1,0 +1,54 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.3'
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 19
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false   //这是添加的
+        checkReleaseBuilds false  //这是添加的
+    }
+
+    buildTypes {
+        lintOptions { abortOnError false }
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets']
+//            jniLibs.srcDirs = ['libs']
+        }
+    }
+    enforceUniquePackageName = false
+    packageBuildConfig(false)
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    provided 'com.android.support:support-v4:25.3.1'
+    provided 'com.android.support:recyclerview-v7:25.3.1'
+    provided 'com.android.support:appcompat-v7:25.3.1'
+    provided 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
+    compile project(':venvy_processor_annotation')
+    annotationProcessor project(':venvy_processor_compiler')
+    provided 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
+    provided "com.squareup.okhttp3:okhttp:3.8.0"
+    provided "com.facebook.fresco:fresco:1.8.0"
+    provided "com.facebook.fresco:animated-gif:1.8.0"
+    provided "com.facebook.fresco:animated-webp:1.8.0"
+    provided "com.facebook.fresco:webpsupport:1.8.0"
+    provided "com.github.bumptech.glide:glide:3.7.0"
+//  provided "com.github.bumptech.glide:glide:4.3.1"
+//  compile 'com.videoli:venvy_processor_annotation:1.0.0'
+//  annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
+}

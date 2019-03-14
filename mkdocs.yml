@@ -1,0 +1,4 @@
+site_name: VideoOS Android SDK
+repo_url: https://github.com/VideoOS/VideoOS-Android-SDK
+nav:
+  - 'SDK集成': 'index.md'

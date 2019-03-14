@@ -1,0 +1,59 @@
+//打包配置
+apply plugin: 'com.android.library'
+
+/*
+  定义android插件
+*/
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.3'
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 19
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src', 'src-csslayout']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['git src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        preRelease {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false   //这是添加的
+        checkReleaseBuilds false  //这是添加的
+    }
+    enforceUniquePackageName = false
+    packageBuildConfig(false)
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    provided project(path: ':VenvyLibrary')
+    provided 'com.android.support:support-v4:25.3.1'
+    provided 'com.android.support:recyclerview-v7:25.3.1'
+    provided 'com.android.support:appcompat-v7:25.3.1'
+}

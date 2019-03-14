@@ -1,0 +1,67 @@
+{
+  "id": "51d849d4-ea97-40e8-ba26-782341f9f326",
+  "template": "os_bubble12_hotspot.lua",
+  "videoStartTime": 70000,
+  "videoEndTime": 85000,
+  "clockStartTime": null,
+  "clockEndTime": null,
+  "duration": 15000,
+  "data": {
+    "isShowAds": true,
+    "creativeName": "气泡+仅对话&图片(含广告&关闭)",
+    "creativeIdList": [
+      77
+    ],
+    "readonly": false,
+    "interactionTemplateId": 68,
+    "roles": [
+      {
+        "roleAvatar": "http://os-open-static.videojj.com/pro/2ab6759c-ae7a-4961-be03-bbe0fb49d17b.jpg",
+        "roleName": "任嘉伦"
+      },
+      {
+        "roleAvatar": "http://os-open-static.videojj.com/pro/c4753ec4-2fff-43f0-b65b-dd190a037f3d.png",
+        "roleName": "杨紫"
+      }
+    ],
+    "messages": [
+      {
+        "duration": 2,
+        "name": "任嘉伦",
+        "avatar": "http://os-open-static.videojj.com/pro/2ab6759c-ae7a-4961-be03-bbe0fb49d17b.jpg",
+        "userType": 1,
+        "content": "hi〜美女，你最近看我的新剧了吗？名字叫做《天乩之白蛇传说》。"
+      },
+      {
+        "duration": 3,
+        "messageType": 1,
+        "name": "杨紫",
+        "userType": 1,
+        "avatar": "http://os-open-static.videojj.com/pro/c4753ec4-2fff-43f0-b65b-dd190a037f3d.png",
+        "content": "你说的是我演的那部吗，那个最可爱的蛇和最美的白娘子？那必须得看呀。快去推广给你的朋友们吧。"
+      },
+      {
+        "duration": 5,
+        "messageType": 2,
+        "exposureTrackLink": "https://baike.baidu.com/item/%E5%A4%A9%E4%B9%A9%E4%B9%8B%E7%99%BD%E8%9B%87%E4%BC%A0%E8%AF%B4/20385408?fr=aladdin",
+        "userType": 2,
+        "content": {
+          "attachInfo": null,
+          "creativeFileId": 77,
+          "width": 611,
+          "resCode": "00",
+          "fileUrl": "http://os-open-static.videojj.com/pro/e52f71b1-1366-48e6-a630-6dcbca77444c.jpg",
+          "resMsg": "处理成功",
+          "height": 403
+        }
+      }
+    ],
+    "interactionTypeId": 85,
+    "isShowClose": true,
+    "errorSchema": {}
+  },
+  "creativeId": 52,
+  "sumHotspot": 1,
+  "hotspotOrder": 0,
+  "nameMapper": null
+}
