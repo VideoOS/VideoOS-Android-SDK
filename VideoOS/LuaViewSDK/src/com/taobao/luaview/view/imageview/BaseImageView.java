@@ -131,7 +131,7 @@ public abstract class BaseImageView extends ForegroundImageView {
                         if (mLuaCallBack == null)
                             return;
                         if (mIImageSize == null) {
-                            LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, 0, 0);
+                            LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, drawable != null ?drawable.getIntrinsicWidth():0, drawable != null ?drawable.getIntrinsicHeight():0);
                             return;
                         }
                         mIImageSize.sizeImage(getContext(), mUrl, new IImageSizeResult() {

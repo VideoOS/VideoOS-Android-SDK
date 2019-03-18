@@ -250,7 +250,7 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
                             }
                             if (imageView.getIImageSize() == null) {
                                 if (urlOrName.equals(imageView.getTag(Constants.RES_LV_TAG_URL))) {//异步回调，需要checktag
-                                    LuaUtil.callFunction(callback, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, 0, 0);
+                                    LuaUtil.callFunction(callback, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, drawable != null ?drawable.getIntrinsicWidth():0, drawable != null ?drawable.getIntrinsicHeight():0);
                                 }
                                 return;
                             }
