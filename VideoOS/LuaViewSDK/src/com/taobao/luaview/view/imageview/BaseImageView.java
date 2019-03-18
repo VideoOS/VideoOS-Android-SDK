@@ -16,6 +16,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 
 import com.taobao.luaview.global.LuaView;
 import com.taobao.luaview.provider.ImageProvider;
@@ -29,6 +30,11 @@ import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaFunction;
 
 import java.lang.ref.WeakReference;
+
+import cn.com.venvy.common.image.IImageSize;
+import cn.com.venvy.common.image.IImageSizeResult;
+import cn.com.venvy.common.image.VenvyBitmapInfo;
+import cn.com.venvy.common.image.VenvyImageSizeFactory;
 
 /**
  * Base ImageView
@@ -46,6 +52,7 @@ public abstract class BaseImageView extends ForegroundImageView {
     protected boolean isNetworkMode = false;
     private String mPlaceHolderImg;
     private Drawable mPlaceHolderDrawable;
+    IImageSize mIImageSize;
 
     public void setIsNetworkMode(boolean isNetworkMode) {
         this.isNetworkMode = isNetworkMode;
@@ -56,6 +63,7 @@ public abstract class BaseImageView extends ForegroundImageView {
         if (context instanceof Activity) {
             ImageActivityLifeCycle.getInstance(((Activity) context).getApplication()).watch(this);
         }
+        mIImageSize = VenvyImageSizeFactory.getImageSize();
     }
 
 
@@ -69,6 +77,10 @@ public abstract class BaseImageView extends ForegroundImageView {
 
     public String getUrl() {
         return mUrl;
+    }
+
+    public IImageSize getIImageSize() {
+        return mIImageSize;
     }
 
     public String getPlaceHolderImg() {
@@ -115,10 +127,31 @@ public abstract class BaseImageView extends ForegroundImageView {
             if (mUrl != null) {
                 loadUrl(mUrl, new DrawableLoadCallback() {
                     @Override
-                    public void onLoadResult(Drawable drawable) {
-                        if (mLuaCallBack != null) {
-                            LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE);
+                    public void onLoadResult(final Drawable drawable) {
+                        if (mLuaCallBack == null)
+                            return;
+                        if (mIImageSize == null) {
+                            LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, 0, 0);
+                            return;
                         }
+                        mIImageSize.sizeImage(getContext(), mUrl, new IImageSizeResult() {
+                            @Override
+                            public void loadSuccess(String url, @Nullable VenvyBitmapInfo bitmap) {
+                                int width = 0, height = 0;
+                                if (bitmap != null && bitmap.getBitmap() != null) {
+                                    width = bitmap.getBitmap().getWidth();
+                                    height = bitmap.getBitmap().getHeight();
+                                }
+                                LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, width, height);
+
+                            }
+
+                            @Override
+                            public void loadFailure(String url, @Nullable Exception e) {
+
+                            }
+                        });
+
                     }
                 });
             } else {
