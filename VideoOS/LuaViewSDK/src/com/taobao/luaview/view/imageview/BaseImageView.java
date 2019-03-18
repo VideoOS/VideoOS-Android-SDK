@@ -20,9 +20,13 @@ import android.os.Build;
 import com.taobao.luaview.global.LuaView;
 import com.taobao.luaview.provider.ImageProvider;
 import com.taobao.luaview.util.DimenUtil;
+import com.taobao.luaview.util.LuaUtil;
 import com.taobao.luaview.util.LuaViewUtil;
 import com.taobao.luaview.view.drawable.LVGradientDrawable;
 import com.taobao.luaview.view.foreground.ForegroundImageView;
+
+import org.luaj.vm2.LuaBoolean;
+import org.luaj.vm2.LuaFunction;
 
 import java.lang.ref.WeakReference;
 
@@ -37,7 +41,7 @@ public abstract class BaseImageView extends ForegroundImageView {
     Path mPath = null;
 
     String mUrl;
-
+    LuaFunction mLuaCallBack;
     protected Boolean mAttachedWindow = null;
     protected boolean isNetworkMode = false;
     private String mPlaceHolderImg;
@@ -75,6 +79,10 @@ public abstract class BaseImageView extends ForegroundImageView {
         mPlaceHolderImg = placeHolderImg;
     }
 
+    public void setLuaFunction(LuaFunction luaFunction) {
+        this.mLuaCallBack = luaFunction;
+    }
+
     public void setPlaceHolderDrawable(Drawable placeHolderDrawable) {
         mPlaceHolderDrawable = placeHolderDrawable;
     }
@@ -105,7 +113,14 @@ public abstract class BaseImageView extends ForegroundImageView {
     public void restoreImage() {
         if (isNetworkMode && mAttachedWindow != null) {// 恢复被清空的image，只有已经被加过才恢复
             if (mUrl != null) {
-                loadUrl(mUrl, null);
+                loadUrl(mUrl, new DrawableLoadCallback() {
+                    @Override
+                    public void onLoadResult(Drawable drawable) {
+                        if (mLuaCallBack != null) {
+                            LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE);
+                        }
+                    }
+                });
             } else {
                 setImageDrawable(null);
             }
