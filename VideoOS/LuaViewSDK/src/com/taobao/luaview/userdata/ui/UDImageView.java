@@ -235,6 +235,7 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
     public UDImageView setImageUrl(final String urlOrName, final LuaFunction callback) {
         final T imageView = getView();
         if (imageView != null) {
+            imageView.setLuaFunction(callback);
             if (!TextUtils.isEmpty(urlOrName)) {
                 if (URLUtil.isNetworkUrl(urlOrName)) {//network
                     imageView.setTag(Constants.RES_LV_TAG_URL, urlOrName);//需要设置tag，防止callback在回调的时候调用错误
@@ -281,26 +282,26 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
                     VenvyImageLoaderFactory.getImageLoader().loadImage(new WeakReference<>(imageView), new VenvyImageInfo.Builder().setUrl(urlOrName).build(), new IImageLoaderResult() {
                         @Override
                         public void loadSuccess(@Nullable WeakReference<? extends IImageView> view, String url, @Nullable VenvyBitmapInfo bitmap) {
-                            Drawable drawable=null;
-                            if(bitmap!=null&&bitmap.getDrawable()!=null){
-                                drawable=bitmap.getDrawable();
-                            }else if(bitmap!=null&&bitmap.getBitmap()!=null){
-                                drawable=new BitmapDrawable(bitmap.getBitmap());
+                            Drawable drawable = null;
+                            if (bitmap != null && bitmap.getDrawable() != null) {
+                                drawable = bitmap.getDrawable();
+                            } else if (bitmap != null && bitmap.getBitmap() != null) {
+                                drawable = new BitmapDrawable(bitmap.getBitmap());
                             }
-                            if(drawable!=null){
-                                final Drawable needDrawable=drawable;
+                            if (drawable != null) {
+                                final Drawable needDrawable = drawable;
                                 VenvyUIUtil.runOnUIThreadDelay(new Runnable() {
                                     @Override
                                     public void run() {
                                         imageView.setImageBitmap(VenvyBlurUtil.doBlur(DrawableUtil.drawableToBitmap(needDrawable), 10, blur));
                                     }
-                                },80);
+                                }, 80);
                             }
                         }
 
                         @Override
                         public void loadFailure(@Nullable WeakReference<? extends IImageView> imageView, String url, @Nullable Exception e) {
-                            Log.i("video++","===data==loadFailure=");
+                            Log.i("video++", "===data==loadFailure=");
                         }
                     });
 //                    imageView.loadUrl(urlOrName, new DrawableLoadCallback() {
