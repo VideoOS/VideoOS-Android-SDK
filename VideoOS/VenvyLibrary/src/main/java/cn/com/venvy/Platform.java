@@ -18,9 +18,10 @@ import cn.com.venvy.common.interf.IWidgetPrepareShowListener;
 import cn.com.venvy.common.interf.IWidgetShowListener;
 import cn.com.venvy.common.interf.OnTagKeyListener;
 import cn.com.venvy.common.interf.WedgeListener;
+import cn.com.venvy.common.media.file.Md5FileNameGenerator;
 import cn.com.venvy.common.track.TrackHelper;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
-import cn.com.venvy.common.utils.VenvyFileUtil;
+import cn.com.venvy.common.media.StorageUtils;
 
 /**
  * Created by yanjiangbo on 2017/5/2.
@@ -182,8 +183,7 @@ public class Platform implements Serializable {
                 }
                 ArrayList<DownloadTask> arrayList = new ArrayList<>();
                 for (String url : strings) {
-                    DownloadTask task = new DownloadTask(App.getContext(), url, VenvyFileUtil
-                            .getCacheDir(App.getContext()) + "/media/" + url.hashCode());
+                    DownloadTask task = new DownloadTask(App.getContext(), url, StorageUtils.getIndividualCacheDirectory(App.getContext()) + "/" + new Md5FileNameGenerator().generate(url));
                     arrayList.add(task);
                 }
                 mDownloadTaskRunner.startTasks(arrayList, taskListener);
