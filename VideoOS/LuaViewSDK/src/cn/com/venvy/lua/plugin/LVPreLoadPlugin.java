@@ -9,7 +9,10 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 import java.util.Map;
 
+import cn.com.venvy.App;
 import cn.com.venvy.Platform;
+import cn.com.venvy.common.media.HttpProxyCacheServer;
+import cn.com.venvy.common.media.view.HttpProxyCacheServerFactory;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
 /**
@@ -18,9 +21,12 @@ import cn.com.venvy.lua.binder.VenvyLVLibBinder;
  */
 
 public class LVPreLoadPlugin {
+    private static ISVideoCachedData sISVideoCachedData;
+
     public static void install(VenvyLVLibBinder venvyLVLibBinder, Platform platform) {
         venvyLVLibBinder.set("preloadImage", new PreLoadImageData(platform));
         venvyLVLibBinder.set("preloadVideo", new PreLoadVideoCacheData(platform));
+        venvyLVLibBinder.set("isCacheVideo", sISVideoCachedData == null ? sISVideoCachedData = new ISVideoCachedData() : sISVideoCachedData);
     }
 
     private static class PreLoadImageData extends VarArgFunction {
@@ -74,6 +80,25 @@ public class LVPreLoadPlugin {
                 mPlatform.preloadMedia(preLoadUrls, null);
             }
             return LuaValue.NIL;
+        }
+    }
+
+    private static class ISVideoCachedData extends VarArgFunction {
+        HttpProxyCacheServer mProxy;
+
+        ISVideoCachedData() {
+            super();
+            if (mProxy == null) {
+                mProxy = HttpProxyCacheServerFactory.getInstance().getProxy(App.getContext());
+            }
+        }
+
+        @Override
+        public LuaValue invoke(Varargs args) {
+            int fixIndex = VenvyLVLibBinder.fixIndex(args);
+            LuaValue target = args.arg(fixIndex + 1);
+            String url = VenvyLVLibBinder.luaValueToString(target);
+            return mProxy != null ? LuaValue.valueOf(mProxy.isCached(url)) : LuaValue.valueOf(false);
         }
     }
 }
