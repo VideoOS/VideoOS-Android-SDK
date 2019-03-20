@@ -1,6 +1,5 @@
 package cn.com.venvy.lua.ud;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -36,7 +35,6 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
 
     public VenvyUDMediaPlayerView(VenvyMediaPlayerView view, Globals globals, LuaValue metaTable, LuaValue initParams) {
         super(view, globals, metaTable, initParams);
-        setBackgroundColor(Color.BLACK);
     }
 
     public void startPlay(String url) {
