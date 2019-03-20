@@ -46,7 +46,7 @@ public class VenvyMediaPlayerView extends ForegroundRelativeLayout implements IL
 
     private void init(Context context) {
         customVideoView = new CustomVideoView(context);
-        this.setBackgroundColor(Color.BLACK);
+        setBackgroundColor(Color.BLACK);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
@@ -159,7 +159,7 @@ public class VenvyMediaPlayerView extends ForegroundRelativeLayout implements IL
         getStyleDrawable().setCornerRadius(radius);
         LVGradientDrawable drawable = this.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) this.getBackground() : new LVGradientDrawable();
         drawable.setCornerRadius(DimenUtil.dpiToPx(radius));
-        LuaViewUtil.setBackground(this, drawable);
+        LuaViewUtil.setBackground(getCustomVideoView()!=null?getCustomVideoView():this, drawable);
     }
 
     public float getCornerRadius() {
@@ -176,7 +176,7 @@ public class VenvyMediaPlayerView extends ForegroundRelativeLayout implements IL
         getStyleDrawable().setStrokeWidth(width);
         LVGradientDrawable drawable = this.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) this.getBackground() : new LVGradientDrawable();
         drawable.setStrokeWidth(width);
-        LuaViewUtil.setBackground(this, drawable);
+        LuaViewUtil.setBackground(getCustomVideoView()!=null?getCustomVideoView():this, drawable);
     }
 
     public int getStrokeWidth() {
@@ -192,7 +192,7 @@ public class VenvyMediaPlayerView extends ForegroundRelativeLayout implements IL
         getStyleDrawable().setStrokeColor(color);
         LVGradientDrawable drawable = this.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) this.getBackground() : new LVGradientDrawable();
         drawable.setStrokeColor(color);
-        LuaViewUtil.setBackground(this, drawable);
+        LuaViewUtil.setBackground(getCustomVideoView()!=null?getCustomVideoView():this, drawable);
     }
 
     public int getStrokeColor() {
