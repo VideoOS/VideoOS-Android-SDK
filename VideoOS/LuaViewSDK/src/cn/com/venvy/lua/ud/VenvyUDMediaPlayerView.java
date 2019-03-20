@@ -3,15 +3,14 @@ package cn.com.venvy.lua.ud;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.taobao.luaview.userdata.ui.UDView;
 import com.taobao.luaview.userdata.ui.UDViewGroup;
-import com.taobao.luaview.util.DimenUtil;
 import com.taobao.luaview.util.LuaUtil;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 
 import cn.com.venvy.common.interf.MediaStatus;
-import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.media.view.CustomVideoView;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
@@ -114,6 +113,29 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
     }
 
     @Override
+    public UDView setCornerRadius(float radius) {
+        getView().setCornerRadius(radius);
+        return this;
+    }
+
+    @Override
+    public float getCornerRadius() {
+        return super.getCornerRadius();
+    }
+
+    @Override
+    public UDView setBorderColor(Integer borderColor) {
+        getView().setStrokeColor(borderColor);
+        return this;
+    }
+
+    @Override
+    public UDView setBorderWidth(int borderWidth) {
+        getView().setStrokeWidth(borderWidth);
+        return this;
+    }
+
+    @Override
     public UDViewGroup setCallback(LuaValue callbacks) {
         mOnStart = LuaUtil.getFunction(callbacks, "OnStart", "onStart");
         mOnPause = LuaUtil.getFunction(callbacks, "OnPause", "onPause");
@@ -121,7 +143,7 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
         mOnFinished = LuaUtil.getFunction(callbacks, "OnFinished", "onFinished");
         mOnPrepare = LuaUtil.getFunction(callbacks, "OnPrepare", "onPrepare");
         mOnError = LuaUtil.getFunction(callbacks, "OnError", "onError");
-        mOnVolume=LuaUtil.getFunction(callbacks,"OnChangeVolume","onChangeVolume");
+        mOnVolume = LuaUtil.getFunction(callbacks, "OnChangeVolume", "onChangeVolume");
         return super.setCallback(callbacks);
     }
 
