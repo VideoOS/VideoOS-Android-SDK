@@ -11,6 +11,7 @@ import java.util.Map;
 
 import cn.com.venvy.App;
 import cn.com.venvy.Platform;
+import cn.com.venvy.common.download.DownloadDbHelper;
 import cn.com.venvy.common.media.HttpProxyCacheServer;
 import cn.com.venvy.common.media.view.HttpProxyCacheServerFactory;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
@@ -84,12 +85,12 @@ public class LVPreLoadPlugin {
     }
 
     private static class ISVideoCachedData extends VarArgFunction {
-        HttpProxyCacheServer mProxy;
+        DownloadDbHelper mHelper;
 
         ISVideoCachedData() {
             super();
-            if (mProxy == null) {
-                mProxy = HttpProxyCacheServerFactory.getInstance().getProxy(App.getContext());
+            if (mHelper == null) {
+                mHelper = new DownloadDbHelper(App.getContext());
             }
         }
 
@@ -98,7 +99,11 @@ public class LVPreLoadPlugin {
             int fixIndex = VenvyLVLibBinder.fixIndex(args);
             LuaValue target = args.arg(fixIndex + 1);
             String url = VenvyLVLibBinder.luaValueToString(target);
-            return mProxy != null ? LuaValue.valueOf(mProxy.isCached(url)) : LuaValue.valueOf(false);
+            DownloadDbHelper.DownloadInfo info = mHelper.queryDownloadInfo(url);
+            if (info == null) {
+                return LuaValue.valueOf(false);
+            }
+            return LuaValue.valueOf(info.totalSize == info.downloadSize);
         }
     }
 }

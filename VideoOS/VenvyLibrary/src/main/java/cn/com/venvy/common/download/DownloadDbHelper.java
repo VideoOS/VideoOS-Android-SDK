@@ -94,8 +94,8 @@ public class DownloadDbHelper {
     public static class DownloadInfo {
         String url;
         int Id;
-        long totalSize;
-        long downloadSize;
+        public long totalSize;
+        public long downloadSize;
         DownloadStatus status;
         String filePath;
     }
