@@ -94,13 +94,13 @@ public class DownloadDbHelper {
     public static class DownloadInfo {
         String url;
         int Id;
-        public long totalSize;
-        public long downloadSize;
-        DownloadStatus status;
+        long totalSize;
+        long downloadSize;
+        public DownloadStatus status;
         String filePath;
     }
 
-    enum DownloadStatus {
+    public enum DownloadStatus {
         DOWNLOAD_FAILED("1"),
         DOWNLOAD_SUCCESS("2"),
         DOWNLOADING("3"),

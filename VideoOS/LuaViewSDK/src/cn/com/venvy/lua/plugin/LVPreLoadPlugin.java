@@ -103,7 +103,7 @@ public class LVPreLoadPlugin {
             if (info == null) {
                 return LuaValue.valueOf(false);
             }
-            return LuaValue.valueOf(info.totalSize == info.downloadSize);
+            return LuaValue.valueOf(info.status == DownloadDbHelper.DownloadStatus.DOWNLOAD_SUCCESS);
         }
     }
 }
