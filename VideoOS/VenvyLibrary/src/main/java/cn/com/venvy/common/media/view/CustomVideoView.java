@@ -503,9 +503,9 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
     }
 
     @Override
-    public void onVolumeChanged(int volume) {
+    public void onVolumeChanged(int maxVolume, int volume) {
         Bundle bundle = new Bundle();
-        bundle.putInt(VOLUME_STATUS, volume);
+        bundle.putFloat(VOLUME_STATUS, (float) volume / (float) maxVolume);
         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_VOLUME_STATUS_CHANGED, bundle);
     }
 }

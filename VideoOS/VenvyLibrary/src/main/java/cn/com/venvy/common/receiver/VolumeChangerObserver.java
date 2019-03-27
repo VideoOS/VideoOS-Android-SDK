@@ -17,7 +17,7 @@ public class VolumeChangerObserver {
     private static final String EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE";
 
     public interface VolumeChangeListener {
-        void onVolumeChanged(int volume);
+        void onVolumeChanged(int maxVolume, int volume);
     }
 
     private Context mContext;
@@ -111,7 +111,7 @@ public class VolumeChangerObserver {
                 }
                 int volume = observer.getCurrentMusicVolume();
                 if (volume >= 0) {
-                    listener.onVolumeChanged(volume);
+                    listener.onVolumeChanged(getMaxMusicVolume(), volume);
                 }
             }
         }
