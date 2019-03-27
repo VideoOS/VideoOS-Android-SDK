@@ -293,7 +293,6 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
     public void setVoice(float voice) {
         int maxVoice = mVolumeChangerObserver.getMaxMusicVolume();
         mCurrentVoice = (int) (maxVoice * voice);
-
         if (mMediaPlayer != null && mCurrentState == STATE_PLAYING && isMediaPlayerPlaying()) {
             mMediaPlayer.setVolume(voice, voice);
         }
