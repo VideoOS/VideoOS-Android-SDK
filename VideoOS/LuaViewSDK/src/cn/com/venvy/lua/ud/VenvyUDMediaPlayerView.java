@@ -212,7 +212,7 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
         } else if (TextUtils.equals(tag, VenvyObservableTarget.TAG_VOLUME_STATUS_CHANGED)) {
             if (bundle == null)
                 return;
-            int volume = bundle.getInt(CustomVideoView.VOLUME_STATUS);
+            float volume = bundle.getFloat(CustomVideoView.VOLUME_STATUS);
             if (volume >= 0) {
                 LuaUtil.callFunction(mOnVolume, valueOf(volume));
             }
