@@ -31,6 +31,8 @@ repositories {
 }
 dependencies {
   implementation 'com.videoli:VideoOS:1.0.0'
+  implementation 'com.videoli:venvy_processor_annotation:1.0.0'
+  annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
 }
 ```
 
@@ -40,7 +42,7 @@ dependencies {
 <uses-permission android:name="android.permission.INTERNET" />
 ```
    
-3. 依赖的第三方库(具体视平台不同而不一致)
+3. 依赖的第三方库(具体视平台不同版本而不一致)
 
 ```
 compile "com.github.bumptech.glide:glide:3.7.0"

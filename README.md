@@ -15,6 +15,7 @@ dependencies {
   implementation 'com.videoli:VideoOS:1.0.0'
 }
 ```
+
 ##### 兼容性
 ```
 向下兼容 Android SDK: 16
