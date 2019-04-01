@@ -44,4 +44,32 @@ public class VideoPlus {
         });
         new DownloadDbHelper(context).deleteDownloadingInfo();
     }
+
+    public static void appCreateSAAS(final Context context, String appKey) {
+        App.setContext(context);
+        Config.SDK_VERSION = BuildConfig.SDK_VERSION;
+        Config.REPORT_ABLE = BuildConfig.ReportAble;
+        Config.DEBUG_STATUS = BuildConfig.DebugStatus;
+
+        if (executed) {
+            return;
+        }
+        executed = true;
+        LuaHelper.initLuaConfig();
+        PlatformInfo platformInfo = new PlatformInfo.Builder().setAppKey(appKey).builder();
+        Platform platform = new Platform(platformInfo);
+        new VideoPlusLuaUpdateModel(platform, null).startRequest();
+        VenvyRouterManager.getInstance().init(context, DebugStatus.isRelease() ? null : new VenvyRouterManager.RouterInitResult() {
+            @Override
+            public void initSuccess() {
+                VenvyLog.d(VideoPlus.class.getName(), "VenvyRouter init success");
+            }
+
+            @Override
+            public void initFailed() {
+
+            }
+        });
+        new DownloadDbHelper(context).deleteDownloadingInfo();
+    }
 }
