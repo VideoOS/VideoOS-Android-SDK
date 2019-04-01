@@ -45,7 +45,7 @@ public class VideoPlus {
         new DownloadDbHelper(context).deleteDownloadingInfo();
     }
 
-    public static void appCreateSAAS(final Context context, String appKey) {
+    public static void appCreateSAAS(final Context context, String appKey,String appSecret) {
         App.setContext(context);
         Config.SDK_VERSION = BuildConfig.SDK_VERSION;
         Config.REPORT_ABLE = BuildConfig.ReportAble;
@@ -56,7 +56,7 @@ public class VideoPlus {
         }
         executed = true;
         LuaHelper.initLuaConfig();
-        PlatformInfo platformInfo = new PlatformInfo.Builder().setAppKey(appKey).builder();
+        PlatformInfo platformInfo = new PlatformInfo.Builder().setAppKey(appKey).setAppSecret(appSecret).builder();
         Platform platform = new Platform(platformInfo);
         new VideoPlusLuaUpdateModel(platform, null).startRequest();
         VenvyRouterManager.getInstance().init(context, DebugStatus.isRelease() ? null : new VenvyRouterManager.RouterInitResult() {
