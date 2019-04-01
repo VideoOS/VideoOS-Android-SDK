@@ -321,13 +321,13 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     private Provider changeProvider(String videoId, String creativeName) {
         Provider provider;
         if (TextUtils.isEmpty(creativeName)) {
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey("550ec7d2-6cb0-4f46-b2df-2a1505ec82d8").setAppSecret("d0bf7873f7fa42a6").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey("e3095ad4-5927-40eb-b6e5-a43b7f1e966b").setAppSecret("b28a1f82e6c147d8").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .build();
         } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey("550ec7d2-6cb0-4f46-b2df-2a1505ec82d8").setAppSecret("d0bf7873f7fa42a6").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey("e3095ad4-5927-40eb-b6e5-a43b7f1e966b").setAppSecret("b28a1f82e6c147d8").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .setExtendJSONString(new JSONObject(extendParams).toString()).build();
         }

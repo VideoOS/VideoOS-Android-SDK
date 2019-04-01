@@ -25,6 +25,6 @@ public class MyApp extends Application {
         super.onCreate();
         DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.RELEASE);
         VenvyLog.needLog = true;
-        VideoPlus.appCreate(MyApp.this);
+        VideoPlus.appCreateSAAS(MyApp.this,"e3095ad4-5927-40eb-b6e5-a43b7f1e966b");
     }
 }
