@@ -125,35 +125,36 @@ public abstract class BaseImageView extends ForegroundImageView {
     public void restoreImage() {
         if (isNetworkMode && mAttachedWindow != null) {// 恢复被清空的image，只有已经被加过才恢复
             if (mUrl != null) {
-                loadUrl(mUrl, new DrawableLoadCallback() {
-                    @Override
-                    public void onLoadResult(final Drawable drawable) {
-                        if (mLuaCallBack == null)
-                            return;
-                        if (mIImageSize == null) {
-                            LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, drawable != null ?drawable.getIntrinsicWidth():0, drawable != null ?drawable.getIntrinsicHeight():0);
-                            return;
-                        }
-                        mIImageSize.sizeImage(getContext(), mUrl, new IImageSizeResult() {
-                            @Override
-                            public void loadSuccess(String url, @Nullable VenvyBitmapInfo bitmap) {
-                                int width = 0, height = 0;
-                                if (bitmap != null && bitmap.getBitmap() != null) {
-                                    width = bitmap.getBitmap().getWidth();
-                                    height = bitmap.getBitmap().getHeight();
-                                }
-                                LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, width, height);
-
-                            }
-
-                            @Override
-                            public void loadFailure(String url, @Nullable Exception e) {
-
-                            }
-                        });
-
-                    }
-                });
+                loadUrl(mUrl,null);
+//                loadUrl(mUrl, new DrawableLoadCallback() {
+//                    @Override
+//                    public void onLoadResult(final Drawable drawable) {
+//                        if (mLuaCallBack == null)
+//                            return;
+//                        if (mIImageSize == null) {
+//                            LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, drawable != null ?drawable.getIntrinsicWidth():0, drawable != null ?drawable.getIntrinsicHeight():0);
+//                            return;
+//                        }
+//                        mIImageSize.sizeImage(getContext(), mUrl, new IImageSizeResult() {
+//                            @Override
+//                            public void loadSuccess(String url, @Nullable VenvyBitmapInfo bitmap) {
+//                                int width = 0, height = 0;
+//                                if (bitmap != null && bitmap.getBitmap() != null) {
+//                                    width = bitmap.getBitmap().getWidth();
+//                                    height = bitmap.getBitmap().getHeight();
+//                                }
+//                                LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, width, height);
+//
+//                            }
+//
+//                            @Override
+//                            public void loadFailure(String url, @Nullable Exception e) {
+//
+//                            }
+//                        });
+//
+//                    }
+//                });
             } else {
                 setImageDrawable(null);
             }
