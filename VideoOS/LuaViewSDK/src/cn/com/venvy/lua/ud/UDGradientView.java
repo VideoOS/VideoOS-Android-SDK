@@ -21,9 +21,9 @@ public class UDGradientView extends UDViewGroup<LVGradientView> {
         super(view, globals, metaTable, initParams);
     }
 
-    public void setGradient(int[] colors) {
+    public void setGradient(int[] colors, GradientDrawable.Orientation orientation) {
         LVGradientView view = getView();
-        Drawable bg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors);
+        Drawable bg = new GradientDrawable(orientation, colors);
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
             view.setBackgroundDrawable(bg);
         } else {

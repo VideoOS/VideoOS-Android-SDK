@@ -1,9 +1,11 @@
 package cn.com.venvy.lua.maper;
 
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 
 import com.taobao.luaview.fun.mapper.LuaViewLib;
 import com.taobao.luaview.fun.mapper.ui.UIViewGroupMethodMapper;
+import com.taobao.luaview.userdata.constants.UDOrientation;
 import com.taobao.luaview.util.ColorUtil;
 import com.taobao.luaview.util.DimenUtil;
 import com.taobao.luaview.util.LuaUtil;
@@ -67,17 +69,20 @@ public class UIGradientMethodMapper<U extends UDGradientView> extends UIViewGrou
         final int narg = varargs.narg();
         Integer startColor;
         Integer endColor;
-        if (narg == 5) {
+        String orientationName = null;
+        if (narg >= 5) {
             Float alphaStart = LuaUtil.getFloat(varargs, 3);
             Float alphaEnd = LuaUtil.getFloat(varargs, 5);
             startColor = colorParse(LuaUtil.getInt(varargs, 2), alphaStart != null ? alphaStart : 0.0f);
             endColor = colorParse(LuaUtil.getInt(varargs, 4), alphaEnd != null ? alphaEnd : 0.0f);
+            orientationName = LuaUtil.getString(varargs, 6);
         } else {
             startColor = ColorUtil.parse(LuaUtil.getInt(varargs, 2), 1);
             endColor = ColorUtil.parse(LuaUtil.getInt(varargs, 3), 1);
         }
+        GradientDrawable.Orientation orientation = UDOrientation.parse(orientationName);
         int[] colors = {startColor != null ? startColor : 0, endColor != null ? endColor : 0};
-        view.setGradient(colors);
+        view.setGradient(colors, orientation);
         return this;
     }
 

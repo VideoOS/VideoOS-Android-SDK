@@ -16,6 +16,7 @@ import com.taobao.luaview.fun.binder.constants.FontStyleBinder;
 import com.taobao.luaview.fun.binder.constants.FontWeightBinder;
 import com.taobao.luaview.fun.binder.constants.GravityBinder;
 import com.taobao.luaview.fun.binder.constants.InterpolatorBinder;
+import com.taobao.luaview.fun.binder.constants.OrientationBinder;
 import com.taobao.luaview.fun.binder.constants.PinnedBinder;
 import com.taobao.luaview.fun.binder.constants.ScaleTypeBinder;
 import com.taobao.luaview.fun.binder.constants.TextAlignBinder;
@@ -199,6 +200,7 @@ public class LuaViewManager {
         globals.tryLazyLoad(new FontStyleBinder());
         globals.tryLazyLoad(new ScaleTypeBinder());
         globals.tryLazyLoad(new GravityBinder());
+        globals.tryLazyLoad(new OrientationBinder());
         globals.tryLazyLoad(new EllipsizeBinder());
         globals.tryLazyLoad(new InterpolatorBinder());
         globals.tryLazyLoad(new PinnedBinder());
