@@ -11,8 +11,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
-import com.taobao.luaview.util.TextUtil;
-
 import cn.com.venvy.common.utils.VenvyLog;
 
 
@@ -25,6 +23,7 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
     protected MediaPlayer mMediaPlayer = null;
     private boolean mIsPrepared;
     private int mCurrentPosition = 0;
+    private String mCurrentUrl = "http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4";
     SurfaceHolder mSurfaceHolder = null;
     private Context mContext;
     private VideoControllerView mMediaController;
@@ -51,12 +50,18 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
 
     @Override
     public void mediaPlayerStart() {
-        mMediaPlayer.start();
+        if (mMediaPlayer == null) {
+            startPlay(mCurrentUrl);
+        } else {
+            mMediaPlayer.start();
+        }
     }
 
     @Override
     public void mediaPlayerPause() {
-        mMediaPlayer.pause();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.pause();
+        }
     }
 
     @Override
@@ -79,8 +84,9 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
 
     @Override
     public void mediaPlayerSeekTo(int pos) {
-        mMediaPlayer.seekTo(pos);
-
+        if (mMediaPlayer != null) {
+            mMediaPlayer.seekTo(pos);
+        }
     }
 
     @Override
@@ -105,7 +111,7 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mSurfaceHolder = holder;
-        startPlay("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4");
+        startPlay(mCurrentUrl);
     }
 
     @Override
@@ -131,7 +137,7 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
             mIsPrepared = false;
             mMediaPlayer.setDisplay(mSurfaceHolder);
 //            mMediaPlayer.setDataSource(mContext, Uri.parse("http://videojj-cdn.oss-cn-beijing.aliyuncs.com/flash/player/video/6.mp4"));
-            mMediaPlayer.setDataSource(mContext,Uri.parse("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4"));
+            mMediaPlayer.setDataSource(mContext, Uri.parse("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4"));
 //            mMediaPlayer.setDataSource(mContext, Uri.parse("https://static.videojj.com/online/video/Team%20Video%2B%2B_We_Are_Young.mp4"));
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepareAsync();
@@ -147,6 +153,7 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
         if (TextUtils.isEmpty(path)) {
             return;
         }
+        mCurrentUrl = path;
         stopPlaying();
         // 关闭系统音乐声音
         try {
@@ -169,7 +176,7 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
                 mCurrentPosition = mMediaPlayer.getCurrentPosition();
                 mMediaPlayer.stop();
             }
-            mCurrentPosition=0;
+            mCurrentPosition = 0;
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;

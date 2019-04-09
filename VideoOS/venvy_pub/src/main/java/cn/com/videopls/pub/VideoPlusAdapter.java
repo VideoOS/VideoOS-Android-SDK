@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.image.IImageLoader;
+import cn.com.venvy.common.image.IImageSize;
 import cn.com.venvy.common.image.IImageView;
 import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
@@ -32,6 +33,10 @@ public abstract class VideoPlusAdapter {
     public abstract Provider createProvider();
 
     public Class<? extends IImageLoader> buildImageLoader() {
+        return null;
+    }
+
+    public Class<? extends IImageSize> buildImageSize() {
         return null;
     }
 

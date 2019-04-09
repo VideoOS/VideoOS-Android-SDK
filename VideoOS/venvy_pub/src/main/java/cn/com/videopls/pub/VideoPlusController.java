@@ -54,6 +54,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         this.mVideoPlusAdapter = videoOSAdapter;
         VenvyRegisterLibsManager.registerConnectLib(videoOSAdapter.buildConnectProvider());
         VenvyRegisterLibsManager.registerImageLoaderLib(videoOSAdapter.buildImageLoader());
+        VenvyRegisterLibsManager.registerImageSizeLib(videoOSAdapter.buildImageSize());
         VenvyRegisterLibsManager.registerWebViewLib(videoOSAdapter.buildWebView());
         VenvyRegisterLibsManager.registerImageViewLib(videoOSAdapter.buildImageView());
         VenvyRegisterLibsManager.registerSvgaImageView(videoOSAdapter.buildSvgaImageView());
@@ -178,7 +179,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                 .setVideoType(provider.getVideoType())
                 .setVideoCategory(provider.getVideoCategory())
                 .setExtendJSONString(provider.getExtendJSONString())
-                .setAppKey(provider.getAppKey());
+                .setAppKey(provider.getAppKey()).setAppSecret(provider.getAppSecret());
         return platformInfoBuilder.builder();
     }
 

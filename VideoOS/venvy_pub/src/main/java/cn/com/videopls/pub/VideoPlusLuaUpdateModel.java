@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.venvy.App;
+import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.download.DownloadTask;
@@ -84,7 +85,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                         return;
                     }
 //                    JSONObject needValue = new JSONObject(VenvyRSAUtil.decryptByRSA1(encryptData, VenvyRSAUtil.KEY_PUBLIC));
-                    JSONObject needValue = new JSONObject( VenvyAesUtil.decrypt(encryptData, VenvyAesUtil.AES_KEY, VenvyAesUtil.AES_KEY));
+                    JSONObject needValue = new JSONObject(VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform())));
                     if (needValue == null) {
                         LuaUpdateCallback callback = getLuaUpdateCallback();
                         if (callback != null) {
@@ -139,13 +140,13 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-        return HttpRequest.post(Config.HOST_VIDEO_OS+UPDATE_VERSION, createBody());
+        return HttpRequest.post(Config.HOST_VIDEO_OS + UPDATE_VERSION, createBody());
     }
 
     private Map<String, String> createBody() {
         Map<String, String> paramBody = new HashMap<>();
         paramBody.put("commonParam", LVCommonParamPlugin.getCommonParamJson());
-        paramBody.put("data", VenvyAesUtil.encrypt(VenvyAesUtil.AES_KEY, VenvyAesUtil.AES_KEY, new JSONObject(paramBody).toString()));
+        paramBody.put("data", VenvyAesUtil.encrypt(AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform()), new JSONObject(paramBody).toString()));
 //        paramBody.put("data", VenvyRSAUtil.encryptByRSA(new JSONObject(paramBody).toString(), VenvyRSAUtil.KEY_PUBLIC));
         return paramBody;
     }

@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import com.taobao.luaview.userdata.ui.UDView;
 import com.taobao.luaview.util.JsonUtil;
 import com.taobao.luaview.util.LuaUtil;
+
 import org.json.JSONObject;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
@@ -100,7 +101,7 @@ public class VenvyUDMqttCallback extends UDView<VenvyLVMqttCallback> {
         try {
             JSONObject value = new JSONObject(message);
             String encryptData = value.optString("encryptData");
-            data = VenvyAesUtil.decrypt(encryptData, VenvyAesUtil.AES_KEY, VenvyAesUtil.AES_KEY);
+            data = encryptData;
         } catch (Exception e) {
             e.printStackTrace();
         }

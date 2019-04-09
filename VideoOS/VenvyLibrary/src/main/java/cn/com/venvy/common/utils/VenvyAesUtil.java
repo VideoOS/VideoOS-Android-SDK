@@ -24,7 +24,8 @@ public class VenvyAesUtil {
     private static final int IV_LENGTH = 16;
     private static final int KEY_LENGTH = 16;
 
-    public static final String AES_KEY="inekcndsaqwertyi";
+    public static final String AES_KEY = "inekcndsaqwertyi";
+
     // /** 创建密钥 **/
     private static SecretKeySpec createKey(String key) {
         byte[] data = null;

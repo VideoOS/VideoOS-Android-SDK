@@ -21,6 +21,7 @@ public class PlatformInfo implements Parcelable {
     private final int verVideoWidth;
     private final int verVideoHeight;
     private final String mAppKey;
+    private final String mAppSecret;
     private ScreenStatus mDirection;
     private VideoType mVideoType;
     private final String mVideoCategory;
@@ -37,6 +38,7 @@ public class PlatformInfo implements Parcelable {
         verVideoHeight = builder.verVideoHeight;
         verVideoWidth = builder.verVideoWidth;
         mAppKey = builder.mAppKey;
+        mAppSecret = builder.mAppSecret;
         mDirection = builder.mInitDirection == null ? ScreenStatus.SMALL_VERTICAL : builder.mInitDirection;
         mVideoType = builder.mVideoType == null ? VideoType.VIDEOOS : builder.mVideoType;
         mVideoCategory = builder.videoCategory;
@@ -102,6 +104,10 @@ public class PlatformInfo implements Parcelable {
         return mAppKey;
     }
 
+    public String getAppSecret() {
+        return mAppSecret;
+    }
+
     public String getCustomerPackageName() {
         return mCustomerPackageName;
     }
@@ -117,6 +123,7 @@ public class PlatformInfo implements Parcelable {
         private int verVideoWidth;
         private int verVideoHeight;
         private String mAppKey;
+        private String mAppSecret;
         private ScreenStatus mInitDirection;
         private VideoType mVideoType;
         private String videoCategory;
@@ -142,7 +149,10 @@ public class PlatformInfo implements Parcelable {
             this.mAppKey = appKey;
             return this;
         }
-
+        public Builder setAppSecret(String appSecret) {
+            this.mAppSecret = appSecret;
+            return this;
+        }
         //初始化屏幕大小及方向
         public Builder setInitDirection(ScreenStatus status) {
             this.mInitDirection = status;
@@ -226,6 +236,7 @@ public class PlatformInfo implements Parcelable {
         dest.writeInt(this.verVideoWidth);
         dest.writeInt(this.verVideoHeight);
         dest.writeString(this.mAppKey);
+        dest.writeString(this.mAppSecret);
         dest.writeInt(this.mDirection == null ? -1 : this.mDirection.getId());
         dest.writeInt(this.mVideoType == null ? 0 : this.mVideoType.getId());
         dest.writeString(this.mVideoCategory);
@@ -243,6 +254,7 @@ public class PlatformInfo implements Parcelable {
         this.verVideoWidth = in.readInt();
         this.verVideoHeight = in.readInt();
         this.mAppKey = in.readString();
+        this.mAppSecret = in.readString();
         int tmpMInitDirection = in.readInt();
         this.mDirection = tmpMInitDirection == -1 ? ScreenStatus.SMALL_VERTICAL : ScreenStatus.getStatusById(tmpMInitDirection);
         this.mVideoType = tmpMInitDirection == -1 ? VideoType.VIDEOOS : VideoType.getStatusById(tmpMInitDirection);
