@@ -13,7 +13,9 @@ import android.text.TextUtils;
 import com.taobao.luaview.fun.mapper.LuaViewApi;
 import com.taobao.luaview.fun.mapper.LuaViewLib;
 import com.taobao.luaview.userdata.constants.UDEllipsize;
+import com.taobao.luaview.userdata.kit.UDSystem;
 import com.taobao.luaview.userdata.ui.UDTextView;
+import com.taobao.luaview.util.AndroidUtil;
 import com.taobao.luaview.util.ColorUtil;
 import com.taobao.luaview.util.DimenUtil;
 import com.taobao.luaview.util.LuaUtil;
@@ -167,7 +169,12 @@ public class UITextViewMethodMapper<U extends UDTextView> extends UIViewMethodMa
 
     public LuaValue setTextSize(U view, Varargs varargs) {
         final float fontSize = (float) varargs.optdouble(2, 12.0);//TODO 这里需要转sp么？
-        return view.setTextSize(fontSize);
+        float density = AndroidUtil.getDensity(view.getContext());
+        if (density < 3) {
+            return view.setTextSize(fontSize - 2);
+        } else {
+            return view.setTextSize(fontSize);
+        }
     }
 
     public LuaValue getTextSize(U view, Varargs varargs) {
