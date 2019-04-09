@@ -26,6 +26,11 @@ import com.taobao.luaview.view.foreground.ForegroundImageView;
 
 import java.lang.ref.WeakReference;
 
+import org.luaj.vm2.LuaFunction;
+
+import cn.com.venvy.common.image.IImageSize;
+import cn.com.venvy.common.image.VenvyImageSizeFactory;
+
 /**
  * Base ImageView
  *
@@ -37,11 +42,12 @@ public abstract class BaseImageView extends ForegroundImageView {
     Path mPath = null;
 
     String mUrl;
-
+    LuaFunction mLuaCallBack;
     protected Boolean mAttachedWindow = null;
     protected boolean isNetworkMode = false;
     private String mPlaceHolderImg;
     private Drawable mPlaceHolderDrawable;
+    IImageSize mIImageSize;
 
     public void setIsNetworkMode(boolean isNetworkMode) {
         this.isNetworkMode = isNetworkMode;
@@ -52,6 +58,7 @@ public abstract class BaseImageView extends ForegroundImageView {
         if (context instanceof Activity) {
             ImageActivityLifeCycle.getInstance(((Activity) context).getApplication()).watch(this);
         }
+        mIImageSize = VenvyImageSizeFactory.getImageSize();
     }
 
 
@@ -67,12 +74,20 @@ public abstract class BaseImageView extends ForegroundImageView {
         return mUrl;
     }
 
+    public IImageSize getIImageSize() {
+        return mIImageSize;
+    }
+
     public String getPlaceHolderImg() {
         return mPlaceHolderImg;
     }
 
     public void setPlaceHolderImg(String placeHolderImg) {
         mPlaceHolderImg = placeHolderImg;
+    }
+
+    public void setLuaFunction(LuaFunction luaFunction) {
+        this.mLuaCallBack = luaFunction;
     }
 
     public void setPlaceHolderDrawable(Drawable placeHolderDrawable) {
@@ -106,6 +121,35 @@ public abstract class BaseImageView extends ForegroundImageView {
         if (isNetworkMode && mAttachedWindow != null) {// 恢复被清空的image，只有已经被加过才恢复
             if (mUrl != null) {
                 loadUrl(mUrl, null);
+//                loadUrl(mUrl, new DrawableLoadCallback() {
+//                    @Override
+//                    public void onLoadResult(final Drawable drawable) {
+//                        if (mLuaCallBack == null)
+//                            return;
+//                        if (mIImageSize == null) {
+//                            LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, drawable != null ?drawable.getIntrinsicWidth():0, drawable != null ?drawable.getIntrinsicHeight():0);
+//                            return;
+//                        }
+//                        mIImageSize.sizeImage(getContext(), mUrl, new IImageSizeResult() {
+//                            @Override
+//                            public void loadSuccess(String url, @Nullable VenvyBitmapInfo bitmap) {
+//                                int width = 0, height = 0;
+//                                if (bitmap != null && bitmap.getBitmap() != null) {
+//                                    width = bitmap.getBitmap().getWidth();
+//                                    height = bitmap.getBitmap().getHeight();
+//                                }
+//                                LuaUtil.callFunction(mLuaCallBack, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, width, height);
+//
+//                            }
+//
+//                            @Override
+//                            public void loadFailure(String url, @Nullable Exception e) {
+//
+//                            }
+//                        });
+//
+//                    }
+//                });
             } else {
                 setImageDrawable(null);
             }
@@ -210,6 +254,9 @@ public abstract class BaseImageView extends ForegroundImageView {
      */
     public void setStrokeWidth(int width) {
         getStyleDrawable().setStrokeWidth(width);
+        LVGradientDrawable drawable = this.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) this.getBackground() : new LVGradientDrawable();
+        drawable.setStrokeWidth(width);
+        LuaViewUtil.setBackground(this, drawable);
     }
 
     public int getStrokeWidth() {
@@ -223,6 +270,9 @@ public abstract class BaseImageView extends ForegroundImageView {
      */
     public void setStrokeColor(int color) {
         getStyleDrawable().setStrokeColor(color);
+        LVGradientDrawable drawable = this.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) this.getBackground() : new LVGradientDrawable();
+        drawable.setStrokeColor(color);
+        LuaViewUtil.setBackground(this, drawable);
     }
 
     public int getStrokeColor() {

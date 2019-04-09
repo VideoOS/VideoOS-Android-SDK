@@ -62,7 +62,7 @@ public class VenvyMqttMapper<U extends VenvyUDMqttCallback> extends UIViewMethod
                 LuaTable configTable = LuaUtil.getTable(args, 3);
                 Map<String, String> topsMap = LuaUtil.toMap(table);
                 if (topsMap != null && configTable != null) {
-                    SocketUserInfo info = new SocketUserInfo(configTable.get("username").tojstring(), configTable.get("password").tojstring(), configTable.get("host").tojstring(), configTable.get("port").tojstring());
+                    SocketUserInfo info = new SocketUserInfo(configTable.get("username").tojstring(), configTable.get("password").tojstring(), configTable.get("host").tojstring(), configTable.get("port").tojstring(), configTable.get("clientId").tojstring());
                     target.setMqttTopics(info, topsMap);
                 }
             }

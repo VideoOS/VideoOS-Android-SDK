@@ -22,7 +22,6 @@ public class LVVideoPlugin {
     private static IsDebug sIsDebug;
     private static ChangeEnvironment sChangeEnvironment;
 
-
     public static void install(VenvyLVLibBinder venvyLVLibBinder, Platform platform) {
         venvyLVLibBinder.set("sdkVersion", sSdkVersion == null ? sSdkVersion = new SdkVersion() : sSdkVersion);
         venvyLVLibBinder.set("isDebug", sIsDebug == null ? sIsDebug = new IsDebug() : sIsDebug);
@@ -31,6 +30,7 @@ public class LVVideoPlugin {
         venvyLVLibBinder.set("currentDirection", new CurrentScreenDirection(platform));
         venvyLVLibBinder.set("isFullScreen", new IsFullScreen(platform));
         venvyLVLibBinder.set("appKey", new AppKey(platform));
+        venvyLVLibBinder.set("appSecret", new AppSecret(platform));
         venvyLVLibBinder.set("nativeVideoID", new GetVideoID(platform));
         venvyLVLibBinder.set("platformID", new GetPlatformId(platform));
         venvyLVLibBinder.set("getVideoCategory", new GetCategory(platform));
@@ -154,6 +154,25 @@ public class LVVideoPlugin {
     }
 
     /**
+     * <<<<<<< HEAD
+     * =======
+     * 获取AppSecret
+     */
+    private static class AppSecret extends VarArgFunction {
+        private Platform mPlatform;
+
+        AppSecret(Platform platform) {
+            this.mPlatform = platform;
+        }
+
+        @Override
+        public Varargs invoke(Varargs args) {
+            return mPlatform != null ? LuaValue.valueOf(mPlatform.getPlatformInfo().getAppSecret()) : LuaValue.valueOf(cn.com.venvy.AppSecret.getAppSecret(mPlatform));
+        }
+    }
+
+    /**
+     * >>>>>>> merge
      * 获取sdk版本号
      */
     private static class SdkVersion extends VarArgFunction {

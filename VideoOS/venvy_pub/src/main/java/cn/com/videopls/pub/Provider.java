@@ -14,9 +14,9 @@ import cn.com.venvy.common.interf.VideoType;
 public class Provider implements Parcelable {
 
     private final String mAppKey;
+    private final String mAppSecret;
     private final String mPlatformId;
     private final String mVideoPath;
-
     private final VideoType mVideoType;
     private final String mVideoTitle;
     private final ScreenStatus mDirection;
@@ -44,6 +44,7 @@ public class Provider implements Parcelable {
 
     private Provider(Builder builder) {
         this.mAppKey = builder.mAppKey;
+        this.mAppSecret = builder.mAppSecret;
         this.mHorVideoHeight = builder.mHorVideoHeight;
         this.mHorVideoWidth = builder.mHorVideoWidth;
         this.mVerVideoHeight = builder.mVerVideoHeight;
@@ -75,6 +76,10 @@ public class Provider implements Parcelable {
 
     public String getAppKey() {
         return mAppKey;
+    }
+
+    public String getAppSecret() {
+        return mAppSecret;
     }
 
     public int getHorVideoWidth() {
@@ -121,6 +126,7 @@ public class Provider implements Parcelable {
 
     public static class Builder {
         private String mAppKey;
+        private String mAppSecret;
         private int mHorVideoWidth;
         private int mHorVideoHeight;
         private int mVerVideoHeight;
@@ -156,6 +162,13 @@ public class Provider implements Parcelable {
         public Builder setAppKey(String appKey) {
             if (!TextUtils.isEmpty(appKey)) {
                 this.mAppKey = appKey;
+            }
+            return this;
+        }
+
+        public Builder setAppSecret(String appSecret) {
+            if (!TextUtils.isEmpty(appSecret)) {
+                this.mAppSecret = appSecret;
             }
             return this;
         }
@@ -264,6 +277,7 @@ public class Provider implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mAppKey);
+        dest.writeString(this.mAppSecret);
         dest.writeInt(this.mHorVideoWidth);
         dest.writeInt(this.mHorVideoHeight);
         dest.writeInt(this.mVerVideoHeight);
@@ -282,6 +296,7 @@ public class Provider implements Parcelable {
 
     protected Provider(Parcel in) {
         this.mAppKey = in.readString();
+        this.mAppSecret = in.readString();
         this.mHorVideoWidth = in.readInt();
         this.mHorVideoHeight = in.readInt();
         this.mVerVideoHeight = in.readInt();

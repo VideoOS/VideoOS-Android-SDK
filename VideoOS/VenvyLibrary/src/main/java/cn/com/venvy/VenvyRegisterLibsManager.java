@@ -2,6 +2,7 @@ package cn.com.venvy;
 
 import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.image.IImageLoader;
+import cn.com.venvy.common.image.IImageSize;
 import cn.com.venvy.common.image.IImageView;
 import cn.com.venvy.common.interf.ISocketConnect;
 import cn.com.venvy.common.interf.ISvgaImageView;
@@ -15,6 +16,7 @@ public class VenvyRegisterLibsManager {
 
     private static Class<? extends IRequestConnect> sConnectClass;
     private static Class<? extends IImageLoader> sImageLoaderClass;
+    private static Class<? extends IImageSize> sImageSizeClass;
     private static Class<? extends IVenvyWebView> sWebViewClass;
     private static Class<? extends IImageView> sImageViewClass;
     private static Class<? extends ISvgaImageView> sSvgaImageViewClass;
@@ -34,6 +36,9 @@ public class VenvyRegisterLibsManager {
         return sImageLoaderClass;
     }
 
+    public static Class<? extends IImageSize> getImageSizeLib() {
+        return sImageSizeClass;
+    }
 
     public static void registerImageViewLib(Class<? extends IImageView> imageViewLib) {
         if (sImageViewClass == null) {
@@ -51,7 +56,11 @@ public class VenvyRegisterLibsManager {
             sImageLoaderClass = imageLoaderLib;
         }
     }
-
+    public static void registerImageSizeLib(Class<? extends IImageSize> imageSizeLib) {
+        if (sImageSizeClass == null) {
+            sImageSizeClass = imageSizeLib;
+        }
+    }
     public static Class<? extends IVenvyWebView> getWebViewLib() {
         return sWebViewClass;
     }

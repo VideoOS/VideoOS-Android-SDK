@@ -100,6 +100,9 @@ public class LVViewGroup<T extends UDViewGroup> extends ForegroundRelativeLayout
             if (homeKeyBroadcastReceiver == null) {
                 homeKeyBroadcastReceiver = new HomeKeyBroadcastReceiver();
                 final IntentFilter homeFilter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+//                homeFilter.addAction(Intent.ACTION_SCREEN_ON);
+                homeFilter.addAction(Intent.ACTION_SCREEN_OFF);
+                homeFilter.addAction(Intent.ACTION_USER_PRESENT);
                 context.registerReceiver(homeKeyBroadcastReceiver, homeFilter);
             }
         } catch (Exception e) {
@@ -149,12 +152,27 @@ public class LVViewGroup<T extends UDViewGroup> extends ForegroundRelativeLayout
 
                 } else if (SYSTEM_DIALOG_REASON_LOCK.equals(reason)) {
                     // 锁屏
-
+                    if (mLuaUserdata != null) {
+                        mLuaUserdata.callOnHide();
+                    }
                 } else if (SYSTEM_DIALOG_REASON_ASSIST.equals(reason)) {
                     // samsung 长按Home键
                     if (mLuaUserdata != null) {
                         mLuaUserdata.callOnHome();
                     }
+                }
+            } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
+                // 解锁
+//                if (mLuaUserdata != null) {
+//                    mLuaUserdata.callOnShow();
+//                }
+            } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
+                if (mLuaUserdata != null) {
+                    mLuaUserdata.callOnHome();
+                }
+            } else if (action.equals(Intent.ACTION_USER_PRESENT)) {
+                if (mLuaUserdata != null) {
+                    mLuaUserdata.callOnShow();
                 }
             }
         }

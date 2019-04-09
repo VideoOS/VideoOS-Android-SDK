@@ -1,6 +1,5 @@
 package cn.com.venvy.common.mqtt;
 
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cn.com.venvy.App;
 import cn.com.venvy.common.bean.SocketConnectItem;
 import cn.com.venvy.common.bean.SocketUserInfo;
 import cn.com.venvy.common.observer.ObservableManager;
@@ -50,6 +48,7 @@ public class VenvyMqttClientHelper {
     private String socketKey = "";
     private String socketPassword = "";
     private String serverUrl = "";
+    private String clientId = "";
 
     public static synchronized VenvyMqttClientHelper getInstance(SocketUserInfo info) {
         if (sMqttClientHelper == null) {
@@ -73,6 +72,10 @@ public class VenvyMqttClientHelper {
         String port = info.port;
         if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(port)) {
             serverUrl = "tcp://" + host + ":" + port;
+        }
+        String clientId = info.clientId;
+        if (!TextUtils.isEmpty(clientId)) {
+            this.clientId = clientId;
         }
     }
 
@@ -194,8 +197,7 @@ public class VenvyMqttClientHelper {
      * 初始化MQTT
      */
     private VenvyMqttClient initMqttClient() throws Exception {
-        String clientId = MacSignature.subClientId();
-        VenvyMqttClient client = new VenvyMqttClient(serverUrl, clientId, new MemoryPersistence());// 初始化客户端
+        VenvyMqttClient client = new VenvyMqttClient(serverUrl, !TextUtils.isEmpty(clientId) ? clientId : MacSignature.subClientId(), new MemoryPersistence());// 初始化客户端
         client.setTimeToWait(5000);
         client.setCallback(new MqttCallback() {
             @Override

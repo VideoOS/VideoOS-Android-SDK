@@ -44,7 +44,7 @@ public class BaseRequestConnect {
     private static final String USER_AGENT = "user-agent";
     private static final String UD_ID = "udid";
     private static final String IDENTITY = "identity";
-    private static final String APP_KEY = "appkey";
+    private static final String APP_KEY = "appKey";
     private static final String IP = "ip";
     private static final String VIDEO_ID = "video_id";
     private static final String NETWORK = "network";
@@ -418,7 +418,7 @@ public class BaseRequestConnect {
             if (!TextUtils.isEmpty(platformId)) {
                 headers.put(PLATFORM_ID, platformId);
             }
-            String appKey = platformInfo.getThirdPlatformId();
+            String appKey = platformInfo.getAppKey();
             if (!TextUtils.isEmpty(appKey)) {
                 headers.put(APP_KEY, appKey);
             }
