@@ -2,7 +2,9 @@ package cn.com.venvy.lua.ud;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.ViewParent;
 
+import com.taobao.luaview.global.LuaView;
 import com.taobao.luaview.userdata.ui.UDViewGroup;
 import com.taobao.luaview.userdata.ui.UDView;
 import com.taobao.luaview.util.LuaUtil;
@@ -206,7 +208,10 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
                     videoView.pausePlay();
 
                 } else if (status == MediaStatus.PLAYING) {
-                    videoView.mediaPlayerStart();
+                    ViewParent parentView = getView().getParent().getParent();
+                    if (parentView != null && parentView instanceof LuaView) {
+                        ((LuaView) parentView).callLuaFunction("show");
+                    }
                 }
             }
         } else if (TextUtils.equals(tag, VenvyObservableTarget.TAG_VOLUME_STATUS_CHANGED)) {
