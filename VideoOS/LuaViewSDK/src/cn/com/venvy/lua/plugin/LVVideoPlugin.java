@@ -1,5 +1,7 @@
 package cn.com.venvy.lua.plugin;
 
+import android.text.TextUtils;
+
 import com.taobao.luaview.util.DimenUtil;
 import com.taobao.luaview.util.LuaUtil;
 
@@ -154,8 +156,6 @@ public class LVVideoPlugin {
     }
 
     /**
-     * <<<<<<< HEAD
-     * =======
      * 获取AppSecret
      */
     private static class AppSecret extends VarArgFunction {
@@ -167,12 +167,11 @@ public class LVVideoPlugin {
 
         @Override
         public Varargs invoke(Varargs args) {
-            return mPlatform != null ? LuaValue.valueOf(mPlatform.getPlatformInfo().getAppSecret()) : LuaValue.valueOf(cn.com.venvy.AppSecret.getAppSecret(mPlatform));
+            return mPlatform != null && mPlatform.getPlatformInfo() != null && !TextUtils.isEmpty(mPlatform.getPlatformInfo().getAppSecret()) ? LuaValue.valueOf(mPlatform.getPlatformInfo().getAppSecret()) : LuaValue.valueOf(cn.com.venvy.AppSecret.getAppSecret(mPlatform));
         }
     }
 
     /**
-     * >>>>>>> merge
      * 获取sdk版本号
      */
     private static class SdkVersion extends VarArgFunction {
