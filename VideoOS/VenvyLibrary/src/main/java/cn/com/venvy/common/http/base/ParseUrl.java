@@ -17,6 +17,7 @@ public class ParseUrl {
         LIVE("liveapi.videojj.com", "test.liveapi.videojj.com", "test.liveapi.videojj.com"),
         LOG_REPORT("log.videojj.com", "test-log.videojj.com", "test-log.videojj.com"),
         OS("os-open.videojj.com", "test-os-open.videojj.com", "dev-os-open.videojj.com"),
+        OS_SAAS("os-saas.videojj.com", "test-os-saas.videojj.com", "dev-os-saas.videojj.com"),
         PLAT_LIVE("plat.videojj.com", "pre-plat.videojj.com", "test-plat.videojj.com");
 
         private String url;
@@ -54,5 +55,6 @@ public class ParseUrl {
         urlMap.put(VenvyUrl.LOG_REPORT.getOnlineUrl(), VenvyUrl.LOG_REPORT);
         urlMap.put(VenvyUrl.PLAT_LIVE.getOnlineUrl(), VenvyUrl.PLAT_LIVE);
         urlMap.put(VenvyUrl.OS.getOnlineUrl(), VenvyUrl.OS);
+        urlMap.put(VenvyUrl.OS_SAAS.getOnlineUrl(), VenvyUrl.OS_SAAS);
     }
 }
