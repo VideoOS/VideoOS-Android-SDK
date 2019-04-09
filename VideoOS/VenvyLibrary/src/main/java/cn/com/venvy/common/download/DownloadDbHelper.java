@@ -96,11 +96,11 @@ public class DownloadDbHelper {
         int Id;
         long totalSize;
         long downloadSize;
-        DownloadStatus status;
+        public DownloadStatus status;
         String filePath;
     }
 
-    enum DownloadStatus {
+    public enum DownloadStatus {
         DOWNLOAD_FAILED("1"),
         DOWNLOAD_SUCCESS("2"),
         DOWNLOADING("3"),

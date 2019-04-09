@@ -1,9 +1,5 @@
 package cn.com.venvy.common.mqtt;
 
-
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -21,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cn.com.venvy.App;
 import cn.com.venvy.common.bean.SocketConnectItem;
 import cn.com.venvy.common.bean.SocketUserInfo;
 import cn.com.venvy.common.observer.ObservableManager;
@@ -50,11 +45,13 @@ public class VenvyMqttClientHelper {
     private String socketKey = "";
     private String socketPassword = "";
     private String serverUrl = "";
+    private String clientId = "";
 
     public static synchronized VenvyMqttClientHelper getInstance(SocketUserInfo info) {
         if (sMqttClientHelper == null) {
             sMqttClientHelper = new VenvyMqttClientHelper(info);
         }
+
         return sMqttClientHelper;
     }
 
@@ -73,6 +70,10 @@ public class VenvyMqttClientHelper {
         String port = info.port;
         if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(port)) {
             serverUrl = "tcp://" + host + ":" + port;
+        }
+        String clientId = info.clientId;
+        if (!TextUtils.isEmpty(clientId)) {
+            this.clientId = clientId;
         }
     }
 
@@ -194,8 +195,7 @@ public class VenvyMqttClientHelper {
      * 初始化MQTT
      */
     private VenvyMqttClient initMqttClient() throws Exception {
-        String clientId = MacSignature.subClientId();
-        VenvyMqttClient client = new VenvyMqttClient(serverUrl, clientId, new MemoryPersistence());// 初始化客户端
+        VenvyMqttClient client = new VenvyMqttClient(serverUrl, !TextUtils.isEmpty(clientId) ? clientId : MacSignature.subClientId(), new MemoryPersistence());// 初始化客户端
         client.setTimeToWait(5000);
         client.setCallback(new MqttCallback() {
             @Override
@@ -253,6 +253,7 @@ public class VenvyMqttClientHelper {
         connectOption.setConnectionTimeout(15);
         // 设置会话心跳时间 单位为秒 服务器会每隔2*20秒的时间向客户端发送个消息判断客户端是否在线，但这个方法并没有重连的机制
         connectOption.setKeepAliveInterval(40);
+//        connectOption.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
         return connectOption;
     }
 

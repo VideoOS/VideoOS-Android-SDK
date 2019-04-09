@@ -40,10 +40,12 @@ import org.luaj.vm2.Varargs;
 import java.lang.ref.WeakReference;
 
 import cn.com.venvy.common.image.IImageLoaderResult;
+import cn.com.venvy.common.image.IImageSizeResult;
 import cn.com.venvy.common.image.IImageView;
 import cn.com.venvy.common.image.VenvyBitmapInfo;
 import cn.com.venvy.common.image.VenvyImageInfo;
 import cn.com.venvy.common.image.VenvyImageLoaderFactory;
+import cn.com.venvy.common.image.VenvyImageSizeFactory;
 import cn.com.venvy.common.utils.VenvyBlurUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -242,10 +244,34 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
                     imageView.setIsNetworkMode(true);
                     imageView.loadUrl(urlOrName, callback == null ? null : new DrawableLoadCallback() {
                         @Override
-                        public void onLoadResult(Drawable drawable) {
-                            if (urlOrName.equals(imageView.getTag(Constants.RES_LV_TAG_URL))) {//异步回调，需要checktag
-                                LuaUtil.callFunction(callback, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE);
+                        public void onLoadResult(final Drawable drawable) {
+                            if (callback == null) {
+                                return;
                             }
+                            if (imageView.getIImageSize() == null) {
+                                if (urlOrName.equals(imageView.getTag(Constants.RES_LV_TAG_URL))) {//异步回调，需要checktag
+                                    LuaUtil.callFunction(callback, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, drawable != null ?drawable.getIntrinsicWidth():0, drawable != null ?drawable.getIntrinsicHeight():0);
+                                }
+                                return;
+                            }
+                            imageView.getIImageSize().sizeImage(imageView.getContext(), urlOrName, new IImageSizeResult() {
+                                @Override
+                                public void loadSuccess(String url, @Nullable VenvyBitmapInfo bitmap) {
+                                    int width = 0, height = 0;
+                                    if (bitmap != null && bitmap.getBitmap() != null) {
+                                        width = bitmap.getBitmap().getWidth();
+                                        height = bitmap.getBitmap().getHeight();
+                                    }
+                                    if (urlOrName.equals(imageView.getTag(Constants.RES_LV_TAG_URL))) {//异步回调，需要checktag
+                                        LuaUtil.callFunction(callback, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, width, height);
+                                    }
+                                }
+
+                                @Override
+                                public void loadFailure(String url, @Nullable Exception e) {
+
+                                }
+                            });
                         }
                     });
                 } else {

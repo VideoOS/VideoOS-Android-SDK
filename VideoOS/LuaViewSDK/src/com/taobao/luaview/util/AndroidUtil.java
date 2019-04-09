@@ -42,14 +42,14 @@ public class AndroidUtil {
      * get density of screen
      */
     public static float getDensity(Context context) {
-        return context.getApplicationContext().getResources().getDisplayMetrics().density;
+        return context.getResources().getDisplayMetrics().density;
     }
 
     /**
      * get screen width
      */
     public static int getScreenWidth(Context context) {
-        return context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+        return context.getResources().getDisplayMetrics().widthPixels;
     }
 
 
@@ -57,7 +57,7 @@ public class AndroidUtil {
      * get screen height
      */
     public static int getScreenHeight(Context context) {
-        return context.getApplicationContext().getResources().getDisplayMetrics().heightPixels;
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 
     /**

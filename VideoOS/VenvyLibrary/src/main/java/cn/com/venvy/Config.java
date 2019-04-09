@@ -7,7 +7,7 @@ package cn.com.venvy;
 
 public class Config {
     public static String SDK_VERSION = "3.0.0";
-    public static String HOST_VIDEO_OS="http://test-os-saas.videojj.com/os-api-saas";
+    public static String HOST_VIDEO_OS="http://os-saas.videojj.com/os-api-saas";
     public static boolean REPORT_ABLE = true;
     public static int DEBUG_STATUS = 0;
 }
