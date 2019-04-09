@@ -182,7 +182,11 @@ local function registerMedia()
 end
 
 local function registerMqtt(data)
-    if data == nil or data.emqConfig == nil then
+    if data == nil then
+        return
+    end
+    local emqConfigTable = data.emqConfig
+    if emqConfigTable == nil then
         return
     end
     --osTypeVideoOS = 1, osTypeLiveOS = 2, 直播开启Mqtt，点播不开启
@@ -192,11 +196,14 @@ local function registerMqtt(data)
 
     local mqtt = Mqtt()
     local topic = {}
+    local topicConfig = emqConfigTable.topic
     local appKey = Native:appKey()
     local nativeVideoID = Native:nativeVideoID()
     local topicString
-    if (appKey ~= '' and appKey ~= nil) then
-        topicString = appKey .. "-" .. nativeVideoID
+    if (appKey ~= '' and appKey ~= nil and topicConfig ~= '' and topicConfig ~= nil) then
+        topicString = topicConfig .. '/' .. appKey .. "-" .. nativeVideoID
+        --    elseif (appKey ~= '' and appKey ~= nil and topicConfig == nil) then
+        --        topicString = appKey .. "-" .. nativeVideoID
     else
         topicString = nativeVideoID
     end
