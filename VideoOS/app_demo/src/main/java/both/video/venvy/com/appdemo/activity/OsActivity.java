@@ -321,13 +321,13 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     private Provider changeProvider(String videoId, String creativeName) {
         Provider provider;
         if (TextUtils.isEmpty(creativeName)) {
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey("3a2467e6-859a-4877-ae1c-5e2c3bff3b82").setAppSecret("3d2230e0d038443f").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .build();
         } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey("3a2467e6-859a-4877-ae1c-5e2c3bff3b82").setAppSecret("3d2230e0d038443f").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .setExtendJSONString(new JSONObject(extendParams).toString()).build();
         }

@@ -323,13 +323,13 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
 
         Provider provider;
         if (TextUtils.isEmpty(creativeName)) {
-            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey("3a2467e6-859a-4877-ae1c-5e2c3bff3b82").setAppSecret("3d2230e0d038443f").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .build();
         } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey("3a2467e6-859a-4877-ae1c-5e2c3bff3b82").setAppSecret("3d2230e0d038443f").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .setExtendJSONString(new JSONObject(extendParams).toString()).build();
         }
