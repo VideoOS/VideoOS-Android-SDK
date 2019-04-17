@@ -14,8 +14,8 @@ import android.support.multidex.MultiDex;
  */
 
 public class MyApp extends Application {
-    private final String appKey = "3a2467e6-859a-4877-ae1c-5e2c3bff3b82";
-    private final String appSecret = "3d2230e0d038443f";
+    private final String appKey = "921ac192-a38b-4b09-905d-e0c352ec624a";
+    private final String appSecret = "6cc1f566c36e4165";
 
     @Override
     protected void attachBaseContext(Context base) {
