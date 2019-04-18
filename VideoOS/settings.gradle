@@ -1,6 +1,7 @@
 include ':app'
 include ':VenvyLibrary'
 include ':venvy_pub'
+include ':venvy_ai'
 include ':LuaViewSDK'
 include ':app_demo'
 include ':venvy_processor_compiler'

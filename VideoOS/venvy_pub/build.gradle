@@ -55,6 +55,7 @@ android {
 dependencies {
     compile project(path: ':VenvyLibrary')
     compile project(path: ':LuaViewSDK')
+    compile project(path: ':venvy_ai')
 
     provided 'com.android.support:support-v4:25.3.1'
     provided 'com.android.support:recyclerview-v7:25.3.1'
