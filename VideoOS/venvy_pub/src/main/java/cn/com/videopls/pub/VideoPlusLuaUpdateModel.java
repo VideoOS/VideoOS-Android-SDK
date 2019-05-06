@@ -223,9 +223,12 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                         List<JSONObject> jsonObjectList = readLuaWithFile(hasDownFile, oldManifestFile);
                         int len = jsonObjectList.size();
                         if (len <= 0) {
+                            oldManifestFile.delete();
+                            VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
+                            VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
                             LuaUpdateCallback callback = getLuaUpdateCallback();
                             if (callback != null) {
-                                callback.updateError(new Exception("update error,because downloadTask error"));
+                                callback.updateComplete(true);
                             }
                             return;
                         } else {
@@ -236,9 +239,11 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                     List<JSONObject> jsonObjectList = readLuaWithFile(hasDownFile);
                     int len = jsonObjectList.size();
                     if (len <= 0) {
+                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
+                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
                         LuaUpdateCallback callback = getLuaUpdateCallback();
                         if (callback != null) {
-                            callback.updateError(new Exception("update error,because downloadTask error"));
+                            callback.updateComplete(true);
                         }
                         return;
                     } else {
