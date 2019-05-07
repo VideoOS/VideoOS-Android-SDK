@@ -516,6 +516,7 @@ local function createUserTypeLeftWithMessageImageIOS(data, index) --左边用户
     prompt:size(33 * bubble.scale, 30 * bubble.scale)
     prompt:placeHolderImage(Data(OS_BUBBLE_PROMPT))
     prompt:image(OS_ICON_BUBBLE_PROMPT_LEFT)
+    prompt:scaleType(ScaleType.FIT_XY)
     prompt:hide()
 
     local message = Image(Native)
@@ -797,6 +798,7 @@ local function createUserTypeRightWithMessageImageIOS(data, index) --左边用�
     prompt:size(33 * bubble.scale, 30 * bubble.scale)
     prompt:placeHolderImage(Data(OS_BUBBLE_PROMPT))
     prompt:image(OS_ICON_BUBBLE_PROMPT_RIGHT)
+    prompt:scaleType(ScaleType.FIT_XY)
     prompt:hide()
 
     local message = Image(Native)

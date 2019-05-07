@@ -143,7 +143,7 @@ local function postUserCardInfo()
     print("[LuaView] " .. paramDataString)
     -- print("[LuaView] " .. OS_HTTP_POST_MOBILE_QUERY)
     -- print("[LuaView] " .. Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    local requestId = Native:post(OS_HTTP_POST_MOBILE_QUERY, {
+    local requestId = cardWindow.request:post(OS_HTTP_POST_MOBILE_QUERY, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -183,7 +183,7 @@ local function getUserCardInfo()
     -- print("[LuaView] "..paramDataString)
     -- print("[LuaView] "..OS_HTTP_GET_MOBILE_QUERY)
     -- print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    local requestId = Native:post(OS_HTTP_GET_MOBILE_QUERY, {
+    local requestId = cardWindow.request:post(OS_HTTP_GET_MOBILE_QUERY, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -1135,6 +1135,7 @@ function show(args)
     if (args == nil or args.data == nil or cardWindow.luaView ~= nil) then
         return
     end
+    cardWindow.request = HttpRequest()
     setConfig(args.data)
 
     onCreate(args.data)
