@@ -23,7 +23,9 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
     protected MediaPlayer mMediaPlayer = null;
     private boolean mIsPrepared;
     private int mCurrentPosition = 0;
-    private String mCurrentUrl = "http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4";
+    //http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4
+    //http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4
+    private String mCurrentUrl = "http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4";
     SurfaceHolder mSurfaceHolder = null;
     private Context mContext;
     private VideoControllerView mMediaController;
@@ -137,7 +139,7 @@ public class CustomVideoView extends SurfaceView implements VideoControllerView.
             mIsPrepared = false;
             mMediaPlayer.setDisplay(mSurfaceHolder);
 //            mMediaPlayer.setDataSource(mContext, Uri.parse("http://videojj-cdn.oss-cn-beijing.aliyuncs.com/flash/player/video/6.mp4"));
-            mMediaPlayer.setDataSource(mContext, Uri.parse("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4"));
+            mMediaPlayer.setDataSource(mContext, Uri.parse(mCurrentUrl));
 //            mMediaPlayer.setDataSource(mContext, Uri.parse("https://static.videojj.com/online/video/Team%20Video%2B%2B_We_Are_Young.mp4"));
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepareAsync();
