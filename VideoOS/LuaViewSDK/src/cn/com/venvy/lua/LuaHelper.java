@@ -11,6 +11,7 @@ import com.taobao.luaview.global.LuaViewConfig;
 import cn.com.venvy.Platform;
 import cn.com.venvy.lua.binder.UIGradientViewBinder;
 import cn.com.venvy.lua.binder.VenvyActivityLifeCycleBinder;
+import cn.com.venvy.lua.binder.VenvyHttpRequestBinder;
 import cn.com.venvy.lua.binder.VenvyKeyboardBinder;
 import cn.com.venvy.lua.binder.VenvyMediaLifeCycleBinder;
 import cn.com.venvy.lua.binder.VenvyMediaViewBinder;
@@ -38,6 +39,7 @@ public class LuaHelper {
     private static VenvySvgaBinder venvySvgaBinder;
     private static LVHttpBridge lvHttpBridge;
     private static VenvyMediaViewBinder mediaViewBinder;
+    private static VenvyHttpRequestBinder httpRequestBinder;
 
     public static void initLuaConfig() {
         LuaView.registerImageProvider(ImageProviderImpl.class);
@@ -75,12 +77,18 @@ public class LuaHelper {
                 getActivityLifeCycleBinder(),
                 getKeyboardBinder(),
                 getMediaViewBinder(),
-                getNativeBinder(platform, viewGroup));
+                getNativeBinder(platform, viewGroup), getHttpRequestBinder(platform));
         luaView.setUseStandardSyntax(true);//是否使用标准语法
     }
 
     private static VenvyMediaViewBinder getMediaViewBinder() {
         return mediaViewBinder == null ? mediaViewBinder = new VenvyMediaViewBinder() : mediaViewBinder;
+    }
+
+    private static VenvyHttpRequestBinder getHttpRequestBinder(Platform platform) {
+        VenvyHttpRequestBinder target = httpRequestBinder == null ? httpRequestBinder = new VenvyHttpRequestBinder() : httpRequestBinder;
+        target.setLVHttpBridge(lvHttpBridge == null ? getLvHttpBridge(platform) : lvHttpBridge);
+        return target;
     }
 
     private static UIGradientViewBinder getUiGradientViewBinder() {
@@ -139,5 +147,6 @@ public class LuaHelper {
         }
         lvHttpBridge = null;
         mediaViewBinder = null;
+        httpRequestBinder = null;
     }
 }
