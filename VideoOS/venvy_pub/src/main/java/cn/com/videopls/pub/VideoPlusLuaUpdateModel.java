@@ -19,6 +19,7 @@ import java.util.Map;
 
 import cn.com.venvy.App;
 import cn.com.venvy.AppSecret;
+import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
@@ -49,6 +50,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
     private static final String UNZIP_LUA_ASYNC_TAG = "unzip_lua";
     private static final String LOCAL_ASSETS_PATH = "lua";
     private static final String LUA_LOAD = "load_luas";
+    private static final String UPDATE_VERSION = "/api/detailedFileVersion";
     private DownloadTaskRunner mDownloadTaskRunner;
     private LuaUpdateCallback mUpdateCallback;
 
@@ -147,8 +149,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-//        return HttpRequest.post(Config.HOST_VIDEO_OS + UPDATE_VERSION, createBody());
-        return HttpRequest.post("http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/detailedFileVersion", createBody());
+        return HttpRequest.post(Config.HOST_VIDEO_OS + UPDATE_VERSION, createBody());
     }
 
     private Map<String, String> createBody() {
@@ -177,7 +178,6 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
             @Override
             public void onTaskStart(DownloadTask downloadTask) {
-                Log.i("video++", "==stat===onTaskStart==");
             }
 
             @Override
@@ -187,7 +187,6 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
             @Override
             public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
-                Log.i("video++", "==stat===onTaskFailed==");
             }
 
             @Override
@@ -228,7 +227,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                             VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
                             LuaUpdateCallback callback = getLuaUpdateCallback();
                             if (callback != null) {
-                                callback.updateComplete(true);
+                                callback.updateComplete(false);
                             }
                             return;
                         } else {
@@ -243,7 +242,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                         VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
                         LuaUpdateCallback callback = getLuaUpdateCallback();
                         if (callback != null) {
-                            callback.updateComplete(true);
+                            callback.updateComplete(false);
                         }
                         return;
                     } else {
@@ -301,8 +300,10 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                         if (oldManifestFile.exists()) {
                             oldManifestFile.delete();
                         }
-                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
-                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
+                        if (failedTasks == null || failedTasks.size() <= 0) {
+                            VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
+                            VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
+                        }
                         LuaUpdateCallback callback = getLuaUpdateCallback();
                         if (callback != null) {
                             callback.updateComplete(true);
@@ -318,12 +319,10 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
         List<JSONObject> jsonObjList = new ArrayList<>();
         String manifestJson = VenvyFileUtil.readFormFile(App.getContext(), manifestFile.getAbsolutePath());
         try {
-            JSONObject jsonObj = new JSONObject(manifestJson);
-            JSONArray jsonArray = jsonObj.optJSONArray("data");
+            JSONArray jsonArray = new JSONArray(manifestJson);
             int length = jsonArray.length();
-            JSONObject[] luaUrls = new JSONObject[length];
             for (int i = 0; i < length; i++) {
-                luaUrls[i] = jsonArray.optJSONObject(i);
+                jsonObjList.add(jsonArray.optJSONObject(i));
             }
         } catch (JSONException e) {
             VenvyLog.i(TAG, "readLuaWithFile ——> error：" + e.getMessage());
@@ -338,10 +337,8 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
             String manifestJson = VenvyFileUtil.readFormFile(App.getContext(), manifestFile.getAbsolutePath());
             String oldManifestJson = VenvyFileUtil.readFormFile(App.getContext(), oldManifestFile.getAbsolutePath());
 
-            JSONObject jsonObj = new JSONObject(manifestJson);
-            JSONArray jsonArray = jsonObj.optJSONArray("data");
-            JSONObject oldJsonObj = new JSONObject(oldManifestJson);
-            JSONArray oldJsonArray = oldJsonObj.optJSONArray("data");
+            JSONArray jsonArray = new JSONArray(manifestJson);
+            JSONArray oldJsonArray = new JSONArray(oldManifestJson);
             int len = jsonArray.length();
             List<JSONObject> needDownLoadJson = new ArrayList<>();
             for (int i = 0; i < len; i++) {
