@@ -3,7 +3,6 @@ package cn.com.videopls.pub;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -205,8 +204,8 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                 }
                 File oldManifestFile = new File(getManifestJsonPath(getOldVersion()));
                 if (isOldManifestJson(oldManifestFile)) {
-                    if (isSameMd5WithManifestJson(hasDownFile, oldManifestFile)) {
-                        oldManifestFile.delete();
+                    if (isSameMd5WithManifestJson(hasDownFile)) {
+                        deleteOldManifestJson();
                         VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
                         VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
                         LuaUpdateCallback callback = getLuaUpdateCallback();
@@ -218,7 +217,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                         List<JSONObject> jsonObjectList = readLuaWithFile(hasDownFile, oldManifestFile);
                         int len = jsonObjectList.size();
                         if (len <= 0) {
-                            oldManifestFile.delete();
+                            deleteOldManifestJson();
                             VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
                             VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
                             LuaUpdateCallback callback = getLuaUpdateCallback();
@@ -292,10 +291,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
                     @Override
                     public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
-                        File oldManifestFile = new File(getManifestJsonPath(getOldVersion()));
-                        if (oldManifestFile.exists()) {
-                            oldManifestFile.delete();
-                        }
+                        deleteOldManifestJson();
                         if (failedTasks == null || failedTasks.size() <= 0) {
                             VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
                             VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
@@ -336,12 +332,24 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
             JSONArray jsonArray = new JSONArray(manifestJson);
             JSONArray oldJsonArray = new JSONArray(oldManifestJson);
             int len = jsonArray.length();
-            List<JSONObject> needDownLoadJson = new ArrayList<>();
+            int oldLen = oldJsonArray.length();
             for (int i = 0; i < len; i++) {
                 JSONObject jsonItemObj = jsonArray.optJSONObject(i);
-                JSONObject oldJsonItemObj = oldJsonArray.optJSONObject(i);
-                if (!TextUtils.equals(jsonItemObj.optString("md5"), oldJsonItemObj.optString("md5"))||!TextUtils.equals(jsonItemObj.optString("name"), oldJsonItemObj.optString("name"))) {
-                    needDownLoadJson.add(jsonItemObj);
+                String luaName = jsonItemObj.optString("name");
+                String luaMd5 = jsonItemObj.optString("md5");
+                boolean needDown = true;
+                for (int j = 0; j < oldLen; j++) {
+                    JSONObject oldJsonItemObj = oldJsonArray.optJSONObject(j);
+                    String oldLuaName = oldJsonItemObj.optString("name");
+                    String oldLuaMd5 = oldJsonItemObj.optString("md5");
+                    if (TextUtils.equals(luaName, oldLuaName) && TextUtils.equals(luaMd5, oldLuaMd5)) {
+                        needDown = false;
+                        break;
+                    }
+                    needDown = true;
+                }
+                if (needDown) {
+                    jsonObjList.add(jsonItemObj);
                 }
             }
         } catch (Exception e) {
@@ -351,14 +359,13 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
         return jsonObjList;
     }
 
-    private boolean isSameMd5WithManifestJson(File manifestFile, File oldManifestFile) {
+    private boolean isSameMd5WithManifestJson(File manifestFile) {
         String manifestJson = VenvyFileUtil.readFormFile(App.getContext(), manifestFile.getAbsolutePath());
-        String oldManifestJson = VenvyFileUtil.readFormFile(App.getContext(), oldManifestFile.getAbsolutePath());
-        if (!TextUtils.isEmpty(manifestJson) && !TextUtils.isEmpty(oldManifestJson)) {
+        String oldMd5 = getOldFileMd5();
+        if (!TextUtils.isEmpty(manifestJson)) {
             try {
                 JSONObject jsonObj = new JSONObject(manifestJson);
-                JSONObject oldJsonObj = new JSONObject(oldManifestJson);
-                return TextUtils.equals(jsonObj.optString("fileMd5"), oldJsonObj.optString("fileMd5"));
+                return TextUtils.equals(jsonObj.optString("fileMd5"), oldMd5);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -396,6 +403,10 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
     private String getManifestJsonPath(String version) {
         return VenvyFileUtil.getCachePath(App.getContext()) + File.separator + version + LUA_MANIFEST_JSON;
+    }
+
+    private void deleteOldManifestJson() {
+        VenvyFileUtil.delFolder(VenvyFileUtil.getCachePath(App.getContext()) + File.separator + getOldVersion());
     }
 
     public interface LuaUpdateCallback {
