@@ -340,7 +340,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
             for (int i = 0; i < len; i++) {
                 JSONObject jsonItemObj = jsonArray.optJSONObject(i);
                 JSONObject oldJsonItemObj = oldJsonArray.optJSONObject(i);
-                if (!TextUtils.equals(jsonItemObj.optString("md5"), oldJsonItemObj.optString("md5"))) {
+                if (!TextUtils.equals(jsonItemObj.optString("md5"), oldJsonItemObj.optString("md5"))||!TextUtils.equals(jsonItemObj.optString("name"), oldJsonItemObj.optString("name"))) {
                     needDownLoadJson.add(jsonItemObj);
                 }
             }
