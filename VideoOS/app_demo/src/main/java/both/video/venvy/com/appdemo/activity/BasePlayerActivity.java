@@ -37,8 +37,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
     //自动选择屏幕类
     private ScreenOrientationSwitcher mScreenOrientationSwitcher;
     protected static final String TAG_CREATIVE_NAME = "creativeName";
-    protected final String appKey = "96d4245d-427f-4964-bbe1-3b3b6ccaf7e1";
-    protected final String appSecret = "ebb53e815fa9458d";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

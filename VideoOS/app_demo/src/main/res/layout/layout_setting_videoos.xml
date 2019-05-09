@@ -34,13 +34,27 @@
         android:text="@string/setting_layout_videoId"
         app:layout_constraintBottom_toBottomOf="@+id/guideline6"
         app:layout_constraintLeft_toLeftOf="@+id/guideline"/>
+    <TextView
+        android:id="@+id/tv_layout_setting_video_appkey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting_layout_appKey"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline9"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline" />
+    <TextView
+        android:id="@+id/tv_layout_setting_video_appSecret"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting_layout_appSecret"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline10"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline" />
 
     <EditText
         app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_app_id"
         app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_app_id"
         app:layout_constraintRight_toRightOf="@+id/guideline7"
         app:layout_constraintLeft_toLeftOf="@+id/guideline8"
-        android:id="@+id/sp_setting_creative_name_id"
+        android:id="@+id/sp_setting_app_id"
         style="@style/style_setting_spinner">
     </EditText>
 
@@ -50,19 +64,38 @@
         app:layout_constraintRight_toRightOf="@+id/guideline7"
         app:layout_constraintLeft_toLeftOf="@+id/guideline8"
         android:id="@+id/sp_setting_app_video_path"
-        android:text="http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4"
+        android:text="http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4"
         style="@style/style_setting_spinner">
     </EditText>
 
+    <EditText
+        app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_video_appkey"
+        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_video_appkey"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline8"
+        android:id="@+id/sp_setting_app_video_appKey"
+        android:text="96d4245d-427f-4964-bbe1-3b3b6ccaf7e1"
+        style="@style/style_setting_spinner">
+    </EditText>
+    <EditText
+        app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_video_appSecret"
+        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_video_appSecret"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline8"
+        android:id="@+id/sp_setting_app_video_appSecret"
+        android:text="ebb53e815fa9458d"
+        style="@style/style_setting_spinner">
+    </EditText>
     <include
         android:id="@+id/layout_setting_change_environment"
         layout="@layout/layout_change_environment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/layout_change_environ_margin_top"
+        android:layout_marginTop="71dp"
         app:layout_constraintLeft_toLeftOf="@+id/guideline"
         app:layout_constraintRight_toRightOf="@+id/guideline7"
-        app:layout_constraintTop_toBottomOf="@+id/guideline6"/>
+        app:layout_constraintTop_toBottomOf="@+id/guideline9"
+        app:layout_constraintHorizontal_bias="0.0" />
 
     <Button
         android:id="@+id/bt_setting_cancel"
@@ -95,8 +128,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.45"/>
-
+        app:layout_constraintGuide_percent="0.3"/>
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.46"/>
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.63"/>
     <android.support.constraint.Guideline
         android:id="@+id/guideline7"
         android:layout_width="wrap_content"

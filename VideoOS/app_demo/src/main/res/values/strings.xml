@@ -20,6 +20,8 @@
     <string name="setting_layout_platform">PlatformID</string>
 
     <string name="setting_layout_videoId">videoID</string>
+    <string name="setting_layout_appKey">appKey</string>
+    <string name="setting_layout_appSecret">appSecret</string>
     <string name="setting_layout_creative_name">素材名称</string>
     <string name="setting_layout_cate">分区</string>
     <string name="setting_environ_debug">开发环境</string>
