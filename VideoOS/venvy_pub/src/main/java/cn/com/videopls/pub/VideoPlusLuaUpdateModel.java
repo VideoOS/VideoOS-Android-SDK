@@ -2,13 +2,9 @@ package cn.com.videopls.pub;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
-
-import com.taobao.luaview.util.TextUtil;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -117,7 +113,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                         }
                         startDownloadManifestJsonFile(luaVersion, luaFileMd5, luaPackageUrl);
                     }
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     VenvyLog.e(VideoPlusLuaUpdateModel.class.getName(), e);
                     LuaUpdateCallback callback = getLuaUpdateCallback();
                     if (callback != null) {
@@ -324,7 +320,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
             for (int i = 0; i < length; i++) {
                 jsonObjList.add(jsonArray.optJSONObject(i));
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             VenvyLog.i(TAG, "readLuaWithFile ——> error：" + e.getMessage());
             e.printStackTrace();
         }
@@ -348,7 +344,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                     needDownLoadJson.add(jsonItemObj);
                 }
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             VenvyLog.i(TAG, "readLuaWithFile ——> error：" + e.getMessage());
             e.printStackTrace();
         }
@@ -363,7 +359,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                 JSONObject jsonObj = new JSONObject(manifestJson);
                 JSONObject oldJsonObj = new JSONObject(oldManifestJson);
                 return TextUtils.equals(jsonObj.optString("fileMd5"), oldJsonObj.optString("fileMd5"));
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
