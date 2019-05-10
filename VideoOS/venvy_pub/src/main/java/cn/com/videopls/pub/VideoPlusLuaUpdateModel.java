@@ -406,7 +406,10 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
     }
 
     private void deleteOldManifestJson() {
-        VenvyFileUtil.delFolder(VenvyFileUtil.getCachePath(App.getContext()) + File.separator + getOldVersion());
+        String version = getOldVersion();
+        if (!TextUtils.isEmpty(version)) {
+            VenvyFileUtil.delFolder(VenvyFileUtil.getCachePath(App.getContext()) + File.separator + getOldVersion());
+        }
     }
 
     public interface LuaUpdateCallback {
