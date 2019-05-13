@@ -235,7 +235,7 @@ public class LVScrollView extends ScrollView implements ILVViewGroup {
                 View childView = getChildAt(i);
                 int childHeight = childView.getMeasuredHeight();
                 int childWidth = childView.getMeasuredWidth();
-                childView.layout(l, height - hadUsedVertical - childHeight, l + childWidth, height - hadUsedVertical);
+                childView.layout(l,0, l + childWidth, height - hadUsedVertical);
                 hadUsedVertical += childHeight;
             }
         }
