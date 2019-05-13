@@ -182,7 +182,7 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
             }
             mMediaController.setMediaPlayerControl(mCustomVideoView);
             mMediaController.setVideoSize(new VideoPlayerSize(VenvyUIUtil.getScreenWidth(LiveActivity.this), VenvyUIUtil.getScreenHeight(LiveActivity.this),
-                    VenvyUIUtil.getScreenWidth(LiveActivity.this), mWidowPlayerHeight, VenvyUIUtil.getStatusBarHeight(LiveActivity.this)));
+                    VenvyUIUtil.getScreenWidth(LiveActivity.this), mWidowPlayerHeight, 0));
         }
 
         //设置参数

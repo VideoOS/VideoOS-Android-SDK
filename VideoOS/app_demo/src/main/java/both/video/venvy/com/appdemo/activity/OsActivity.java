@@ -187,7 +187,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
             }
             mMediaController.setMediaPlayerControl(mCustomVideoView);
             mMediaController.setVideoSize(new VideoPlayerSize(VenvyUIUtil.getScreenWidth(OsActivity.this), VenvyUIUtil.getScreenHeight(OsActivity.this),
-                    VenvyUIUtil.getScreenWidth(OsActivity.this), mWidowPlayerHeight, VenvyUIUtil.getStatusBarHeight(OsActivity.this)));
+                    VenvyUIUtil.getScreenWidth(OsActivity.this), mWidowPlayerHeight,0));
         }
 
         //设置参数

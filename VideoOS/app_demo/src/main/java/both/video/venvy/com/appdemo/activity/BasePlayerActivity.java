@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -37,9 +38,14 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
     //自动选择屏幕类
     private ScreenOrientationSwitcher mScreenOrientationSwitcher;
     protected static final String TAG_CREATIVE_NAME = "creativeName";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mRootView = (ViewGroup) LayoutInflater.from(this)
                 .inflate(R.layout.activity_base_player, null);
         setContentView(mRootView);
@@ -221,14 +227,14 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
 
     private void switchScreenOrientation(boolean fullScreen, boolean reverseOrientation) {
         if (fullScreen) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             if (reverseOrientation) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
         } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             if (reverseOrientation) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
             } else {
