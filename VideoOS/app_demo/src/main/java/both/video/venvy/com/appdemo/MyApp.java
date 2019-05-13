@@ -14,9 +14,6 @@ import android.support.multidex.MultiDex;
  */
 
 public class MyApp extends Application {
-    private final String appKey = "96d4245d-427f-4964-bbe1-3b3b6ccaf7e1";
-    private final String appSecret = "ebb53e815fa9458d";
-
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -28,6 +25,6 @@ public class MyApp extends Application {
         super.onCreate();
         DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.PREVIEW);
         VenvyLog.needLog = true;
-        VideoPlus.appCreateSAAS(MyApp.this, appKey, appSecret);
+        VideoPlus.appCreateSAAS(MyApp.this, getString(R.string.appKey_def), getString(R.string.appSecret_def));
     }
 }
