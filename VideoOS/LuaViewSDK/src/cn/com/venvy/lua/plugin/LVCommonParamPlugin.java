@@ -12,6 +12,7 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import cn.com.venvy.App;
+import cn.com.venvy.Config;
 import cn.com.venvy.common.utils.VenvyAPKVersionCodeUtils;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
@@ -67,7 +68,7 @@ public class LVCommonParamPlugin {
                 return table;
             }
             table.set(LuaValue.valueOf(VERSION), LuaValue.valueOf(VenvyAPKVersionCodeUtils.getVersionName(App.getContext())));
-            table.set(LuaValue.valueOf(SDK_VERSION), LuaValue.valueOf("1.0.0"));
+            table.set(LuaValue.valueOf(SDK_VERSION), LuaValue.valueOf(Config.SDK_VERSION));
             table.set(LuaValue.valueOf(USER_AGENT), LuaValue.valueOf(VenvyDeviceUtil.getUserAgent(context)));
             table.set(LuaValue.valueOf(OS_VERSION), LuaValue.valueOf(VenvyDeviceUtil.getOsVersion()));
             table.set(LuaValue.valueOf(UD_ID), LuaValue.valueOf(VenvyDeviceUtil.getAndroidID(context)));
