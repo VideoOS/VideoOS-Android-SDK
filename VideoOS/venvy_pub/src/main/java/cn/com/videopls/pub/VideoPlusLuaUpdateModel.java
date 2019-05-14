@@ -187,6 +187,10 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
             @Override
             public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
+                LuaUpdateCallback callback = getLuaUpdateCallback();
+                if (callback != null) {
+                    callback.updateError(new Exception("update error,because downloadTask error"));
+                }
             }
 
             @Override
