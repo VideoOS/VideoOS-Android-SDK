@@ -87,7 +87,7 @@ public class LuaHelper {
 
     private static VenvyHttpRequestBinder getHttpRequestBinder(Platform platform) {
         VenvyHttpRequestBinder target = httpRequestBinder == null ? httpRequestBinder = new VenvyHttpRequestBinder() : httpRequestBinder;
-        target.setLVHttpBridge(lvHttpBridge == null ? getLvHttpBridge(platform) : lvHttpBridge);
+        target.setLVHttpBridge(getLvHttpBridge(platform));
         return target;
     }
 
@@ -130,7 +130,7 @@ public class LuaHelper {
     }
 
     private static LVHttpBridge getLvHttpBridge(Platform platform) {
-        return lvHttpBridge == null ? lvHttpBridge = new LVHttpBridge(platform) : lvHttpBridge;
+        return lvHttpBridge = new LVHttpBridge(platform);
     }
 
     public static void destroy() {
