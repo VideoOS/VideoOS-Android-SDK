@@ -429,7 +429,7 @@ local function configSize(data)
     if (System.android()) then
         dataTable.portraitPositionY = 0.65
     else
-        dataTable.portraitPositionY = 0.75
+        dataTable.portraitPositionY = 0.65
     end
     dataTable.landscapePositionY = 0.65
 end
