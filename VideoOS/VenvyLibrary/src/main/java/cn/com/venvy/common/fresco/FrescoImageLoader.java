@@ -21,6 +21,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.image.CloseableStaticBitmap;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -91,7 +92,7 @@ public class FrescoImageLoader implements IImageLoader {
                                 }
                                 if (imageInfo != null) {//需要获取图片的大小
                                     result.loadSuccess(imageViewReference, url,
-                                            new VenvyBitmapInfo());
+                                            new VenvyBitmapInfo(((CloseableStaticBitmap) imageInfo).getUnderlyingBitmap(), null));
                                 }
                             }
                         })

@@ -30,7 +30,7 @@ repositories {
   maven { url 'https://dl.bintray.com/videoli/maven/' }
 }
 dependencies {
-  implementation 'com.videoli:VideoOS:1.0.0'
+  implementation 'com.videoli:VideoOS:1.2.0'
 }
 ```
 

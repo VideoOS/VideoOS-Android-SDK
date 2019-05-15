@@ -10,6 +10,8 @@ import org.luaj.vm2.lib.VarArgFunction;
 import java.util.Map;
 
 import cn.com.venvy.Platform;
+import cn.com.venvy.App;
+import cn.com.venvy.common.download.DownloadDbHelper;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
 /**
@@ -18,9 +20,12 @@ import cn.com.venvy.lua.binder.VenvyLVLibBinder;
  */
 
 public class LVPreLoadPlugin {
+    private static ISVideoCachedData sISVideoCachedData;
+
     public static void install(VenvyLVLibBinder venvyLVLibBinder, Platform platform) {
         venvyLVLibBinder.set("preloadImage", new PreLoadImageData(platform));
         venvyLVLibBinder.set("preloadVideo", new PreLoadVideoCacheData(platform));
+        venvyLVLibBinder.set("isCacheVideo", sISVideoCachedData == null ? sISVideoCachedData = new ISVideoCachedData() : sISVideoCachedData);
     }
 
     private static class PreLoadImageData extends VarArgFunction {
@@ -74,6 +79,29 @@ public class LVPreLoadPlugin {
                 mPlatform.preloadMedia(preLoadUrls, null);
             }
             return LuaValue.NIL;
+        }
+    }
+
+    private static class ISVideoCachedData extends VarArgFunction {
+        DownloadDbHelper mHelper;
+
+        ISVideoCachedData() {
+            super();
+            if (mHelper == null) {
+                mHelper = new DownloadDbHelper(App.getContext());
+            }
+        }
+
+        @Override
+        public LuaValue invoke(Varargs args) {
+            int fixIndex = VenvyLVLibBinder.fixIndex(args);
+            LuaValue target = args.arg(fixIndex + 1);
+            String url = VenvyLVLibBinder.luaValueToString(target);
+            DownloadDbHelper.DownloadInfo info = mHelper.queryDownloadInfo(url);
+            if (info == null) {
+                return LuaValue.valueOf(false);
+            }
+            return LuaValue.valueOf(info.status == DownloadDbHelper.DownloadStatus.DOWNLOAD_SUCCESS);
         }
     }
 }

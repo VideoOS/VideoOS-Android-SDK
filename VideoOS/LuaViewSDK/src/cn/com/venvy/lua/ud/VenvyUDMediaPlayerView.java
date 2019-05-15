@@ -2,16 +2,17 @@ package cn.com.venvy.lua.ud;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.ViewParent;
 
+import com.taobao.luaview.global.LuaView;
 import com.taobao.luaview.userdata.ui.UDViewGroup;
-import com.taobao.luaview.util.DimenUtil;
+import com.taobao.luaview.userdata.ui.UDView;
 import com.taobao.luaview.util.LuaUtil;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 
 import cn.com.venvy.common.interf.MediaStatus;
-import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.media.view.CustomVideoView;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
@@ -114,6 +115,29 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
     }
 
     @Override
+    public UDView setCornerRadius(float radius) {
+        getView().setCornerRadius(radius);
+        return super.setCornerRadius(radius);
+    }
+
+    @Override
+    public float getCornerRadius() {
+        return super.getCornerRadius();
+    }
+
+    @Override
+    public UDView setBorderColor(Integer borderColor) {
+        getView().setStrokeColor(borderColor);
+        return super.setBorderColor(borderColor);
+    }
+
+    @Override
+    public UDView setBorderWidth(int borderWidth) {
+        getView().setStrokeWidth(borderWidth);
+        return super.setBorderWidth(borderWidth);
+    }
+
+    @Override
     public UDViewGroup setCallback(LuaValue callbacks) {
         mOnStart = LuaUtil.getFunction(callbacks, "OnStart", "onStart");
         mOnPause = LuaUtil.getFunction(callbacks, "OnPause", "onPause");
@@ -121,7 +145,7 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
         mOnFinished = LuaUtil.getFunction(callbacks, "OnFinished", "onFinished");
         mOnPrepare = LuaUtil.getFunction(callbacks, "OnPrepare", "onPrepare");
         mOnError = LuaUtil.getFunction(callbacks, "OnError", "onError");
-        mOnVolume=LuaUtil.getFunction(callbacks,"OnChangeVolume","onChangeVolume");
+        mOnVolume = LuaUtil.getFunction(callbacks, "OnChangeVolume", "onChangeVolume");
         return super.setCallback(callbacks);
     }
 
@@ -184,13 +208,16 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
                     videoView.pausePlay();
 
                 } else if (status == MediaStatus.PLAYING) {
-                    videoView.mediaPlayerStart();
+                    ViewParent parentView = getView().getParent().getParent();
+                    if (parentView != null && parentView instanceof LuaView) {
+                        ((LuaView) parentView).callLuaFunction("show");
+                    }
                 }
             }
         } else if (TextUtils.equals(tag, VenvyObservableTarget.TAG_VOLUME_STATUS_CHANGED)) {
             if (bundle == null)
                 return;
-            int volume = bundle.getInt(CustomVideoView.VOLUME_STATUS);
+            float volume = bundle.getFloat(CustomVideoView.VOLUME_STATUS);
             if (volume >= 0) {
                 LuaUtil.callFunction(mOnVolume, valueOf(volume));
             }

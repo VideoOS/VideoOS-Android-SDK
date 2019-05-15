@@ -61,7 +61,6 @@ import cn.com.videopls.pub.os.VideoOsView;
 public class OsActivity extends BasePlayerActivity implements View.OnClickListener {
 
     private VideoOsConfigDialog mConfigDialog;
-    private String mVideoId, mCreativeName;
     private String userName, userPwd;
     private IPlatformLoginInterface.LoginCallback mLoginCallback;
 
@@ -80,17 +79,17 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
                     Toast.makeText(OsActivity.this, "配置错误，请确认你输入的配置信息", Toast.LENGTH_LONG).show();
                     return;
                 }
+                String videoId = bean.getVideoId();
+                String appKey = bean.getAppKey();
+                String appSecret = bean.getAppSecret();
+                String creativeName = bean.getCreativeName();
                 //正在播放视频需要切集操作调用逻辑 没有必须重新创建VideoPlusView 以及VideoPlusAdapter
                 mVideoPlusView.stop();
-                mVideoId = bean.getVideoId();
-                mCreativeName = bean.getCreativeName();
-                mCustomVideoView.startPlay(mVideoId);
-                mVideoPlusAdapter.updateProvider(changeProvider(mVideoId, mCreativeName));
+                mCustomVideoView.startPlay(videoId);
+                mVideoPlusAdapter.updateProvider(changeProvider(videoId, appKey, appSecret, creativeName));
                 mVideoPlusView.start();
             }
         });
-        mVideoId = mConfigDialog.getVideoId();
-        mCreativeName = mConfigDialog.getCreativeName();
         mVideoPlusAdapter = initVideoPlusAdapter();
         mVideoPlusView.setVideoOSAdapter(mVideoPlusAdapter);
         mVideoPlusView.start();
@@ -188,13 +187,13 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
             }
             mMediaController.setMediaPlayerControl(mCustomVideoView);
             mMediaController.setVideoSize(new VideoPlayerSize(VenvyUIUtil.getScreenWidth(OsActivity.this), VenvyUIUtil.getScreenHeight(OsActivity.this),
-                    VenvyUIUtil.getScreenWidth(OsActivity.this), mWidowPlayerHeight, VenvyUIUtil.getStatusBarHeight(OsActivity.this)));
+                    VenvyUIUtil.getScreenWidth(OsActivity.this), mWidowPlayerHeight,0));
         }
 
         //设置参数
         @Override
         public Provider createProvider() {
-            return changeProvider(mVideoId, mCreativeName);
+            return changeProvider(mConfigDialog.getVideoId(), mConfigDialog.getAppKey(), mConfigDialog.getAppSecret(), mConfigDialog.getCreativeName());
         }
 
         //注册网络图片架构插件
@@ -318,16 +317,16 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         return mSettingView;
     }
 
-    private Provider changeProvider(String videoId, String creativeName) {
+    private Provider changeProvider(String videoId, String appKey, String appSecret, String creativeName) {
         Provider provider;
         if (TextUtils.isEmpty(creativeName)) {
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .build();
         } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .setExtendJSONString(new JSONObject(extendParams).toString()).build();
         }

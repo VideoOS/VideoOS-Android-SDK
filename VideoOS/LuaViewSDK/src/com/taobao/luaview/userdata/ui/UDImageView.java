@@ -16,7 +16,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
 
@@ -40,11 +39,13 @@ import org.luaj.vm2.Varargs;
 import java.lang.ref.WeakReference;
 
 import cn.com.venvy.common.image.IImageLoaderResult;
+import cn.com.venvy.common.image.IImageSizeResult;
 import cn.com.venvy.common.image.IImageView;
 import cn.com.venvy.common.image.VenvyBitmapInfo;
 import cn.com.venvy.common.image.VenvyImageInfo;
 import cn.com.venvy.common.image.VenvyImageLoaderFactory;
 import cn.com.venvy.common.utils.VenvyBlurUtil;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
@@ -235,16 +236,41 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
     public UDImageView setImageUrl(final String urlOrName, final LuaFunction callback) {
         final T imageView = getView();
         if (imageView != null) {
+            imageView.setLuaFunction(callback);
             if (!TextUtils.isEmpty(urlOrName)) {
                 if (URLUtil.isNetworkUrl(urlOrName)) {//network
                     imageView.setTag(Constants.RES_LV_TAG_URL, urlOrName);//需要设置tag，防止callback在回调的时候调用错误
                     imageView.setIsNetworkMode(true);
                     imageView.loadUrl(urlOrName, callback == null ? null : new DrawableLoadCallback() {
                         @Override
-                        public void onLoadResult(Drawable drawable) {
-                            if (urlOrName.equals(imageView.getTag(Constants.RES_LV_TAG_URL))) {//异步回调，需要checktag
-                                LuaUtil.callFunction(callback, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE);
+                        public void onLoadResult(final Drawable drawable) {
+                            if (callback == null) {
+                                return;
                             }
+                            if (imageView.getIImageSize() == null) {
+                                if (urlOrName.equals(imageView.getTag(Constants.RES_LV_TAG_URL))) {//异步回调，需要checktag
+                                    LuaUtil.callFunction(callback, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, drawable != null ? drawable.getIntrinsicWidth() : 0, drawable != null ? drawable.getIntrinsicHeight() : 0);
+                                }
+                                return;
+                            }
+                            imageView.getIImageSize().sizeImage(imageView.getContext(), urlOrName, new IImageSizeResult() {
+                                @Override
+                                public void loadSuccess(String url, @Nullable VenvyBitmapInfo bitmap) {
+                                    int width = 0, height = 0;
+                                    if (bitmap != null && bitmap.getBitmap() != null) {
+                                        width = bitmap.getBitmap().getWidth();
+                                        height = bitmap.getBitmap().getHeight();
+                                    }
+                                    if (urlOrName.equals(imageView.getTag(Constants.RES_LV_TAG_URL))) {//异步回调，需要checktag
+                                        LuaUtil.callFunction(callback, drawable != null ? LuaBoolean.TRUE : LuaBoolean.FALSE, width, height);
+                                    }
+                                }
+
+                                @Override
+                                public void loadFailure(String url, @Nullable Exception e) {
+
+                                }
+                            });
                         }
                     });
                 } else {
@@ -281,26 +307,29 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
                     VenvyImageLoaderFactory.getImageLoader().loadImage(new WeakReference<>(imageView), new VenvyImageInfo.Builder().setUrl(urlOrName).build(), new IImageLoaderResult() {
                         @Override
                         public void loadSuccess(@Nullable WeakReference<? extends IImageView> view, String url, @Nullable VenvyBitmapInfo bitmap) {
-                            Drawable drawable=null;
-                            if(bitmap!=null&&bitmap.getDrawable()!=null){
-                                drawable=bitmap.getDrawable();
-                            }else if(bitmap!=null&&bitmap.getBitmap()!=null){
-                                drawable=new BitmapDrawable(bitmap.getBitmap());
+                            Drawable drawable = null;
+                            if (bitmap != null && bitmap.getDrawable() != null) {
+                                drawable = bitmap.getDrawable();
+                            } else if (bitmap != null && bitmap.getBitmap() != null) {
+                                drawable = new BitmapDrawable(bitmap.getBitmap());
                             }
-                            if(drawable!=null){
-                                final Drawable needDrawable=drawable;
+                            if (drawable != null) {
+                                final Drawable needDrawable = drawable;
                                 VenvyUIUtil.runOnUIThreadDelay(new Runnable() {
                                     @Override
                                     public void run() {
                                         imageView.setImageBitmap(VenvyBlurUtil.doBlur(DrawableUtil.drawableToBitmap(needDrawable), 10, blur));
                                     }
-                                },80);
+                                }, 80);
                             }
                         }
 
                         @Override
                         public void loadFailure(@Nullable WeakReference<? extends IImageView> imageView, String url, @Nullable Exception e) {
-                            Log.i("video++","===data==loadFailure=");
+                            if (e != null && !TextUtils.isEmpty(url)) {
+                                VenvyLog.e("errorImage", "---glide图片加载失败--,url==" + url + (e != null ? " ," +
+                                        "exception==" + e.toString() : ""));
+                            }
                         }
                     });
 //                    imageView.loadUrl(urlOrName, new DrawableLoadCallback() {
@@ -463,4 +492,3 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
         return this;
     }
 }
-

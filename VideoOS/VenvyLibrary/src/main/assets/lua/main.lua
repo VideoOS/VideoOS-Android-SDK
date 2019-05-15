@@ -182,7 +182,11 @@ local function registerMedia()
 end
 
 local function registerMqtt(data)
-    if data == nil or data.emqConfig == nil then
+    if data == nil then
+        return
+    end
+    local emqConfigTable = data.emqConfig
+    if emqConfigTable == nil then
         return
     end
     --osTypeVideoOS = 1, osTypeLiveOS = 2, 直播开启Mqtt，点播不开启
@@ -192,7 +196,22 @@ local function registerMqtt(data)
 
     local mqtt = Mqtt()
     local topic = {}
-    topic[Native:nativeVideoID()] = 0
+    local topicConfig = emqConfigTable.topic
+    local appKey = Native:appKey()
+    local nativeVideoID = Native:nativeVideoID()
+    local topicString
+    if (appKey ~= '' and appKey ~= nil and topicConfig ~= '' and topicConfig ~= nil) then
+        topicString = topicConfig .. '/' .. appKey .. "-" .. nativeVideoID
+        --    elseif (appKey ~= '' and appKey ~= nil and topicConfig == nil) then
+        --        topicString = appKey .. "-" .. nativeVideoID
+    else
+        topicString = nativeVideoID
+    end
+
+    if System.ios() then
+        topicString = topicString .. '/'
+    end
+    topic[topicString] = 0
     --print("register "..Native:nativeVideoID())
 
     onMqttMessage = function(message)
@@ -229,7 +248,7 @@ local function getTaglist()
     local paramDataString = Native:tableToJson(paramData)
     --print("[LuaView] "..paramDataString)
     --print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    Native:post(OS_HTTP_GET_TAG_LIST, {
+    mainNode.request:post(OS_HTTP_GET_TAG_LIST, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -267,7 +286,7 @@ local function getTaglist()
                 end
             end
         end
-    end)
+    end, mainNode.media)
 end
 
 local function getSimulationTag()
@@ -285,7 +304,7 @@ local function getSimulationTag()
     local paramDataString = Native:tableToJson(paramData)
     --print("[LuaView] "..paramDataString)
     --print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    Native:post(OS_HTTP_GET_SIMULATION_TAG, {
+    mainNode.request:post(OS_HTTP_GET_SIMULATION_TAG, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -312,7 +331,7 @@ local function getSimulationTag()
             end
         end
         --print("getSimulationTag success")
-    end)
+    end, mainNode.media)
 end
 
 function getTag()
@@ -337,7 +356,7 @@ local function getResourcelist()
     local paramDataString = Native:tableToJson(paramData)
     -- print("[LuaView] getResourcelist")
     --print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    Native:post(OS_HTTP_GET_RESOURCE_LIST, {
+    mainNode.request:post(OS_HTTP_GET_RESOURCE_LIST, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -380,13 +399,13 @@ local function getResourcelist()
         if (table_leng(imageList) > 0) then
             Native:preloadImage(imageList)
         end
-    end)
+    end, mainNode.media)
 end
 
 --预加载接口重试5次，服务器错误也算失败
 function reloadGetResourcelist()
     preloadCount = preloadCount + 1
-    
+
     if preloadCount > 5 then
         return
     end
@@ -401,6 +420,7 @@ function show(args)
     end
 
     mainNode.media = registerMedia()
+    mainNode.request = HttpRequest()
 
     if System.ios() then
         deviceType = 1
@@ -412,7 +432,7 @@ function show(args)
     }
     local paramDataString = Native:tableToJson(paramData)
     --print("luaview "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    Native:post(OS_HTTP_GET_CONFIG, {
+    mainNode.request:post(OS_HTTP_GET_CONFIG, {
         bu_id = buId,
         device_type = deviceType,
         target_id = roomId,
@@ -431,7 +451,7 @@ function show(args)
         getTag()
         getResourcelist()
         --TODO 连接MQTT
-    end)
+    end, mainNode.media)
     --获取广告--
     --[[
     Native:get("http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/getAds", {}, function(response, errorInfo)

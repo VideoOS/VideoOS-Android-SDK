@@ -23,8 +23,8 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.RELEASE);
+        DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.PREVIEW);
         VenvyLog.needLog = true;
-        VideoPlus.appCreate(MyApp.this);
+        VideoPlus.appCreateSAAS(MyApp.this, getString(R.string.appKey_def), getString(R.string.appSecret_def));
     }
 }

@@ -176,8 +176,11 @@ local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
     end
     local screenWidth, screenHeight = System.screenSize()
     if (isPortrait) then
-        local videoWidth, videoHight = Native:getVideoSize(0)
-        luaview:frame(0, 0, math.min(screenWidth, screenHeight), videoHight)
+        local videoWidth, videoHight, y = Native:getVideoSize(0)
+        if System.android() then
+            y = 0.0
+        end
+        luaview:frame(0, y, math.min(screenWidth, screenHeight), videoHight)
     else
         luaview:frame(0, 0, math.max(screenWidth, screenHeight), math.min(screenWidth, screenHeight))
     end
@@ -580,7 +583,7 @@ function getUserCardInfo(callback)
     -- print("[LuaView] "..paramDataString)
     -- print("[LuaView] "..OS_HTTP_GET_MOBILE_QUERY)
     -- print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    local requestId = Native:post(OS_HTTP_GET_MOBILE_QUERY, {
+    local requestId = card.request:post(OS_HTTP_GET_MOBILE_QUERY, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -610,7 +613,7 @@ function getUserCardInfo(callback)
         if callback ~= nil then
             callback(dataTable)
         end
-    end)
+    end, card.luaview)
     table.insert(card.requestIds, requestId)
 end
 
@@ -621,6 +624,7 @@ function show(args)
     card.data = args.data
     card.launchPlanId = card.data.launchPlanId
     card.id = card.data.id
+    card.request = HttpRequest()
     print("LuaView card id " .. card.id)
     if (card.hotspotOrder == nil) then
         local hotspotOrder = card.data.hotspotOrder

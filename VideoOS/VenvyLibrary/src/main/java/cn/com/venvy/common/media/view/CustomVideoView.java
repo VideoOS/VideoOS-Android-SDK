@@ -293,14 +293,13 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
     public void setVoice(float voice) {
         int maxVoice = mVolumeChangerObserver.getMaxMusicVolume();
         mCurrentVoice = (int) (maxVoice * voice);
-        if (isMediaPlayerPlaying()) {
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_SYSTEM);
+        if (mMediaPlayer != null && mCurrentState == STATE_PLAYING && isMediaPlayerPlaying()) {
             mMediaPlayer.setVolume(voice, voice);
         }
     }
 
     public float getVoice() {
-        int maxVoice = mVolumeChangerObserver.getCurrentMusicVolume();
+        int maxVoice = mVolumeChangerObserver.getMaxMusicVolume();
         return (float) mCurrentVoice / (float) maxVoice;
     }
 
@@ -503,9 +502,11 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
     }
 
     @Override
-    public void onVolumeChanged(int volume) {
+    public void onVolumeChanged(int maxVolume, int volume) {
+        float volumeScale = (float) volume / (float) maxVolume;
+        setVoice(volumeScale);
         Bundle bundle = new Bundle();
-        bundle.putInt(VOLUME_STATUS, volume);
+        bundle.putFloat(VOLUME_STATUS, volumeScale);
         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_VOLUME_STATUS_CHANGED, bundle);
     }
 }

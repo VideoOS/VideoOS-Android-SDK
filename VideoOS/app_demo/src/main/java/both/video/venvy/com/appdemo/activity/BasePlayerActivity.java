@@ -8,12 +8,15 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.utils.ScreenOrientationSwitcher;
 import both.video.venvy.com.appdemo.widget.CustomVideoView;
 import both.video.venvy.com.appdemo.widget.VideoControllerView;
+import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.VideoPlusAdapter;
 import cn.com.videopls.pub.VideoPlusView;
@@ -34,10 +37,15 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
     protected FrameLayout mVideoContentView;
     //自动选择屏幕类
     private ScreenOrientationSwitcher mScreenOrientationSwitcher;
-    protected static final String TAG_CREATIVE_NAME="creativeName";
+    protected static final String TAG_CREATIVE_NAME = "creativeName";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mRootView = (ViewGroup) LayoutInflater.from(this)
                 .inflate(R.layout.activity_base_player, null);
         setContentView(mRootView);
@@ -61,6 +69,15 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mVideoPlusView != null) {
+            VideoPositionHelper.getInstance().cancel();
+            mVideoPlusView.stop();
+        }
+    }
+
     /***
      *
      * @param newConfig 屏幕切换回调此生命周期
@@ -70,9 +87,10 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
      *                     ScreenStatus.FULL_VERTICAL  竖全屏
      */
     @Override
+
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (mCustomVideoView!=null&&mController!=null) {
+        if (mCustomVideoView != null && mController != null) {
             mController.onConfigurationChanged(newConfig);
         }
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -209,14 +227,14 @@ public abstract class BasePlayerActivity extends AppCompatActivity implements Vi
 
     private void switchScreenOrientation(boolean fullScreen, boolean reverseOrientation) {
         if (fullScreen) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             if (reverseOrientation) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
         } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             if (reverseOrientation) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
             } else {

@@ -3,10 +3,12 @@ package both.video.venvy.com.appdemo.widget;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.support.annotation.IdRes;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import org.luaj.vm2.Lua;
 import org.luaj.vm2.ast.Str;
@@ -24,10 +26,10 @@ import cn.com.venvy.common.interf.VideoType;
 public class VideoOsConfigDialog implements RadioGroup.OnCheckedChangeListener {
     private AlertDialog mDialog;
     private Context mContext;
-    private EditText mPathView, mNativeView;
+    private EditText mPathView, mNativeView, mAppKeyView, mAppSecretView;
     private SettingChangedListener listener;
 
-    public VideoOsConfigDialog(Context context, VideoType type) {
+    public VideoOsConfigDialog(final Context context, VideoType type) {
         mContext = context;
         mDialog = new AlertDialog.Builder(context).create();
         final View osConfigView = LayoutInflater.from(mContext)
@@ -36,7 +38,9 @@ public class VideoOsConfigDialog implements RadioGroup.OnCheckedChangeListener {
         if (type == VideoType.LIVEOS) {
             mPathView.setText("25");
         }
-        mNativeView = (EditText) osConfigView.findViewById(R.id.sp_setting_creative_name_id);
+        mNativeView = (EditText) osConfigView.findViewById(R.id.sp_setting_app_id);
+        mAppKeyView = (EditText) osConfigView.findViewById(R.id.sp_setting_app_video_appKey);
+        mAppSecretView = (EditText) osConfigView.findViewById(R.id.sp_setting_app_video_appSecret);
         osConfigView.findViewById(R.id.bt_setting_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,9 +54,19 @@ public class VideoOsConfigDialog implements RadioGroup.OnCheckedChangeListener {
             public void onClick(View v) {
                 if (listener == null)
                     return;
+                String videoId = mPathView.getText().toString();
+                String appKey = mAppKeyView.getText().toString();
+                String appSecret = mAppSecretView.getText().toString();
+                if (TextUtils.isEmpty(videoId) || TextUtils.isEmpty(appKey) || TextUtils.isEmpty(appSecret)) {
+                    Toast.makeText(context, "请检查你输入的videoID,appKey,appSecret,参数不可为空", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 ConfigBean bean = new ConfigBean();
                 bean.setCreativeName(mNativeView.getText().toString());
                 bean.setVideoId(mPathView.getText().toString());
+                bean.setAppKey(mAppKeyView.getText().toString());
+                bean.setAppSecret(mAppSecretView.getText().toString());
                 listener.onChangeStat(bean);
                 mDialog.dismiss();
             }
@@ -93,6 +107,14 @@ public class VideoOsConfigDialog implements RadioGroup.OnCheckedChangeListener {
      */
     public String getCreativeName() {
         return mNativeView != null ? mNativeView.getText().toString() : null;
+    }
+
+    public String getAppKey() {
+        return mAppKeyView != null ? mAppKeyView.getText().toString() : null;
+    }
+
+    public String getAppSecret() {
+        return mAppSecretView != null ? mAppSecretView.getText().toString() : null;
     }
 
     public void onChangeListener(SettingChangedListener l) {
