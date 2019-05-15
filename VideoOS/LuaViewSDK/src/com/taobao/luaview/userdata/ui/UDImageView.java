@@ -16,7 +16,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
 
@@ -46,6 +45,7 @@ import cn.com.venvy.common.image.VenvyBitmapInfo;
 import cn.com.venvy.common.image.VenvyImageInfo;
 import cn.com.venvy.common.image.VenvyImageLoaderFactory;
 import cn.com.venvy.common.utils.VenvyBlurUtil;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
@@ -326,7 +326,10 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
 
                         @Override
                         public void loadFailure(@Nullable WeakReference<? extends IImageView> imageView, String url, @Nullable Exception e) {
-                            Log.i("video++", "===data==loadFailure=");
+                            if (e != null && !TextUtils.isEmpty(url)) {
+                                VenvyLog.e("errorImage", "---glide图片加载失败--,url==" + url + (e != null ? " ," +
+                                        "exception==" + e.toString() : ""));
+                            }
                         }
                     });
 //                    imageView.loadUrl(urlOrName, new DrawableLoadCallback() {

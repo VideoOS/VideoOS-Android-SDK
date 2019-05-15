@@ -56,7 +56,6 @@ import cn.com.videopls.pub.os.VideoOsView;
 public class LiveActivity extends BasePlayerActivity implements View.OnClickListener {
 
     private VideoOsConfigDialog mConfigDialog;
-    private String mVideoId, mCreativeName;
     private String userName, userPwd;
     private IPlatformLoginInterface.LoginCallback mLoginCallback;
 
@@ -76,16 +75,16 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
                     Toast.makeText(LiveActivity.this, "配置错误，请确认你输入的配置信息", Toast.LENGTH_LONG).show();
                     return;
                 }
+                String videoId = bean.getVideoId();
+                String appKey = bean.getAppKey();
+                String appSecret = bean.getAppSecret();
+                String creativeName = bean.getCreativeName();
                 //正在播放视频需要切集操作调用逻辑 没有必须重新创建VideoPlusView 以及VideoPlusAdapter
                 mVideoPlusView.stop();
-                mVideoId = bean.getVideoId();
-                mCreativeName = bean.getCreativeName();
-                mVideoPlusAdapter.updateProvider(changeProvider(mVideoId, mCreativeName));
+                mVideoPlusAdapter.updateProvider(changeProvider(videoId, appKey, appSecret, creativeName));
                 mVideoPlusView.start();
             }
         });
-        mVideoId = mConfigDialog.getVideoId();
-        mCreativeName = mConfigDialog.getCreativeName();
         mVideoPlusAdapter = initVideoPlusAdapter();
         mVideoPlusView.setVideoOSAdapter(mVideoPlusAdapter);
         mVideoPlusView.start();
@@ -183,13 +182,13 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
             }
             mMediaController.setMediaPlayerControl(mCustomVideoView);
             mMediaController.setVideoSize(new VideoPlayerSize(VenvyUIUtil.getScreenWidth(LiveActivity.this), VenvyUIUtil.getScreenHeight(LiveActivity.this),
-                    VenvyUIUtil.getScreenWidth(LiveActivity.this), mWidowPlayerHeight, VenvyUIUtil.getStatusBarHeight(LiveActivity.this)));
+                    VenvyUIUtil.getScreenWidth(LiveActivity.this), mWidowPlayerHeight, 0));
         }
 
         //设置参数
         @Override
         public Provider createProvider() {
-            return changeProvider(mVideoId, mCreativeName);
+            return changeProvider(mConfigDialog.getVideoId(), mConfigDialog.getAppKey(), mConfigDialog.getAppSecret(), mConfigDialog.getCreativeName());
         }
 
         //注册网络图片架构插件
@@ -319,17 +318,17 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
         return mSettingView;
     }
 
-    private Provider changeProvider(String videoId, String creativeName) {
+    private Provider changeProvider(String videoId, String appKey, String appSecret, String creativeName) {
 
         Provider provider;
         if (TextUtils.isEmpty(creativeName)) {
-            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey("3a2467e6-859a-4877-ae1c-5e2c3bff3b82").setAppSecret("3d2230e0d038443f").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .build();
         } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey("3a2467e6-859a-4877-ae1c-5e2c3bff3b82").setAppSecret("3d2230e0d038443f").setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
                     .setVideoID(videoId)//视频地址
                     .setExtendJSONString(new JSONObject(extendParams).toString()).build();
         }

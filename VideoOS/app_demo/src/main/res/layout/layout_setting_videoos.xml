@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -10,14 +9,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.04"/>
+        app:layout_constraintGuide_percent="0.04" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.07"/>
+        app:layout_constraintGuide_percent="0.07" />
 
     <TextView
         android:id="@+id/tv_layout_setting_app_id"
@@ -25,7 +24,7 @@
         android:layout_height="wrap_content"
         android:text="@string/setting_layout_creative_name"
         app:layout_constraintLeft_toLeftOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="@+id/guideline2"/>
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
     <TextView
         android:id="@+id/tv_layout_setting_video_path"
@@ -33,36 +32,69 @@
         android:layout_height="wrap_content"
         android:text="@string/setting_layout_videoId"
         app:layout_constraintBottom_toBottomOf="@+id/guideline6"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline"/>
+        app:layout_constraintLeft_toLeftOf="@+id/guideline" />
+
+    <TextView
+        android:id="@+id/tv_layout_setting_video_appkey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting_layout_appKey"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline9"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline" />
+
+    <TextView
+        android:id="@+id/tv_layout_setting_video_appSecret"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting_layout_appSecret"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline10"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline" />
 
     <EditText
+        android:id="@+id/sp_setting_app_id"
+        style="@style/style_setting_spinner"
         app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_app_id"
-        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_app_id"
-        app:layout_constraintRight_toRightOf="@+id/guideline7"
         app:layout_constraintLeft_toLeftOf="@+id/guideline8"
-        android:id="@+id/sp_setting_creative_name_id"
-        style="@style/style_setting_spinner">
-    </EditText>
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_app_id"></EditText>
 
     <EditText
-        app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_video_path"
-        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_video_path"
-        app:layout_constraintRight_toRightOf="@+id/guideline7"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline8"
         android:id="@+id/sp_setting_app_video_path"
-        android:text="http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4"
-        style="@style/style_setting_spinner">
-    </EditText>
+        style="@style/style_setting_spinner"
+        android:text="http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_video_path"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline8"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_video_path"></EditText>
+
+    <EditText
+        android:id="@+id/sp_setting_app_video_appKey"
+        style="@style/style_setting_spinner"
+        android:text="@string/appKey_def"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_video_appkey"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline8"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_video_appkey"></EditText>
+
+    <EditText
+        android:id="@+id/sp_setting_app_video_appSecret"
+        style="@style/style_setting_spinner"
+        android:text="@string/appSecret_def"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_layout_setting_video_appSecret"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline8"
+        app:layout_constraintRight_toRightOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/tv_layout_setting_video_appSecret"></EditText>
 
     <include
         android:id="@+id/layout_setting_change_environment"
         layout="@layout/layout_change_environment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/layout_change_environ_margin_top"
+        android:layout_marginTop="71dp"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="@+id/guideline"
         app:layout_constraintRight_toRightOf="@+id/guideline7"
-        app:layout_constraintTop_toBottomOf="@+id/guideline6"/>
+        app:layout_constraintTop_toBottomOf="@+id/guideline9" />
 
     <Button
         android:id="@+id/bt_setting_cancel"
@@ -76,7 +108,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/guideline"
         app:layout_constraintRight_toLeftOf="@+id/bt_setting_apply"
-        app:layout_constraintTop_toBottomOf="@+id/layout_setting_change_environment"/>
+        app:layout_constraintTop_toBottomOf="@+id/layout_setting_change_environment" />
 
     <Button
         android:id="@+id/bt_setting_apply"
@@ -88,27 +120,41 @@
         android:textColor="@android:color/white"
         app:layout_constraintLeft_toRightOf="@+id/bt_setting_cancel"
         app:layout_constraintRight_toRightOf="@+id/guideline7"
-        app:layout_constraintTop_toTopOf="@+id/bt_setting_cancel"/>
+        app:layout_constraintTop_toTopOf="@+id/bt_setting_cancel" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.45"/>
+        app:layout_constraintGuide_percent="0.3" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.46" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.63" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.96"/>
+        app:layout_constraintGuide_percent="0.96" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25"/>
+        app:layout_constraintGuide_percent="0.25" />
 
 </android.support.constraint.ConstraintLayout>

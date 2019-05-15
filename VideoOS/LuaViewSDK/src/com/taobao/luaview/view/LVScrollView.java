@@ -77,9 +77,7 @@ public class LVScrollView extends ScrollView implements ILVViewGroup {
 
     private ViewGroup initTargetViewGroup(int type) {
         if (type == SCROLL_TYPE_DOWN) {
-            LinearLayout target = new LinearLayout(getContext());
-            target.setOrientation(LinearLayout.VERTICAL);
-            return target;
+            return new LVDownLayout(getContext());
         } else {
             return new LVUpLayout(getContext());
         }
@@ -236,6 +234,107 @@ public class LVScrollView extends ScrollView implements ILVViewGroup {
                 int childHeight = childView.getMeasuredHeight();
                 int childWidth = childView.getMeasuredWidth();
                 childView.layout(l, height - hadUsedVertical - childHeight, l + childWidth, height - hadUsedVertical);
+                hadUsedVertical += childHeight;
+            }
+        }
+    }
+
+    public class LVDownLayout extends ViewGroup {
+        int hadUsedVertical = 0;//垂直已经使用的距离
+        int mTotalHeight = 0;
+
+
+        public LVDownLayout(Context context) {
+            super(context);
+        }
+
+        public LVDownLayout(Context context, AttributeSet attributeSet) {
+            super(context, attributeSet);
+        }
+
+        public LVDownLayout(Context context, AttributeSet attributeSet, int style) {
+            super(context, attributeSet, style);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            measureChildren(widthMeasureSpec, heightMeasureSpec);
+            // 宽度模式
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            // 测量宽度
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            // 高度模式
+            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+            // 测量高度
+            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+            // 子view数目
+            int childCount = getChildCount();
+            if (childCount == 0) {
+                // 如果当前ViewGroup没有子View，就没有存在的意义，无需占空间
+                setMeasuredDimension(0, 0);
+            } else {
+                // 如果宽高都是包裹内容
+                if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.AT_MOST) {
+                    // 宽度为所有子view宽度相加，高度取子view最大高度
+                    int width = getMaxWidth();
+                    int height = getTotalHeight();
+                    setMeasuredDimension(width, height);
+                    mTotalHeight = height;
+                } else if (widthMode == MeasureSpec.AT_MOST) {
+                    // 宽度为所有子View宽度相加，高度为测量高度
+                    setMeasuredDimension(getMaxWidth(), heightSize);
+                    mTotalHeight = heightSize;
+                } else if (heightMode == MeasureSpec.AT_MOST) {
+                    // 宽度为测量宽度，高度为子view最大高度
+                    mTotalHeight = getTotalHeight();
+                    setMeasuredDimension(widthSize, mTotalHeight);
+                } else {
+                    mTotalHeight = Math.max(getTotalHeight(), mTargetHeight);
+                    setMeasuredDimension(getMaxWidth(), mTotalHeight);
+                }
+            }
+        }
+
+        /**
+         * 获取子view最大高度
+         */
+        private int getMaxWidth() {
+            // 最大高度
+            int maxWidth = 0;
+            // 子view数目
+            int childCount = getChildCount();
+            // 遍历子view拿取最大高度
+            for (int i = 0; i < childCount; i++) {
+                View childView = getChildAt(i);
+                if (childView.getMeasuredHeight() > maxWidth)
+                    maxWidth = childView.getMeasuredWidth();
+            }
+            return maxWidth;
+        }
+
+        private int getTotalHeight() {
+            // 所有子view宽度之和
+            int totalHeight = 0;
+            // 子View数目
+            int childCount = getChildCount();
+            // 遍历所有子view拿取所有子view宽度之和
+            for (int i = 0; i < childCount; i++) {
+                View childView = getChildAt(i);
+                totalHeight += childView.getMeasuredHeight();
+            }
+            return totalHeight;
+        }
+
+        @Override
+        protected void onLayout(boolean changed, int l, int t, int r, int b) {
+            int childCount = this.getChildCount();
+            hadUsedVertical = t;//垂直已经使用的距离
+            for (int i = 0; i < childCount; i++) {
+                View childView = getChildAt(i);
+                int childHeight = childView.getMeasuredHeight();
+                int childWidth = childView.getMeasuredWidth();
+                childView.layout(l, hadUsedVertical, l + childWidth, hadUsedVertical+childHeight);
                 hadUsedVertical += childHeight;
             }
         }
