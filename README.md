@@ -12,7 +12,7 @@ repositories {
 maven { url 'https://dl.bintray.com/videoli/maven/' }
 }
 dependencies {
-implementation 'com.videoli:VideoOS:1.1.0'
+implementation 'com.videoli:VideoOS:1.2.0'
 }
 ```
 
@@ -30,7 +30,7 @@ mavenCentral()
 maven { url 'https://dl.bintray.com/videoli/maven/' }
 }
 dependencies {
-implementation 'com.videoli:VideoOS-SAAS:1.0.0'
+implementation 'com.videoli:VideoOS:1.2.0'
 implementation 'com.videoli:venvy_processor_annotation:1.0.0'
 annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
 }
