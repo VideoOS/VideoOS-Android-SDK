@@ -18,8 +18,10 @@ public class VenvyImageSizeFactory {
         try {
             IImageSize imageSize = null;
             if (sImageSizeReference == null) {
-                imageSize = VenvyRegisterLibsManager.getImageSizeLib().newInstance();
-                sImageSizeReference = new WeakReference<>(imageSize);
+                if (VenvyRegisterLibsManager.getImageSizeLib() != null) {
+                    imageSize = VenvyRegisterLibsManager.getImageSizeLib().newInstance();
+                    sImageSizeReference = new WeakReference<>(imageSize);
+                }
             } else {
                 imageSize = sImageSizeReference.get();
                 if (imageSize == null) {
