@@ -2,6 +2,7 @@ package cn.com.videopls.pub.view;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.taobao.luaview.global.LuaScriptLoader;
 import com.taobao.luaview.global.LuaView;
@@ -137,6 +138,10 @@ public class VideoOSLuaView extends VideoOSBaseView {
 
     private void runLuaFile(final LuaView luaView, final String luaName, final Object valueData) {
         if (TextUtils.isEmpty(luaName)) {
+            return;
+        }
+        if(true){
+            runLua(luaView, luaName, valueData);
             return;
         }
         if (sScriptBundle == null) {

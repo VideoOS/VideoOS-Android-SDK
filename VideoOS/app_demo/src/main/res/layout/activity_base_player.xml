@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/video_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <FrameLayout
-        android:id="@+id/root"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/root">
+    <both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer
+        android:id="@+id/player"
         android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_player_height"/>
+    <TextView
+        android:id="@+id/tvVideoId"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
-    </FrameLayout>
-
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        android:text="http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4"
+        />
+    <CheckBox
+        android:id="@+id/cbShowStatusBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="显示状态栏"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="280dp"
+        />
+    <cn.com.videopls.pub.os.VideoOsView
+        android:id="@+id/os_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 </FrameLayout>

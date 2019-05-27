@@ -89,7 +89,7 @@ local function getPortraitLocation(data)
     if (redEnvelope.portraitWidth ~= nil and redEnvelope.portraitHeight ~= nil and redEnvelope.portraitX ~= nil and redEnvelope.portraitY ~= nil) then
         return redEnvelope.portraitX, redEnvelope.portraitY, redEnvelope.portraitWidth, redEnvelope.portraitHeight
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local videoWidth, videoHight = Native:getVideoSize(0)
     local sacleW = math.min(screenWidth, screenHeight) / math.max(screenWidth, screenHeight)
     local sacleH = videoHight / math.min(screenWidth, screenHeight)
@@ -132,7 +132,7 @@ local function getLandscapeLocation(data)
     if (redEnvelope.landscapeWidth ~= nil and redEnvelope.landscapeHeight ~= nil and redEnvelope.landscapeX ~= nil and redEnvelope.landscapeY ~= nil) then
         return redEnvelope.landscapeX, redEnvelope.landscapeY, redEnvelope.landscapeWidth, redEnvelope.landscapeHeight
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local width = 0
     local height = 0
     local x = 0
@@ -172,7 +172,7 @@ local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
     if (luaview == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         local videoWidth, videoHight, y = Native:getVideoSize(0)
         if System.android() then
