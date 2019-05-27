@@ -1,7 +1,6 @@
 package cn.com.venvy.common.utils;
 
 import android.content.Context;
-import android.util.Log;
 
 /**
  * Created by videojj_pls on 2018/9/4.

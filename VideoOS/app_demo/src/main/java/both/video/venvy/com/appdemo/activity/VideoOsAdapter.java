@@ -3,7 +3,6 @@ package both.video.venvy.com.appdemo.activity;
 import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import both.video.venvy.com.appdemo.MyApp;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
@@ -21,10 +20,10 @@ import cn.com.venvy.common.interf.IWidgetCloseListener;
 import cn.com.venvy.common.interf.IWidgetShowListener;
 import cn.com.venvy.common.interf.MediaStatus;
 import cn.com.venvy.common.interf.VideoOSMediaController;
+import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.okhttp.OkHttpHelper;
-import cn.com.venvy.common.utils.VenvyMD5Util;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
@@ -39,16 +38,18 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     private StandardVideoOSPlayer mPlayer;
 
+    private boolean isLive;
+
     private VideoPlayerSize videoPlayerSize = new VideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.getScreenHeight(MyApp.getInstance()),
             VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.dip2px(MyApp.getInstance(), 200), 0);
 
-    public VideoOsAdapter(StandardVideoOSPlayer mPlayer) {
+    public VideoOsAdapter(StandardVideoOSPlayer mPlayer, boolean isLive) {
         this.mPlayer = mPlayer;
+        this.isLive = isLive;
     }
 
 
     public VideoPlayerSize getVideoPlayerSize() {
-        Log.d("VideoPlayerSize","video size : "+videoPlayerSize.toString());
         return videoPlayerSize;
     }
 
@@ -56,7 +57,9 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     //设置参数
     @Override
     public Provider createProvider() {
-        return new Provider.Builder().setAppKey(ConfigUtil.getAppKey()).setAppSecret(ConfigUtil.getAppSecret()).setVideoID(mPlayer.getPlayTag()).build();
+        return new Provider.Builder().setAppKey(ConfigUtil.getAppKey()).setAppSecret(ConfigUtil.getAppSecret())
+                .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
+                .setVideoID(mPlayer.getPlayTag()).build();
     }
 
 
@@ -207,7 +210,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         if (TextUtils.isEmpty(url)) {
             return;
         }
-        FullScreenWebViewDialog dialog = FullScreenWebViewDialog.getInstance(MyApp.getInstance());
+        FullScreenWebViewDialog dialog = FullScreenWebViewDialog.getInstance(mPlayer.getContext());
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {

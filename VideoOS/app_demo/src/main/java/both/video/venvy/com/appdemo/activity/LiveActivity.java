@@ -1,6 +1,5 @@
 package both.video.venvy.com.appdemo.activity;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -19,11 +18,9 @@ import both.video.venvy.com.appdemo.bean.ConfigBean;
 import both.video.venvy.com.appdemo.utils.AssetsUtil;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.VideoOsConfigDialog;
-import cn.com.venvy.common.bean.PlatformUserInfo;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.router.IRouterCallback;
-import cn.com.venvy.common.utils.VenvyRandomUtils;
 import cn.com.videopls.pub.Provider;
 
 /**
@@ -69,6 +66,11 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
         mVideoPlayer.startPlayLogic();
     }
 
+
+    @Override
+    protected boolean isLiveOS() {
+        return true;
+    }
 
     @Override
     public void onClick(View v) {
@@ -121,13 +123,13 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
 
         Provider provider;
         if (TextUtils.isEmpty(creativeName)) {
-            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret)
                     .setVideoID(videoId)//视频地址
                     .build();
         } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret)
                     .setVideoID(videoId)//视频地址
                     .setExtendJSONString(new JSONObject(extendParams).toString()).build();
         }

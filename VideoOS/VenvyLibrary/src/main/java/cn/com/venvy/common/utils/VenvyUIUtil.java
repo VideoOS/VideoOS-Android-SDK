@@ -642,11 +642,6 @@ public class VenvyUIUtil {
     }
 
 
-    public static int getScreenHeightByDisplayMetrics(@Nullable Context context) {
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        return dm.heightPixels;
-    }
-
     /**
      * 获取屏幕宽度
      */

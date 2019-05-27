@@ -20,7 +20,6 @@ import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.VideoOsConfigDialog;
 import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.router.IRouterCallback;
-import cn.com.venvy.common.utils.VenvyRandomUtils;
 import cn.com.videopls.pub.Provider;
 
 /**
@@ -67,6 +66,10 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
 
     }
 
+    @Override
+    protected boolean isLiveOS() {
+        return false;
+    }
 
     @Override
     public void onClick(View v) {
@@ -77,9 +80,9 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
             if (mVideoPlusView == null)
                 return;
             mVideoPlusView.stop();
-            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_bubble_hotspot.lua&id=os_bubble_hotspot");
+            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_red_envelope_hotspot.lua&id=os_red_envelope_hotspot");
             HashMap<String, String> params = new HashMap<>();
-            params.put("data", AssetsUtil.readFileAssets("local_bubble.json", OsActivity.this));
+            params.put("data", AssetsUtil.readFileAssets("local_red.json", OsActivity.this));
             mVideoPlusView.navigation(uri, params, new IRouterCallback() {
                 @Override
                 public void arrived() {
@@ -117,13 +120,14 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     private Provider changeProvider(String videoId, String appKey, String appSecret, String creativeName) {
         Provider provider;
         if (TextUtils.isEmpty(creativeName)) {
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(String.valueOf(System.currentTimeMillis()))
                     .setVideoID(videoId)//视频地址
                     .build();
         } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(System.currentTimeMillis() + VenvyRandomUtils.getRandomNumbersAndLetters(10))
+            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(String.valueOf(System.currentTimeMillis()))
                     .setVideoID(videoId)//视频地址
                     .setExtendJSONString(new JSONObject(extendParams).toString()).build();
         }
