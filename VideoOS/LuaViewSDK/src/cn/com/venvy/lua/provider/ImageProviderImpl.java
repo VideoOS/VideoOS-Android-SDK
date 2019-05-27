@@ -18,6 +18,7 @@ import com.taobao.luaview.provider.ImageProvider;
 import com.taobao.luaview.view.imageview.BaseImageView;
 import com.taobao.luaview.view.imageview.DrawableLoadCallback;
 
+import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 
 import cn.com.venvy.common.image.IImageLoader;
@@ -86,10 +87,10 @@ public class ImageProviderImpl implements ImageProvider {
 
     private static class ImageResult implements IImageLoaderResult {
 
-        WeakReference<DrawableLoadCallback> callback;
+        SoftReference<DrawableLoadCallback> callback;
 
         private ImageResult(DrawableLoadCallback callback) {
-            this.callback = new WeakReference<>(callback);
+            this.callback = new SoftReference<>(callback);
         }
 
 
