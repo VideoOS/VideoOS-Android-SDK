@@ -3,15 +3,11 @@ package both.video.venvy.com.appdemo.activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import org.json.JSONObject;
-
 import java.util.HashMap;
-import java.util.Map;
 
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
@@ -21,7 +17,6 @@ import both.video.venvy.com.appdemo.widget.VideoOsConfigDialog;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.router.IRouterCallback;
-import cn.com.videopls.pub.Provider;
 
 /**
  * Created by videojj_pls on 2018/9/13.
@@ -56,7 +51,7 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
                 tvVideoId.setText(videoId);
                 //正在播放视频需要切集操作调用逻辑 没有必须重新创建VideoPlusView 以及VideoPlusAdapter
                 mVideoPlusView.stop();
-                mAdapter.updateProvider(changeProvider(videoId, appKey, appSecret, creativeName));
+                mAdapter.updateProvider(mAdapter.generateProvider(appKey, appSecret, videoId, creativeName));
                 mVideoPlusView.start();
             }
         });
@@ -119,20 +114,4 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
         return mSettingView;
     }
 
-    private Provider changeProvider(String videoId, String appKey, String appSecret, String creativeName) {
-
-        Provider provider;
-        if (TextUtils.isEmpty(creativeName)) {
-            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret)
-                    .setVideoID(videoId)//视频地址
-                    .build();
-        } else {
-            Map<String, String> extendParams = new HashMap<>();
-            extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.LIVEOS).setAppKey(appKey).setAppSecret(appSecret)
-                    .setVideoID(videoId)//视频地址
-                    .setExtendJSONString(new JSONObject(extendParams).toString()).build();
-        }
-        return provider;
-    }
 }

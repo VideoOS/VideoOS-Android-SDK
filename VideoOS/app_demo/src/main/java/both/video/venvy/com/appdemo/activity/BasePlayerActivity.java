@@ -25,29 +25,18 @@ import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
 import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.utils.VenvyUIUtil;
-import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.os.VideoOsView;
 
 public abstract class BasePlayerActivity extends AppCompatActivity {
-    //Video++适配器
-//    protected VideoPlusAdapter mVideoPlusAdapter;
 
-    protected int mWidowPlayerHeight;
-    protected ViewGroup mRootView;
-//    protected VideoControllerView mController;
-    //播放器类
-//    protected CustomVideoView mCustomVideoView;
-
-
-    protected StandardVideoOSPlayer mVideoPlayer;
-    protected VideoOsView mVideoPlusView;
+    protected ViewGroup mRootView; //  Activity 根布局
+    protected StandardVideoOSPlayer mVideoPlayer; // 播放器控件
+    protected VideoOsView mVideoPlusView; // VideoOs 视图（填充根布局）
+    protected VideoOsAdapter mAdapter;// VideoOS 视图适配器
     protected OrientationUtils mOrientationUtils;
-    protected VideoOsAdapter mAdapter;
-    protected TextView tvVideoId;
-    protected CheckBox cbShowStatusBar;
-    protected static final String TAG_CREATIVE_NAME = "creativeName";
-
-    private boolean isNavigationBarShow = true;
+    protected TextView tvVideoId; // 当前VideoId
+    protected CheckBox cbShowStatusBar; // 控制是否显示状态栏
+    private boolean isNavigationBarShow = true; // 当前是否存在底部导航栏
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,19 +47,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         mRootView = (ViewGroup) LayoutInflater.from(this)
                 .inflate(R.layout.activity_base_player, null);
         setContentView(mRootView);
-        cbShowStatusBar = mRootView.findViewById(R.id.cbShowStatusBar);
-        tvVideoId = mRootView.findViewById(R.id.tvVideoId);
-        //播放器
-        mVideoPlayer = mRootView.findViewById(R.id.player);
-        mVideoPlusView = mRootView.findViewById(R.id.os_view);
-        mAdapter = new VideoOsAdapter(mVideoPlayer, isLiveOS());
-        mVideoPlusView.setVideoOSAdapter(mAdapter);
 
-        tvVideoId.setText(ConfigUtil.getVideoId());
+        // 初始化相关控件
+        initViews();
         // 设置旋转
         mOrientationUtils = new OrientationUtils(this, mVideoPlayer);
         initVideoPlayerSetting();
-
         cbShowStatusBar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -79,7 +61,22 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         });
     }
 
+    private void initViews() {
+        cbShowStatusBar = mRootView.findViewById(R.id.cbShowStatusBar);
+        tvVideoId = mRootView.findViewById(R.id.tvVideoId);
+        mVideoPlayer = mRootView.findViewById(R.id.player);
+        mVideoPlusView = mRootView.findViewById(R.id.os_view);
+        mAdapter = new VideoOsAdapter(mVideoPlayer, isLiveOS());
+        mVideoPlusView.setVideoOSAdapter(mAdapter);
+        tvVideoId.setText(ConfigUtil.getVideoId());
+    }
 
+
+    /**
+     * 子类实现该方法表示当前业务是否为直播
+     *
+     * @return
+     */
     protected boolean isLiveOS() {
         return false;
     }
@@ -119,11 +116,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         mVideoPlayer.setVideoAllCallBack(new VideoAllCallBack() {
             @Override
             public void onStartPrepared(String url, Object... objects) {
+                // 播放器播放视频前的回调
                 if (TextUtils.isEmpty(url)) {
                     return;
                 }
                 mVideoPlusView.stop();
-                mAdapter.updateProvider(changeProvider(mVideoPlayer.getPlayTag()));
+                mAdapter.updateProvider(mAdapter.generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(), mVideoPlayer.getPlayTag()));
                 mVideoPlusView.start();
             }
 
@@ -249,6 +247,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         if (mVideoPlayer != null) {
             mVideoPlayer.onVideoResume();
         }
+        // 默认显示状态栏
         checkNavigationBarShow(mVideoPlusView);
     }
 
@@ -308,10 +307,9 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             tvVideoId.setVisibility(View.VISIBLE);
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             params.height = VenvyUIUtil.dip2px(this, 200);
-            //TODO : 通知SDK屏幕放心
+            // 竖屏根据状态栏设置，重新设置VideoOSView的Size,
+            toggleStatusBar(cbShowStatusBar.isChecked());
             if (mAdapter != null) {
-                // TODO : 先重新设置 VideoSize
-                toggleStatusBar(cbShowStatusBar.isChecked());
                 mAdapter.notifyVideoScreenChanged(ScreenStatus.SMALL_VERTICAL);
             }
         } else {
@@ -320,21 +318,13 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             tvVideoId.setVisibility(View.GONE);
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //隐藏状态栏
-            //TODO : 通知SDK屏幕放心
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //横屏隐藏状态栏
             if (mAdapter != null) {
                 mAdapter.notifyVideoScreenChanged(ScreenStatus.LANDSCAPE);
             }
         }
         mVideoPlayer.setLayoutParams(params);
         mVideoPlusView.setLayoutParams(osParams);
-    }
-
-
-    private Provider changeProvider(String videoId) {
-        return new Provider.Builder().setAppKey(ConfigUtil.getAppKey()).setAppSecret(ConfigUtil.getAppSecret())
-                .setCustomUDID(String.valueOf(System.currentTimeMillis()))
-                .setVideoID(videoId).build();
     }
 
 

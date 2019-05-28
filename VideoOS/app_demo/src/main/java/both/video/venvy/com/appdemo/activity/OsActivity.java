@@ -3,15 +3,11 @@ package both.video.venvy.com.appdemo.activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import org.json.JSONObject;
-
 import java.util.HashMap;
-import java.util.Map;
 
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
@@ -20,7 +16,6 @@ import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.VideoOsConfigDialog;
 import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.router.IRouterCallback;
-import cn.com.videopls.pub.Provider;
 
 /**
  * Created by videojj_pls on 2018/9/13.
@@ -28,7 +23,7 @@ import cn.com.videopls.pub.Provider;
 
 public class OsActivity extends BasePlayerActivity implements View.OnClickListener {
 
-    private VideoOsConfigDialog mConfigDialog;
+    private VideoOsConfigDialog mConfigDialog; // 应用配置Dialog
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +50,11 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
                 mVideoPlayer.setUp(videoId, true, ConfigUtil.getVideoName());
                 mVideoPlayer.setPlayTag(videoId);
                 mVideoPlayer.startPlayLogic();
-                mAdapter.updateProvider(changeProvider(videoId, appKey, appSecret, creativeName));
+                mAdapter.updateProvider(mAdapter.generateProvider(appKey, appSecret, videoId, creativeName));
                 mVideoPlusView.start();
             }
         });
-
+        // 默认播放上次缓存的VideoId
         mVideoPlayer.setUp(ConfigUtil.getVideoId(), true, ConfigUtil.getVideoName());
         mVideoPlayer.setPlayTag(ConfigUtil.getVideoId());
         mVideoPlayer.startPlayLogic();
@@ -117,21 +112,5 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         return mSettingView;
     }
 
-    private Provider changeProvider(String videoId, String appKey, String appSecret, String creativeName) {
-        Provider provider;
-        if (TextUtils.isEmpty(creativeName)) {
-
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(String.valueOf(System.currentTimeMillis()))
-                    .setVideoID(videoId)//视频地址
-                    .build();
-        } else {
-            Map<String, String> extendParams = new HashMap<>();
-            extendParams.put(TAG_CREATIVE_NAME, creativeName);
-            provider = new Provider.Builder().setVideoType(VideoType.VIDEOOS).setAppKey(appKey).setAppSecret(appSecret).setCustomUDID(String.valueOf(System.currentTimeMillis()))
-                    .setVideoID(videoId)//视频地址
-                    .setExtendJSONString(new JSONObject(extendParams).toString()).build();
-        }
-        return provider;
-    }
 
 }

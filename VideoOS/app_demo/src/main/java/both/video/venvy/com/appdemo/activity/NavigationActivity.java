@@ -83,7 +83,6 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        //点播按钮  //TODO新版OS
         if (id == R.id.tv_home_item_2) {
             startOsActivity();
         } else if (id == R.id.tv_home_item_1) {

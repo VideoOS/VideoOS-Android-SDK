@@ -4,6 +4,11 @@ import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import both.video.venvy.com.appdemo.MyApp;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.FullScreenWebViewDialog;
@@ -33,12 +38,10 @@ import cn.com.videopls.pub.VideoPlusAdapter;
  * Created by Lucas on 2019/5/21.
  */
 public class VideoOsAdapter extends VideoPlusAdapter {
-
     private static final String TAG = VideoOsAdapter.class.getSimpleName();
-
+    protected static final String TAG_CREATIVE_NAME = "creativeName";
     private StandardVideoOSPlayer mPlayer;
-
-    private boolean isLive;
+    private boolean isLive; // 是否为直播
 
     private VideoPlayerSize videoPlayerSize = new VideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.getScreenHeight(MyApp.getInstance()),
             VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.dip2px(MyApp.getInstance(), 200), 0);
@@ -48,18 +51,56 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         this.isLive = isLive;
     }
 
-
+    /**
+     * 外部可根据业务动态设置VideoPlaySize的值
+     * @return
+     */
     public VideoPlayerSize getVideoPlayerSize() {
         return videoPlayerSize;
     }
 
 
+    /**
+     * 统一通过此方法生成SDK所需的Provider
+     * @param appKey
+     * @param appSecret
+     * @param videoId
+     * @return
+     */
+    public Provider generateProvider(String appKey,String appSecret,String videoId){
+        return generateProvider(appKey, appSecret, videoId,null);
+    }
+
+    /**
+     *
+     * @param appKey
+     * @param appSecret
+     * @param videoId 视频源
+     * @param creativeName 素材名称
+     * @return
+     */
+    public Provider generateProvider(String appKey,String appSecret,String videoId,String creativeName){
+        if(TextUtils.isEmpty(creativeName)){
+            return new Provider.Builder().setAppKey(appKey).setAppSecret(appSecret)
+                    .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
+                    .setCustomUDID(String.valueOf(System.currentTimeMillis()))
+                    .setVideoID(videoId).build();
+        }else{
+            Map<String, String> extendParams = new HashMap<>();
+            extendParams.put(TAG_CREATIVE_NAME, creativeName);
+            return new Provider.Builder().setAppKey(appKey).setAppSecret(appSecret)
+                    .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
+                    .setCustomUDID(String.valueOf(System.currentTimeMillis()))
+                    .setVideoID(videoId)
+                    .setExtendJSONString(new JSONObject(extendParams).toString()).build();
+        }
+
+    }
+
     //设置参数
     @Override
     public Provider createProvider() {
-        return new Provider.Builder().setAppKey(ConfigUtil.getAppKey()).setAppSecret(ConfigUtil.getAppSecret())
-                .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
-                .setVideoID(mPlayer.getPlayTag()).build();
+        return generateProvider(ConfigUtil.getAppKey(),ConfigUtil.getAppSecret(),mPlayer.getPlayTag());
     }
 
 
@@ -81,7 +122,10 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         return VenvyMqtt.class;
     }
 
-    //广告展示监听插件
+    /**
+     * 广告展示监听
+     * @return
+     */
     @Override
     public IWidgetShowListener buildWidgetShowListener() {
         return new IWidgetShowListener<WidgetInfo>() {
@@ -95,7 +139,9 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         };
     }
 
-    //广告点击监听插件
+    /**
+     * 广告点击监听
+     */
     @Override
     public IWidgetClickListener buildWidgetClickListener() {
         return new IWidgetClickListener<WidgetInfo>() {
@@ -106,7 +152,10 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         };
     }
 
-    //广告关闭监听插件
+    /**
+     * 广告关闭监听
+     * @return
+     */
     @Override
     public IWidgetCloseListener buildWidgetCloseListener() {
         return new IWidgetCloseListener<WidgetInfo>() {
@@ -132,7 +181,9 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         };
     }
 
-    //平台方播放器相关状态
+    /**
+     * 平台方播放器相关业务状态
+     */
     @Override
     public IMediaControlListener buildMediaController() {
         return new VideoOSMediaController() {
