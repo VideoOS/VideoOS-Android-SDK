@@ -206,7 +206,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
 ```
 
-#### Adapter高级功能
+##### Adapter高级功能
 
 - 功能插件注册
 
@@ -329,7 +329,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 `VideoOsAdapter`详情查看app_demo项目中源码
 
 
-### Step4. 播放器横竖屏切换处理
+#### Step4. 播放器横竖屏切换处理
 
 复写Activity中`onConfigurationChanged`函数处理视频的横竖屏情况
 
@@ -371,7 +371,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     }
 ```
 
-### Step5. 资源释放
+#### Step5. 资源释放
 
 在相关Activity的`onDestroy`生命周期函数中释放相关资源
 
