@@ -40,25 +40,17 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
                     Toast.makeText(OsActivity.this, "配置错误，请确认你输入的配置信息", Toast.LENGTH_LONG).show();
                     return;
                 }
+
                 String videoId = bean.getVideoId();
-                String appKey = bean.getAppKey();
-                String appSecret = bean.getAppSecret();
-                String creativeName = bean.getCreativeName();
+                String creativeName = bean.getCreativeName();//素材名称
                 tvVideoId.setText(videoId);
-                //正在播放视频需要切集操作调用逻辑 没有必须重新创建VideoPlusView 以及VideoPlusAdapter
-                mVideoPlusView.stop();
-                mVideoPlayer.setUp(videoId, true, ConfigUtil.getVideoName());
-                mVideoPlayer.setPlayTag(videoId);
-                mVideoPlayer.startPlayLogic();
-                mAdapter.updateProvider(mAdapter.generateProvider(appKey, appSecret, videoId, creativeName));
-                mVideoPlusView.start();
+                ConfigUtil.putAppKey(bean.getAppKey());
+                ConfigUtil.putAppSecret(bean.getAppSecret());
+                ConfigUtil.putVideoId(videoId);
+                //正在播放视频需要切集操作调用逻辑 不需要重新创建VideoPlusView 以及VideoPlusAdapter
+                startDefaultVideo(videoId);
             }
         });
-        // 默认播放上次缓存的VideoId
-        mVideoPlayer.setUp(ConfigUtil.getVideoId(), true, ConfigUtil.getVideoName());
-        mVideoPlayer.setPlayTag(ConfigUtil.getVideoId());
-        mVideoPlayer.startPlayLogic();
-
     }
 
     @Override

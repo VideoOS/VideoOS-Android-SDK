@@ -14,7 +14,6 @@ import both.video.venvy.com.appdemo.bean.ConfigBean;
 import both.video.venvy.com.appdemo.utils.AssetsUtil;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.VideoOsConfigDialog;
-import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.router.IRouterCallback;
 
@@ -25,8 +24,6 @@ import cn.com.venvy.common.router.IRouterCallback;
 public class LiveActivity extends BasePlayerActivity implements View.OnClickListener {
 
     private VideoOsConfigDialog mConfigDialog;
-    private String userName, userPwd;
-    private IPlatformLoginInterface.LoginCallback mLoginCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,20 +42,16 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
                     return;
                 }
                 String videoId = bean.getVideoId();
-                String appKey = bean.getAppKey();
-                String appSecret = bean.getAppSecret();
-                String creativeName = bean.getCreativeName();
+                String creativeName = bean.getCreativeName();//素材名称
                 tvVideoId.setText(videoId);
+                ConfigUtil.putAppKey(bean.getAppKey());
+                ConfigUtil.putAppSecret(bean.getAppSecret());
+                ConfigUtil.putVideoId(videoId);
+
                 //正在播放视频需要切集操作调用逻辑 没有必须重新创建VideoPlusView 以及VideoPlusAdapter
-                mVideoPlusView.stop();
-                mAdapter.updateProvider(mAdapter.generateProvider(appKey, appSecret, videoId, creativeName));
-                mVideoPlusView.start();
+                startDefaultVideo(videoId);
             }
         });
-
-        mVideoPlayer.setUp(ConfigUtil.getVideoId(), true, ConfigUtil.getVideoName());
-        mVideoPlayer.setPlayTag(ConfigUtil.getVideoId());
-        mVideoPlayer.startPlayLogic();
     }
 
 

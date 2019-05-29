@@ -27,8 +27,16 @@ import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.os.VideoOsView;
 
+/**
+ * SDK 集成步骤
+ * 1、在layout文件中确保VideoOsView宽高填充整个屏幕（match_parent）
+ * 2、在Activity、Fragment启动相关生命周期中（通常是onCreate），按照文档或者Step注释的顺序启动VideoOsView
+ * 3、需要复写Activity的 onConfigurationChanged函数，以处理播放器横竖屏切换的逻辑
+ * 4、onDestroy（）中释放相关资源避免造成内存泄漏
+ */
 public abstract class BasePlayerActivity extends AppCompatActivity {
-
+    private static final String TAG = BasePlayerActivity.class.getSimpleName();
+    private static final String LIVE_DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4";
     protected ViewGroup mRootView; //  Activity 根布局
     protected StandardVideoOSPlayer mVideoPlayer; // 播放器控件
     protected VideoOsView mVideoPlusView; // VideoOs 视图（填充根布局）
@@ -37,6 +45,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     protected TextView tvVideoId; // 当前VideoId
     protected CheckBox cbShowStatusBar; // 控制是否显示状态栏
     private boolean isNavigationBarShow = true; // 当前是否存在底部导航栏
+    private boolean isFirstPlayVideo = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +57,19 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                 .inflate(R.layout.activity_base_player, null);
         setContentView(mRootView);
 
-        // 初始化相关控件
+        // Step1 : 初始化VideoOsView和播放器相关控件
         initViews();
-        // 设置旋转
-        mOrientationUtils = new OrientationUtils(this, mVideoPlayer);
+
+        // Step2 : 为VideoOsView设置Adapter
+        mAdapter = new VideoOsAdapter(mVideoPlayer, isLiveOS());
+        mVideoPlusView.setVideoOSAdapter(mAdapter);
+
+        // Step3 : 在播放器的相关CallBack中启动VideoOsView  ---  mVideoPlusView.start()
         initVideoPlayerSetting();
+
+        // Step4 : 启动播放
+        startDefaultVideo(null);
+
         cbShowStatusBar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -66,9 +83,23 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         tvVideoId = mRootView.findViewById(R.id.tvVideoId);
         mVideoPlayer = mRootView.findViewById(R.id.player);
         mVideoPlusView = mRootView.findViewById(R.id.os_view);
-        mAdapter = new VideoOsAdapter(mVideoPlayer, isLiveOS());
-        mVideoPlusView.setVideoOSAdapter(mAdapter);
         tvVideoId.setText(ConfigUtil.getVideoId());
+    }
+
+    /**
+     * 默认自动播放上次缓存的VideoId,子类有需要可自己实现
+     */
+    protected void startDefaultVideo(String videoId) {
+        if (isLiveOS()) {
+            // 直播播放默认媒体资源即可
+            mVideoPlayer.setUp(LIVE_DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
+        } else {
+            // 点播播放指定媒体资源
+            mVideoPlayer.setUp(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId, true, ConfigUtil.getVideoName());
+        }
+        mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
+        mVideoPlayer.startPlayLogic();
+
     }
 
 
@@ -93,10 +124,9 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     }
 
     private void initVideoPlayerSetting() {
-        //增加title
-        mVideoPlayer.getTitleTextView().setVisibility(View.VISIBLE);
-        //设置返回键
-        mVideoPlayer.getBackButton().setVisibility(View.VISIBLE);
+        mOrientationUtils = new OrientationUtils(this, mVideoPlayer); // 设置旋转
+        mVideoPlayer.getTitleTextView().setVisibility(View.VISIBLE);  //增加title
+        mVideoPlayer.getBackButton().setVisibility(View.VISIBLE);//设置返回键
         //设置全屏按键功能,这是使用的是选择屏幕，而不是全屏
         mVideoPlayer.getFullscreenButton().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +143,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        // 在播放器的回调用启动OsView
         mVideoPlayer.setVideoAllCallBack(new VideoAllCallBack() {
             @Override
             public void onStartPrepared(String url, Object... objects) {
@@ -120,9 +151,19 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(url)) {
                     return;
                 }
-                mVideoPlusView.stop();
-                mAdapter.updateProvider(mAdapter.generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(), mVideoPlayer.getPlayTag()));
-                mVideoPlusView.start();
+                if (isFirstPlayVideo) {
+//                    Log.d(TAG, "onStartPrepared : First");
+                    // 首次播放，只需调用start启动
+                    mVideoPlusView.start();
+                    isFirstPlayVideo = false;
+                } else {
+//                    Log.d(TAG, "onStartPrepared : Second + ");
+                    // 非首次播放，在此demo种视为切集操作
+                    mVideoPlusView.stop();
+                    mAdapter.updateProvider(mAdapter.generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(), ConfigUtil.getVideoId()));
+                    mVideoPlusView.start();
+                }
+
             }
 
             @Override
@@ -297,10 +338,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         if (params == null) {
             params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
-        ViewGroup.LayoutParams osParams = mVideoPlusView.getLayoutParams();
-        if (osParams == null) {
-            osParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        }
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // 手机竖屏
             cbShowStatusBar.setVisibility(View.VISIBLE);
@@ -324,7 +361,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             }
         }
         mVideoPlayer.setLayoutParams(params);
-        mVideoPlusView.setLayoutParams(osParams);
     }
 
 
@@ -360,5 +396,4 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             });
         }
     }
-
 }
