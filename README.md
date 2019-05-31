@@ -48,9 +48,6 @@ Annotation : 注解的声明和编译。主要包含`venvy_processor_annotation`
 
 - 修改template和id为具体的lua文件名即可。如果lua文件需要初始化数据，则需要提供对应的json文件。具体请参考`VenvyLibrary`模块 assets文件夹下源码
 
-## 贡献者指南
-待补充，请直接将内容填写到[CONTRIBUTING](CONTRIBUTING)，参考：[https://help.github.com/en/articles/setting-guidelines-for-repository-contributors](https://help.github.com/en/articles/setting-guidelines-for-repository-contributors)
-
 ## 维护者
 * [androidlgf](https://github.com/androidlgf) - 防防 <guofang@videopls.com>
 * [vainfeng](https://github.com/vainfeng) - 疯子 <liangzifeng@videopls.com>
