@@ -418,3 +418,8 @@ adapter.notifyMediaStatusChanged(MediaStatus.PLAYING);
 - VideoPlusAdapter中Provider的videoId参数为视频的标识(原url),可以用url作为参数 或 使用拼接 ID的方式来识别。此值需要与控制台输入的视频ID(直播为房间号)保持一致
 - 文档中的代码仅供参考，实际参数请根据项目自行配置
 - 请将互动层（VideoOsView）置于合适视图层级以防阻挡事件分发操作。建议视图层级为加载控制栏的下方,播放器上方
+
+
+## 常见问题
+
+[常见问题整理](https://os-lab.videojj.com/topic/73/android-sdk%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86)
