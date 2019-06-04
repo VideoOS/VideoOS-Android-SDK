@@ -27,7 +27,7 @@ public class ConfigUtil {
     public static final String RELEASE_APP_KEY = "ae83ec93-c3fa-493a-a0f2-ce11765f4616";
     public static final String RELEASE_APP_SECRET = "72a46e7bcdb44efb";
 
-    private static final String TEST_APP_KEY = "eed99d68-6f1d-403a-a9f4-0583cccc20e9 ";
+    private static final String TEST_APP_KEY = "eed99d68-6f1d-403a-a9f4-0583cccc20e9";
     private static final String TEST_APP_SECRET = "941f336cf231470b";
     public static final String DEFAULT_APPKEY = TEST_APP_KEY;
     public static final String DEFAULT_APPSECRET = TEST_APP_SECRET;
