@@ -1,4 +1,9 @@
 apply plugin: 'com.android.application'
+
+configurations.all {
+    resolutionStrategy.force 'com.android.support:support-annotations:28.0.0'
+}
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -25,13 +30,15 @@ android {
         }
         release {
             //是否混淆
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         preRelease {
             //是否混淆
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
