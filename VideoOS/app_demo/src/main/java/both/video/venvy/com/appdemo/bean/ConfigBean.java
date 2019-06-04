@@ -10,6 +10,14 @@ public class ConfigBean {
     private String appKey;
     private String appSecret;
 
+    public ConfigBean() {
+    }
+
+    public ConfigBean(String appKey, String appSecret) {
+        this.appKey = appKey;
+        this.appSecret = appSecret;
+    }
+
     public String getCreativeName() {
         return creativeName;
     }

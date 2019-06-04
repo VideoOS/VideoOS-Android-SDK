@@ -2,6 +2,7 @@ package cn.com.videopls.pub.view;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.taobao.luaview.global.LuaScriptLoader;
 import com.taobao.luaview.global.LuaView;

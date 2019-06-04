@@ -3,6 +3,7 @@ package both.video.venvy.com.appdemo.utils;
 import android.content.Context;
 import android.text.TextUtils;
 
+import both.video.venvy.com.appdemo.MyApp;
 import both.video.venvy.com.appdemo.bean.OsConfigureBean;
 import both.video.venvy.com.appdemo.bean.SettingsBean;
 import cn.com.venvy.common.bean.PlatformUserInfo;
@@ -14,6 +15,25 @@ import cn.com.venvy.common.utils.VenvyPreferenceHelper;
  * Create by bolo on 08/06/2018
  */
 public class ConfigUtil {
+
+    public static final String CONFIG_FILE_NAME = "config_name";
+
+    public static final String CONFIG_APPKEY_TAG = "AppKey";
+    public static final String CONFIG_APPSECRET_TAG = "AppSecret";
+    public static final String CONFIG_VIDEO_ID = "videoId";
+    public static final String CONFIG_VIDEO_NAME = "videoName";
+
+    // 正式环境appKey&appSecret (ps : 只有这一对)
+    public static final String RELEASE_APP_KEY = "ae83ec93-c3fa-493a-a0f2-ce11765f4616";
+    public static final String RELEASE_APP_SECRET = "72a46e7bcdb44efb";
+
+    private static final String TEST_APP_KEY = "eed99d68-6f1d-403a-a9f4-0583cccc20e9 ";
+    private static final String TEST_APP_SECRET = "941f336cf231470b";
+    public static final String DEFAULT_APPKEY = TEST_APP_KEY;
+    public static final String DEFAULT_APPSECRET = TEST_APP_SECRET;
+
+    public static final String DEFAULT_VIDEO_ID = "d67eba2a3e549b75e42746b79721d0bf";
+
 
     public static final String SP_DEMO_CONFIG = "sp_demo_config";
     private static final String SP_DEMO_CONFIG_UID = "u_id";
@@ -171,5 +191,50 @@ public class ConfigUtil {
         data.platformIdList.add(0, bean.mPlatformId);
 
         return data;
+    }
+
+
+    public static void putAppKey(String appKey) {
+        if (TextUtils.isEmpty(appKey)) {
+            return;
+        }
+        VenvyPreferenceHelper.putString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_APPKEY_TAG, appKey);
+    }
+
+    public static String getAppKey() {
+        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_APPKEY_TAG, DEFAULT_APPKEY);
+    }
+
+    public static void putAppSecret(String appSecret) {
+        if (TextUtils.isEmpty(appSecret)) {
+            return;
+        }
+        VenvyPreferenceHelper.putString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_APPSECRET_TAG, appSecret);
+    }
+
+    public static String getAppSecret() {
+        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_APPSECRET_TAG, DEFAULT_APPSECRET);
+    }
+
+    public static String getVideoId() {
+        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_VIDEO_ID, DEFAULT_VIDEO_ID);
+    }
+
+    public static void putVideoId(String videoId) {
+        if (TextUtils.isEmpty(videoId)) {
+            return;
+        }
+        VenvyPreferenceHelper.putString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_VIDEO_ID, videoId);
+    }
+
+    public static String getVideoName(){
+        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_VIDEO_NAME, "");
+    }
+
+    public static void putVideoName(String videoName){
+        if (TextUtils.isEmpty(videoName)) {
+            return;
+        }
+        VenvyPreferenceHelper.putString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_VIDEO_NAME, videoName);
     }
 }

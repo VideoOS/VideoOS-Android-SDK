@@ -28,7 +28,6 @@ public class OkhttpClientUtil {
             synchronized (OkhttpClientUtil.class) {
                 if (client == null) {
                     HttpSSLParams.SSLParams sslParams = initSSLParams(context);
-
                     client = new OkHttpClient.Builder().protocols(Arrays.asList(Protocol.HTTP_1_1, Protocol.HTTP_2))
                             .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
                             .dispatcher(new Dispatcher(new ThreadPoolExecutor(0, 100, 60, TimeUnit.SECONDS,

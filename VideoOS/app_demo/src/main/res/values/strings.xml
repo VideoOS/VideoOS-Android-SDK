@@ -37,4 +37,6 @@
     <string name="config_failed">配置未生效</string>
     <string name="config_success">设置成功</string>
     <string name="Home_progress_title">正在获取配置...</string>
+    <string name="current_app_key">当前AppKey：\n%1$s</string>
+    <string name="current_app_secret">当前AppSecret：\n%1$s</string>
 </resources>
