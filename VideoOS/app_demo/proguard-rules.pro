@@ -23,3 +23,19 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Mqtt
+-keep class org.eclipse.paho.client.mqttv3.** {
+    <fields>;
+    <methods>;
+}
+
+# videojj
+-keep public class cn.com.venvy.processor.build.venvy_pub$$VenvyRoleMapUtil{ *; }
+-keep class cn.com.venvy.lua.** {
+     <fields>;
+     <methods>;
+}
+-keep class cn.com.videopls.** {
+    <fields>;
+    <methods>;
+}
