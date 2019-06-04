@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import cn.com.videopls.pub.os.VideoOsView;
 public abstract class BasePlayerActivity extends AppCompatActivity {
     private static final String TAG = BasePlayerActivity.class.getSimpleName();
     private static final String LIVE_DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4";
+    private static final String DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4";
     protected ViewGroup mRootView; //  Activity 根布局
     protected StandardVideoOSPlayer mVideoPlayer; // 播放器控件
     protected VideoOsView mVideoPlusView; // VideoOs 视图（填充根布局）
@@ -91,11 +93,11 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
      */
     protected void startDefaultVideo(String videoId) {
         if (isLiveOS()) {
-            // 直播播放默认媒体资源即可
+            // 直播
             mVideoPlayer.setUp(LIVE_DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
         } else {
-            // 点播播放指定媒体资源
-            mVideoPlayer.setUp(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId, true, ConfigUtil.getVideoName());
+            // 点播
+            mVideoPlayer.setUp(DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
         }
         mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
         mVideoPlayer.startPlayLogic();

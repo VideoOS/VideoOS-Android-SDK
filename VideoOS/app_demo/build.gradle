@@ -5,8 +5,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 33
-        versionName "1.0.33"
+        versionCode 35
+        versionName "1.0.35"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [moduleName: project.getName()]
@@ -63,7 +63,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.1.0'
     compile 'com.android.support:multidex:1.0.3'
     compile "com.github.bumptech.glide:glide:3.7.0"
-    compile "com.squareup.okhttp3:okhttp:3.8.0"
+    compile "com.squareup.okhttp3:okhttp:3.4.1"
     compile "com.squareup.okio:okio:1.12.0"
     compile project(':venvy_pub')
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.6.2'
