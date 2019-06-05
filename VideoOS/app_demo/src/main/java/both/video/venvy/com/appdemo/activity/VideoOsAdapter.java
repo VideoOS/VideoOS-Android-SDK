@@ -44,7 +44,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     private boolean isLive; // 是否为直播
 
     private VideoPlayerSize videoPlayerSize = new VideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.getScreenHeight(MyApp.getInstance()),
-            VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.dip2px(MyApp.getInstance(), 200), 0);
+            VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.dip2px(MyApp.getInstance(), 200));
 
     public VideoOsAdapter(StandardVideoOSPlayer mPlayer, boolean isLive) {
         this.mPlayer = mPlayer;
@@ -53,6 +53,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     /**
      * 外部可根据业务动态设置VideoPlaySize的值
+     *
      * @return
      */
     public VideoPlayerSize getVideoPlayerSize() {
@@ -62,30 +63,30 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     /**
      * 统一通过此方法生成SDK所需的Provider
+     *
      * @param appKey
      * @param appSecret
      * @param videoId
      * @return
      */
-    public Provider generateProvider(String appKey,String appSecret,String videoId){
-        return generateProvider(appKey, appSecret, videoId,null);
+    public Provider generateProvider(String appKey, String appSecret, String videoId) {
+        return generateProvider(appKey, appSecret, videoId, null);
     }
 
     /**
-     *
      * @param appKey
      * @param appSecret
-     * @param videoId 视频源
+     * @param videoId      视频源
      * @param creativeName 素材名称
      * @return
      */
-    public Provider generateProvider(String appKey,String appSecret,String videoId,String creativeName){
-        if(TextUtils.isEmpty(creativeName)){
+    public Provider generateProvider(String appKey, String appSecret, String videoId, String creativeName) {
+        if (TextUtils.isEmpty(creativeName)) {
             return new Provider.Builder().setAppKey(appKey).setAppSecret(appSecret)
                     .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
                     .setCustomUDID(String.valueOf(System.currentTimeMillis()))
                     .setVideoID(videoId).build();
-        }else{
+        } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
             return new Provider.Builder().setAppKey(appKey).setAppSecret(appSecret)
@@ -100,7 +101,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     //设置参数
     @Override
     public Provider createProvider() {
-        return generateProvider(ConfigUtil.getAppKey(),ConfigUtil.getAppSecret(),mPlayer.getPlayTag());
+        return generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(), mPlayer.getPlayTag());
     }
 
 
@@ -124,6 +125,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     /**
      * 广告展示监听
+     *
      * @return
      */
     @Override
@@ -154,6 +156,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     /**
      * 广告关闭监听
+     *
      * @return
      */
     @Override

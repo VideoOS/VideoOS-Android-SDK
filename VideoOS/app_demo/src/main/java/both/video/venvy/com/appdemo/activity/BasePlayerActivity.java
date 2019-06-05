@@ -44,9 +44,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     protected VideoOsView mVideoPlusView; // VideoOs 视图（填充根布局）
     protected VideoOsAdapter mAdapter;// VideoOS 视图适配器
     protected OrientationUtils mOrientationUtils;
-    protected TextView tvVideoId; // 当前VideoId
     protected CheckBox cbShowStatusBar; // 控制是否显示状态栏
-    private boolean isNavigationBarShow = true; // 当前是否存在底部导航栏
     private boolean isFirstPlayVideo = true;
 
     @Override
@@ -82,10 +80,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
     private void initViews() {
         cbShowStatusBar = mRootView.findViewById(R.id.cbShowStatusBar);
-        tvVideoId = mRootView.findViewById(R.id.tvVideoId);
         mVideoPlayer = mRootView.findViewById(R.id.player);
         mVideoPlusView = mRootView.findViewById(R.id.os_view);
-        tvVideoId.setText(ConfigUtil.getVideoId());
     }
 
     /**
@@ -343,7 +339,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // 手机竖屏
             cbShowStatusBar.setVisibility(View.VISIBLE);
-            tvVideoId.setVisibility(View.VISIBLE);
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             params.height = VenvyUIUtil.dip2px(this, 200);
             // 竖屏根据状态栏设置，重新设置VideoOSView的Size,
@@ -354,7 +349,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         } else {
             // 手机横屏
             cbShowStatusBar.setVisibility(View.GONE);
-            tvVideoId.setVisibility(View.GONE);
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //横屏隐藏状态栏
@@ -376,7 +370,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             @Override
             public boolean onPreDraw() {
 //                Log.d("printSomeLog", "rootView height : " + rootView.getMeasuredHeight());
-                isNavigationBarShow = rootView.getMeasuredHeight() < VenvyUIUtil.getScreenHeight(MyApp.getInstance());
                 cbShowStatusBar.setChecked(true);// 触发onCheckChanged事件
                 rootView.getViewTreeObserver().removeOnPreDrawListener(this);
                 return true;
