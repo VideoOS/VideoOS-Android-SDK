@@ -19,8 +19,8 @@ public class VideoPlayerSize {
 
     @Deprecated
     public VideoPlayerSize(int horVideoWidth, int horVideoHeight, int verVideoWidth, int verVideoHeight, int portraitSmallScreenOriginY) {
-        this.mFullScreenContentWidth = horVideoHeight;
-        this.mFullScreenContentHeight = horVideoWidth;
+        this.mFullScreenContentWidth = horVideoWidth;
+        this.mFullScreenContentHeight = horVideoHeight;
         this.mVerVideoWidth = verVideoWidth;
         this.mVerVideoHeight = verVideoHeight;
         this.mPortraitSmallScreenOriginY = portraitSmallScreenOriginY;
