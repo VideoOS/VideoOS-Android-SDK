@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">cytron-android</string>
+    <string name="app_name">videoOS</string>
 
     <string name="media_controller_huyu">互娱</string>
     <string name="home_select_platform">选择平台类型</string>
