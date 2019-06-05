@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">cytron-android</string>
+    <string name="app_name">videoOS</string>
 
     <string name="media_controller_huyu">互娱</string>
     <string name="home_select_platform">选择平台类型</string>
@@ -12,7 +12,7 @@
     <string name="home_live_anchor_portrait">竖屏推流</string>
     <string name="home_live_anchor_landscape">横屏推流</string>
     <string name="home_setting_item_mall">电商</string>
-    <string name="home_setting_item_local">模拟</string>
+    <string name="home_setting_item_local">预览</string>
     <string name="home_setting_item_live">live</string>
     <string name="home_setting_item_os">点播</string>
     <string name="setting_layout_uid">用户 ID</string>
@@ -37,4 +37,6 @@
     <string name="config_failed">配置未生效</string>
     <string name="config_success">设置成功</string>
     <string name="Home_progress_title">正在获取配置...</string>
+    <string name="current_app_key">当前AppKey：\n%1$s</string>
+    <string name="current_app_secret">当前AppSecret：\n%1$s</string>
 </resources>

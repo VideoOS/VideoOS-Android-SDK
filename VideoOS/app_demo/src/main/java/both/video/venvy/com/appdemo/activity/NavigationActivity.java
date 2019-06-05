@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
 import both.video.venvy.com.appdemo.R;
 
 /**
@@ -18,12 +19,12 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_main);
         findViewById(R.id.tv_home_item_1).setOnClickListener(this);
         findViewById(R.id.tv_home_item_2).setOnClickListener(this);
+
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        //点播按钮  //TODO新版OS
         if (id == R.id.tv_home_item_2) {
             startOsActivity();
         } else if (id == R.id.tv_home_item_1) {
