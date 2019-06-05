@@ -290,7 +290,10 @@ public abstract class VideoPlusController implements VenvyObserver {
         for (int i = 0; i < childCount; i++) {
             View childView = mContentView.getChildAt(i);
             if (childView != null) {
-                mContentView.removeView(childView);
+                int priority = getViewPriority(childView);
+                if (priority == 2) {
+                    mContentView.removeView(childView);
+                }
             }
         }
     }
