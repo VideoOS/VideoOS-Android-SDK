@@ -217,7 +217,7 @@ local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
     if (luaview == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         luaview:frame(0, 0, math.min(screenWidth, screenHeight), math.max(screenWidth, screenHeight))
     else
@@ -232,7 +232,7 @@ local function setCardViewSize(data, cardWindowView, isPortrait) --设置当前�
     if (data == nil or cardWindowView == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         if (System.android()) then
             cardWindowView:frame(0, 0, cardWindow.portraitWidth, cardWindow.portraitHeight)
@@ -347,7 +347,7 @@ local function setCardBottomViewSize(data, cardBottomView, cardFlexView, cardFle
     if (data == nil or cardBottomView == nil or cardFlexView == nil or cardFlexLabel == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local corner = 0
     if (isPortrait) then
         cardBottomView:frame(0, 0, cardWindow.portraitWidth, cardWindow.portraitHeight * 0.123)
@@ -979,7 +979,7 @@ local function onCreate(data)
 
     cardWindow.luaView:addView(cardWindow.cardWindowView)
 
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         if System.ios() then
             cardWindow.cardWindowView:y(math.max(screenWidth, screenHeight))
@@ -1072,7 +1072,7 @@ local function setConfig(data)
     if (hotspotOrder == nil) then
         hotspotOrder = 0
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local videoWidth, videoHight, marginTop = Native:getVideoSize(0)
     cardWindow.portraitWidth = math.min(screenWidth, screenHeight) --宽
     cardWindow.portraitHeight = math.max(screenWidth, screenHeight) - videoHight - marginTop --高

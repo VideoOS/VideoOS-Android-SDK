@@ -78,7 +78,7 @@ local function linkUrl(data) --获取linkUrl
         return nil
     end
     local link = data.link
-    if (link ~= nil and string.match(tostring(link), "http") == "http") then
+    if (link ~= nil and string.len(link) > 0) then
         return link
     else
         return nil
@@ -204,7 +204,7 @@ local function getScrollViewLocation(data)
     contentDataTable.positionX = 0.0
     contentDataTable.positionY = 0.17
 
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local width = 0
     local height = 0
     local x = 0
@@ -237,7 +237,6 @@ local function createUserTypeLeftWithMessageText(data, index) --左边用户云�
         return nil
     end
     local userParent = View()
-    local pos = 0;
     local icon = Image(Native)
     icon:image("os_bubble_item_icon_bg")
     icon:placeHolderImage("os_bubble_item_icon_bg")
@@ -258,11 +257,8 @@ local function createUserTypeLeftWithMessageText(data, index) --左边用户云�
     message:anchorPoint(0, 0)
     message:scale(0)
     userParent:onLayout(function()
-        pos = pos + 1
-        if (pos <= 2) then
-            message:backgroundColor(0xFFFFFF)
-            message:backgroundColor("os_message_left_bg")
-        end
+        message:backgroundColor(0xFFFFFF)
+        message:backgroundColor("os_message_left_bg")
     end)
     startViewScaleAnim(message, bubbleAnimScale, {
         onStart = function()
@@ -441,7 +437,7 @@ local function createUserTypeLeftWithMessageImage(data, index) --左边用户云
     local promptTop = message:y() + message:height() - 17 * bubble.scale
     prompt:xy(message:x() + message:width() - 17 * bubble.scale, promptTop)
 
-    if data.link ~= nil and string.match(tostring(data.link), "http") == "http" then
+    if (data.link ~= nil and string.len(data.link) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, -prompt:width() * 0.3, -prompt:height() * 0.3, nil)
@@ -516,6 +512,7 @@ local function createUserTypeLeftWithMessageImageIOS(data, index) --左边用户
     prompt:size(33 * bubble.scale, 30 * bubble.scale)
     prompt:placeHolderImage(Data(OS_BUBBLE_PROMPT))
     prompt:image(OS_ICON_BUBBLE_PROMPT_LEFT)
+    prompt:scaleType(ScaleType.FIT_XY)
     prompt:hide()
 
     local message = Image(Native)
@@ -546,7 +543,7 @@ local function createUserTypeLeftWithMessageImageIOS(data, index) --左边用户
     prompt:xy(message:x() + message:width() - 17 * bubble.scale, promptTop)
     userParent:frame(0, 0, bubble.width, prompt:y() + prompt:height())
 
-    if data.link ~= nil and string.match(tostring(data.link), "http") == "http" then
+    if (data.link ~= nil and string.len(data.link) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, -prompt:width() * 0.3, -prompt:height() * 0.3, nil)
@@ -741,7 +738,7 @@ local function createUserTypeRightWithMessageImage(data, index) --左边用户�
     prompt:margin(70 * bubble.scale, promptTop, 0, 0)
     message:size(messageWidth, messageHeight)
     message:margin(86 * bubble.scale, 19 * bubble.scale, 0, 0)
-    if data.link ~= nil and string.match(tostring(data.link), "http") == "http" then
+    if (data.link ~= nil and string.len(data.link) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, prompt:width() * 0.3, -prompt:height() * 0.3, nil)
@@ -797,6 +794,7 @@ local function createUserTypeRightWithMessageImageIOS(data, index) --左边用�
     prompt:size(33 * bubble.scale, 30 * bubble.scale)
     prompt:placeHolderImage(Data(OS_BUBBLE_PROMPT))
     prompt:image(OS_ICON_BUBBLE_PROMPT_RIGHT)
+    prompt:scaleType(ScaleType.FIT_XY)
     prompt:hide()
 
     local message = Image(Native)
@@ -830,7 +828,7 @@ local function createUserTypeRightWithMessageImageIOS(data, index) --左边用�
 
     userParent:height(prompt:y() + prompt:height())
 
-    if data.link ~= nil and string.match(tostring(data.link), "http") == "http" then
+    if (data.link ~= nil and string.len(data.link) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, prompt:width() * 0.3, -prompt:height() * 0.3, nil)
@@ -877,7 +875,7 @@ local function createParent()
     else
         luaView = ThroughView()
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     luaView:frame(0, 0, screenWidth, screenHeight)
     return luaView
 end
