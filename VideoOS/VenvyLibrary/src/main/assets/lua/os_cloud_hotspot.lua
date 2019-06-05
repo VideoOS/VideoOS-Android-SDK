@@ -56,7 +56,7 @@ local function getLinkUrl(data)
         return nil
     end
     local link = dataTable.linkUrl
-    if (link ~= nil and string.match(tostring(link), "http") == "http") then
+    if (link ~= nil and string.len(link) > 0) then
         return link
     else
         return nil
@@ -114,7 +114,7 @@ local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
     if (luaview == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         local videoWidth, videoHight, y = Native:getVideoSize(0)
         if System.android() then
@@ -131,7 +131,7 @@ local function checkShowPosition(x, y, w, h, data, isPortrait)
     if (isPortrait) then
         maxWidth, maxHeight = Native:getVideoSize(0)
     else
-        local screenWidth, screenHeight = System.screenSize()
+        local screenWidth, screenHeight = Native:getVideoSize(2)
         maxWidth = math.max(screenWidth, screenHeight)
         maxHeight = math.min(screenWidth, screenHeight)
     end
@@ -179,7 +179,7 @@ local function getLandscapeLocation(data) --获取竖屏位置
     if (cloud.landscapeWidth ~= nil and cloud.landscapeHeight ~= nil and cloud.landscapeX ~= nil and cloud.landscapeY ~= nil) then
         return cloud.landscapeX, cloud.landscapeY, cloud.landscapeWidth, cloud.landscapeHeight
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local width = 0
     local height = 0
     local x = 0
@@ -242,7 +242,7 @@ local function getPortraitLocation(data) --获取竖屏位置
     if (cloud.portraitWidth ~= nil and cloud.portraitHeight ~= nil and cloud.portraitX ~= nil and cloud.portraitY ~= nil) then
         return cloud.portraitX, cloud.portraitY, cloud.portraitWidth, cloud.portraitHeight
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local videoWidth, videoHight = Native:getVideoSize(0)
     local sacleW = math.min(screenWidth, screenHeight) / math.max(screenWidth, screenHeight)
     local sacleH = videoHight / math.min(screenWidth, screenHeight)
@@ -366,7 +366,7 @@ local function rotationScreen(isPortrait)
         return
     end
     needShowOnPortrait(isPortrait)
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local tempWidthSide, tempHeightSide
     if (isPortrait) then
         if (not cloud.needShowOnPortrait) then

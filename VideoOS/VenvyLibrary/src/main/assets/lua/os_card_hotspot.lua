@@ -91,7 +91,7 @@ local function getPortraitLocation(data)
     if (card.portraitWidth ~= nil and card.portraitHeight ~= nil and card.portraitX ~= nil and card.portraitY ~= nil) then
         return card.portraitX, card.portraitY, card.portraitWidth, card.portraitHeight
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local videoWidth, videoHight = Native:getVideoSize(0)
     local sacleW = math.min(screenWidth, screenHeight) / math.max(screenWidth, screenHeight)
     local sacleH = videoHight / math.min(screenWidth, screenHeight)
@@ -134,7 +134,7 @@ local function getLandscapeLocation(data)
     if (card.landscapeWidth ~= nil and card.landscapeHeight ~= nil and card.landscapeX ~= nil and card.landscapeY ~= nil) then
         return card.landscapeX, card.landscapeY, card.landscapeWidth, card.landscapeHeight
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local width = 0
     local height = 0
     local x = 0
@@ -174,7 +174,7 @@ local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
     if (luaview == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         local videoWidth, videoHight, y = Native:getVideoSize(0)
         if System.android() then
@@ -265,13 +265,21 @@ local function setCardFlexLayoutSize(data, cardFlexView, cardFlexLabel, isPortra
         y = card.portraitHeight * 0.364
         w = card.portraitWidth * 0.762
         h = card.portraitHeight * 0.387
-        cardFlexLabel:textSize(8)
+        if System.ios() then
+            cardFlexLabel:textSize(8)
+        else
+            cardFlexLabel:textSize(7)
+        end
     else
         x = card.landscapeWidth * 0.239
         y = card.landscapeHeight * 0.364
         w = card.landscapeWidth * 0.762
         h = card.landscapeHeight * 0.387
-        cardFlexLabel:textSize(11)
+        if System.ios() then
+            cardFlexLabel:textSize(13)
+        else
+            cardFlexLabel:textSize(12)
+        end
     end
     cardFlexLabel:frame(w * 0.4, 0, w, h)
     local corner = h / 2

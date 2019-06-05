@@ -33,4 +33,5 @@
     <dimen name="media_controller_height">75dp</dimen>
     <dimen name="media_controller_ver_height">45dp</dimen>
     <dimen name="media_controller_pause_margin_bottom">15dp</dimen>
+    <dimen name="activity_player_height">200dp</dimen>
 </resources>

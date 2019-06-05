@@ -160,7 +160,7 @@ local function getPortraitLocation(data)
     if (vote.portraitWidth ~= nil and vote.portraitHeight ~= nil and vote.portraitX ~= nil and vote.portraitY ~= nil) then
         return vote.portraitX, vote.portraitY, vote.portraitWidth, vote.portraitHeight
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local videoWidth, videoHight = Native:getVideoSize(0)
     local sacleW = math.min(screenWidth, screenHeight) / math.max(screenWidth, screenHeight)
     local sacleH = videoHight / math.min(screenWidth, screenHeight)
@@ -203,7 +203,7 @@ local function getLandscapeLocation(data)
     if (vote.landscapeWidth ~= nil and vote.landscapeHeight ~= nil and vote.landscapeX ~= nil and vote.landscapeY ~= nil) then
         return vote.landscapeX, vote.landscapeY, vote.landscapeWidth, vote.landscapeHeight
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local width = 0
     local height = 0
     local x = 0
@@ -243,7 +243,7 @@ local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
     if (luaview == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         local videoWidth, videoHight, y = Native:getVideoSize(0)
         if System.android() then

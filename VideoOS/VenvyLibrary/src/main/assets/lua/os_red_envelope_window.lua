@@ -125,7 +125,7 @@ local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
     if (luaview == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         luaview:frame(0, 0, math.min(screenWidth, screenHeight), math.max(screenWidth, screenHeight))
     else
@@ -140,7 +140,7 @@ local function setRedEnvelopeViewSize(data, redEnvelopeWindowView, isPortrait) -
     if (data == nil or redEnvelopeWindowView == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         if (System.android()) then
             redEnvelopeWindowView:frame(0, 0, redEnvelopeWindow.portraitWidth, redEnvelopeWindow.portraitHeight)
@@ -176,7 +176,7 @@ local function setRedEnvelopeBackgroundViewSize(data, redEnvelopeBackgroundView,
     if (data == nil or redEnvelopeBackgroundView == nil) then
         return
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         redEnvelopeBackgroundView:image(Data(OS_ICON_PORTRAIT_BG))
         redEnvelopeBackgroundView:frame(0, 0, redEnvelopeWindow.portraitWidth, redEnvelopeWindow.portraitHeight)
@@ -458,7 +458,7 @@ local function setConfig(data)
         return
     end
     redEnvelopeWindow.data = data
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local videoWidth, videoHight, marginTop = Native:getVideoSize(0)
     redEnvelopeWindow.portraitWidth = math.min(screenWidth, screenHeight) --宽
     redEnvelopeWindow.portraitHeight = math.max(screenWidth, screenHeight) - videoHight - marginTop --高

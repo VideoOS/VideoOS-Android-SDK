@@ -220,8 +220,8 @@ public class LVVideoPlugin {
                             if (mPlatform.getMediaControlListener() != null) {
                                 VideoPlayerSize videoPlayerSize = mPlatform.getMediaControlListener().getVideoSize();
                                 if (videoPlayerSize != null && videoPlayerSize.mVerVideoHeight > 0) {
-                                    width = DimenUtil.pxToDpi(videoPlayerSize.mHorVideoWidth);
-                                    height = DimenUtil.pxToDpi(videoPlayerSize.mHorVideoHeight);
+                                    width = DimenUtil.pxToDpi(videoPlayerSize.mFullScreenContentWidth);
+                                    height = DimenUtil.pxToDpi(videoPlayerSize.mFullScreenContentHeight);
                                     marginTop = DimenUtil.pxToDpi(videoPlayerSize.mPortraitSmallScreenOriginY);
                                     break;
                                 }
@@ -234,8 +234,8 @@ public class LVVideoPlugin {
                             if (mPlatform.getMediaControlListener() != null) {
                                 VideoPlayerSize videoPlayerSize = mPlatform.getMediaControlListener().getVideoSize();
                                 if (videoPlayerSize != null && videoPlayerSize.mVerVideoHeight > 0) {
-                                    width = DimenUtil.pxToDpi(videoPlayerSize.mHorVideoWidth);
-                                    height = DimenUtil.pxToDpi(videoPlayerSize.mHorVideoHeight);
+                                    width = DimenUtil.pxToDpi(videoPlayerSize.mFullScreenContentWidth);
+                                    height = DimenUtil.pxToDpi(videoPlayerSize.mFullScreenContentHeight);
                                     marginTop = DimenUtil.pxToDpi(videoPlayerSize.mPortraitSmallScreenOriginY);
                                     break;
                                 }

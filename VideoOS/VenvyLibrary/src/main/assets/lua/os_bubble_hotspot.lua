@@ -78,7 +78,7 @@ local function linkUrl(data) --获取linkUrl
         return nil
     end
     local link = data.link
-    if (link ~= nil and string.match(tostring(link), "http") == "http") then
+    if (link ~= nil and string.len(link) > 0) then
         return link
     else
         return nil
@@ -204,7 +204,7 @@ local function getScrollViewLocation(data)
     contentDataTable.positionX = 0.0
     contentDataTable.positionY = 0.17
 
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     local width = 0
     local height = 0
     local x = 0
@@ -437,7 +437,7 @@ local function createUserTypeLeftWithMessageImage(data, index) --左边用户云
     local promptTop = message:y() + message:height() - 17 * bubble.scale
     prompt:xy(message:x() + message:width() - 17 * bubble.scale, promptTop)
 
-    if data.link ~= nil and string.match(tostring(data.link), "http") == "http" then
+    if (data.link ~= nil and string.len(data.link) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, -prompt:width() * 0.3, -prompt:height() * 0.3, nil)
@@ -543,7 +543,7 @@ local function createUserTypeLeftWithMessageImageIOS(data, index) --左边用户
     prompt:xy(message:x() + message:width() - 17 * bubble.scale, promptTop)
     userParent:frame(0, 0, bubble.width, prompt:y() + prompt:height())
 
-    if data.link ~= nil and string.match(tostring(data.link), "http") == "http" then
+    if (data.link ~= nil and string.len(data.link) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, -prompt:width() * 0.3, -prompt:height() * 0.3, nil)
@@ -738,7 +738,7 @@ local function createUserTypeRightWithMessageImage(data, index) --左边用户�
     prompt:margin(70 * bubble.scale, promptTop, 0, 0)
     message:size(messageWidth, messageHeight)
     message:margin(86 * bubble.scale, 19 * bubble.scale, 0, 0)
-    if data.link ~= nil and string.match(tostring(data.link), "http") == "http" then
+    if (data.link ~= nil and string.len(data.link) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, prompt:width() * 0.3, -prompt:height() * 0.3, nil)
@@ -828,7 +828,7 @@ local function createUserTypeRightWithMessageImageIOS(data, index) --左边用�
 
     userParent:height(prompt:y() + prompt:height())
 
-    if data.link ~= nil and string.match(tostring(data.link), "http") == "http" then
+    if (data.link ~= nil and string.len(data.link) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, prompt:width() * 0.3, -prompt:height() * 0.3, nil)
@@ -875,7 +875,7 @@ local function createParent()
     else
         luaView = ThroughView()
     end
-    local screenWidth, screenHeight = System.screenSize()
+    local screenWidth, screenHeight = Native:getVideoSize(2)
     luaView:frame(0, 0, screenWidth, screenHeight)
     return luaView
 end
