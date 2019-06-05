@@ -52,5 +52,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/bt_os_setting_mall"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        android:visibility="invisible"
+        />
 </android.support.constraint.ConstraintLayout>
