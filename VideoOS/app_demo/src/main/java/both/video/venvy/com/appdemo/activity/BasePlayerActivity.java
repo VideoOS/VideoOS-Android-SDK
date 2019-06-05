@@ -384,7 +384,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreDraw() {
 //                Log.d("printSomeLog", "updateRootViewHeight : " + rootView.getMeasuredHeight());
-                    mAdapter.getVideoPlayerSize().mHorVideoHeight = rootView.getMeasuredHeight();
+                    mAdapter.getVideoPlayerSize().mFullScreenContentHeight = rootView.getMeasuredHeight();
                     rootView.getViewTreeObserver().removeOnPreDrawListener(this);
                     return true;
                 }
