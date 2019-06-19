@@ -353,6 +353,9 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             }
         } else {
             // 手机横屏
+
+            // 竖屏状态下获得的高度不包含状态栏，切换到横屏需要更新一下VideoPlayerSize的高
+            mAdapter.getVideoPlayerSize().mFullScreenContentHeight = VenvyUIUtil.getScreenWidth(MyApp.getInstance());
             cbShowStatusBar.setVisibility(View.GONE);
             tvVideoId.setVisibility(View.GONE);
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
