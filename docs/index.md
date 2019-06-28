@@ -422,4 +422,51 @@ adapter.notifyMediaStatusChanged(MediaStatus.PLAYING);
 
 ## 常见问题
 
-[常见问题整理](https://os-lab.videojj.com/topic/73/android-sdk%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86)
+### 在预期的时间没有展示对应的投放效果
+
+- 确定对应的服务器环境和appKey&appSecret是否对应正确
+
+- 检查adapter中的getVideoPlayerSize（）返回的VideoPlayerSize参数是否正确
+
+- 如果是点播，请检查adapter中getCurrentPosition（）返回的当前播放时间是否与投放计划中设置的一致
+
+### 横竖屏切换视图显示异常
+
+- 请检查在对应Activity中有无处理onConfigurationChanged()方法。须通过这个回调通知adapter屏幕变化
+
+```
+ mAdapter.notifyVideoScreenChanged(ScreenStatus.SMALL_VERTICAL);// 竖屏小屏
+ mAdapter.notifyVideoScreenChanged(ScreenStatus.FULL_VERTICAL);// 竖屏全屏
+ mAdapter.notifyVideoScreenChanged(ScreenStatus.LANDSCAPE);// 横屏
+```
+
+### 刘海屏等异形屏适配有问题
+
+- 需要计算设备实际的宽高，设置adapter中VideoPlayerSize的contentHeight参数。这个参数需要与`VideoOsView`的实际高度一致（match_parent）。在不同的设备上，通过WindowManager获取屏幕高度与高度为match_parent的`VideoOsView`并不一致。需要考虑异形屏，状态栏，底部导航栏等因素，得出一个实际的值传入VidePlayerSize中
+
+
+### 中插视频如何暂停/恢复
+
+ - adapter.notifyMediaStatusChanged(MediaStatus.PLAYING);
+
+
+
+### 广告监听处理
+
+- `VideoPlusAdapter `中覆盖相关方法
+
+```
+	//广告展示监听插件
+    @Override
+    public IWidgetShowListener buildWidgetShowListener() {}
+
+    //广告点击监听插件
+    @Override
+    public IWidgetClickListener buildWidgetClickListener() {}
+
+    //广告关闭监听插件
+    @Override
+    public IWidgetCloseListener buildWidgetCloseListener() {}
+
+```
+
