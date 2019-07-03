@@ -290,7 +290,7 @@ public class LVScrollView extends ScrollView implements ILVViewGroup {
                     mTotalHeight = getTotalHeight();
                     setMeasuredDimension(widthSize, mTotalHeight);
                 } else {
-                    mTotalHeight = Math.max(getTotalHeight(), mTargetHeight);
+                    mTotalHeight = getTotalHeight();
                     setMeasuredDimension(getMaxWidth(), mTotalHeight);
                 }
             }
@@ -334,7 +334,7 @@ public class LVScrollView extends ScrollView implements ILVViewGroup {
                 View childView = getChildAt(i);
                 int childHeight = childView.getMeasuredHeight();
                 int childWidth = childView.getMeasuredWidth();
-                childView.layout(l, hadUsedVertical, l + childWidth, hadUsedVertical+childHeight);
+                childView.layout(l, hadUsedVertical, l + childWidth, hadUsedVertical + childHeight);
                 hadUsedVertical += childHeight;
             }
         }
