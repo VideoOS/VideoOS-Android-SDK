@@ -58,6 +58,11 @@ public abstract class VideoOSMediaController implements IMediaControlListener {
         return 0;
     }
 
+    @Override
+    public long getDuration() {
+        return 0;
+    }
+
     //优先级高于Provided的设置
     public VideoPlayerSize getVideoSize() {
         return null;
