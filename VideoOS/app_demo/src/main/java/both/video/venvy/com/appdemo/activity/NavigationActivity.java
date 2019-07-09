@@ -46,7 +46,11 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
                         showConfigDialog();
                         break;
                     case R.id.rb_debug:
+                        ConfigUtil.putAppKey(ConfigUtil.DEV_APP_KEY);
+                        ConfigUtil.putAppSecret(ConfigUtil.DEV_APP_SECRET);
                         DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.DEBUG);
+                        tv_app_key.setText(getString(R.string.current_app_key, ConfigUtil.getAppKey()));
+                        tv_app_secret.setText(getString(R.string.current_app_secret, ConfigUtil.getAppSecret()));
                         break;
                     case R.id.rb_preview:
                         DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.PREVIEW);

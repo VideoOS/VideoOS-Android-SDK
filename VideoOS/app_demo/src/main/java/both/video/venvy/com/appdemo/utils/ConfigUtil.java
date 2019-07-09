@@ -27,12 +27,17 @@ public class ConfigUtil {
     public static final String RELEASE_APP_KEY = "ae83ec93-c3fa-493a-a0f2-ce11765f4616";
     public static final String RELEASE_APP_SECRET = "72a46e7bcdb44efb";
 
-    private static final String TEST_APP_KEY = "eed99d68-6f1d-403a-a9f4-0583cccc20e9";
-    private static final String TEST_APP_SECRET = "941f336cf231470b";
+    public static final String DEV_APP_KEY = "93db5ef3-7fbc-485a-97b0-fc9f4e7209f5";
+    public static final String DEV_APP_SECRET = "74f251d40a49468a";
+
+
+    private static final String TEST_APP_KEY = "38142380-e814-4004-8638-41bd25ed9fbc";
+    private static final String TEST_APP_SECRET = "f2d319133a244187";
     public static final String DEFAULT_APPKEY = TEST_APP_KEY;
     public static final String DEFAULT_APPSECRET = TEST_APP_SECRET;
 
-    public static final String DEFAULT_VIDEO_ID = "d67eba2a3e549b75e42746b79721d0bf";
+//    public static final String DEFAULT_VIDEO_ID = "d67eba2a3e549b75e42746b79721d0bf";
+    public static final String DEFAULT_VIDEO_ID = "8fe405c9fe65d5b100807d6b28d56f84";
 
 
     public static final String SP_DEMO_CONFIG = "sp_demo_config";

@@ -38,7 +38,7 @@ import cn.com.videopls.pub.os.VideoOsView;
 public abstract class BasePlayerActivity extends AppCompatActivity {
     private static final String TAG = BasePlayerActivity.class.getSimpleName();
     private static final String LIVE_DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4";
-    private static final String DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4";
+    private static final String DEFAULT_VIDEO = "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/test/SwordArtOnlineAlicization22.mp4";
     protected ViewGroup mRootView; //  Activity 根布局
     protected StandardVideoOSPlayer mVideoPlayer; // 播放器控件
     protected VideoOsView mVideoPlusView; // VideoOs 视图（填充根布局）

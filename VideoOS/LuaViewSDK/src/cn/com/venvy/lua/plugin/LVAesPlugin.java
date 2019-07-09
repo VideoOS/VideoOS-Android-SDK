@@ -5,6 +5,7 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import cn.com.venvy.common.utils.VenvyAesUtil;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
 import static cn.com.venvy.lua.binder.VenvyLVLibBinder.luaValueToString;
@@ -60,6 +61,7 @@ public class LVAesPlugin {
             String content = luaValueToString(contextValue);
 
             String aes = VenvyAesUtil.decrypt(content, key, iv);
+            VenvyLog.d("aes result : " + aes);
             return LuaValue.valueOf(aes == null ? "" : aes);
         }
     }

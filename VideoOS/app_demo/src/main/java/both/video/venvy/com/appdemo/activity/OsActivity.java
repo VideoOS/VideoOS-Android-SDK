@@ -3,6 +3,7 @@ package both.video.venvy.com.appdemo.activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         View settingView = getSettingView();
         mRootView.addView(settingView);
         mConfigDialog = new VideoOsConfigDialog(this, VideoType.VIDEOOS);
@@ -67,9 +69,9 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
             if (mVideoPlusView == null)
                 return;
             mVideoPlusView.stop();
-            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_red_envelope_hotspot.lua&id=os_red_envelope_hotspot");
+            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_baike_hotspot.lua&id=os_baike_hotspot");
             HashMap<String, String> params = new HashMap<>();
-            params.put("data", AssetsUtil.readFileAssets("local_red.json", OsActivity.this));
+            params.put("data", AssetsUtil.readFileAssets("local_baike.json", OsActivity.this));
             mVideoPlusView.navigation(uri, params, new IRouterCallback() {
                 @Override
                 public void arrived() {
