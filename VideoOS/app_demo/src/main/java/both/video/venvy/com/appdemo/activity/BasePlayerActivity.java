@@ -352,6 +352,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //横屏隐藏状态栏
+            // 横屏状态下，重置内容区为屏幕宽度
+            mAdapter.getVideoPlayerSize().mFullScreenContentHeight = VenvyUIUtil.getScreenWidth(MyApp.getInstance());
             if (mAdapter != null) {
                 mAdapter.notifyVideoScreenChanged(ScreenStatus.LANDSCAPE);
             }
@@ -379,7 +381,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
     private void updateRootViewHeight(final View rootView) {
         if (VenvyUIUtil.isScreenOriatationPortrait(this)) {
-            // 仅为竖屏的时候才获取高度
+            // 仅为竖屏的时候才获取高度（修正过状态栏之后的结果）
             rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {

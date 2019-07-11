@@ -43,6 +43,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     private StandardVideoOSPlayer mPlayer;
     private boolean isLive; // 是否为直播
 
+    // 本例中为了演示状态栏的影响，故通过getVideoPlayerSize()供UI层支持修改内容区Size（考虑状态栏，异形屏等），确保内容区始终为屏幕宽高
     private VideoPlayerSize videoPlayerSize = new VideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.getScreenHeight(MyApp.getInstance()),
             VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.dip2px(MyApp.getInstance(), 200));
 
