@@ -31,6 +31,8 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         appContext = this;
+        ConfigUtil.putAppKey("93db5ef3-7fbc-485a-97b0-fc9f4e7209f5");
+        ConfigUtil.putAppSecret("74f251d40a49468a");
         DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.PREVIEW);
         VenvyLog.needLog = true;
         VideoPlus.appCreateSAAS(MyApp.this, ConfigUtil.getAppKey(), ConfigUtil.getAppSecret());

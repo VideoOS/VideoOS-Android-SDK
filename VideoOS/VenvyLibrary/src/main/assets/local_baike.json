@@ -17,7 +17,7 @@
     "hotEditInfor":{
       "isShowAds":true,
       "hotImage":"https://os-saas-share.oss-cn-beijing.aliyuncs.com/dev/app_info/399/a730e396-189a-40b3-b412-b6c4a8829fd3.jpg",
-      "hotTitle":"塞尔达传说系列首部登陆任天堂Switch主机的作品",
+      "hotTitle":"塞尔达传说",
       "isShowClose":true,
       "isShowhot":true
     },
@@ -28,6 +28,18 @@
   "duration":10000,
   "hotspotOrder":0,
   "id":"b3fb78e8-72d2-4265-9e44-f313b3d3614c",
+  "hotspotTrackLink":[
+    {
+      "clickTrackLink":"http://clickc.admaster.com.cn/c/a122445,b3554598,c3925,i0,m101,8a2,8b3,h",
+      "exposureTrackLink":"http://v.admaster.com.cn/i/a122445,b3554598,c3925,i0,m202,8a2,8b3,h"
+    }
+  ],
+  "infoTrackLink":[
+    {
+      "clickTrackLink":"http://clickc.admaster.com.cn/c/a122445,b3554599,c3925,i0,m101,8a2,8b3,h",
+      "exposureTrackLink":"http://v.admaster.com.cn/i/a122445,b3554599,c3925,i0,m202,8a2,8b3,h"
+    }
+  ],
   "launchPlanId":"90",
   "sumHotspot":1,
   "template":"os_baike_ec_hotspot.lua",

@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.shuyu.gsyvideoplayer.video.base.GSYVideoView;
+
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -29,6 +31,7 @@ import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.okhttp.OkHttpHelper;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
@@ -203,7 +206,10 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
             @Override
             public MediaStatus getCurrentMediaStatus() {
-                return mPlayer == null ? MediaStatus.PAUSE : mPlayer.isInPlayingState() ? MediaStatus.PLAYING : MediaStatus.PAUSE;
+                if(mPlayer == null){
+                    return MediaStatus.PAUSE;
+                }
+                return mPlayer.getCurrentState() ==  GSYVideoView.CURRENT_STATE_PLAYING? MediaStatus.PLAYING : MediaStatus.PAUSE;
             }
 
             /**

@@ -14,11 +14,41 @@ local scale = getScale()
 local OS_ICON_WEDGE_CLOSE = "iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAABHNCSVQICAgIfAhkiAAABWJJREFUWIW9mf9vFFUUxT+vDtvdIiIiW0KFKAFCW74KGEpVwv9MoglNTBCIYqpUUkRFgRi+CKVUWlpo2b3+cO50p8O8mSlUb7IJ3Zn37tlz7333vEsgZ2Z2CtgPvAS+BhZDCJZ/723NzAJwHDgMLABXQggPit5NMoveBYaAQ8BHwBIwBkyZ2cxGAjWzBBjxz8fACjBvZiGEcL8QpAP8BDgBDANbgRdAC3gFTG8UUDMbQGR8BuwFtvujjj9fAdb4SpkccoBjmf2aiNFx//uSA34bgAFoA+eAg8DmzOO9wDsO9iJiVyA9Bw8hBousDZwEWmZ2CVh4E0Yd4LDvdQCRkLdBxLCZ2XQI4W8Qk/sRY1sj+zcR0w1UTNNm9mg9QM2s3/0cQwxuKfHV9h9xL/WTuOMllINFvw5gANgFnAG6QMfMntQBmsnBMRTSD0pef+VYFlHYA2B96Ji5BsxU+Esc6BhwBOVPFcDga86iUL9fsWQRuA18BdwNIXRTx4vAlP+KcUR3EaPBgQ0CnwINM/semCti1AEe8U+ag30lAJ8C14HvfM9e4YQQzMxmgGn/7iQKz0Bks5Y/70epciOfo2bWQuffCWAf8XwHkfPcAf4I3AkhdLIvJAAZoJccRAOFKUEM5i2bZysoGvMOsIGiMY4YLAPYQd3mDnAV+DMPkCIAZrYFOIWKZBfx3DPEwl/Az8AFVFT7gM/RsdYsWQ/wD/ALcB54FkJ4WfRSUvDdAgp9FzE1iNjNWwA2ATv93x1gGdiNGGwRz8EuMIdC/AMwW8RgFKSH/pE77UNFUpaj6fHUcJDvAdtiDhH784j9a0RCXAoyA/QJak8NVCRDDrooR9PnVdZFRXLX935YBZCIwzVmZttQpxhDjG2qASZmc8ANYAJ4HEJYrrOokMnIxiuoYncSD33MOsAzFOJJajJYG2QmRxdRz027SH9NH69QMf6KmsYf6wFYC2QKFInSC4iVBvVyENSL76BjprSKY1bWpoqsiyq4Vi65dVBn6qKzdd1WG6TLrRGk4KuEQtb6UR4fBXZ6T1+X1Qq39+I2EqQHKD8H89ZCOXwaMbmExERtq3MEBSRUxxGTZZ0kug0K9z1U3RMhhNpXkVImM3LrBPXkVsxSmddGZy5lMq82SFfUuxxkHbm1RK/yY+doE+XncdQab9W5ihSC9CIZQop6PXLrJbADiYyYzGv587OoqFZlXsyKpFoARlEbHKZabj1FB/V5lHfDwJfoclcl8+4DPyGZ14kxuobJzLXzGLo0VcmttNVNAbPu/HfU389QfhXZhFgfRakSHUBkxywD9O7YB6m+1T1HPX2STKvzFrqMQnkM5WCRHgXl7m56LbYQaDpmSVAOnkM5GLsXgxicR3JrgpxYcAdPzWzCvzruQGIyrwns8ecJcNnMXmSBBg/xYXRQj1Cdg7MoxBepkFsu80ZQkVTJvGWUo1PAN8Aq0MR/6QjKwc2xHehV8XWkqOvIrTngFgrnaZSDseMpvcCNup+bZvY4nWAcRtfP7ZHF0JNbN9GdpFLyw2syr98B7KZ8UjKE+vyMfyxx5yuRRak95w3lVk7mLTnYPSVL0ivGMq6aEuAKKoQOCnne0snCVXTtXLcedOvQG0D0odA2cu/MAr8B36J0EsgQwoOMfErHKE0U4kV6k4VaIY5ZblKSoLt9m16OzqJ0mkRTjFUBkk4w7vuEtYOqvI1CcxvNZl4bfbwl0MuIxVGUg13E4CQwnT8nV88tZzMBvkBn5SKabq0ZHm2Eua8mYvMoysGL5Bh8DWRmg0GkvDto/LahAHNAdwAfoiJ5GEJYKHq3UPT6BiGdD/5XlvoB7L/4b5j/1f4FpBs0xIw/x0gAAAAASUVORK5CYII="
 local adTypeName = "BaikeWindow"
 
-local KEY_CACHE_ID = "BAIKE_WINDOW_ID"
 
-local function isAutoClose(data)
-    return not data.data.hotEditInfor.isShowhot
+
+
+
+local function getWindowExposureTrackLink(data, index)
+    if (data == nil or index == nil) then
+        return nil
+    end
+    local infoTrackLinkTable = data.infoTrackLink
+    if (infoTrackLinkTable == nil) then
+        return nil
+    end
+    local indexInfoTrackLinkTable = infoTrackLinkTable[index]
+    if (indexInfoTrackLinkTable == nil) then
+        return nil
+    end
+    return indexInfoTrackLinkTable.exposureTrackLink
 end
+
+local function getWindowClickTrackLink(data, index)
+    if (data == nil or index == nil) then
+        return nil
+    end
+    local infoTrackLinkTable = data.infoTrackLink
+    if (infoTrackLinkTable == nil) then
+        return nil
+    end
+    local indexInfoTrackLinkTable = infoTrackLinkTable[index]
+    if (indexInfoTrackLinkTable == nil) then
+        return nil
+    end
+    return indexInfoTrackLinkTable.clickTrackLink
+end
+
+
 
 local function generateBannerSize(isPortrait)
     local x, y, w, h = 0, 0, 0, 0
@@ -208,10 +238,6 @@ local function createViewPager(urlList, framex, framey, framew, frameh)
     baikeWindow.pageItems = pageItems
     baikeWindow.bannerPagerScrollView = scrollView
 
-    for i = 1, count do
-        scrollView:currentPage(i, true)
-    end
-    scrollView:currentPage(1, true)
 
     bgView:addView(scrollView)
     return bgView
@@ -259,10 +285,6 @@ end
 local function closeView()
     Native:widgetEvent(eventTypeClose, baikeWindow.data.id, adTypeName, actionTypeNone, "")
 
-    -- 清空记录的id
-    if (Native:getCacheData(KEY_CACHE_ID) == baikeWindow.data.id) then
-        Native:saveCacheData(KEY_CACHE_ID, nil)
-    end
     Native:destroyView()
 end
 
@@ -493,22 +515,9 @@ local function registerMedia()
             elseif (type == 2) then
                 rotationScreen(false)
             end
-        end,
-        onMediaProgress = function(progress)
-            if (isAutoClose(baikeWindow.data)) then
-                if progress > baikeWindow.data.videoEndTime then
-                    -- 如果progress 大于投放结束时间，则close
-                    closeViewByScreenDirection()
-                end
-            end
-
         end
     }
     media:mediaCallback(callbackTable)
-    if (isAutoClose(baikeWindow.data)) then
-        -- 直接显示的window的话，需要监听播放进度，投放时长一到自动关闭
-        media:startVideoTime()
-    end
     return media
 end
 
@@ -550,7 +559,7 @@ local function createTitleView(data, isPortrait)
     baikeTitle:lines(1)
     baikeTitle:textColor(0xFFFFFF)
     baikeTitle:text(data)
-    baikeTitle:textSize(18)
+    baikeTitle:textSize(16)
     setTitleSize(baikeTitle, isPortrait)
     return baikeTitle
 end
@@ -567,9 +576,6 @@ local function createLogoImg(data, isPortrait)
     baikeLogo:align(Align.CENTER)
     logoWrapper:addView(baikeLogo)
 
-    if (isAutoClose(data)) then
-        logoWrapper:hide()
-    end
 
     return logoWrapper, baikeLogo
 end
@@ -590,7 +596,10 @@ local function createBottomView(data, isPortrait)
 end
 
 local function onCreate(data)
-
+    local exposureTrackLink = getWindowExposureTrackLink(data,1)
+    if(exposureTrackLink ~= nil)then
+        Native:get(exposureTrackLink)
+    end
 
     if (baikeWindow.launchPlanId ~= nil) then
         osTrack(baikeWindow.launchPlanId, 1, 1)
@@ -660,6 +669,11 @@ local function onCreate(data)
     end
 
     baikeWindow.bottomView:onClick(function()
+        local clickTrackLink = getWindowClickTrackLink(data,1)
+        if(clickTrackLink ~= nil) then
+            Native:get(clickTrackLink)
+        end
+
         local linkUrl = baikeWindow.data.data.inforEdit.linkUrl
         if (linkUrl == nil) then
             return
@@ -708,13 +722,6 @@ local function setConfig(data)
     --baikeWindow.landscapeWidth = math.max(screenWidth, screenHeight) * 0.32  -- 横屏宽
     baikeWindow.landscapeHeight = math.min(screenWidth, screenHeight) -- 横屏高
     baikeWindow.launchPlanId = data.launchPlanId
-
-    local cacheId = Native:getCacheData(KEY_CACHE_ID)
-    if (not data.data.hotEditInfor.isShowhot and cacheId ~= nil and #cacheId > 0) then
-        cacheId = "os_baike_window" .. cacheId
-        Native:destroyView(cacheId)
-    end
-    Native:saveCacheData(KEY_CACHE_ID, data.id)
 end
 
 function show(args)
