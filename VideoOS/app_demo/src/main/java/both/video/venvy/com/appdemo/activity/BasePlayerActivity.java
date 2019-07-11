@@ -152,14 +152,14 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                 if (isFirstPlayVideo) {
 //                    Log.d(TAG, "onStartPrepared : First");
                     // 首次播放，只需调用start启动
-                    mVideoPlusView.start();
+//                    mVideoPlusView.start();
                     isFirstPlayVideo = false;
                 } else {
 //                    Log.d(TAG, "onStartPrepared : Second + ");
                     // 非首次播放，在此demo种视为切集操作
                     mVideoPlusView.stop();
                     mAdapter.updateProvider(mAdapter.generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(), ConfigUtil.getVideoId()));
-                    mVideoPlusView.start();
+//                    mVideoPlusView.start();
                 }
 
             }

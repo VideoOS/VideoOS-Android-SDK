@@ -74,23 +74,23 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.setVisibility(View.VISIBLE);
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-        startConnect(new IStartResult() {
-            @Override
-            public void successful() {
-                Uri.Builder builder = new Uri.Builder();
-                builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
-                        .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                        .appendQueryParameter("template", "main.lua")
-                        .appendQueryParameter("id", MAIN_DEFAULT_ID);
-                navigation(builder.build(), null, null);
-            }
-
-            @Override
-            public void failed() {
-                VenvyLog.e(VideoPlusController.class.getName(), "VideoOS start error");
-
-            }
-        });
+//        startConnect(new IStartResult() {
+//            @Override
+//            public void successful() {
+//                Uri.Builder builder = new Uri.Builder();
+//                builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+//                        .path(VenvySchemeUtil.PATH_LUA_VIEW)
+//                        .appendQueryParameter("template", "main.lua")
+//                        .appendQueryParameter("id", MAIN_DEFAULT_ID);
+//                navigation(builder.build(), null, null);
+//            }
+//
+//            @Override
+//            public void failed() {
+//                VenvyLog.e(VideoPlusController.class.getName(), "VideoOS start error");
+//
+//            }
+//        });
     }
 
     public void stop() {

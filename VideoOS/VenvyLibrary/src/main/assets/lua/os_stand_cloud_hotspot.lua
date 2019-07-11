@@ -169,17 +169,17 @@ local function createCloseBtn(isPortrait)
 end
 
 local function setUpImageLayout(data, imageView, isPortrait)
-    if (imageView == nil) then
-        return
+        if (imageView == nil) then
+            return
+        end
+        if (data == nil) then
+            return
+        end
+        local x, y, w, h = getLocation(data, isPortrait)
+        print("setUpImageLayout x=" .. x .. " y=" .. y .. " w=" .. w .. " h=" .. h .. " isPortrait:" .. tostring(isPortrait))
+        imageView:frame(x, y, w, h)
+        --imageView:size(w, h)
     end
-    if (data == nil) then
-        return
-    end
-    local x, y, w, h = getLocation(data, isPortrait)
-    print("setUpImageLayout x=" .. x .. " y=" .. y .. " w=" .. w .. " h=" .. h .. " isPortrait:" .. tostring(isPortrait))
-    imageView:frame(x, y, w, h)
-    --imageView:size(w, h)
-end
 
 --[[
     创建云图控件

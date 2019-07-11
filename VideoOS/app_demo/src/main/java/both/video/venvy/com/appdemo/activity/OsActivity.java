@@ -25,6 +25,20 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         View settingView = getSettingView();
         mRootView.addView(settingView);
 
+//        Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_stand_cloud_hotspot.lua&id=os_stand_cloud_hotspot");
+//        HashMap<String, String> params = new HashMap<>();
+//        params.put("data", AssetsUtil.readFileAssets("local_cloud.json", OsActivity.this));
+//        mVideoPlusView.navigation(uri, params, new IRouterCallback() {
+//            @Override
+//            public void arrived() {
+//                mVideoPlusView.start();
+//            }
+//
+//            @Override
+//            public void lost() {
+//
+//            }
+//        });
     }
 
     @Override
@@ -39,9 +53,9 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
             if (mVideoPlusView == null)
                 return;
             mVideoPlusView.stop();
-            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_vote_hotspot.lua&id=os_vote_hotspot");
+            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_mix_stand_hotspot.lua&id=os_mix_stand_hotspot");
             HashMap<String, String> params = new HashMap<>();
-            params.put("data", AssetsUtil.readFileAssets("local_vote.json", OsActivity.this));
+            params.put("data", AssetsUtil.readFileAssets("local_wedge.json", OsActivity.this));
             mVideoPlusView.navigation(uri, params, new IRouterCallback() {
                 @Override
                 public void arrived() {
