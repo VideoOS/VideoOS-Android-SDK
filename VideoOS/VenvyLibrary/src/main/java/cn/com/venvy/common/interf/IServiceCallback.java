@@ -8,7 +8,7 @@ package cn.com.venvy.common.interf;
 public interface IServiceCallback {
     void onCompleteForService();
 
-    void onFailToCompleteForService(Exception e);
+    void onFailToCompleteForService(Throwable throwable);
 
     void onClickForService(ServiceType type, String eventType);
 }
