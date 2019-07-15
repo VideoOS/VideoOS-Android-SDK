@@ -15,9 +15,12 @@ local OS_ICON_BUBBLE_PROMPT_LEFT = "iVBORw0KGgoAAAANSUhEUgAAAQQAAADkCAYAAAB+O1o8
 
 local AD_TYPE_VIDEO = 0
 local AD_TYPE_IMAGE = 1
-local adsArray = { { type = 0, url = "https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/54985990-470c-4db7-b03f-8143159af459.mp4", duration = 15 },
+local adsArray = { { type = 0,
+                     url = "https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/54985990-470c-4db7-b03f-8143159af459.mp4",
+                     duration = 10 },
                    { type = 1, url = "http://videojj-mobile.oss-cn-beijing.aliyuncs.com/mock/os/dream_ad.jpg", duration = 10 },
-                   { type = 1, url = "http://mgcdn.videojj.com/xisilixisili.MP4", duration = 10 } }
+                   { type = 0, url = "http://mgcdn.videojj.com/xisilixisili.MP4", duration = 10 }
+}
 
 -- 当前广告列队的位置, 从 1 开始
 local currentAdIndex = 1
@@ -456,80 +459,14 @@ local function changeStatusType6(downParentView, downView, downLabel, lineView, 
     setDownType3Size(downParentView, downView, downLabel, lineView, adsLabel, downCloseView, downCloseImage, isPortrait)
 end
 
---[[
-    分发广告列表中的广告
-]]
-local function dispatchAdsEvent()
-    local data = adsArray[currentAdIndex]
-    if (data == nil or wedge.mediaPlayer == nil or wedge.cloudImage) then
-        if (wedge.timer ~= nil) then
-            wedge.timer:cancel()
-        end
-        -- 结束了
-        return
+local function createMediaPlay(data, isPortrait)
+    local mediaPlayer = MediaPlayer()
+    local x, y, w, h = getLocation(data, isPortrait)
+    mediaPlayer:frame(x, y, w, h)
+    if System.ios() then
+        mediaPlayer:show()
     end
-    passedDuration = passedDuration + data.duration
-    print("dispatchAdsEvent : 当前广告的位置:" .. currentAdIndex .. " type:" .. data.type)
-    if data.type == AD_TYPE_VIDEO then
-        -- 中插广告
-        wedge.imageParent:hide()
-        wedge.mediaPlayer:stopPlay()
-        wedge.mediaPlayer:startPlay(data.url)
-        isVideoAdPlaying = true
-    else
-        -- 静态图片
-        wedge.imageParent:show()
-        wedge.cloudImage:image(url, nil)
-    end
-    currentAdIndex = currentAdIndex + 1
-end
-
-local function performWithShutDownTimer(videoDurationTime)
-    --根据关闭时间倒计时
-    if (videoDurationTime == nil) then
-        return
-    end
-    local repeatRerecordNum = 0 --记录重复次数
-    local needChangeStatus = false
-    wedge.timer = performWithRepeatCount(function()
-        if (wedge.mediaPlayPaused) then
-            return
-        end
-        repeatRerecordNum = repeatRerecordNum + 1
-        if (repeatRerecordNum >= passedDuration) then
-            -- 播放下一段广告
-            dispatchAdsEvent()
-        end
-        wedge.countDownLabel:text(tostring(videoDurationTime - repeatRerecordNum))
-        if (videoDurationTime - repeatRerecordNum <= 0) then
-            --执行结束操作
-            wedge.timer:cancel()
-            return
-        end
-        if (wedge.timerType == -1) then
-            return
-        end
-        if (wedge.closeAfter - repeatRerecordNum > 0 and wedge.countDownLabel ~= nil) then
-            wedge.countDownAdsLabel:text(tostring(wedge.closeAfter - repeatRerecordNum) .. "s后可关闭广告")
-        end
-        if (wedge.closeAfter - repeatRerecordNum <= 0 and needChangeStatus == false) then
-            --刷新情况 5，6
-            if (wedge.timerType == 2) then
-                changeStatusType5(wedge.countDownParentView, wedge.countDownView, wedge.countDownLabel, wedge.countDownLineView, wedge.downAdsLabel, wedge.countDownAdsLabel, wedge.countDownLine2View, wedge.countDownCloseView, wedge.countDownCloseImage, Native:isPortraitScreen())
-            else
-                changeStatusType6(wedge.countDownParentView, wedge.countDownView, wedge.countDownLabel, wedge.countDownLineView, wedge.downAdsLabel, wedge.countDownAdsLabel, wedge.countDownLine2View, wedge.countDownCloseView, wedge.countDownCloseImage, Native:isPortraitScreen())
-            end
-            needChangeStatus = true
-        end
-    end, videoDurationTime)
-    if (videoDurationTime <= 0) then
-        wedge.timer:cancel()
-    end
-    --设置视频倒计时 关闭倒计时默认值
-    if (wedge.timerType ~= -1 and wedge.countDownAdsLabel ~= nil) then
-        wedge.countDownAdsLabel:text(tostring(wedge.closeAfter) .. "s后可关闭广告")
-    end
-    wedge.countDownLabel:text(tostring(videoDurationTime))
+    return mediaPlayer
 end
 
 local function setLuaViewSize(luaView, isPortrait)
@@ -567,6 +504,273 @@ local function setBackViewSize(backView, isPortrait)
     else
         backView:xy(17 * scale, 14 * scale + y)
     end
+end
+
+--屏幕旋转--  TODO
+local function rotationScreen(isPortrait)
+    if (wedge.mediaPlayer == nil or wedge.data == nil) then
+        return
+    end
+    local x, y, w, h
+    if (isPortrait) then
+        x, y, w, h = getPortraitLocation(wedge.data)
+        --        wedge.guideParentView:show()
+    else
+        x, y, w, h = getLandscapeLocation(wedge.data)
+        --        wedge.guideParentView:show()
+    end
+    setLuaViewSize(wedge.luaView, isPortrait)
+    setBackViewSize(wedge.backView, isPortrait)
+    wedge.mediaPlayer:frame(x, y, w, h)
+end
+
+local function registerMedia()
+    local media = Media()
+    -- body
+    -- 注册window callback通知
+    local callbackTable = {
+        --0: 竖屏小屏幕，1 竖屏全凭，2 横屏全屏
+        onPlayerSize = function(type)
+            if (type == 0) then
+                rotationScreen(true)
+            elseif (type == 1) then
+                rotationScreen(true)
+            elseif (type == 2) then
+                rotationScreen(false)
+            end
+            if System.ios() then
+                wedge.guideParentView:alignRight()
+                wedge.guideParentView:alignBottom()
+                wedge.countDownParentView:alignRight()
+            end
+        end,
+        onMediaProgress = function(progress)
+            --            dispatchAd(cloud.data, progress)
+        end
+    }
+    media:mediaCallback(callbackTable)
+    media:startVideoTime()
+    return media
+end
+
+local function registerCallback()
+    local tag = "mediaPlayer callback"
+    wedge.mediaPlayer:callback({
+        onStart = function(url)
+            print(tag .. " onStart")
+            --开始播放
+            wedge.voice = wedge.mediaPlayer:voice()
+            if (wedge.voice > 0) then
+                wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
+            else
+                wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
+            end
+            wedge.mediaPlayPaused = false
+            --local videoDuration = getVideoDuration(dataTable)
+            --local currentPosition = 0
+            --if (videoDuration == 0) then
+            --    currentPosition = rounded((wedge.mediaPlayer:duration() - wedge.mediaPlayer:position()) / 1000)
+            --else
+            --    currentPosition = rounded((videoDuration - wedge.mediaPlayer:position()) / 1000)
+            --end
+            --wedge.videoDuration = currentPosition
+            --if wedge.timer == nil then
+            --    performWithShutDownTimer(currentPosition)
+            --end
+            --showControl(Native:isPortraitScreen(), true)
+            if wedge.loading ~= nil then
+                wedge.loading:stop()
+                --wedge.loading:removeFromParent()
+                --wedge.loading = nil
+            end
+            --wedge.imageParent:hide()
+        end,
+        onPause = function(url)
+            print(tag .. " onPause")
+            wedge.mediaPlayPaused = true
+            --暂停播放
+        end,
+        onFinished = function(url)
+            print(tag .. " onFinished")
+            --停止播放
+            --closeWedge()
+        end,
+        onPrepare = function(url)
+            print(tag .. " onPrepare")
+            --准备播放
+            if System.ios() then
+                wedge.mediaPlayer:show()
+            end
+        end,
+        onError = function(url)
+            print(tag .. " onError")
+            --播放错误
+            --closeWedge()
+            dispatchAdsEvent()
+        end,
+        onChangeVolume = function(volme)
+            if (wedge.guideVoiceImage == nil) then
+                return
+            end
+            if (volme > 0) then
+                wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
+            else
+                wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
+            end
+        end
+    })
+end
+
+--[[
+    分发广告列表中的广告
+]]
+local function dispatchAdsEvent()
+    local data = adsArray[currentAdIndex]
+    if (data == nil or wedge.mediaPlayer == nil or wedge.cloudImage == nil) then
+        if (wedge.timer ~= nil) then
+            wedge.timer:cancel()
+        end
+        -- 结束了
+        return
+    end
+    passedDuration = passedDuration + data.duration
+    print("dispatchAdsEvent : 当前广告的位置:" .. currentAdIndex .. " type:" .. data.type)
+    if data.type == AD_TYPE_VIDEO then
+        -- 中插广告
+        if (wedge.mediaParent:isHide()) then
+            wedge.mediaPlayer = createMediaPlay(wedge.data, Native:isPortraitScreen())
+
+            local tag = "mediaPlayer callback"
+            wedge.mediaPlayer:callback({
+                onStart = function(url)
+                    print(tag .. " onStart")
+                    --开始播放
+                    wedge.voice = wedge.mediaPlayer:voice()
+                    if (wedge.voice > 0) then
+                        wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
+                    else
+                        wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
+                    end
+                    wedge.mediaPlayPaused = false
+                    --local videoDuration = getVideoDuration(dataTable)
+                    --local currentPosition = 0
+                    --if (videoDuration == 0) then
+                    --    currentPosition = rounded((wedge.mediaPlayer:duration() - wedge.mediaPlayer:position()) / 1000)
+                    --else
+                    --    currentPosition = rounded((videoDuration - wedge.mediaPlayer:position()) / 1000)
+                    --end
+                    --wedge.videoDuration = currentPosition
+                    --if wedge.timer == nil then
+                    --    performWithShutDownTimer(currentPosition)
+                    --end
+                    --showControl(Native:isPortraitScreen(), true)
+                    if wedge.loading ~= nil then
+                        wedge.loading:stop()
+                        --wedge.loading:removeFromParent()
+                        --wedge.loading = nil
+                    end
+                    --wedge.imageParent:hide()
+                end,
+                onPause = function(url)
+                    print(tag .. " onPause")
+                    wedge.mediaPlayPaused = true
+                    --暂停播放
+                end,
+                onFinished = function(url)
+                    print(tag .. " onFinished")
+                    --停止播放
+                    --closeWedge()
+                end,
+                onPrepare = function(url)
+                    print(tag .. " onPrepare")
+                    --准备播放
+                    if System.ios() then
+                        wedge.mediaPlayer:show()
+                    end
+                end,
+                onError = function(url)
+                    print(tag .. " onError")
+                    --播放错误
+                    --closeWedge()
+                    dispatchAdsEvent()
+                end,
+                onChangeVolume = function(volme)
+                    if (wedge.guideVoiceImage == nil) then
+                        return
+                    end
+                    if (volme > 0) then
+                        wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
+                    else
+                        wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
+                    end
+                end
+            })
+            wedge.mediaParent:addView(wedge.mediaPlayer)
+        end
+        wedge.mediaParent:show()
+        wedge.mediaPlayer:startPlay(data.url)
+        wedge.loading:start()
+        isVideoAdPlaying = true
+    else
+        -- 静态图片
+        wedge.loading:stop()
+        wedge.mediaPlayer:stopPlay()
+        wedge.mediaParent:removeView(wedge.mediaPlayer)
+        wedge.mediaParent:hide()
+        wedge.imageParent:show()
+        wedge.cloudImage:image(data.url, nil)
+    end
+    currentAdIndex = currentAdIndex + 1
+end
+
+local function performWithShutDownTimer(videoDurationTime)
+    --根据关闭时间倒计时
+    if (videoDurationTime == nil) then
+        return
+    end
+    local repeatRerecordNum = 0 --记录重复次数
+    local needChangeStatus = false
+    wedge.timer = performWithRepeatCount(function()
+        if (wedge.mediaPlayPaused) then
+            return
+        end
+        repeatRerecordNum = repeatRerecordNum + 1
+        if (repeatRerecordNum >= passedDuration) then
+            -- 播放下一段广告
+            dispatchAdsEvent()
+        end
+        wedge.countDownLabel:text(tostring(videoDurationTime - repeatRerecordNum))
+        if (videoDurationTime - repeatRerecordNum <= 0) then
+            print("************** all ads is ending **************")
+            --执行结束操作
+            wedge.timer:cancel()
+            closeWedge()
+            return
+        end
+        if (wedge.timerType == -1) then
+            return
+        end
+        if (wedge.closeAfter - repeatRerecordNum > 0 and wedge.countDownLabel ~= nil) then
+            wedge.countDownAdsLabel:text(tostring(wedge.closeAfter - repeatRerecordNum) .. "s后可关闭广告")
+        end
+        if (wedge.closeAfter - repeatRerecordNum <= 0 and needChangeStatus == false) then
+            --刷新情况 5，6
+            if (wedge.timerType == 2) then
+                changeStatusType5(wedge.countDownParentView, wedge.countDownView, wedge.countDownLabel, wedge.countDownLineView, wedge.downAdsLabel, wedge.countDownAdsLabel, wedge.countDownLine2View, wedge.countDownCloseView, wedge.countDownCloseImage, Native:isPortraitScreen())
+            else
+                changeStatusType6(wedge.countDownParentView, wedge.countDownView, wedge.countDownLabel, wedge.countDownLineView, wedge.downAdsLabel, wedge.countDownAdsLabel, wedge.countDownLine2View, wedge.countDownCloseView, wedge.countDownCloseImage, Native:isPortraitScreen())
+            end
+            needChangeStatus = true
+        end
+    end, videoDurationTime)
+    if (videoDurationTime <= 0) then
+        wedge.timer:cancel()
+    end
+    --设置视频倒计时 关闭倒计时默认值
+    if (wedge.timerType ~= -1 and wedge.countDownAdsLabel ~= nil) then
+        wedge.countDownAdsLabel:text(tostring(wedge.closeAfter) .. "s后可关闭广告")
+    end
+    wedge.countDownLabel:text(tostring(videoDurationTime))
 end
 
 --情况一 只显示播放器倒计时
@@ -796,53 +1000,6 @@ local function setGuideViewSize(guideParentView, guideView, guideImage, guideLab
     --    end
 end
 
---屏幕旋转--  TODO
-local function rotationScreen(isPortrait)
-    if (wedge.mediaPlayer == nil or wedge.data == nil) then
-        return
-    end
-    local x, y, w, h
-    if (isPortrait) then
-        x, y, w, h = getPortraitLocation(wedge.data)
-        --        wedge.guideParentView:show()
-    else
-        x, y, w, h = getLandscapeLocation(wedge.data)
-        --        wedge.guideParentView:show()
-    end
-    setLuaViewSize(wedge.luaView, isPortrait)
-    setBackViewSize(wedge.backView, isPortrait)
-    wedge.mediaPlayer:frame(x, y, w, h)
-end
-
-local function registerMedia()
-    local media = Media()
-    -- body
-    -- 注册window callback通知
-    local callbackTable = {
-        --0: 竖屏小屏幕，1 竖屏全凭，2 横屏全屏
-        onPlayerSize = function(type)
-            if (type == 0) then
-                rotationScreen(true)
-            elseif (type == 1) then
-                rotationScreen(true)
-            elseif (type == 2) then
-                rotationScreen(false)
-            end
-            if System.ios() then
-                wedge.guideParentView:alignRight()
-                wedge.guideParentView:alignBottom()
-                wedge.countDownParentView:alignRight()
-            end
-        end,
-        onMediaProgress = function(progress)
-            --            dispatchAd(cloud.data, progress)
-        end
-    }
-    media:mediaCallback(callbackTable)
-    media:startVideoTime()
-    return media
-end
-
 local function registerWindow()
     local nativeWindow = nil
     if System.ios() then
@@ -916,16 +1073,7 @@ local function createCloudImage(isPortrait)
     local cloudImage = Image(Native)
     cloudImage:scaleType(ScaleType.FIT_XY)
     setLuaViewSize(cloudImage, isPortrait)
-end
-
-local function createMediaPlay(data, isPortrait)
-    local mediaPlayer = MediaPlayer()
-    local x, y, w, h = getLocation(data, isPortrait)
-    mediaPlayer:frame(x, y, w, h)
-    if System.ios() then
-        mediaPlayer:show()
-    end
-    return mediaPlayer
+    return cloudImage
 end
 
 local function createBack(data, isPortrait)
@@ -1169,7 +1317,7 @@ function createLoadingView()
     local loading = LoadingIndicator()
     loading:frame(0, 0, 40, 40)
     loading:color(0xffffff)
-    loading:start()
+    --loading:start()
     return loading;
 end
 
@@ -1180,7 +1328,7 @@ local function onCreate(data)
     wedge.imageParent = createParent(isPortrait)
     wedge.cloudImage = createCloudImage(isPortrait)
     wedge.imageParent:addView(wedge.cloudImage)
-    wedge.imageParent:hide()
+    --wedge.imageParent:hide()
 
     -- 视频根布局
     wedge.mediaParent = createParent(isPortrait)
@@ -1190,9 +1338,11 @@ local function onCreate(data)
     wedge.guideParentView, wedge.guideView, wedge.guideImageView, wedge.guideLabelView, wedge.guideVoiceView, wedge.guideVoiceImage = createGuide(data, isPortrait)
     wedge.loading = createLoadingView()
     showControl(isPortrait, false)
+
+    wedge.luaView:addView(wedge.imageParent)
     wedge.luaView:addView(wedge.mediaParent)
     wedge.mediaParent:addView(wedge.mediaPlayer)
-    wedge.mediaParent:hide()
+    --wedge.mediaParent:hide()
     wedge.luaView:addView(wedge.backView)
     wedge.luaView:addView(wedge.countDownParentView)
     wedge.countDownParentView:alignRight()
@@ -1251,66 +1401,6 @@ local function onCreate(data)
     --end
 end
 
-local function registerCallback()
-    wedge.mediaPlayer:callback({
-        onStart = function(url)
-            --开始播放
-            wedge.voice = wedge.mediaPlayer:voice()
-            if (wedge.voice > 0) then
-                wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
-            else
-                wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
-            end
-            wedge.mediaPlayPaused = false
-            --local videoDuration = getVideoDuration(dataTable)
-            --local currentPosition = 0
-            --if (videoDuration == 0) then
-            --    currentPosition = rounded((wedge.mediaPlayer:duration() - wedge.mediaPlayer:position()) / 1000)
-            --else
-            --    currentPosition = rounded((videoDuration - wedge.mediaPlayer:position()) / 1000)
-            --end
-            --wedge.videoDuration = currentPosition
-            --if wedge.timer == nil then
-            --    performWithShutDownTimer(currentPosition)
-            --end
-            --showControl(Native:isPortraitScreen(), true)
-            if wedge.loading ~= nil then
-                wedge.loading:stop()
-                wedge.loading:removeFromParent()
-                wedge.loading = nil
-            end
-        end,
-        onPause = function(url)
-            wedge.mediaPlayPaused = true
-            --暂停播放
-        end,
-        onFinished = function(url)
-            --停止播放
-            closeWedge()
-        end,
-        onPrepare = function(url)
-            --准备播放
-            if System.ios() then
-                wedge.mediaPlayer:show()
-            end
-        end,
-        onError = function(url)
-            --播放错误
-            closeWedge()
-        end,
-        onChangeVolume = function(volme)
-            if (wedge.guideVoiceImage == nil) then
-                return
-            end
-            if (volme > 0) then
-                wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
-            else
-                wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
-            end
-        end
-    })
-end
-
 local function setDefaultValue(data)
     --设置默认大小值
     if (data == nil) then
@@ -1349,7 +1439,7 @@ function show(args)
     end
 
     setDefaultValue(dataTable)
-    --wedgeConfig(dataTable)
+    wedgeConfig(dataTable)
     --wedge.id = dataTable.id
     --wedge.launchPlanId = dataTable.launchPlanId
 
@@ -1368,6 +1458,4 @@ function show(args)
     end
     -- track
     --exposureTrack(wedge.data)
-
-    --wedge.mediaPlayer:startPlay(getWedgeUrl(dataTable))
 end
