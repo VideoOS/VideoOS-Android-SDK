@@ -5,7 +5,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +76,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         statusBarHeight = VenvyUIUtil.getStatusBarHeight(this);
         // 默认显示状态栏
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //显示状态栏
-        cbShowStatusBar.setChecked(true);
 
         cbShowStatusBar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -299,8 +297,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         if (mVideoPlayer != null) {
             mVideoPlayer.onVideoResume();
         }
-        // 默认显示状态栏
-        checkNavigationBarShow(mVideoPlusView);
+        calculateHeight(mVideoPlusView);
     }
 
 
@@ -376,19 +373,14 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * 检查有无底部导航栏
-     *
-     * @param rootView
-     */
-    private void checkNavigationBarShow(final View rootView) {
+    private void calculateHeight(final View rootView) {
         rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
 //                Log.d("printSomeLog", "rootView height : " + rootView.getMeasuredHeight());
                 osViewHasStatusHeight = rootView.getMeasuredHeight();
                 osViewNotIncludeHeight = osViewHasStatusHeight + statusBarHeight;
-                Log.d("printSomeLog", "has status height : " + osViewHasStatusHeight + " not include height : " + osViewNotIncludeHeight);
+                cbShowStatusBar.setChecked(true);
                 rootView.getViewTreeObserver().removeOnPreDrawListener(this);
                 return true;
             }
