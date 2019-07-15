@@ -140,10 +140,10 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
-        if(true){
-            runLua(luaView, luaName, valueData);
-            return;
-        }
+//        if(true){
+//            runLua(luaView, luaName, valueData);
+//            return;
+//        }
         if (sScriptBundle == null) {
             VenvyAsyncTaskUtil.doAsyncTask(INIT_SCRIPT, new VenvyAsyncTaskUtil.IDoAsyncTask<Object, ScriptBundle>() {
                 @Override

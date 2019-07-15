@@ -31,7 +31,6 @@ import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.okhttp.OkHttpHelper;
-import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
@@ -56,6 +55,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     /**
      * 外部可根据业务动态设置VideoPlaySize的值
+     *
      * @return
      */
     public VideoPlayerSize getVideoPlayerSize() {
@@ -65,30 +65,30 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     /**
      * 统一通过此方法生成SDK所需的Provider
+     *
      * @param appKey
      * @param appSecret
      * @param videoId
      * @return
      */
-    public Provider generateProvider(String appKey,String appSecret,String videoId){
-        return generateProvider(appKey, appSecret, videoId,null);
+    public Provider generateProvider(String appKey, String appSecret, String videoId) {
+        return generateProvider(appKey, appSecret, videoId, null);
     }
 
     /**
-     *
      * @param appKey
      * @param appSecret
-     * @param videoId 视频源
+     * @param videoId      视频源
      * @param creativeName 素材名称
      * @return
      */
-    public Provider generateProvider(String appKey,String appSecret,String videoId,String creativeName){
-        if(TextUtils.isEmpty(creativeName)){
+    public Provider generateProvider(String appKey, String appSecret, String videoId, String creativeName) {
+        if (TextUtils.isEmpty(creativeName)) {
             return new Provider.Builder().setAppKey(appKey).setAppSecret(appSecret)
                     .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
                     .setCustomUDID(String.valueOf(System.currentTimeMillis()))
                     .setVideoID(videoId).build();
-        }else{
+        } else {
             Map<String, String> extendParams = new HashMap<>();
             extendParams.put(TAG_CREATIVE_NAME, creativeName);
             return new Provider.Builder().setAppKey(appKey).setAppSecret(appSecret)
@@ -103,7 +103,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     //设置参数
     @Override
     public Provider createProvider() {
-        return generateProvider(ConfigUtil.getAppKey(),ConfigUtil.getAppSecret(),mPlayer.getPlayTag());
+        return generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(), mPlayer.getPlayTag());
     }
 
 
@@ -127,6 +127,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     /**
      * 广告展示监听
+     *
      * @return
      */
     @Override
@@ -157,6 +158,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     /**
      * 广告关闭监听
+     *
      * @return
      */
     @Override
@@ -193,7 +195,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             @Override
             public void start() {
                 if (mPlayer != null) {
-                    mPlayer.onVideoResume();
+                    mPlayer.onVideoResume(false);
                 }
             }
 
@@ -206,10 +208,10 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
             @Override
             public MediaStatus getCurrentMediaStatus() {
-                if(mPlayer == null){
+                if (mPlayer == null) {
                     return MediaStatus.PAUSE;
                 }
-                return mPlayer.getCurrentState() ==  GSYVideoView.CURRENT_STATE_PLAYING? MediaStatus.PLAYING : MediaStatus.PAUSE;
+                return mPlayer.getCurrentState() == GSYVideoView.CURRENT_STATE_PLAYING ? MediaStatus.PLAYING : MediaStatus.PAUSE;
             }
 
             /**
@@ -248,14 +250,26 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             //平台方重新开启播放器事件
             case ACTION_PLAY_VIDEO:
                 if (mPlayer != null) {
-                    mPlayer.onVideoResume();
+                    mPlayer.onVideoResume(false);
                 }
                 break;
             //平台方打开H5事件
             case ACTION_OPEN_URL:
+//                if (TextUtils.isEmpty(url))
+//                    return;
+//                loadUrl(url);
                 if (TextUtils.isEmpty(url))
                     return;
-                loadUrl(url);
+                String infoUrl = url;
+                if (infoUrl.contains("cv")) {   //本地播放器切换视频源
+                    String[] split = infoUrl.split("\\|");
+                    String videoUrl = split[1];
+                    mPlayer.setUp(videoUrl, true, "");
+                    mPlayer.setPlayTag(videoUrl);
+                    mPlayer.startPlayLogic();
+                } else {  //H5播放
+                    loadUrl(infoUrl);
+                }
                 break;
             case ACTION_GET_ITEM:
 
