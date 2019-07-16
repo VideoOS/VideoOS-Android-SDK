@@ -52,7 +52,8 @@ public class BaseRequestConnect {
     private static final String LANGUAGE = "lang";
     private static final String ENCODING = "Accept-Encoding";
     private static final String PLATFORM_TOKEN = "user_token";
-
+    private static final String ANDROID_ID = "ANDROID_ID";
+    private static final String IMEI = "IMEI";
     private HashMap<String, String> mDefaultHeaders;
     private Platform mPlatform;
     private PriorityTaskDispatch mPriorityDispatch;
@@ -315,6 +316,8 @@ public class BaseRequestConnect {
     private Request buildRequestParams(@NonNull Request request) {
         Map<String, String> params = request.mParams;
         if (params == null || params.size() <= 0 || !request.isEncrypted) {
+            request.mParams.put(ANDROID_ID, VenvyDeviceUtil.getAndroidID(App.getContext()));
+            request.mParams.put(IMEI, VenvyDeviceUtil.getIMEI(App.getContext()));
             return request;
         }
         StringBuilder paramsBuild = new StringBuilder();
@@ -332,6 +335,8 @@ public class BaseRequestConnect {
         request.mParams.clear();
         request.mParams.put(SERVER_KEY, VenvyAesUtil.encrypt(AES_KEY, AES_IV, paramsBuild.toString()));
         request.mParams.put("isEncrypted", String.valueOf(true));
+        request.mParams.put(ANDROID_ID, VenvyDeviceUtil.getAndroidID(App.getContext()));
+        request.mParams.put(IMEI, VenvyDeviceUtil.getIMEI(App.getContext()));
         return request;
     }
 
@@ -437,6 +442,8 @@ public class BaseRequestConnect {
         Context context = App.getContext();
         defaultHeaders.put(NETWORK, VenvyDeviceUtil.getNetWorkName(context));
         defaultHeaders.put(IP, VenvyDeviceUtil.getLocalIPAddress());
+        defaultHeaders.put(ANDROID_ID, VenvyDeviceUtil.getAndroidID(context));
+        defaultHeaders.put(IMEI, VenvyDeviceUtil.getIMEI(context));
         IPlatformLoginInterface loginInterface = platform.getPlatformLoginInterface();
         if (loginInterface != null) {
             PlatformUserInfo platformUserInfo = loginInterface.getLoginUser();

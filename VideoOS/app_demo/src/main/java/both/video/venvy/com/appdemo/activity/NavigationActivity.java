@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
@@ -24,6 +23,7 @@ import cn.com.venvy.common.interf.VideoType;
 public class NavigationActivity extends AppCompatActivity implements View.OnClickListener {
     TextView tv_app_key;
     TextView tv_app_secret;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +32,7 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.tv_home_item_2).setOnClickListener(this);
         tv_app_key = findViewById(R.id.tv_app_key);
         tv_app_secret = findViewById(R.id.tv_app_secret);
+
 
         ((RadioButton) findViewById(R.id.rb_release)).setChecked(DebugStatus.isRelease());
         ((RadioButton) findViewById(R.id.rb_debug)).setChecked(DebugStatus.isDebug());
@@ -63,9 +64,9 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
     }
 
 
-    private void showConfigDialog(){
+    private void showConfigDialog() {
         VideoOsConfigDialog dialog = new VideoOsConfigDialog(this, VideoType.VIDEOOS);
-        dialog.onChangeListener(new VideoOsConfigDialog.SettingChangedListener(){
+        dialog.onChangeListener(new VideoOsConfigDialog.SettingChangedListener() {
 
             @Override
             public void onChangeStat(ConfigBean bean) {

@@ -23,7 +23,7 @@ public class VideoPositionHelper {
     public static final String KEY_POSITIVE = "positive";
     public static final String KEY_PLAY_STATUS = "play_status";
     public static final String KEY_PLAY_VOICE = "play_voice";
-    public static final int DEFAULT_SLEEP_TIME = 800;
+    public static final int DEFAULT_SLEEP_TIME = 10;
 
     private static final int STATUS_IDLE = 0;  // 初始状态
     private static final int STATUS_START = 1;  //已经开始轮询状态

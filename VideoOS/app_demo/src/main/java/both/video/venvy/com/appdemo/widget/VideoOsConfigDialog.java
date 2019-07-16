@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
 import java.util.ArrayList;
@@ -18,9 +19,13 @@ import both.video.venvy.com.appdemo.adapter.AppKeyConfigAdapter;
 import both.video.venvy.com.appdemo.adapter.AppSecretConfigAdapter;
 import both.video.venvy.com.appdemo.adapter.VideoIdConfigAdapter;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
+import both.video.venvy.com.appdemo.bean.ConfigData;
+import both.video.venvy.com.appdemo.http.AppConfigModel;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import cn.com.venvy.common.debug.DebugStatus;
 import cn.com.venvy.common.interf.VideoType;
+import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
  * Created by videojj_pls on 2018/9/13.
@@ -36,6 +41,8 @@ public class VideoOsConfigDialog {
     private VideoIdPopup mVideoIdPopup;
     private AppKeyPopup mAppKeyPopup;
     private AppSecretPopup mAppSecretPopup;
+
+    private AppConfigModel mAppConfigModel;
 
     public VideoOsConfigDialog(final Context context, VideoType type) {
         mContext = context;
@@ -121,6 +128,8 @@ public class VideoOsConfigDialog {
 
     public void showOsSetting() {
         mDialog.show();
+
+        queryAppKey();
     }
 
     /**
@@ -195,9 +204,6 @@ public class VideoOsConfigDialog {
                 }
             });
         }
-        List<ConfigBean> data = generatePopupData();
-        mAppKeyPopup.addData(data);
-        mAppSecretPopup.addData(data);
         mVideoIdPopup.addData(generateVideoIdData());
     }
 
@@ -237,6 +243,45 @@ public class VideoOsConfigDialog {
         data.add("25");
         data.add("40");
         return data;
+    }
+
+    protected void queryAppKey(){
+        if (mAppConfigModel == null) {
+            mAppConfigModel = new AppConfigModel(new AppConfigModel.AppConfigCallback() {
+                @Override
+                public void updateComplete(final String result) {
+                    VenvyUIUtil.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ConfigData configData = JSON.parseObject(result, ConfigData.class);
+                            if (configData == null) {
+                                return;
+                            }
+                            ConfigData.ConfigInfo configInfo = configData.getData();
+                            if (configInfo == null) {
+                                return;
+                            }
+                            List<ConfigBean> data = new ArrayList<>();
+                            for(ConfigData.ConfigInfo.AppInfo info : configInfo.getApps()){
+                                data.add(new ConfigBean(info.getAppKey(), info.getAppSecret()));
+                            }
+                            mAppKeyPopup.addData(data);
+                            mAppSecretPopup.addData(data);
+
+
+                        }
+                    });
+
+                }
+                @Override
+                public void updateError(Throwable t) {
+                    List<ConfigBean> data = generatePopupData();
+                    mAppKeyPopup.addData(data);
+                    mAppSecretPopup.addData(data);
+                }
+            });
+        }
+        mAppConfigModel.startRequest();
     }
 
 

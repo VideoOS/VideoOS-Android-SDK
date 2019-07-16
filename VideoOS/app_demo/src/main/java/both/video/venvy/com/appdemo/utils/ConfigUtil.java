@@ -24,8 +24,8 @@ public class ConfigUtil {
     public static final String CONFIG_VIDEO_NAME = "videoName";
 
     // 正式环境appKey&appSecret (ps : 只有这一对)
-    public static final String RELEASE_APP_KEY = "ae83ec93-c3fa-493a-a0f2-ce11765f4616";
-    public static final String RELEASE_APP_SECRET = "72a46e7bcdb44efb";
+    public static final String RELEASE_APP_KEY = "de3a49c7-1c00-4822-b187-9120be3394aa";
+    public static final String RELEASE_APP_SECRET = "ea8b3c7985124277";
 
     public static final String DEV_APP_KEY = "93db5ef3-7fbc-485a-97b0-fc9f4e7209f5";
     public static final String DEV_APP_SECRET = "74f251d40a49468a";
@@ -207,7 +207,7 @@ public class ConfigUtil {
     }
 
     public static String getAppKey() {
-        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_APPKEY_TAG, DEFAULT_APPKEY);
+        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_APPKEY_TAG, RELEASE_APP_KEY);
     }
 
     public static void putAppSecret(String appSecret) {
@@ -218,7 +218,7 @@ public class ConfigUtil {
     }
 
     public static String getAppSecret() {
-        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_APPSECRET_TAG, DEFAULT_APPSECRET);
+        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_APPSECRET_TAG, RELEASE_APP_SECRET);
     }
 
     public static String getVideoId() {

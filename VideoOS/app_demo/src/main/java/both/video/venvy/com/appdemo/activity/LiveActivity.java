@@ -52,6 +52,7 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
                 startDefaultVideo(videoId);
             }
         });
+
     }
 
 
