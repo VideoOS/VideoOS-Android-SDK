@@ -5,7 +5,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 
 import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
@@ -46,6 +44,11 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     protected OrientationUtils mOrientationUtils;
     protected CheckBox cbShowStatusBar; // 控制是否显示状态栏
     private boolean isFirstPlayVideo = true;
+    private boolean isFirstDraw = true;
+
+    private int statusBarHeight;
+    private int osViewHasStatusHeight;// 有状态栏时的高度
+    private int osViewNotIncludeHeight;// 状态栏隐藏时的高度
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +73,17 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         // Step4 : 启动播放
         startDefaultVideo(null);
 
+        statusBarHeight = VenvyUIUtil.getStatusBarHeight(this);
+        // 默认显示状态栏
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //显示状态栏
+
         cbShowStatusBar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 toggleStatusBar(isChecked);
             }
         });
+
     }
 
     private void initViews() {
@@ -113,12 +121,15 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
     private void toggleStatusBar(boolean isChecked) {
         if (isChecked) {
+            mAdapter.getVideoPlayerSize().mFullScreenContentHeight = osViewHasStatusHeight;
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //显示状态栏
         } else {
+            mAdapter.getVideoPlayerSize().mFullScreenContentHeight = osViewNotIncludeHeight;
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //隐藏状态栏
         }
-        // 状态栏改变无法立刻获取内容区高度，需要得到重新渲染后获取才能得到准确值
-        updateRootViewHeight(mVideoPlusView);
+
+        // 横竖屏切换无法立刻获取内容区高度，需要得到重新渲染后获取才能得到准确值
+//        updateRootViewHeight(mVideoPlusView);
     }
 
     private void initVideoPlayerSetting() {
@@ -286,8 +297,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         if (mVideoPlayer != null) {
             mVideoPlayer.onVideoResume();
         }
-        // 默认显示状态栏
-        checkNavigationBarShow(mVideoPlusView);
+        calculateHeight(mVideoPlusView);
     }
 
 
@@ -348,10 +358,13 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             }
         } else {
             // 手机横屏
+
             cbShowStatusBar.setVisibility(View.GONE);
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //横屏隐藏状态栏
+            // 横屏状态下，重置内容区为屏幕宽度
+            mAdapter.getVideoPlayerSize().mFullScreenContentHeight = VenvyUIUtil.getScreenWidth(MyApp.getInstance());
             if (mAdapter != null) {
                 mAdapter.notifyVideoScreenChanged(ScreenStatus.LANDSCAPE);
             }
@@ -360,35 +373,17 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * 检查有无底部导航栏
-     *
-     * @param rootView
-     */
-    private void checkNavigationBarShow(final View rootView) {
+    private void calculateHeight(final View rootView) {
         rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
 //                Log.d("printSomeLog", "rootView height : " + rootView.getMeasuredHeight());
-                cbShowStatusBar.setChecked(true);// 触发onCheckChanged事件
+                osViewHasStatusHeight = rootView.getMeasuredHeight();
+                osViewNotIncludeHeight = osViewHasStatusHeight + statusBarHeight;
+                cbShowStatusBar.setChecked(true);
                 rootView.getViewTreeObserver().removeOnPreDrawListener(this);
                 return true;
             }
         });
-    }
-
-    private void updateRootViewHeight(final View rootView) {
-        if (VenvyUIUtil.isScreenOriatationPortrait(this)) {
-            // 仅为竖屏的时候才获取高度
-            rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-//                Log.d("printSomeLog", "updateRootViewHeight : " + rootView.getMeasuredHeight());
-                    mAdapter.getVideoPlayerSize().mFullScreenContentHeight = rootView.getMeasuredHeight();
-                    rootView.getViewTreeObserver().removeOnPreDrawListener(this);
-                    return true;
-                }
-            });
-        }
     }
 }

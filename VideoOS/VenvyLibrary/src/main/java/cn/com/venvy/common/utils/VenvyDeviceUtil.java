@@ -99,9 +99,9 @@ public class VenvyDeviceUtil {
                     .getSystemService(Context.TELEPHONY_SERVICE);
             IMEI = telephonyManager.getDeviceId();
             //md5加密
-            IMEI = VenvyStringUtil.convertMD5(IMEI);
+//            IMEI = VenvyStringUtil.convertMD5(IMEI);
         } catch (Exception e) {
-            IMEI = "";
+            IMEI = "000000000000000";
         }
         return IMEI;
     }
@@ -120,9 +120,9 @@ public class VenvyDeviceUtil {
             androidID = Settings.System.getString(context.getContentResolver(),
                     Settings.System.ANDROID_ID);
             //md5加密
-            androidID = VenvyStringUtil.convertMD5(androidID);
+//            androidID = VenvyStringUtil.convertMD5(androidID);
         } catch (Exception e) {
-            androidID = "";
+            androidID = "0000000000000000";
         }
         return androidID;
     }
