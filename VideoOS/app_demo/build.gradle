@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 39
-        versionName "1.0.39"
+        versionCode 40
+        versionName "1.0.40"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [moduleName: project.getName()]
@@ -61,7 +61,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
 
-    compile 'com.shuyu:GSYVideoPlayer:6.0.1'
+    compile 'com.shuyu:GSYVideoPlayer:4.1.0'
     compile 'com.github.razerdp:BasePopup:2.1.9'
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.46'
     compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'

@@ -390,7 +390,6 @@ end
 
 local function onCreate(data)
 
-
     local exposureTrackUrl = getHotspotExposureTrackLink(data,1)
     if(exposureTrackUrl ~= nil) then
         Native:get(exposureTrackUrl)

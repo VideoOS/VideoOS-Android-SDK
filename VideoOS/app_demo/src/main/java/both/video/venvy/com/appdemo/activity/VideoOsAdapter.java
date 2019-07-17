@@ -31,6 +31,7 @@ import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.okhttp.OkHttpHelper;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
@@ -221,6 +222,8 @@ public class VideoOsAdapter extends VideoPlusAdapter {
              */
             @Override
             public long getCurrentPosition() {
+//                long position = mPlayer != null ? mPlayer.getCurrentPositionWhenPlaying() : -1;
+//                VenvyLog.w("video position is : "+position);
                 return mPlayer != null ? mPlayer.getCurrentPositionWhenPlaying() : -1;
             }
 
