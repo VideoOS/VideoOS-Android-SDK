@@ -10,7 +10,7 @@ require "os_string"
 require "os_constant"
 require "os_util"
 require "os_track"
-baikeWindow = object:new()
+cardWindow = object:new()
 local adTypeName = "cardWindow"
 local scale = getScale()
 local OS_ICON_WEDGE_CLOSE = "iVBORw0KGgoAAAANSUhEUgAAAC0AAAAtCAYAAAA6GuKaAAAAAXNSR0IArs4c6QAAAAlwSFlzAAAhOAAAITgBRZYxYAAAABxpRE9UAAAAAgAAAAAAAAAXAAAAKAAAABcAAAAWAAABJuDZqwUAAADySURBVGgFxNYxDsIwDAXQDiwwcR1uwB1ghpUj5Oh8S3yE2rTYju1GsiIlqf3Swe009ccFyw/Esb+dsnpA1hvi6sku4PaJJ+YKOMGsa4L/gpkgGz4Hs64K3gMzQRZ8Dcy6m/AtMBNEw/+BWbcL14CZIAquBbPuAi5dgpuaeRQu4Lux5gvnT4jvkO4gkGYIL9z6hsUk4DNiMSrgoWDeIBOeAs6Ep4Iz4CXgSHgpOAK+C3gU7unD3bZGiHX2dJWGItpY7cNW6Px8FjwNzAtEw9PB0fAycBS8HDwK3w0scOnD1rbW8Iz37xCPjg3Ph6OhJGMY/gYAAP//68uhBAAAANxJREFU7dZNDoIwEAVgEl2gK4/lCdh4ALceoUf3DfEloIjTdt6sbDIpJHTeF34ahqFuHHH5DVU66471J5R8RIELpFZyeDRYDleBZfAW8OP16InyzGGvSiv4ArR9ZAbxgHlNN7wHDOs8UuER4FR4JDgFrgBL4UqwBJ4BDofX/kvYPmzbWuto3VXGZeAVJ8VZvWDm1sInLDxwMWcPPArMTC98E8wme/BoMDN/wXfBbLIFV4GZ+Q3uArPJEq4GM/MdXgVmE4NngZlJeBOYTc48SJxHZH3sEon5/6jVHXgCCd+jGkmWfYoAAAAASUVORK5CYII="
@@ -22,8 +22,8 @@ local OS_CARD_LANDSCAPE_SHADOW = "iVBORw0KGgoAAAANSUhEUgAAAZAAAAAYCAYAAADUK6vNAA
 
 local adTypeName = "CardWindow"
 local blurUrl = nil
-baikeWindow.userCardInfo = {}
-baikeWindow.requestIds = {}
+cardWindow.userCardInfo = {}
+cardWindow.requestIds = {}
 local alphaTime = 1.0
 
 local function translationAnim(x, y)
@@ -83,12 +83,12 @@ local function getHotspotClickTrackLink(data, index)
 end
 
 local function closeView()
-    for key, value in pairs(baikeWindow.requestIds) do
+    for key, value in pairs(cardWindow.requestIds) do
         if (value ~= nil) then
             Native:abort(value)
         end
     end
-    Native:widgetEvent(eventTypeClose, baikeWindow.id, adTypeName, actionTypeNone, "")
+    Native:widgetEvent(eventTypeClose, cardWindow.id, adTypeName, actionTypeNone, "")
     Native:destroyView()
 end
 
@@ -102,22 +102,22 @@ end
 
 local function checkCollectStatus()
 
-    if baikeWindow.collectStatus == 3 then
+    if cardWindow.collectStatus == 3 then
         return 3
     end
 
     local collectCount = 0
-    if baikeWindow.isHotOrder1 == true then
+    if cardWindow.isHotOrder1 == true then
         collectCount = collectCount + 1;
     end
-    if baikeWindow.isHotOrder2 == true then
+    if cardWindow.isHotOrder2 == true then
         collectCount = collectCount + 1;
     end
-    if baikeWindow.isHotOrder3 == true then
+    if cardWindow.isHotOrder3 == true then
         collectCount = collectCount + 1;
     end
-    baikeWindow.collectCount = collectCount
-    if collectCount == baikeWindow.sumHotspot then
+    cardWindow.collectCount = collectCount
+    if collectCount == cardWindow.sumHotspot then
         return 2
     end
     return 1
@@ -127,14 +127,14 @@ local function postUserCardInfo()
 
     local businessInfoTable = {
         collectStatus = checkCollectStatus(),
-        isHotOrder1 = baikeWindow.isHotOrder1,
-        isHotOrder2 = baikeWindow.isHotOrder2,
-        isHotOrder3 = baikeWindow.isHotOrder3,
+        isHotOrder1 = cardWindow.isHotOrder1,
+        isHotOrder2 = cardWindow.isHotOrder2,
+        isHotOrder3 = cardWindow.isHotOrder3,
     }
 
     local businessParamTable = {
         userId = Native:getIdentity(),
-        creativeId = baikeWindow.data.creativeId,
+        creativeId = cardWindow.data.creativeId,
         businessInfo = businessInfoTable
     }
 
@@ -147,7 +147,7 @@ local function postUserCardInfo()
     print("[LuaView] " .. paramDataString)
     -- print("[LuaView] " .. OS_HTTP_POST_MOBILE_QUERY)
     -- print("[LuaView] " .. Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    local requestId = baikeWindow.request:post(OS_HTTP_POST_MOBILE_QUERY, {
+    local requestId = cardWindow.request:post(OS_HTTP_POST_MOBILE_QUERY, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -167,15 +167,15 @@ local function postUserCardInfo()
         if (dataTable == nil) then
             return
         end
-    end, baikeWindow.luaView)
-    table.insert(baikeWindow.requestIds, requestId)
+    end, cardWindow.luaView)
+    table.insert(cardWindow.requestIds, requestId)
 end
 
 local function getUserCardInfo()
 
     local businessInfo = {
         userId = Native:getIdentity(),
-        creativeId = baikeWindow.data.creativeId
+        creativeId = cardWindow.data.creativeId
     }
 
     local paramData = {
@@ -187,7 +187,7 @@ local function getUserCardInfo()
     -- print("[LuaView] "..paramDataString)
     -- print("[LuaView] "..OS_HTTP_GET_MOBILE_QUERY)
     -- print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    local requestId = baikeWindow.request:post(OS_HTTP_GET_MOBILE_QUERY, {
+    local requestId = cardWindow.request:post(OS_HTTP_GET_MOBILE_QUERY, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -208,9 +208,9 @@ local function getUserCardInfo()
             postUserCardInfo()
             return
         end
-        baikeWindow.data.data.userCardInfo = dataTable
-    end, baikeWindow.luaView)
-    table.insert(baikeWindow.requestIds, requestId)
+        cardWindow.data.data.userCardInfo = dataTable
+    end, cardWindow.luaView)
+    table.insert(cardWindow.requestIds, requestId)
 end
 
 local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
@@ -235,10 +235,10 @@ local function setCardViewSize(data, cardWindowView, isPortrait) --设置当前�
     local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         if (System.android()) then
-            cardWindowView:frame(0, 0, baikeWindow.portraitWidth, baikeWindow.portraitHeight)
+            cardWindowView:frame(0, 0, cardWindow.portraitWidth, cardWindow.portraitHeight)
             cardWindowView:align(Align.BOTTOM)
         else
-            cardWindowView:frame(0, math.max(screenWidth, screenHeight) - baikeWindow.portraitHeight, baikeWindow.portraitWidth, baikeWindow.portraitHeight)
+            cardWindowView:frame(0, math.max(screenWidth, screenHeight) - cardWindow.portraitHeight, cardWindow.portraitWidth, cardWindow.portraitHeight)
         end
     else
         if (System.android()) then
@@ -256,7 +256,7 @@ local function setCardTopContentViewSize(data, cardWindowTopContentView, isPortr
     end
     if (isPortrait) then
         cardWindowTopContentView:backgroundColor(0xEAEAEA, 1)
-        cardWindowTopContentView:frame(0, 0, baikeWindow.portraitWidth, baikeWindow.portraitHeight * 0.877)
+        cardWindowTopContentView:frame(0, 0, cardWindow.portraitWidth, cardWindow.portraitHeight * 0.877)
     else
         cardWindowTopContentView:backgroundColor(0x000000, 0)
         cardWindowTopContentView:frame(0, 0, 200 * scale, 336.8 * scale)
@@ -272,7 +272,7 @@ local function setCardBlurViewViewSize(data, cardBlurView, isPortrait) --设置�
         if (cardBlurView:isShow()) then
             cardBlurView:hide()
         end
-        cardBlurView:frame(0, 0, baikeWindow.portraitWidth, baikeWindow.portraitHeight * 0.877)
+        cardBlurView:frame(0, 0, cardWindow.portraitWidth, cardWindow.portraitHeight * 0.877)
     else
         cardBlurView:frame(0, 0, 200 * scale, 336.8 * scale)
         if (cardBlurView:isHide()) then
@@ -287,31 +287,31 @@ local function setCardImageLayoutSize(data, index, cardImageLayout, cardImage, c
     end
     local x, y, w, h = 0, 0, 0, 0
     if (isPortrait) then
-        if (baikeWindow.sumHotspot == 2) then
-            w = baikeWindow.portraitWidth * 0.276
+        if (cardWindow.sumHotspot == 2) then
+            w = cardWindow.portraitWidth * 0.276
             --            h = cardWindow.portraitHeight * 0.317
             h = w / 0.743
-            y = baikeWindow.portraitHeight * 0.086
+            y = cardWindow.portraitHeight * 0.086
             if (index == 1) then
-                x = baikeWindow.portraitWidth * 0.205
+                x = cardWindow.portraitWidth * 0.205
             else
-                x = baikeWindow.portraitWidth * 0.520
+                x = cardWindow.portraitWidth * 0.520
             end
         else
-            w = baikeWindow.portraitWidth * 0.276
+            w = cardWindow.portraitWidth * 0.276
             --            h = cardWindow.portraitHeight * 0.317
             h = w / 0.743
-            y = baikeWindow.portraitHeight * 0.086
+            y = cardWindow.portraitHeight * 0.086
             if (index == 1) then
-                x = baikeWindow.portraitWidth * 0.057
+                x = cardWindow.portraitWidth * 0.057
             elseif index == 2 then
-                x = baikeWindow.portraitWidth * 0.363
+                x = cardWindow.portraitWidth * 0.363
             else
-                x = baikeWindow.portraitWidth * 0.667
+                x = cardWindow.portraitWidth * 0.667
             end
         end
     else
-        if (baikeWindow.sumHotspot == 2) then
+        if (cardWindow.sumHotspot == 2) then
             w = 78.2 * scale
             h = 105.2 * scale
             y = 42 * scale
@@ -350,15 +350,15 @@ local function setCardBottomViewSize(data, cardBottomView, cardFlexView, cardFle
     local screenWidth, screenHeight = Native:getVideoSize(2)
     local corner = 0
     if (isPortrait) then
-        cardBottomView:frame(0, 0, baikeWindow.portraitWidth, baikeWindow.portraitHeight * 0.123)
+        cardBottomView:frame(0, 0, cardWindow.portraitWidth, cardWindow.portraitHeight * 0.123)
         cardBottomView:align(Align.BOTTOM)
-        cardFlexView:frame(0, 0, baikeWindow.hotspotRatio * baikeWindow.portraitWidth, baikeWindow.portraitHeight * 0.123)
-        corner = baikeWindow.portraitHeight * 0.123 / 2
-        cardFlexLabel:frame(0, 0, baikeWindow.portraitWidth, baikeWindow.portraitHeight * 0.123)
+        cardFlexView:frame(0, 0, cardWindow.hotspotRatio * cardWindow.portraitWidth, cardWindow.portraitHeight * 0.123)
+        corner = cardWindow.portraitHeight * 0.123 / 2
+        cardFlexLabel:frame(0, 0, cardWindow.portraitWidth, cardWindow.portraitHeight * 0.123)
     else
         cardBottomView:frame(0, 0, 200 * scale, 38.3 * scale)
         cardBottomView:align(Align.BOTTOM)
-        cardFlexView:frame(0, 0, baikeWindow.hotspotRatio * 200 * scale, 38.3 * scale)
+        cardFlexView:frame(0, 0, cardWindow.hotspotRatio * 200 * scale, 38.3 * scale)
         cardFlexLabel:frame(0, 0, 200 * scale, 38.3 * scale)
         corner = 19.15 * scale
     end
@@ -372,23 +372,23 @@ local function setCardTitleViewSize(data, cardTitleView, isPortrait)
     end
     local x, y, w, h = 0, 0, 0, 0
     if (isPortrait) then
-        if (baikeWindow.collectStatus == 3) then
-            x = baikeWindow.portraitWidth * 0.227
-            y = baikeWindow.portraitHeight * 0.643
-            w = baikeWindow.portraitWidth * 0.567
-            h = baikeWindow.portraitHeight * 0.082
+        if (cardWindow.collectStatus == 3) then
+            x = cardWindow.portraitWidth * 0.227
+            y = cardWindow.portraitHeight * 0.643
+            w = cardWindow.portraitWidth * 0.567
+            h = cardWindow.portraitHeight * 0.082
             cardTitleView:textColor(0x4A4A4A)
             cardTitleView:textSize(14)
         else
-            x = baikeWindow.portraitWidth * 0.227
-            y = baikeWindow.portraitHeight * 0.448
-            w = baikeWindow.portraitWidth * 0.567
-            h = baikeWindow.portraitHeight * 0.090
+            x = cardWindow.portraitWidth * 0.227
+            y = cardWindow.portraitHeight * 0.448
+            w = cardWindow.portraitWidth * 0.567
+            h = cardWindow.portraitHeight * 0.090
             cardTitleView:textColor(0x4A4A4A)
             cardTitleView:textSize(14)
         end
     else
-        if (baikeWindow.collectStatus == 3) then
+        if (cardWindow.collectStatus == 3) then
             x = 13.9 * scale
             y = 200.5 * scale
             w = 171 * scale
@@ -418,22 +418,22 @@ local function setCardContentImageView(data, cardContentImageView, cardContentIm
     end
     local x, y, w, h = 0, 0, 0, 0
     if (isPortrait) then
-        if (baikeWindow.collectStatus == 3) then
-            x = baikeWindow.portraitWidth * 0.120
-            y = baikeWindow.portraitHeight * 0.207
-            w = baikeWindow.portraitWidth * 0.763
+        if (cardWindow.collectStatus == 3) then
+            x = cardWindow.portraitWidth * 0.120
+            y = cardWindow.portraitHeight * 0.207
+            w = cardWindow.portraitWidth * 0.763
             h = w * 80.0 / 165.0 --cardWindow.portraitHeight * 0.316
         else
-            x = baikeWindow.portraitWidth * 0.187
-            y = baikeWindow.portraitHeight * 0.558
-            w = baikeWindow.portraitWidth * 0.628
+            x = cardWindow.portraitWidth * 0.187
+            y = cardWindow.portraitHeight * 0.558
+            w = cardWindow.portraitWidth * 0.628
             h = w * 80.0 / 165.0 --cardWindow.portraitHeight * 0.260
         end
         -- cardContentImageShadowView:backgroundColor(0xFF0000)
         cardContentImageShadowView:image(Data(OS_CARD_PORTRAIT_SHADOW))
-        cardContentImageShadowView:frame((baikeWindow.portraitWidth - 348 * scale) * 0.5, y + h - 8 * scale, 348 * scale, 16 * scale)
+        cardContentImageShadowView:frame((cardWindow.portraitWidth - 348 * scale) * 0.5, y + h - 8 * scale, 348 * scale, 16 * scale)
     else
-        if (baikeWindow.collectStatus == 3) then
+        if (cardWindow.collectStatus == 3) then
             x = 17.7 * scale
             y = 96.5 * scale
             w = 165 * scale
@@ -456,7 +456,7 @@ local function setCardCloseImageView(data, cardCloseLayout, cardCloseImageView, 
         return
     end
     --    local x, y, w, h = 0, 0, 0, 0
-    local size = baikeWindow.portraitHeight * 0.083
+    local size = cardWindow.portraitHeight * 0.083
     if (isPortrait) then
         --        x = 350 * scale
         --        y = 8 * scale
@@ -474,27 +474,27 @@ end
 
 --屏幕旋转--
 local function rotationScreen(isPortrait)
-    setLuaViewSize(baikeWindow.luaView, isPortrait)
-    setCardViewSize(baikeWindow.data, baikeWindow.baikeWindowView, isPortrait)
-    setCardTopContentViewSize(baikeWindow.data, baikeWindow.TopView, isPortrait)
-    setCardBlurViewViewSize(baikeWindow.data, baikeWindow.cardBlurImageView, isPortrait)
-    setCardBottomViewSize(baikeWindow.data, baikeWindow.cardBottomView, baikeWindow.cardFlexView, baikeWindow.cardFlexLabel, isPortrait)
-    setCardCloseImageView(baikeWindow.data, baikeWindow.baikeCloseLayout, baikeWindow.cardCloseImageView, isPortrait)
-    if (baikeWindow.collectStatus ~= 3) then
-        if (baikeWindow.cardImageLayout3 ~= nil) then
-            baikeWindow.cardImageLayout1:rotation(0)
-            baikeWindow.cardImageLayout3:rotation(0)
+    setLuaViewSize(cardWindow.luaView, isPortrait)
+    setCardViewSize(cardWindow.data, cardWindow.cardWindowView, isPortrait)
+    setCardTopContentViewSize(cardWindow.data, cardWindow.cardWindowTopContentView, isPortrait)
+    setCardBlurViewViewSize(cardWindow.data, cardWindow.cardBlurImageView, isPortrait)
+    setCardBottomViewSize(cardWindow.data, cardWindow.cardBottomView, cardWindow.cardFlexView, cardWindow.cardFlexLabel, isPortrait)
+    setCardCloseImageView(cardWindow.data, cardWindow.cardCloseLayout, cardWindow.cardCloseImageView, isPortrait)
+    if (cardWindow.collectStatus ~= 3) then
+        if (cardWindow.cardImageLayout3 ~= nil) then
+            cardWindow.cardImageLayout1:rotation(0)
+            cardWindow.cardImageLayout3:rotation(0)
         end
-        setCardImageLayoutSize(baikeWindow.data, 1, baikeWindow.cardImageLayout1, baikeWindow.cardImageView1, baikeWindow.cardBgView1, isPortrait)
-        setCardImageLayoutSize(baikeWindow.data, 2, baikeWindow.cardImageLayout2, baikeWindow.cardImageView2, baikeWindow.cardBgView2, isPortrait)
-        setCardImageLayoutSize(baikeWindow.data, 3, baikeWindow.cardImageLayout3, baikeWindow.cardImageView3, baikeWindow.cardBgView3, isPortrait)
-        if (isPortrait == false and baikeWindow.cardImageLayout3 ~= nil and baikeWindow.sumHotspot >= 3) then
-            baikeWindow.cardImageLayout1:rotation(-10)
-            baikeWindow.cardImageLayout3:rotation(10)
+        setCardImageLayoutSize(cardWindow.data, 1, cardWindow.cardImageLayout1, cardWindow.cardImageView1, cardWindow.cardBgView1, isPortrait)
+        setCardImageLayoutSize(cardWindow.data, 2, cardWindow.cardImageLayout2, cardWindow.cardImageView2, cardWindow.cardBgView2, isPortrait)
+        setCardImageLayoutSize(cardWindow.data, 3, cardWindow.cardImageLayout3, cardWindow.cardImageView3, cardWindow.cardBgView3, isPortrait)
+        if (isPortrait == false and cardWindow.cardImageLayout3 ~= nil and cardWindow.sumHotspot >= 3) then
+            cardWindow.cardImageLayout1:rotation(-10)
+            cardWindow.cardImageLayout3:rotation(10)
         end
     end
-    setCardTitleViewSize(baikeWindow.data, baikeWindow.cardTitleLabel, isPortrait)
-    setCardContentImageView(baikeWindow.data, baikeWindow.cardContentImageView, baikeWindow.cardContentImageShadowView, isPortrait)
+    setCardTitleViewSize(cardWindow.data, cardWindow.cardTitleLabel, isPortrait)
+    setCardContentImageView(cardWindow.data, cardWindow.cardContentImageView, cardWindow.cardContentImageShadowView, isPortrait)
 end
 
 local function registerMedia()
@@ -527,7 +527,7 @@ local function registerWindow()
     local callbackTable = {
         onShow = function()
             if (System.android()) then
-                setBlurImage(baikeWindow.cardBlurImageView, blurUrl)
+                setBlurImage(cardWindow.cardBlurImageView, blurUrl)
             end
         end
     }
@@ -592,7 +592,7 @@ local function createCardGroupView(data, isPortrait)
     local cardImageLayout1, cardImageView1, cardBgView1 = createCardImageItem()
     local cardImageLayout2, cardImageView2, cardBgView2 = createCardImageItem()
     local cardImageLayout3, cardImageView3, cardBgView3
-    if (baikeWindow.sumHotspot == 3) then
+    if (cardWindow.sumHotspot == 3) then
         cardImageLayout3, cardImageView3, cardBgView3 = createCardImageItem()
     end
     setCardImageLayoutSize(data, 1, cardImageLayout1, cardImageView1, cardBgView1, isPortrait)
@@ -608,7 +608,7 @@ local function createCardBottomView(data, isPortrait)
     local cardFlexView = GradientView()
     cardFlexView:gradient(0xFA8831, 0xF45016)
 
-    local text = "运气真好，还差" .. tostring(baikeWindow.sumHotspot - baikeWindow.collectCount) .. "张就成功啦"
+    local text = "运气真好，还差" .. tostring(cardWindow.sumHotspot - cardWindow.collectCount) .. "张就成功啦"
     local cardFlexLabel = Label(Native)
     cardFlexLabel:text(text)
     cardFlexLabel:textColor(0xFFFFFF)
@@ -664,84 +664,84 @@ local function notCollectState(data)
     -- print("LuaView notCollectState "..Native:tableToJson(dataTable))
     local contentImageUrl = collectTable.imageUrl
     if (contentImageUrl ~= nil) then
-        baikeWindow.cardContentImageView:image(contentImageUrl)
+        cardWindow.cardContentImageView:image(contentImageUrl)
     end
     local content = collectTable.content
     if content ~= nil then
-        baikeWindow.cardTitleLabel:text(content)
+        cardWindow.cardTitleLabel:text(content)
     else
-        baikeWindow.cardTitleLabel:text("")
+        cardWindow.cardTitleLabel:text("")
     end
     local hotspotArrayTable = dataTable.hotspotArray
     if (hotspotArrayTable == nil) then
         return
     end
     -- print("LuaView hotspotArrayTable "..Native:tableToJson(hotspotArrayTable))
-    if (baikeWindow.isHotOrder1) then
+    if (cardWindow.isHotOrder1) then
         local HotOrderTable = hotspotArrayTable[1]
-        if (HotOrderTable == nil or baikeWindow.cardImageView1 == nil) then
+        if (HotOrderTable == nil or cardWindow.cardImageView1 == nil) then
             return
         end
         local imageUrl = HotOrderTable.imageUrl
         if (imageUrl ~= nil) then
-            if (baikeWindow.hotspotOrder == 1) then
-                setBlurImage(baikeWindow.cardBlurImageView, imageUrl)
-                startShowAnimation(baikeWindow.cardImageView1, alphaTime)
+            if (cardWindow.hotspotOrder == 1) then
+                setBlurImage(cardWindow.cardBlurImageView, imageUrl)
+                startShowAnimation(cardWindow.cardImageView1, alphaTime)
             end
-            baikeWindow.cardImageView1:image(imageUrl)
+            cardWindow.cardImageView1:image(imageUrl)
         end
     else
-        if (baikeWindow.cardImageView1 ~= nil) then
-            baikeWindow.cardImageView1:image(Data(OS_ICON_CARD_NO_COLLECT))
-            baikeWindow.cardBgView1:hide()
+        if (cardWindow.cardImageView1 ~= nil) then
+            cardWindow.cardImageView1:image(Data(OS_ICON_CARD_NO_COLLECT))
+            cardWindow.cardBgView1:hide()
         end
     end
 
-    if (baikeWindow.isHotOrder2) then
+    if (cardWindow.isHotOrder2) then
         local HotOrderTable = hotspotArrayTable[2]
-        if (HotOrderTable == nil or baikeWindow.cardImageView2 == nil) then
+        if (HotOrderTable == nil or cardWindow.cardImageView2 == nil) then
             return
         end
         local imageUrl = HotOrderTable.imageUrl
         if (imageUrl ~= nil) then
-            if (baikeWindow.hotspotOrder == 2) then
-                setBlurImage(baikeWindow.cardBlurImageView, imageUrl)
-                startShowAnimation(baikeWindow.cardImageView2, alphaTime)
+            if (cardWindow.hotspotOrder == 2) then
+                setBlurImage(cardWindow.cardBlurImageView, imageUrl)
+                startShowAnimation(cardWindow.cardImageView2, alphaTime)
             end
-            baikeWindow.cardImageView2:image(imageUrl)
+            cardWindow.cardImageView2:image(imageUrl)
         end
     else
-        if (baikeWindow.cardImageView2 ~= nil) then
-            baikeWindow.cardImageView2:image(Data(OS_ICON_CARD_NO_COLLECT))
-            baikeWindow.cardBgView2:hide()
+        if (cardWindow.cardImageView2 ~= nil) then
+            cardWindow.cardImageView2:image(Data(OS_ICON_CARD_NO_COLLECT))
+            cardWindow.cardBgView2:hide()
         end
     end
 
-    if (baikeWindow.isHotOrder3) then
+    if (cardWindow.isHotOrder3) then
         local HotOrderTable = hotspotArrayTable[3]
-        if (HotOrderTable == nil or baikeWindow.cardImageView3 == nil) then
+        if (HotOrderTable == nil or cardWindow.cardImageView3 == nil) then
             return
         end
         local imageUrl = HotOrderTable.imageUrl
         if (imageUrl ~= nil) then
-            if (baikeWindow.hotspotOrder == 3) then
-                setBlurImage(baikeWindow.cardBlurImageView, imageUrl)
-                startShowAnimation(baikeWindow.cardImageView3, alphaTime)
+            if (cardWindow.hotspotOrder == 3) then
+                setBlurImage(cardWindow.cardBlurImageView, imageUrl)
+                startShowAnimation(cardWindow.cardImageView3, alphaTime)
             end
-            baikeWindow.cardImageView3:image(imageUrl)
+            cardWindow.cardImageView3:image(imageUrl)
         end
     else
-        if (baikeWindow.cardImageView3 ~= nil) then
-            baikeWindow.cardImageView3:image(Data(OS_ICON_CARD_NO_COLLECT))
-            baikeWindow.cardBgView3:hide()
+        if (cardWindow.cardImageView3 ~= nil) then
+            cardWindow.cardImageView3:image(Data(OS_ICON_CARD_NO_COLLECT))
+            cardWindow.cardBgView3:hide()
         end
     end
 end
 
 --收集成功 未领取
 local function collectState(data)
-    baikeWindow.cardBottomView:gradient(0xFA8831, 0xF45016)
-    baikeWindow.cardFlexView:hide()
+    cardWindow.cardBottomView:gradient(0xFA8831, 0xF45016)
+    cardWindow.cardFlexView:hide()
     local dataTable = data.data
     if (dataTable == nil) then
         return
@@ -752,154 +752,154 @@ local function collectState(data)
     end
     local btnTitle = collectTable.btnTitle
     if (btnTitle ~= nil) then
-        baikeWindow.cardFlexLabel:text(btnTitle)
+        cardWindow.cardFlexLabel:text(btnTitle)
     end
     local content = collectTable.content
     if content ~= nil then
-        baikeWindow.cardTitleLabel:text(content)
+        cardWindow.cardTitleLabel:text(content)
     else
-        baikeWindow.cardTitleLabel:text("")
+        cardWindow.cardTitleLabel:text("")
     end
 
     local imageUrl = collectTable.imageUrl
     if (imageUrl ~= nil) then
-        baikeWindow.cardContentImageView:image(imageUrl)
+        cardWindow.cardContentImageView:image(imageUrl)
     end
     local hotspotArrayTable = dataTable.hotspotArray
     if (hotspotArrayTable == nil) then
         return
     end
-    if (baikeWindow.isHotOrder1) then
+    if (cardWindow.isHotOrder1) then
         local HotOrderTable = hotspotArrayTable[1]
-        if (HotOrderTable == nil or baikeWindow.cardImageView1 == nil) then
+        if (HotOrderTable == nil or cardWindow.cardImageView1 == nil) then
             return
         end
         local imageUrl = HotOrderTable.imageUrl
         if (imageUrl ~= nil) then
-            baikeWindow.cardImageView1:image(imageUrl)
-            if (baikeWindow.hotspotOrder == 1) then
-                setBlurImage(baikeWindow.cardBlurImageView, imageUrl)
-                startShowAnimation(baikeWindow.cardImageView1, alphaTime)
+            cardWindow.cardImageView1:image(imageUrl)
+            if (cardWindow.hotspotOrder == 1) then
+                setBlurImage(cardWindow.cardBlurImageView, imageUrl)
+                startShowAnimation(cardWindow.cardImageView1, alphaTime)
             end
         end
     else
-        if (baikeWindow.cardImageView1 ~= nil) then
-            baikeWindow.cardImageView1:image(Data(OS_ICON_CARD_NO_COLLECT))
-            baikeWindow.cardBgView1:hide()
+        if (cardWindow.cardImageView1 ~= nil) then
+            cardWindow.cardImageView1:image(Data(OS_ICON_CARD_NO_COLLECT))
+            cardWindow.cardBgView1:hide()
         end
     end
 
-    if (baikeWindow.isHotOrder2) then
+    if (cardWindow.isHotOrder2) then
         local HotOrderTable = hotspotArrayTable[2]
-        if (HotOrderTable == nil or baikeWindow.cardImageView2 == nil) then
+        if (HotOrderTable == nil or cardWindow.cardImageView2 == nil) then
             return
         end
         local imageUrl = HotOrderTable.imageUrl
         if (imageUrl ~= nil) then
-            baikeWindow.cardImageView2:image(imageUrl)
-            if (baikeWindow.hotspotOrder == 2) then
-                setBlurImage(baikeWindow.cardBlurImageView, imageUrl)
-                startShowAnimation(baikeWindow.cardImageView2, alphaTime)
+            cardWindow.cardImageView2:image(imageUrl)
+            if (cardWindow.hotspotOrder == 2) then
+                setBlurImage(cardWindow.cardBlurImageView, imageUrl)
+                startShowAnimation(cardWindow.cardImageView2, alphaTime)
             end
         end
     else
-        if (baikeWindow.cardImageView2 ~= nil) then
-            baikeWindow.cardImageView2:image(Data(OS_ICON_CARD_NO_COLLECT))
-            baikeWindow.cardBgView2:hide()
+        if (cardWindow.cardImageView2 ~= nil) then
+            cardWindow.cardImageView2:image(Data(OS_ICON_CARD_NO_COLLECT))
+            cardWindow.cardBgView2:hide()
         end
     end
 
-    if (baikeWindow.isHotOrder3) then
+    if (cardWindow.isHotOrder3) then
         local HotOrderTable = hotspotArrayTable[3]
-        if (HotOrderTable == nil or baikeWindow.cardImageView3 == nil) then
+        if (HotOrderTable == nil or cardWindow.cardImageView3 == nil) then
             return
         end
         local imageUrl = HotOrderTable.imageUrl
         if (imageUrl ~= nil) then
-            baikeWindow.cardImageView3:image(imageUrl)
-            if (baikeWindow.hotspotOrder == 3) then
-                setBlurImage(baikeWindow.cardBlurImageView, imageUrl)
-                startShowAnimation(baikeWindow.cardImageView3, alphaTime)
+            cardWindow.cardImageView3:image(imageUrl)
+            if (cardWindow.hotspotOrder == 3) then
+                setBlurImage(cardWindow.cardBlurImageView, imageUrl)
+                startShowAnimation(cardWindow.cardImageView3, alphaTime)
             end
         end
     else
-        if (baikeWindow.cardImageView3 ~= nil) then
-            baikeWindow.cardImageView3:image(Data(OS_ICON_CARD_NO_COLLECT))
-            baikeWindow.cardBgView3:hide()
+        if (cardWindow.cardImageView3 ~= nil) then
+            cardWindow.cardImageView3:image(Data(OS_ICON_CARD_NO_COLLECT))
+            cardWindow.cardBgView3:hide()
         end
     end
 
     --点击lua文件
-    baikeWindow.cardBottomView:onClick(function()
+    cardWindow.cardBottomView:onClick(function()
         --TODO领奖操作逻辑处理
-        baikeWindow.collectStatus = 3
+        cardWindow.collectStatus = 3
         postUserCardInfo()
         local clickLinkUrl = getHotspotClickTrackLink(data, 1)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
-        if (baikeWindow.launchPlanId ~= nil) then
-            osTrack(baikeWindow.launchPlanId, 3, 1)
+        if (cardWindow.launchPlanId ~= nil) then
+            osTrack(cardWindow.launchPlanId, 3, 1)
         end
         if collectTable.linkType == 2 then
-            Native:widgetEvent(eventTypeClick, baikeWindow.id, adTypeName, actionTypeOpenUrl, collectTable.linkUrl)
+            Native:widgetEvent(eventTypeClick, cardWindow.id, adTypeName, actionTypeOpenUrl, collectTable.linkUrl)
             performWithDelay(function()
                 closeView()
             end, 500)
             return
         end
 
-        baikeWindow.cardFlexLabel:text("确定")
-        baikeWindow.TopView:removeAllViews()
+        cardWindow.cardFlexLabel:text("确定")
+        cardWindow.cardWindowTopContentView:removeAllViews()
         local isPortrait = Native:isPortraitScreen()
-        setCardBlurViewViewSize(baikeWindow.data, baikeWindow.cardBlurImageView, isPortrait)
-        setCardCloseImageView(baikeWindow.data, baikeWindow.baikeCloseLayout, baikeWindow.cardCloseImageView, isPortrait)
-        setCardTitleViewSize(baikeWindow.data, baikeWindow.cardTitleLabel, isPortrait)
-        setCardContentImageView(baikeWindow.data, baikeWindow.cardContentImageView, baikeWindow.cardContentImageShadowView, isPortrait)
-        baikeWindow.TopView:addView(baikeWindow.cardBlurImageView)
-        baikeWindow.TopView:addView(baikeWindow.cardCloseImageView)
-        baikeWindow.TopView:addView(baikeWindow.cardTitleLabel)
-        baikeWindow.TopView:addView(baikeWindow.cardContentImageView)
+        setCardBlurViewViewSize(cardWindow.data, cardWindow.cardBlurImageView, isPortrait)
+        setCardCloseImageView(cardWindow.data, cardWindow.cardCloseLayout, cardWindow.cardCloseImageView, isPortrait)
+        setCardTitleViewSize(cardWindow.data, cardWindow.cardTitleLabel, isPortrait)
+        setCardContentImageView(cardWindow.data, cardWindow.cardContentImageView, cardWindow.cardContentImageShadowView, isPortrait)
+        cardWindow.cardWindowTopContentView:addView(cardWindow.cardBlurImageView)
+        cardWindow.cardWindowTopContentView:addView(cardWindow.cardCloseImageView)
+        cardWindow.cardWindowTopContentView:addView(cardWindow.cardTitleLabel)
+        cardWindow.cardWindowTopContentView:addView(cardWindow.cardContentImageView)
 
         local successTable = dataTable.success
         if (successTable == nil) then
             return
         end
 
-        baikeWindow.cardBottomView:onClick(function()
-            Native:widgetEvent(eventTypeClick, baikeWindow.id, adTypeName, actionTypeGetItem, successTable.itemId)
+        cardWindow.cardBottomView:onClick(function()
+            Native:widgetEvent(eventTypeClick, cardWindow.id, adTypeName, actionTypeGetItem, successTable.itemId)
             closeView()
         end)
 
         local title = successTable.title
         if (title ~= nil) then
-            baikeWindow.cardTitleLabel:text(title)
+            cardWindow.cardTitleLabel:text(title)
         end
 
         local imageUrl = successTable.imageUrl
         if (imageUrl ~= nil) then
-            baikeWindow.cardContentImageView:image(imageUrl)
+            cardWindow.cardContentImageView:image(imageUrl)
         end
     end)
 end
 
 local function successState(data)
-    baikeWindow.cardBottomView:gradient(0xFA8831, 0xF45016)
-    baikeWindow.cardFlexView:hide()
-    baikeWindow.cardFlexLabel:text("确定") --写死？？？
+    cardWindow.cardBottomView:gradient(0xFA8831, 0xF45016)
+    cardWindow.cardFlexView:hide()
+    cardWindow.cardFlexLabel:text("确定") --写死？？？
 
-    baikeWindow.TopView:removeAllViews()
+    cardWindow.cardWindowTopContentView:removeAllViews()
     local isPortrait = Native:isPortraitScreen()
-    setCardBlurViewViewSize(baikeWindow.data, baikeWindow.cardBlurImageView, isPortrait)
-    setCardCloseImageView(baikeWindow.data, baikeWindow.baikeCloseLayout, baikeWindow.cardCloseImageView, isPortrait)
-    setCardTitleViewSize(baikeWindow.data, baikeWindow.cardTitleLabel, isPortrait)
-    setCardContentImageView(baikeWindow.data, baikeWindow.cardContentImageView, baikeWindow.cardContentImageShadowView, isPortrait)
-    baikeWindow.TopView:addView(baikeWindow.cardBlurImageView)
-    baikeWindow.TopView:addView(baikeWindow.cardCloseImageView)
-    baikeWindow.TopView:addView(baikeWindow.cardTitleLabel)
-    baikeWindow.TopView:addView(baikeWindow.cardContentImageView)
-    baikeWindow.cardTitleLabel:text("您已经领取过这套卡牌奖励哦") --写死？？？
-    baikeWindow.cardBottomView:onClick(function()
+    setCardBlurViewViewSize(cardWindow.data, cardWindow.cardBlurImageView, isPortrait)
+    setCardCloseImageView(cardWindow.data, cardWindow.cardCloseLayout, cardWindow.cardCloseImageView, isPortrait)
+    setCardTitleViewSize(cardWindow.data, cardWindow.cardTitleLabel, isPortrait)
+    setCardContentImageView(cardWindow.data, cardWindow.cardContentImageView, cardWindow.cardContentImageShadowView, isPortrait)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardBlurImageView)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardCloseImageView)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardTitleLabel)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardContentImageView)
+    cardWindow.cardTitleLabel:text("您已经领取过这套卡牌奖励哦") --写死？？？
+    cardWindow.cardBottomView:onClick(function()
         closeView()
     end)
     local dataTable = data.data
@@ -913,99 +913,99 @@ local function successState(data)
 
     local successImageUrl = successTable.imageUrl
     if (successImageUrl ~= nil) then
-        baikeWindow.cardContentImageView:image(successImageUrl)
+        cardWindow.cardContentImageView:image(successImageUrl)
     end
     local hotspotArrayTable = dataTable.hotspotArray
-    if (hotspotArrayTable == nil or baikeWindow.hotspotOrder == nil) then
+    if (hotspotArrayTable == nil or cardWindow.hotspotOrder == nil) then
         return
     end
-    local hotspotItemTable = hotspotArrayTable[baikeWindow.hotspotOrder]
+    local hotspotItemTable = hotspotArrayTable[cardWindow.hotspotOrder]
     if (hotspotItemTable == nil) then
         return
     end
     local imageUrl = hotspotItemTable.imageUrl
     if (imageUrl ~= nil) then
-        setBlurImage(baikeWindow.cardBlurImageView, imageUrl)
+        setBlurImage(cardWindow.cardBlurImageView, imageUrl)
     end
 end
 
 local function onCreate(data)
-    if (baikeWindow.launchPlanId ~= nil) then
-        osTrack(baikeWindow.launchPlanId, 1, 1)
+    if (cardWindow.launchPlanId ~= nil) then
+        osTrack(cardWindow.launchPlanId, 1, 1)
     end
 
     local isPortrait = Native:isPortraitScreen()
-    baikeWindow.media = registerMedia()
-    baikeWindow.window = registerWindow()
-    baikeWindow.luaView = createLuaView(isPortrait)
+    cardWindow.media = registerMedia()
+    cardWindow.window = registerWindow()
+    cardWindow.luaView = createLuaView(isPortrait)
 
-    baikeWindow.baikeWindowView = createCardView(data, isPortrait)
-    baikeWindow.TopView = createCardTopContentView(data, isPortrait)
-    baikeWindow.cardBlurImageView = createCardBlurView(data, isPortrait)
-    baikeWindow.TopView:addView(baikeWindow.cardBlurImageView)
+    cardWindow.cardWindowView = createCardView(data, isPortrait)
+    cardWindow.cardWindowTopContentView = createCardTopContentView(data, isPortrait)
+    cardWindow.cardBlurImageView = createCardBlurView(data, isPortrait)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardBlurImageView)
 
-    baikeWindow.baikeCloseLayout, baikeWindow.cardCloseImageView = createCardCloseImageView(data, isPortrait)
-    baikeWindow.cardBottomView, baikeWindow.cardFlexView, baikeWindow.cardFlexLabel = createCardBottomView(data, isPortrait)
+    cardWindow.cardCloseLayout, cardWindow.cardCloseImageView = createCardCloseImageView(data, isPortrait)
+    cardWindow.cardBottomView, cardWindow.cardFlexView, cardWindow.cardFlexLabel = createCardBottomView(data, isPortrait)
 
     -- 首先判断状态
-    if (baikeWindow.collectStatus ~= 3) then
-        baikeWindow.cardImageLayout1, baikeWindow.cardImageView1, baikeWindow.cardBgView1, baikeWindow.cardImageLayout2, baikeWindow.cardImageView2, baikeWindow.cardBgView2, baikeWindow.cardImageLayout3, baikeWindow.cardImageView3, baikeWindow.cardBgView3 = createCardGroupView(data, isPortrait)
-        baikeWindow.TopView:addView(baikeWindow.cardImageLayout1)
-        if (baikeWindow.sumHotspot == 3) then
-            baikeWindow.TopView:addView(baikeWindow.cardImageLayout3)
+    if (cardWindow.collectStatus ~= 3) then
+        cardWindow.cardImageLayout1, cardWindow.cardImageView1, cardWindow.cardBgView1, cardWindow.cardImageLayout2, cardWindow.cardImageView2, cardWindow.cardBgView2, cardWindow.cardImageLayout3, cardWindow.cardImageView3, cardWindow.cardBgView3 = createCardGroupView(data, isPortrait)
+        cardWindow.cardWindowTopContentView:addView(cardWindow.cardImageLayout1)
+        if (cardWindow.sumHotspot == 3) then
+            cardWindow.cardWindowTopContentView:addView(cardWindow.cardImageLayout3)
         end
-        baikeWindow.TopView:addView(baikeWindow.cardImageLayout2)
-        if (isPortrait == false and baikeWindow.sumHotspot >= 3) then
-            baikeWindow.cardImageLayout1:rotation(-10)
-            baikeWindow.cardImageLayout3:rotation(10)
+        cardWindow.cardWindowTopContentView:addView(cardWindow.cardImageLayout2)
+        if (isPortrait == false and cardWindow.sumHotspot >= 3) then
+            cardWindow.cardImageLayout1:rotation(-10)
+            cardWindow.cardImageLayout3:rotation(10)
         end
     end
 
 
-    baikeWindow.cardTitleLabel = createTitleView(data, isPortrait)
-    baikeWindow.cardContentImageView, baikeWindow.cardContentImageShadowView = createCardContentImageView(data, isPortrait)
+    cardWindow.cardTitleLabel = createTitleView(data, isPortrait)
+    cardWindow.cardContentImageView, cardWindow.cardContentImageShadowView = createCardContentImageView(data, isPortrait)
 
-    baikeWindow.cardBottomView:addView(baikeWindow.cardFlexView)
-    baikeWindow.cardBottomView:addView(baikeWindow.cardFlexLabel)
+    cardWindow.cardBottomView:addView(cardWindow.cardFlexView)
+    cardWindow.cardBottomView:addView(cardWindow.cardFlexLabel)
 
-    baikeWindow.TopView:addView(baikeWindow.baikeCloseLayout)
-    baikeWindow.TopView:addView(baikeWindow.cardTitleLabel)
-    baikeWindow.TopView:addView(baikeWindow.cardContentImageShadowView)
-    baikeWindow.TopView:addView(baikeWindow.cardContentImageView)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardCloseLayout)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardTitleLabel)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardContentImageShadowView)
+    cardWindow.cardWindowTopContentView:addView(cardWindow.cardContentImageView)
 
-    baikeWindow.baikeWindowView:addView(baikeWindow.TopView)
+    cardWindow.cardWindowView:addView(cardWindow.cardWindowTopContentView)
 
-    baikeWindow.baikeWindowView:addView(baikeWindow.cardBottomView)
+    cardWindow.cardWindowView:addView(cardWindow.cardBottomView)
 
-    baikeWindow.luaView:addView(baikeWindow.baikeWindowView)
+    cardWindow.luaView:addView(cardWindow.cardWindowView)
 
     local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         if System.ios() then
-            baikeWindow.baikeWindowView:y(math.max(screenWidth, screenHeight))
-            startViewTranslationAnim(baikeWindow.baikeWindowView, 0, -baikeWindow.portraitHeight)
+            cardWindow.cardWindowView:y(math.max(screenWidth, screenHeight))
+            startViewTranslationAnim(cardWindow.cardWindowView, 0, -cardWindow.portraitHeight)
         else
-            baikeWindow.baikeWindowView:translation(0, 438 * scale)
-            startViewTranslationAnim(baikeWindow.baikeWindowView, 0, 0)
+            cardWindow.cardWindowView:translation(0, 438 * scale)
+            startViewTranslationAnim(cardWindow.cardWindowView, 0, 0)
         end
 
     else
         if System.ios() then
-            baikeWindow.baikeWindowView:x(math.max(screenWidth, screenHeight))
-            startViewTranslationAnim(baikeWindow.baikeWindowView, -200 * scale, 0)
+            cardWindow.cardWindowView:x(math.max(screenWidth, screenHeight))
+            startViewTranslationAnim(cardWindow.cardWindowView, -200 * scale, 0)
         else
-            baikeWindow.baikeWindowView:translation(200 * scale, 0)
-            startViewTranslationAnim(baikeWindow.baikeWindowView, 0, 0)
+            cardWindow.cardWindowView:translation(200 * scale, 0)
+            startViewTranslationAnim(cardWindow.cardWindowView, 0, 0)
         end
     end
 
-    baikeWindow.baikeWindowView:onClick(function()
+    cardWindow.cardWindowView:onClick(function()
     end)
 
-    baikeWindow.baikeCloseLayout:onClick(function()
+    cardWindow.cardCloseLayout:onClick(function()
         local isPortrait = Native:isPortraitScreen()
         if (isPortrait) then
-            startViewTranslationAnim(baikeWindow.baikeWindowView, 0, 438 * scale, {
+            startViewTranslationAnim(cardWindow.cardWindowView, 0, 438 * scale, {
                 onCancel = function()
                     closeView()
                 end,
@@ -1019,10 +1019,10 @@ local function onCreate(data)
         end
     end)
 
-    baikeWindow.luaView:onClick(function()
+    cardWindow.luaView:onClick(function()
         local isPortrait = Native:isPortraitScreen()
         if (isPortrait) then
-            startViewTranslationAnim(baikeWindow.baikeWindowView, 0, 438 * scale, {
+            startViewTranslationAnim(cardWindow.cardWindowView, 0, 438 * scale, {
                 onCancel = function()
                     closeView()
                 end,
@@ -1034,7 +1034,7 @@ local function onCreate(data)
                 end
             })
         else
-            startViewTranslationAnim(baikeWindow.baikeWindowView, 200 * scale, 0, {
+            startViewTranslationAnim(cardWindow.cardWindowView, 200 * scale, 0, {
                 onCancel = function()
                     closeView()
                 end,
@@ -1049,21 +1049,21 @@ local function onCreate(data)
     end)
     --- -逻辑处理----
     ------ 状态判断--------
-    if (baikeWindow.collectStatus == 1) then
+    if (cardWindow.collectStatus == 1) then
         notCollectState(data)
-    elseif (baikeWindow.collectStatus == 2) then
+    elseif (cardWindow.collectStatus == 2) then
         collectState(data)
     else
         successState(data)
     end
-    Native:widgetEvent(eventTypeShow, baikeWindow.id, adTypeName, actionTypeNone, "")
+    Native:widgetEvent(eventTypeShow, cardWindow.id, adTypeName, actionTypeNone, "")
 end
 
 local function setConfig(data)
     if (data == nil) then
         return
     end
-    baikeWindow.data = data
+    cardWindow.data = data
     local sumHotspot = data.sumHotspot
     if (sumHotspot == nil) then
         sumHotspot = 2
@@ -1074,63 +1074,63 @@ local function setConfig(data)
     end
     local screenWidth, screenHeight = Native:getVideoSize(2)
     local videoWidth, videoHight, marginTop = Native:getVideoSize(0)
-    baikeWindow.portraitWidth = math.min(screenWidth, screenHeight) --宽
-    baikeWindow.portraitHeight = math.max(screenWidth, screenHeight) - videoHight - marginTop --高
-    baikeWindow.sumHotspot = sumHotspot
-    baikeWindow.hotspotOrder = hotspotOrder + 1 --当前热点序号
-    baikeWindow.hotspotRatio = 0.333 --收集占半分比
-    baikeWindow.collectStatus = 1
-    baikeWindow.collectCount = 1
-    baikeWindow.id = "os_card_window" .. tostring(data.id) .. tostring(data.hotspotOrder)
-    baikeWindow.launchPlanId = data.launchPlanId
-    baikeWindow.isHotOrder1 = false
-    baikeWindow.isHotOrder2 = false
-    baikeWindow.isHotOrder3 = false
+    cardWindow.portraitWidth = math.min(screenWidth, screenHeight) --宽
+    cardWindow.portraitHeight = math.max(screenWidth, screenHeight) - videoHight - marginTop --高
+    cardWindow.sumHotspot = sumHotspot
+    cardWindow.hotspotOrder = hotspotOrder + 1 --当前热点序号
+    cardWindow.hotspotRatio = 0.333 --收集占半分比
+    cardWindow.collectStatus = 1
+    cardWindow.collectCount = 1
+    cardWindow.id = "os_card_window" .. tostring(data.id) .. tostring(data.hotspotOrder)
+    cardWindow.launchPlanId = data.launchPlanId
+    cardWindow.isHotOrder1 = false
+    cardWindow.isHotOrder2 = false
+    cardWindow.isHotOrder3 = false
     if data.data.userCardInfo ~= nil then
         -- print("LuaView os card window userCardInfo "..Native:tableToJson(data.data.userCardInfo))
-        baikeWindow.userCardInfo = data.data.userCardInfo
-        if baikeWindow.hotspotOrder == 1 then
-            baikeWindow.userCardInfo.isHotOrder1 = true
-        elseif baikeWindow.hotspotOrder == 2 then
-            baikeWindow.userCardInfo.isHotOrder2 = true
-        elseif baikeWindow.hotspotOrder == 3 then
-            baikeWindow.userCardInfo.isHotOrder3 = true
+        cardWindow.userCardInfo = data.data.userCardInfo
+        if cardWindow.hotspotOrder == 1 then
+            cardWindow.userCardInfo.isHotOrder1 = true
+        elseif cardWindow.hotspotOrder == 2 then
+            cardWindow.userCardInfo.isHotOrder2 = true
+        elseif cardWindow.hotspotOrder == 3 then
+            cardWindow.userCardInfo.isHotOrder3 = true
         end
 
-        baikeWindow.collectStatus = baikeWindow.userCardInfo.collectStatus
-        baikeWindow.isHotOrder1 = baikeWindow.userCardInfo.isHotOrder1
-        baikeWindow.isHotOrder2 = baikeWindow.userCardInfo.isHotOrder2 --是否收集状态
-        baikeWindow.isHotOrder3 = baikeWindow.userCardInfo.isHotOrder3
-        baikeWindow.collectStatus = checkCollectStatus()
-        if baikeWindow.userCardInfo.collectStatus == 1 then
+        cardWindow.collectStatus = cardWindow.userCardInfo.collectStatus
+        cardWindow.isHotOrder1 = cardWindow.userCardInfo.isHotOrder1
+        cardWindow.isHotOrder2 = cardWindow.userCardInfo.isHotOrder2 --是否收集状态
+        cardWindow.isHotOrder3 = cardWindow.userCardInfo.isHotOrder3
+        cardWindow.collectStatus = checkCollectStatus()
+        if cardWindow.userCardInfo.collectStatus == 1 then
             postUserCardInfo()
         end
-        if (baikeWindow.collectStatus == 2) then
+        if (cardWindow.collectStatus == 2) then
             local showLinkUrl = getHotspotExposureTrackLink(data, 1)
             if (showLinkUrl ~= nil) then
                 Native:get(showLinkUrl)
             end
-            if (baikeWindow.launchPlanId ~= nil) then
-                osTrack(baikeWindow.launchPlanId, 2, 1)
+            if (cardWindow.launchPlanId ~= nil) then
+                osTrack(cardWindow.launchPlanId, 2, 1)
             end
         end
     else
-        if baikeWindow.hotspotOrder == 1 then
-            baikeWindow.isHotOrder1 = true
-        elseif baikeWindow.hotspotOrder == 2 then
-            baikeWindow.isHotOrder2 = true
-        elseif baikeWindow.hotspotOrder == 3 then
-            baikeWindow.isHotOrder3 = true
+        if cardWindow.hotspotOrder == 1 then
+            cardWindow.isHotOrder1 = true
+        elseif cardWindow.hotspotOrder == 2 then
+            cardWindow.isHotOrder2 = true
+        elseif cardWindow.hotspotOrder == 3 then
+            cardWindow.isHotOrder3 = true
         end
         postUserCardInfo()
     end
-    if (baikeWindow.sumHotspot == 2) then
-        if baikeWindow.collectCount < 2 then
-            baikeWindow.hotspotRatio = baikeWindow.collectCount / 2.0
+    if (cardWindow.sumHotspot == 2) then
+        if cardWindow.collectCount < 2 then
+            cardWindow.hotspotRatio = cardWindow.collectCount / 2.0
         end
-    elseif (baikeWindow.sumHotspot == 3) then
-        if baikeWindow.collectCount < 3 then
-            baikeWindow.hotspotRatio = baikeWindow.collectCount / 3.0
+    elseif (cardWindow.sumHotspot == 3) then
+        if cardWindow.collectCount < 3 then
+            cardWindow.hotspotRatio = cardWindow.collectCount / 3.0
         end
     end
     -- cardWindow.collectStatus = 3 --1.收集未成功 2.收集成功 3.领取成功
@@ -1146,10 +1146,10 @@ local function setConfig(data)
 end
 
 function show(args)
-    if (args == nil or args.data == nil or baikeWindow.luaView ~= nil) then
+    if (args == nil or args.data == nil or cardWindow.luaView ~= nil) then
         return
     end
-    baikeWindow.request = HttpRequest()
+    cardWindow.request = HttpRequest()
     setConfig(args.data)
 
     onCreate(args.data)

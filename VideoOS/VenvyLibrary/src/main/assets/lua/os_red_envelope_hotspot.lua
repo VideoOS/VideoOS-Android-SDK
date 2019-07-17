@@ -11,13 +11,13 @@ require "os_string"
 require "os_constant"
 require "os_util"
 require "os_track"
-baike = object:new()
+redEnvelope = object:new()
 local adTypeName = "redEnvelope"
 local scale = getScale()
 local OS_ICON_WEDGE_CLOSE = "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"
 local OS_ICON_CARD_IMAGE_BG = "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"
 
-baike.requestIds = {}
+redEnvelope.requestIds = {}
 local function translationAnim(x, y)
     local anim = Animation():translation(x, y):duration(0.3)
     return anim
@@ -65,14 +65,14 @@ local function getHotspotClickTrackLink(data, index)
 end
 
 local function closeView()
-    for key, value in pairs(baike.requestIds) do
+    for key, value in pairs(redEnvelope.requestIds) do
         if (value ~= nil) then
             Native:abort(value)
         end
     end
-    if Native:getCacheData(baike.id) == tostring(eventTypeShow) then
-        Native:widgetEvent(eventTypeClose, baike.id, adTypeName, actionTypeNone, "")
-        Native:deleteBatchCacheData({ baike.id })
+    if Native:getCacheData(redEnvelope.id) == tostring(eventTypeShow) then
+        Native:widgetEvent(eventTypeClose, redEnvelope.id, adTypeName, actionTypeNone, "")
+        Native:deleteBatchCacheData({ redEnvelope.id })
     end
     Native:destroyView()
 end
@@ -86,8 +86,8 @@ local function getPortraitLocation(data)
         return 0, 0, 0, 0
     end
 
-    if (baike.portraitWidth ~= nil and baike.portraitHeight ~= nil and baike.portraitX ~= nil and baike.portraitY ~= nil) then
-        return baike.portraitX, baike.portraitY, baike.portraitWidth, baike.portraitHeight
+    if (redEnvelope.portraitWidth ~= nil and redEnvelope.portraitHeight ~= nil and redEnvelope.portraitX ~= nil and redEnvelope.portraitY ~= nil) then
+        return redEnvelope.portraitX, redEnvelope.portraitY, redEnvelope.portraitWidth, redEnvelope.portraitHeight
     end
     local screenWidth, screenHeight = Native:getVideoSize(2)
     local videoWidth, videoHight = Native:getVideoSize(0)
@@ -113,11 +113,11 @@ local function getPortraitLocation(data)
     if (scaleY ~= nil) then
         y = math.min(screenWidth, screenHeight) * scaleY * sacleH
     end
-    baike.portraitX = x
-    baike.portraitY = y
-    baike.portraitWidth = width
-    baike.portraitHeight = height
-    return baike.portraitX, baike.portraitY, baike.portraitWidth, baike.portraitHeight
+    redEnvelope.portraitX = x
+    redEnvelope.portraitY = y
+    redEnvelope.portraitWidth = width
+    redEnvelope.portraitHeight = height
+    return redEnvelope.portraitX, redEnvelope.portraitY, redEnvelope.portraitWidth, redEnvelope.portraitHeight
 end
 
 --获取横屏位置  ratio=1.253  dataTable.width=0.248  positionX=0.037  positionY=0.531
@@ -129,8 +129,8 @@ local function getLandscapeLocation(data)
     if (dataTable == nil) then
         return 0, 0, 0, 0
     end
-    if (baike.landscapeWidth ~= nil and baike.landscapeHeight ~= nil and baike.landscapeX ~= nil and baike.landscapeY ~= nil) then
-        return baike.landscapeX, baike.landscapeY, baike.landscapeWidth, baike.landscapeHeight
+    if (redEnvelope.landscapeWidth ~= nil and redEnvelope.landscapeHeight ~= nil and redEnvelope.landscapeX ~= nil and redEnvelope.landscapeY ~= nil) then
+        return redEnvelope.landscapeX, redEnvelope.landscapeY, redEnvelope.landscapeWidth, redEnvelope.landscapeHeight
     end
     local screenWidth, screenHeight = Native:getVideoSize(2)
     local width = 0
@@ -153,11 +153,11 @@ local function getLandscapeLocation(data)
     if (scaleY ~= nil) then
         y = math.min(screenWidth, screenHeight) * scaleY
     end
-    baike.landscapeX = x
-    baike.landscapeY = y
-    baike.landscapeWidth = width
-    baike.landscapeHeight = height
-    return baike.landscapeX, baike.landscapeY, baike.landscapeWidth, baike.landscapeHeight
+    redEnvelope.landscapeX = x
+    redEnvelope.landscapeY = y
+    redEnvelope.landscapeWidth = width
+    redEnvelope.landscapeHeight = height
+    return redEnvelope.landscapeX, redEnvelope.landscapeY, redEnvelope.landscapeWidth, redEnvelope.landscapeHeight
 end
 
 local function getCardLocation(data, isPortrait) --设置当前容器大小
@@ -185,7 +185,7 @@ local function setLuaViewSize(luaview, isPortrait) --设置当前容器大小
 end
 
 local function setCardViewSize(data, redEnvelopeView, isPortrait) --设置卡牌显示容器大小
-    if (baike == nil or data == nil) then
+    if (redEnvelope == nil or data == nil) then
         return
     end
     local x, y, w, h = getCardLocation(data, isPortrait)
@@ -198,11 +198,11 @@ local function setCardImageLayoutSize(data, redEnvelopeImageLayout, redEnvelopeI
     end
     local x, y, w, h = 0, 0, 0, 0
     if (isPortrait) then
-        w = baike.portraitWidth * 0.515
-        h = baike.portraitHeight * 0.867
+        w = redEnvelope.portraitWidth * 0.515
+        h = redEnvelope.portraitHeight * 0.867
     else
-        w = baike.landscapeWidth * 0.515
-        h = baike.landscapeHeight * 0.867
+        w = redEnvelope.landscapeWidth * 0.515
+        h = redEnvelope.landscapeHeight * 0.867
     end
     redEnvelopeImageLayout:frame(x, y, w, h)
     redEnvelopeImage:frame(x, y, w, h)
@@ -215,12 +215,12 @@ local function setCardAdsLayoutSize(data, redEnvelopeAdsLabel, isPortrait)
     end
     local w, h = 0, 0, 0, 0
     if (isPortrait) then
-        w = baike.portraitWidth * 0.176
-        h = baike.portraitHeight * 0.114
+        w = redEnvelope.portraitWidth * 0.176
+        h = redEnvelope.portraitHeight * 0.114
         redEnvelopeAdsLabel:textSize(6)
     else
-        w = baike.landscapeWidth * 0.176
-        h = baike.landscapeHeight * 0.114
+        w = redEnvelope.landscapeWidth * 0.176
+        h = redEnvelope.landscapeHeight * 0.114
         redEnvelopeAdsLabel:textSize(10)
     end
     redEnvelopeAdsLabel:size(w, h)
@@ -233,10 +233,10 @@ local function setCardCloseLayoutSize(data, redEnvelopeCloseView, redEnvelopeClo
     end
     local w, h = 0, 0
     if (isPortrait) then
-        h = baike.portraitHeight * 0.144
+        h = redEnvelope.portraitHeight * 0.144
         w = h
     else
-        h = baike.landscapeHeight * 0.144
+        h = redEnvelope.landscapeHeight * 0.144
         w = h
     end
     redEnvelopeCloseImage:size(w * 0.368, w * 0.368)
@@ -258,16 +258,16 @@ local function setCardFlexLayoutSize(data, redEnvelopeFlexView, redEnvelopeFlexL
     end
     local x, y, w, h = 0, 0, 0, 0
     if (isPortrait) then
-        x = baike.portraitWidth * 0.239
-        y = baike.portraitHeight * 0.364
-        w = baike.portraitWidth * 0.762
-        h = baike.portraitHeight * 0.387
+        x = redEnvelope.portraitWidth * 0.239
+        y = redEnvelope.portraitHeight * 0.364
+        w = redEnvelope.portraitWidth * 0.762
+        h = redEnvelope.portraitHeight * 0.387
         redEnvelopeFlexLabel:textSize(8)
     else
-        x = baike.landscapeWidth * 0.239
-        y = baike.landscapeHeight * 0.364
-        w = baike.landscapeWidth * 0.762
-        h = baike.landscapeHeight * 0.387
+        x = redEnvelope.landscapeWidth * 0.239
+        y = redEnvelope.landscapeHeight * 0.364
+        w = redEnvelope.landscapeWidth * 0.762
+        h = redEnvelope.landscapeHeight * 0.387
         redEnvelopeFlexLabel:textSize(11)
     end
     redEnvelopeFlexLabel:frame(w * 0.4, 0, w, h)
@@ -278,12 +278,12 @@ end
 
 --屏幕旋转--
 local function rotationScreen(isPortrait)
-    setLuaViewSize(baike.luaview, isPortrait)
-    setCardViewSize(baike.data, baike.redEnvelopeView, isPortrait)
-    setCardImageLayoutSize(baike.data, baike.redEnvelopeImageLayout, baike.redEnvelopeImageView, isPortrait)
-    setCardAdsLayoutSize(baike.data, baike.redEnvelopeAdsLabel, isPortrait)
-    setCardCloseLayoutSize(baike.data, baike.redEnvelopeCloseLayout, baike.redEnvelopeCloseImage, isPortrait)
-    setCardFlexLayoutSize(baike.data, baike.redEnvelopeFlexView, baike.redEnvelopeFlexLabel, isPortrait)
+    setLuaViewSize(redEnvelope.luaview, isPortrait)
+    setCardViewSize(redEnvelope.data, redEnvelope.redEnvelopeView, isPortrait)
+    setCardImageLayoutSize(redEnvelope.data, redEnvelope.redEnvelopeImageLayout, redEnvelope.redEnvelopeImageView, isPortrait)
+    setCardAdsLayoutSize(redEnvelope.data, redEnvelope.redEnvelopeAdsLabel, isPortrait)
+    setCardCloseLayoutSize(redEnvelope.data, redEnvelope.redEnvelopeCloseLayout, redEnvelope.redEnvelopeCloseImage, isPortrait)
+    setCardFlexLayoutSize(redEnvelope.data, redEnvelope.redEnvelopeFlexView, redEnvelope.redEnvelopeFlexLabel, isPortrait)
 end
 
 local function registerMedia()
@@ -302,10 +302,10 @@ local function registerMedia()
             end
         end,
         onMediaPause = function()
-            baike.luaview:hide()
+            redEnvelope.luaview:hide()
         end,
         onMediaPlay = function()
-            baike.luaview:show()
+            redEnvelope.luaview:show()
         end
     }
     media:mediaCallback(callbackTable)
@@ -388,15 +388,15 @@ local function configSize(data)
     end
     local isShowClose = dataTable.isShowClose
     if (isShowClose ~= nil) then
-        baike.isShowClose = isShowClose
+        redEnvelope.isShowClose = isShowClose
     else
-        baike.isShowClose = false
+        redEnvelope.isShowClose = false
     end
     local isShowAds = dataTable.isShowAds
     if (isShowAds ~= nil) then
-        baike.isShowAds = isShowAds
+        redEnvelope.isShowAds = isShowAds
     else
-        baike.isShowAds = false
+        redEnvelope.isShowAds = false
     end
     dataTable.ratio = 1.253
     dataTable.width = 0.248
@@ -442,15 +442,15 @@ local function fillData(data)
     --开关控制关闭按钮
     local isShowClose = dataTable.isShowClose
     if (isShowClose ~= true) then
-        baike.redEnvelopeCloseLayout:hide()
+        redEnvelope.redEnvelopeCloseLayout:hide()
     end
     local isShowAds = dataTable.isShowAds
     if (isShowAds ~= true) then
-        baike.redEnvelopeAdsLabel:hide()
+        redEnvelope.redEnvelopeAdsLabel:hide()
     end
     local imageUrl = dataTable.imageUrl
     if (imageUrl ~= nil) then
-        baike.redEnvelopeImageView:image(imageUrl)
+        redEnvelope.redEnvelopeImageView:image(imageUrl)
     end
     local title = dataTable.title
     if (title ~= nil) then
@@ -467,83 +467,83 @@ local function fillData(data)
                 end
             end
         end
-        baike.redEnvelopeFlexLabel:text(newTitle)
+        redEnvelope.redEnvelopeFlexLabel:text(newTitle)
     end
 end
 
 local function onCreate(data)
-    local showLinkUrl = getHotspotExposureTrackLink(baike.data, 1)
+    local showLinkUrl = getHotspotExposureTrackLink(redEnvelope.data, 1)
     if (showLinkUrl ~= nil) then
         Native:get(showLinkUrl)
     end
-    if (baike.launchPlanId ~= nil) then
-        osTrack(baike.launchPlanId, 1, 2)
-        osTrack(baike.launchPlanId, 2, 2)
+    if (redEnvelope.launchPlanId ~= nil) then
+        osTrack(redEnvelope.launchPlanId, 1, 2)
+        osTrack(redEnvelope.launchPlanId, 2, 2)
     end
 
     configSize(data)
     local isPortrait = Native:isPortraitScreen()
-    baike.luaview = createLuaView(isPortrait)
-    baike.redEnvelopeView = createCardView(data, isPortrait)
-    baike.redEnvelopeImageLayout, baike.redEnvelopeImageView = createCardImageView(data, isPortrait)
-    baike.redEnvelopeAdsLabel = createCardAdsView(data, isPortrait)
-    baike.redEnvelopeCloseLayout, baike.redEnvelopeCloseImage = createCardCloseView(data, isPortrait)
-    baike.redEnvelopeFlexView, baike.redEnvelopeFlexLabel = createCardFlexView(data, isPortrait)
+    redEnvelope.luaview = createLuaView(isPortrait)
+    redEnvelope.redEnvelopeView = createCardView(data, isPortrait)
+    redEnvelope.redEnvelopeImageLayout, redEnvelope.redEnvelopeImageView = createCardImageView(data, isPortrait)
+    redEnvelope.redEnvelopeAdsLabel = createCardAdsView(data, isPortrait)
+    redEnvelope.redEnvelopeCloseLayout, redEnvelope.redEnvelopeCloseImage = createCardCloseView(data, isPortrait)
+    redEnvelope.redEnvelopeFlexView, redEnvelope.redEnvelopeFlexLabel = createCardFlexView(data, isPortrait)
 
-    baike.redEnvelopeImageLayout:addView(baike.redEnvelopeImageView)
-    baike.redEnvelopeCloseLayout:addView(baike.redEnvelopeCloseImage)
-    baike.redEnvelopeFlexView:addView(baike.redEnvelopeFlexLabel)
+    redEnvelope.redEnvelopeImageLayout:addView(redEnvelope.redEnvelopeImageView)
+    redEnvelope.redEnvelopeCloseLayout:addView(redEnvelope.redEnvelopeCloseImage)
+    redEnvelope.redEnvelopeFlexView:addView(redEnvelope.redEnvelopeFlexLabel)
 
-    baike.redEnvelopeView:addView(baike.redEnvelopeFlexView)
-    baike.redEnvelopeView:addView(baike.redEnvelopeImageLayout)
-    baike.redEnvelopeView:addView(baike.redEnvelopeAdsLabel)
-    baike.redEnvelopeView:addView(baike.redEnvelopeCloseLayout)
+    redEnvelope.redEnvelopeView:addView(redEnvelope.redEnvelopeFlexView)
+    redEnvelope.redEnvelopeView:addView(redEnvelope.redEnvelopeImageLayout)
+    redEnvelope.redEnvelopeView:addView(redEnvelope.redEnvelopeAdsLabel)
+    redEnvelope.redEnvelopeView:addView(redEnvelope.redEnvelopeCloseLayout)
 
-    baike.luaview:addView(baike.redEnvelopeView)
-    if (baike.isShowAds == false) then
-        baike.redEnvelopeAdsLabel:hide()
+    redEnvelope.luaview:addView(redEnvelope.redEnvelopeView)
+    if (redEnvelope.isShowAds == false) then
+        redEnvelope.redEnvelopeAdsLabel:hide()
     end
     if (isPortrait) then
-        baike.redEnvelopeFlexView:translation(-0.485 * baike.portraitWidth, 0)
-        startViewTranslationAnim(baike.redEnvelopeFlexView, 0, 0)
+        redEnvelope.redEnvelopeFlexView:translation(-0.485 * redEnvelope.portraitWidth, 0)
+        startViewTranslationAnim(redEnvelope.redEnvelopeFlexView, 0, 0)
     else
-        baike.redEnvelopeFlexView:translation(-0.485 * baike.landscapeWidth, 0)
-        startViewTranslationAnim(baike.redEnvelopeFlexView, 0, 0)
+        redEnvelope.redEnvelopeFlexView:translation(-0.485 * redEnvelope.landscapeWidth, 0)
+        startViewTranslationAnim(redEnvelope.redEnvelopeFlexView, 0, 0)
     end
-    baike.media = registerMedia()
-    baike.window = registerWindow()
+    redEnvelope.media = registerMedia()
+    redEnvelope.window = registerWindow()
 
-    baike.redEnvelopeCloseLayout:onClick(function()
+    redEnvelope.redEnvelopeCloseLayout:onClick(function()
         closeView()
     end)
 
-    baike.redEnvelopeImageLayout:onClick(function()
-        Native:widgetEvent(eventTypeClick, baike.id, adTypeName, actionTypeNone, "")
+    redEnvelope.redEnvelopeImageLayout:onClick(function()
+        Native:widgetEvent(eventTypeClick, redEnvelope.id, adTypeName, actionTypeNone, "")
         closeView()
-        local clickLinkUrl = getHotspotClickTrackLink(baike.data, 1)
+        local clickLinkUrl = getHotspotClickTrackLink(redEnvelope.data, 1)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
-        if (baike.launchPlanId ~= nil) then
-            osTrack(baike.launchPlanId, 3, 2)
+        if (redEnvelope.launchPlanId ~= nil) then
+            osTrack(redEnvelope.launchPlanId, 3, 2)
         end
-        Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_red_envelope_window.lua" .. "&id=" .. "os_red_envelope_window" .. tostring(baike.id) .. tostring(baike.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
+        Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_red_envelope_window.lua" .. "&id=" .. "os_red_envelope_window" .. tostring(redEnvelope.id) .. tostring(redEnvelope.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
-    baike.redEnvelopeFlexView:onClick(function()
-        Native:widgetEvent(eventTypeClick, baike.id, adTypeName, actionTypeNone, "")
+    redEnvelope.redEnvelopeFlexView:onClick(function()
+        Native:widgetEvent(eventTypeClick, redEnvelope.id, adTypeName, actionTypeNone, "")
         closeView()
-        local clickLinkUrl = getHotspotClickTrackLink(baike.data, 1)
+        local clickLinkUrl = getHotspotClickTrackLink(redEnvelope.data, 1)
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
-        if (baike.launchPlanId ~= nil) then
-            osTrack(baike.launchPlanId, 3, 2)
+        if (redEnvelope.launchPlanId ~= nil) then
+            osTrack(redEnvelope.launchPlanId, 3, 2)
         end
-        Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_red_envelope_window.lua" .. "&id=" .. "os_red_envelope_window" .. tostring(baike.id) .. tostring(baike.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
+        Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_red_envelope_window.lua" .. "&id=" .. "os_red_envelope_window" .. tostring(redEnvelope.id) .. tostring(redEnvelope.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
     fillData(data)
-    Native:widgetEvent(eventTypeShow, baike.id, adTypeName, actionTypeNone, "")
-    Native:saveCacheData(baike.id, tostring(eventTypeShow))
+    Native:widgetEvent(eventTypeShow, redEnvelope.id, adTypeName, actionTypeNone, "")
+    Native:saveCacheData(redEnvelope.id, tostring(eventTypeShow))
     checkMqttHotspotToSetClose(data, function()
         closeView()
     end)
@@ -553,7 +553,7 @@ function getRedEnvelopeInfo(callback)
 
     local businessInfo = {
         userId = Native:getIdentity(),
-        creativeId = baike.data.creativeId
+        creativeId = redEnvelope.data.creativeId
     }
 
     local paramData = {
@@ -565,7 +565,7 @@ function getRedEnvelopeInfo(callback)
     -- print("[LuaView] "..paramDataString)
     -- print("[LuaView] "..OS_HTTP_GET_MOBILE_QUERY)
     print("[LuaView] " .. Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
-    local requestId = baike.request:post(OS_HTTP_GET_MOBILE_QUERY, {
+    local requestId = redEnvelope.request:post(OS_HTTP_GET_MOBILE_QUERY, {
         bu_id = buId,
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -590,21 +590,21 @@ function getRedEnvelopeInfo(callback)
             end
             return
         end
-    end, baike.luaview)
-    table.insert(baike.requestIds, requestId)
+    end, redEnvelope.luaview)
+    table.insert(redEnvelope.requestIds, requestId)
 end
 
 function show(args)
-    if (args == nil or args.data == nil or baike.luaview ~= nil) then
+    if (args == nil or args.data == nil or redEnvelope.luaview ~= nil) then
         return
     end
-    baike.data = args.data
+    redEnvelope.data = args.data
 
-    baike.id = baike.data.id
-    baike.launchPlanId = baike.data.launchPlanId
-    baike.request = HttpRequest()
+    redEnvelope.id = redEnvelope.data.id
+    redEnvelope.launchPlanId = redEnvelope.data.launchPlanId
+    redEnvelope.request = HttpRequest()
     getRedEnvelopeInfo(function()
-        onCreate(baike.data)
+        onCreate(redEnvelope.data)
     end)
 end
 
