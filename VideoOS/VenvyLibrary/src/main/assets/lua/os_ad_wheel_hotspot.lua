@@ -176,15 +176,27 @@ local function getAdDescribeTxt(data, index)
 end
 
 --轮播标题获取--
-local function getAdTitle(data)
-    if (data == nil) then
+local function getAdTitle(data, index)
+    if (data == nil or index == nil) then
         return
     end
     local dataTable = data.data
     if (dataTable == nil) then
         return nil
     end
-    return dataTable.creativeName
+    local hotEditTable = dataTable.hotEdit
+    if (hotEditTable == nil) then
+        return nil
+    end
+    local adArrayTable = hotEditTable.adArray
+    if (adArrayTable == nil) then
+        return nil
+    end
+    local curIndexTable = adArrayTable[index]
+    if (curIndexTable == nil) then
+        return nil
+    end
+    return curIndexTable.adTitle
 end
 
 local function closeView()
@@ -219,56 +231,29 @@ local function setCurIconBorder(index)
     if (index == 1) then
         adWheel.adWheelIconView1:borderWidth(2 * scale)
         adWheel.adWheelIconView1:borderColor(0x999999)
-        if (System.android()) then
-            adWheel.adWheelIconView1:padding(2 * scale, 2 * scale, 2 * scale, 2 * scale)
-        end
         if (adWheel.adWheelIconView2 ~= nil) then
             adWheel.adWheelIconView2:borderWidth(0)
-            if (System.android()) then
-                adWheel.adWheelIconView2:padding(0, 0, 0, 0)
-            end
         end
         if (adWheel.adWheelIconView3 ~= nil) then
             adWheel.adWheelIconView3:borderWidth(0)
-            if (System.android()) then
-                adWheel.adWheelIconView3:padding(0, 0, 0, 0)
-            end
         end
     elseif (index == 2) then
         adWheel.adWheelIconView2:borderWidth(2 * scale)
         adWheel.adWheelIconView2:borderColor(0x999999)
-        if (System.android()) then
-            adWheel.adWheelIconView2:padding(2 * scale, 2 * scale, 2 * scale, 2 * scale)
-        end
         if (adWheel.adWheelIconView1 ~= nil) then
             adWheel.adWheelIconView1:borderWidth(0)
-            if (System.android()) then
-                adWheel.adWheelIconView1:padding(0, 0, 0, 0)
-            end
         end
         if (adWheel.adWheelIconView3 ~= nil) then
             adWheel.adWheelIconView3:borderWidth(0)
-            if (System.android()) then
-                adWheel.adWheelIconView3:padding(0, 0, 0, 0)
-            end
         end
     elseif (index == 3) then
         adWheel.adWheelIconView3:borderWidth(2 * scale)
         adWheel.adWheelIconView3:borderColor(0x999999)
-        if (System.android()) then
-            adWheel.adWheelIconView3:padding(2 * scale, 2 * scale, 2 * scale, 2 * scale)
-        end
         if (adWheel.adWheelIconView2 ~= nil) then
             adWheel.adWheelIconView2:borderWidth(0)
-            if (System.android()) then
-                adWheel.adWheelIconView2:padding(0, 0, 0, 0)
-            end
         end
         if (adWheel.adWheelIconView1 ~= nil) then
             adWheel.adWheelIconView1:borderWidth(0)
-            if (System.android()) then
-                adWheel.adWheelIconView1:padding(0, 0, 0, 0)
-            end
         end
     end
 end
@@ -299,10 +284,22 @@ local function setAdWheelViewSize(data, adWheelView, isPortrait)
     local screenWidth, screenHeight = Native:getVideoSize(2)
     if (isPortrait) then
         adWheelView:cornerRadius(0)
-        adWheelView:frame(0, math.max(screenWidth, screenHeight) - adWheel.portraitHeight, adWheel.portraitWidth, adWheel.portraitHeight)
+        if (System.android()) then
+            adWheelView:margin(0, 0, 0, 0)
+            adWheelView:size(adWheel.portraitWidth, adWheel.portraitHeight)
+            adWheelView:align(Align.BOTTOM)
+        else
+            adWheelView:frame(0, math.max(screenWidth, screenHeight) - adWheel.portraitHeight, adWheel.portraitWidth, adWheel.portraitHeight)
+        end
     else
         adWheelView:cornerRadius(4 * scale)
-        adWheelView:frame((math.max(screenWidth, screenHeight) - 536 * scale) / 2, (math.min(screenWidth, screenHeight) - 225 * scale) / 2, 536 * scale, 225 * scale)
+        if (System.android()) then
+            adWheelView:align(Align.BOTTOM)
+            adWheelView:margin((math.max(screenWidth, screenHeight) - 536 * scale) / 2, 0, 0, (math.min(screenWidth, screenHeight) - 225 * scale) / 2)
+            adWheelView:size(536 * scale, 225 * scale)
+        else
+            adWheelView:frame((math.max(screenWidth, screenHeight) - 536 * scale) / 2, (math.min(screenWidth, screenHeight) - 225 * scale) / 2, 536 * scale, 225 * scale)
+        end
     end
 end
 
@@ -312,29 +309,31 @@ local function setAdWheelDetailViewSize(data, adWheelDetailView, isPortrait)
         return
     end
     if (isPortrait) then
-        adWheelDetailView:frame(16 * scale, 60 * scale, 343 * scale, 192 * scale)
+        if (System.android()) then
+            adWheelDetailView:frame(16 * scale, adWheel.portraitHeight * 0.125, 343 * scale, adWheel.portraitHeight * 0.442)
+        else
+            adWheelDetailView:frame(16 * scale, 60 * scale, 343 * scale, 192 * scale)
+        end
     else
         adWheelDetailView:frame(12 * scale, 12 * scale, 201 * scale, 201 * scale)
     end
 end
 
 --轮播广告标题大小--
-local function setadWheelTitleViewSize(data, adWheelTitleView, isPortrait)
-    --设置当前容器大小
+local function setadWheelTitleViewSize(data, adWheelTitleView, isPortrait) --设置当前容器大小
     if (data == nil or adWheelTitleView == nil) then
         return
     end
     if (isPortrait) then
         if (System.android()) then
             adWheelTitleView:maxLines(1)
+            adWheelTitleView:frame(16 * scale, 0, 330 * scale, adWheel.portraitHeight * 0.125)
+            adWheelTitleView:gravity(Gravity.V_CENTER)
         else
             adWheelTitleView:lines(1)
+            adWheelTitleView:frame(16 * scale, 0, 330 * scale, 60 * scale)
         end
-        adWheelTitleView:frame(16 * scale, 0, 330 * scale, 60 * scale)
         adWheelTitleView:textSize(16)
-        if System.android() then
-            adWheelTitleView:gravity(Gravity.V_CENTER)
-        end
     else
         adWheelTitleView:textSize(18)
 
@@ -343,23 +342,23 @@ local function setadWheelTitleViewSize(data, adWheelTitleView, isPortrait)
             adWheelTitleView:frame(237 * scale, 18 * scale, 180 * scale, 48 * scale)
             adWheelTitleView:gravity(Gravity.LEFT)
         else
-            local adTitle = getAdTitle(data)
+            local adTitle = getAdTitle(data, adWheel.hotspotOrder)
             local labelW = Native:stringDrawLength(adTitle, 18)
             if labelW > 180 * scale then
                 adWheelTitleView:lines(2)
-                adWheelTitleView:frame(237 * scale, 18 * scale, 180 * scale, 36)
+                adWheelTitleView:frame(237 * scale, 18 * scale, 180 * scale, 48 * scale)
             else
                 adWheelTitleView:lines(1)
                 adWheelTitleView:frame(237 * scale, 18 * scale, 180 * scale, 18)
             end
+
             adWheelTitleView:textAlign(TextAlign.LEFT)
         end
     end
 end
 
 --轮播广告描述大小--
-local function setadWheelDesViewSize(data, adWheelDesView, isPortrait)
-    --设置当前容器大小
+local function setadWheelDesViewSize(data, adWheelDesView, isPortrait) --设置当前容器大小
     if (data == nil or adWheelDesView == nil) then
         return
     end
@@ -384,8 +383,7 @@ local function setadWheelDesViewSize(data, adWheelDesView, isPortrait)
 end
 
 --轮播广告按钮大小--
-local function setadWheelBtnViewSize(data, adWheelBtnView, adWheelBtnBackView, isPortrait)
-    --设置当前容器大小
+local function setadWheelBtnViewSize(data, adWheelBtnView, adWheelBtnBackView, isPortrait) --设置当前容器大小
     if (data == nil or adWheelBtnView == nil) then
         return
     end
@@ -413,9 +411,8 @@ local function setadWheelBtnViewSize(data, adWheelBtnView, adWheelBtnBackView, i
 end
 
 --轮播广告按钮大小--
-local function setadWheelIconViewSize(index, data, adWheelIconView, isPortrait)
-    --设置当前容器大小
-    if (data == nil or adWheelIconView == nil) then
+local function setadWheelIconViewSize(index, data, adWheelIconView, adWheelIcon, isPortrait) --设置当前容器大小
+    if (data == nil or adWheelIconView == nil or adWheelIcon == nil) then
         return
     end
     local screenWidth, screenHeight = Native:getVideoSize(2)
@@ -426,25 +423,30 @@ local function setadWheelIconViewSize(index, data, adWheelIconView, isPortrait)
         if (index == 1) then
             -- adWheelIconView:frame(16 * scale, adWheel.seperatedView:bottom() + 16 * scale, itemWidth, itemWidth)
             adWheelIconView:frame(16 * scale, adWheel.adWheelDetailView:bottom() + 16 * scale, itemWidth, itemWidth)
+            adWheelIcon:frame(0, 0, itemWidth, itemWidth)
         elseif (index == 2) then
             adWheelIconView:frame(16 * scale + itemWidth + spacSize, adWheel.adWheelDetailView:bottom() + 16 * scale, itemWidth, itemWidth)
+            adWheelIcon:frame(0, 0, itemWidth, itemWidth)
         elseif (index == 3) then
             adWheelIconView:frame(16 * scale + (itemWidth + spacSize) * 2, adWheel.adWheelDetailView:bottom() + 16 * scale, itemWidth, itemWidth)
+            adWheelIcon:frame(0, 0, itemWidth, itemWidth)
         end
     else
         if (index == 1) then
             adWheelIconView:frame(464 * scale, 11 * scale, 60 * scale, 60 * scale)
+            adWheelIcon:frame(0, 0, 60 * scale, 60 * scale)
         elseif (index == 2) then
             adWheelIconView:frame(464 * scale, 81.8 * scale, 60 * scale, 60 * scale)
+            adWheelIcon:frame(0, 0, 60 * scale, 60 * scale)
         elseif (index == 3) then
             adWheelIconView:frame(464 * scale, 152.7 * scale, 60 * scale, 60 * scale)
+            adWheelIcon:frame(0, 0, 60 * scale, 60 * scale)
         end
     end
 end
 
 --轮播广告关闭大小--
-local function setadWheelShutDownViewSize(data, shutDownView, shutDownImageView, isPortrait)
-    --设置当前容器大小
+local function setadWheelShutDownViewSize(data, shutDownView, shutDownImageView, isPortrait) --设置当前容器大小
     if (data == nil or shutDownView == nil or shutDownImageView == nil) then
         return
     end
@@ -462,14 +464,23 @@ local function setadWheelShutDownViewSize(data, shutDownView, shutDownImageView,
     end
     if (isPortrait) then
         shutDownImageView:image(Data(OS_ICON_WEDGE_CLOSE))
-        shutDownView:frame(adWheel.adWheelView:right() - 44 * scale, adWheel.adWheelView:top() + 8 * scale, 44 * scale, 44 * scale)
         shutDownImageView:frame(0, 0, 15 * scale, 15 * scale)
         shutDownImageView:align(Align.CENTER)
-        --        shutDownView:align(Align.RIGHT)
+        if (System.android()) then
+            local screenWidth, screenHeight = Native:getVideoSize(2)
+            local videoWidth, videoHight, marginTop = Native:getVideoSize(0)
+            shutDownView:frame(math.min(screenWidth, screenHeight) - 44 * scale, videoHight + 8 * scale, 44 * scale, 44 * scale)
+        else
+            shutDownView:frame(adWheel.adWheelView:right() - 44 * scale, adWheel.adWheelView:top() + 8 * scale, 44 * scale, 44 * scale)
+        end
     else
         shutDownImageView:frame(0, 0, 44 * scale, 44 * scale)
         shutDownImageView:image(Data(OS_ICON_WEDGE_LANDSCAPE_CLOSE))
-        shutDownView:frame(adWheel.adWheelView:right() - 10 * scale, adWheel.adWheelView:top() - 34 * scale, 44 * scale, 44 * scale)
+        if (System.android()) then
+            shutDownView:frame(adWheel.adWheelView:right() - 10 * scale, 34 * scale, 44 * scale, 44 * scale)
+        else
+            shutDownView:frame(adWheel.adWheelView:right() - 10 * scale, adWheel.adWheelView:top() - 34 * scale, 44 * scale, 44 * scale)
+        end
     end
 end
 
@@ -532,7 +543,7 @@ local function changeAdWheel(index, data)
     if (adImage ~= nil) then
         adWheel.adWheelDetailView:image(adImage)
     end
-    local adTitle = getAdTitle(data)
+    local adTitle = getAdTitle(data, adWheel.hotspotOrder)
     if (adTitle ~= nil) then
         adWheel.adWheelTitleView:text(adTitle)
         setadWheelTitleViewSize(data, adWheel.adWheelTitleView, isPortrait)
@@ -559,7 +570,13 @@ end
 
 --屏幕旋转--
 local function rotationScreen(isPortrait)
-    print("rotationScreen lua")
+    if (System.android()) then
+        local screenWidth, screenHeight = Native:getVideoSize(2)
+        local videoWidth, videoHight, marginTop = Native:getVideoSize(0)
+        adWheel.portraitWidth = math.min(screenWidth, screenHeight) --宽
+        adWheel.portraitHeight = math.max(screenWidth, screenHeight) - videoHight - marginTop --高
+    end
+
     setLuaViewSize(adWheel.luaview, isPortrait)
     setAdWheelViewSize(adWheel.data, adWheel.adWheelView, isPortrait)
     setAdWheelDetailViewSize(adWheel.data, adWheel.adWheelDetailView, isPortrait)
@@ -569,9 +586,9 @@ local function rotationScreen(isPortrait)
     setadWheelShutDownViewSize(adWheel.data, adWheel.shutDownView, adWheel.shutDownImageView, isPortrait)
     setadWheelSeperatedView(adWheel.data, adWheel.seperatedView, isPortrait)
     setadWheelAdView(adWheel.data, adWheel.adView, adWheel.adLabel, isPortrait)
-    setadWheelIconViewSize(1, adWheel.data, adWheel.adWheelIconView1, isPortrait)
-    setadWheelIconViewSize(2, adWheel.data, adWheel.adWheelIconView2, isPortrait)
-    setadWheelIconViewSize(3, adWheel.data, adWheel.adWheelIconView3, isPortrait)
+    setadWheelIconViewSize(1, adWheel.data, adWheel.adWheelIconView1, adWheel.adWheelIcon1, isPortrait)
+    setadWheelIconViewSize(2, adWheel.data, adWheel.adWheelIconView2, adWheel.adWheelIcon2, isPortrait)
+    setadWheelIconViewSize(3, adWheel.data, adWheel.adWheelIconView3, adWheel.adWheelIcon3, isPortrait)
 end
 
 local function registerMedia()
@@ -622,10 +639,6 @@ end
 local function createAdWheelTitleView(data, isPortrait)
     local adWheelTitleView = Label()
     adWheelTitleView:textColor(0x333333)
-    local adTitle = getAdTitle(data)
-    if (adTitle ~= nil) then
-        adWheelTitleView:text(adTitle)
-    end
     setadWheelTitleViewSize(data, adWheelTitleView, isPortrait)
     return adWheelTitleView
 end
@@ -661,10 +674,16 @@ end
 
 --轮播Icon描述--
 local function createAdWheelIconView(index, data, isPortrait)
-    local adWheelIconView = Image(Native)
-    adWheelIconView:scaleType(ScaleType.CENTER_CROP)
-    setadWheelIconViewSize(index, data, adWheelIconView, isPortrait)
-    return adWheelIconView
+    local adWheelIconView = View()
+
+    local adWheelIcon = Image(Native)
+    adWheelIcon:scaleType(ScaleType.CENTER_CROP)
+    adWheelIconView:addView(adWheelIcon)
+    if (System.android()) then
+        adWheelIconView:padding(2 * scale, 2 * scale, 2 * scale, 2 * scale)
+    end
+    setadWheelIconViewSize(index, data, adWheelIconView, adWheelIcon, isPortrait)
+    return adWheelIconView, adWheelIcon
 end
 
 --轮播广告关闭按钮--
@@ -674,7 +693,6 @@ local function createAdWheelShutDownView(data, isPortrait)
     local shutDownImageView = Image(Native)
     shutDownImageView:align(Align.CENTER)
     shutDownImageView:scaleType(ScaleType.FIT_XY)
-    shutDownImageView:image(Data(OS_ICON_WEDGE_CLOSE))
     shutDownView:addView(shutDownImageView)
     setadWheelShutDownViewSize(data, shutDownView, shutDownImageView, isPortrait)
     return shutDownView, shutDownImageView
@@ -716,7 +734,6 @@ local function onCreate(data)
 
     local isPortrait = Native:isPortraitScreen()
     adWheel.luaview = createLuaView(isPortrait)
-    adWheel.luaview:backgroundColor(0x0D57D5, 0.5)
     adWheel.adWheelView = createAdWheelView(data, isPortrait)
     adWheel.adWheelDetailView = createDetailImageView(data, isPortrait)
     adWheel.adWheelTitleView = createAdWheelTitleView(data, isPortrait)
@@ -731,8 +748,8 @@ local function onCreate(data)
     local adIconImage3 = getAdImage(data, 3)
 
     if (adIconImage1 ~= nil) then
-        adWheel.adWheelIconView1 = createAdWheelIconView(1, data, isPortrait)
-        adWheel.adWheelIconView1:image(adIconImage1)
+        adWheel.adWheelIconView1, adWheel.adWheelIcon1 = createAdWheelIconView(1, data, isPortrait)
+        adWheel.adWheelIcon1:image(adIconImage1)
         setCurIconBorder(adWheel.hotspotOrder)
         adWheel.adWheelIconView1:onClick(function()
             if (adWheel.timer ~= nil) then
@@ -744,8 +761,8 @@ local function onCreate(data)
         end)
     end
     if (adIconImage2 ~= nil) then
-        adWheel.adWheelIconView2 = createAdWheelIconView(2, data, isPortrait)
-        adWheel.adWheelIconView2:image(adIconImage2)
+        adWheel.adWheelIconView2, adWheel.adWheelIcon2 = createAdWheelIconView(2, data, isPortrait)
+        adWheel.adWheelIcon2:image(adIconImage2)
         adWheel.adWheelIconView2:onClick(function()
             if (adWheel.timer ~= nil) then
                 adWheel.timer:cancel()
@@ -756,8 +773,8 @@ local function onCreate(data)
         end)
     end
     if (adIconImage3 ~= nil) then
-        adWheel.adWheelIconView3 = createAdWheelIconView(3, data, isPortrait)
-        adWheel.adWheelIconView3:image(adIconImage3)
+        adWheel.adWheelIconView3, adWheel.adWheelIcon3 = createAdWheelIconView(3, data, isPortrait)
+        adWheel.adWheelIcon3:image(adIconImage3)
         adWheel.adWheelIconView3:onClick(function()
             if (adWheel.timer ~= nil) then
                 adWheel.timer:cancel()
@@ -770,11 +787,12 @@ local function onCreate(data)
 
     adWheel.luaview:addView(adWheel.adWheelView)
 
+
     adWheel.adWheelView:addView(adWheel.adWheelDetailView)
     adWheel.adWheelView:addView(adWheel.adWheelTitleView)
     adWheel.adWheelView:addView(adWheel.adWheelDesView)
     adWheel.adWheelView:addView(adWheel.adWheelBtnBackView)
-    -- adWheel.adWheelView:addView(adWheel.shutDownView)
+    --    adWheel.adWheelView:addView(adWheel.shutDownView)
     adWheel.adWheelView:addView(adWheel.seperatedView)
     adWheel.adWheelView:addView(adWheel.adView)
     if (adWheel.adWheelIconView1 ~= nil) then
@@ -787,7 +805,7 @@ local function onCreate(data)
         adWheel.adWheelView:addView(adWheel.adWheelIconView3)
     end
 
-    adWheel.luaview:addView(shutDownView)
+    adWheel.luaview:addView(adWheel.shutDownView)
 
     Native:widgetEvent(eventTypeShow, adWheel.id, adTypeName, actionTypeNone, "")
 
@@ -827,10 +845,7 @@ local function setConfig(data)
     local videoWidth, videoHight, marginTop = Native:getVideoSize(0)
     adWheel.portraitWidth = math.min(screenWidth, screenHeight) --宽
     adWheel.portraitHeight = math.max(screenWidth, screenHeight) - videoHight - marginTop --高
-    local hotspotOrder = data.hotspotOrder
-    if (hotspotOrder == nil) then
-        hotspotOrder = 0
-    end
+    local hotspotOrder = 0
     adWheel.iconClick = false
     adWheel.hotspotOrder = hotspotOrder + 1
     adWheel.adWhellCount = getAdWhellCount(data)
