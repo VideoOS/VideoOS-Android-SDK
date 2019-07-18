@@ -16,6 +16,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import cn.com.venvy.App;
+import cn.com.venvy.common.download.DownloadDbHelper;
 import cn.com.venvy.common.media.file.DiskUsage;
 import cn.com.venvy.common.media.file.FileNameGenerator;
 import cn.com.venvy.common.media.file.Md5FileNameGenerator;
@@ -61,6 +63,7 @@ public class HttpProxyCacheServer {
     private final Thread waitConnectionThread;
     private final Config config;
     private final Pinger pinger;
+    private DownloadDbHelper helper;
 
     public HttpProxyCacheServer(Context context) {
         this(new Builder(context).buildConfig());
@@ -158,7 +161,15 @@ public class HttpProxyCacheServer {
      */
     public boolean isCached(String url) {
         checkNotNull(url, "Url can't be null!");
-        return getCacheFile(url).exists();
+        if (helper == null) {
+            helper = new DownloadDbHelper(App.getContext());
+        }
+        DownloadDbHelper.DownloadInfo info = helper.queryDownloadInfo(url);
+        if (info == null) {
+            return false;
+        }
+        return info.status == DownloadDbHelper.DownloadStatus.DOWNLOAD_SUCCESS;
+//        return getCacheFile(url).exists();
     }
 
     public void shutdown() {
