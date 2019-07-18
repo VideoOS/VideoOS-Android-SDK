@@ -25,20 +25,6 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         View settingView = getSettingView();
         mRootView.addView(settingView);
 
-//        Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_stand_cloud_hotspot.lua&id=os_stand_cloud_hotspot");
-//        HashMap<String, String> params = new HashMap<>();
-//        params.put("data", AssetsUtil.readFileAssets("local_cloud.json", OsActivity.this));
-//        mVideoPlusView.navigation(uri, params, new IRouterCallback() {
-//            @Override
-//            public void arrived() {
-//                mVideoPlusView.start();
-//            }
-//
-//            @Override
-//            public void lost() {
-//
-//            }
-//        });
     }
 
     @Override

@@ -3,6 +3,7 @@ package cn.com.videopls.pub;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -10,7 +11,6 @@ import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import cn.com.venvy.Platform;
@@ -29,7 +29,6 @@ import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyLog;
-import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.view.VideoOSLuaView;
@@ -40,10 +39,12 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 public abstract class VideoPlusController implements VenvyObserver {
 
+    protected VideoPlusView mContentView;
+
+    protected Platform mPlatform;
+
     private Context mContext;
     private VideoPlusAdapter mVideoPlusAdapter;
-    private VideoPlusView mContentView;
-    private Platform mPlatform;
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
 
@@ -96,7 +97,7 @@ public abstract class VideoPlusController implements VenvyObserver {
 //        });
     }
 
-    public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
+    public void startService(@NonNull ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
         if (!VenvyAPIUtil.isSupport(16)) {
             Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
             return;
@@ -108,15 +109,15 @@ public abstract class VideoPlusController implements VenvyObserver {
         //TODO 开启网络请求
     }
 
-    public void restartService(ServiceType serviceType) {
+    public void restartService(@NonNull ServiceType serviceType) {
 
     }
 
-    public void pauseService(ServiceType serviceType) {
+    public void pauseService(@NonNull ServiceType serviceType) {
 
     }
 
-    public void stopService(ServiceType serviceType) {
+    public void stopService(@NonNull ServiceType serviceType) {
 
     }
 

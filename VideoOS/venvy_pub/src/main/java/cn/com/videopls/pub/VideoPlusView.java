@@ -2,6 +2,7 @@ package cn.com.videopls.pub;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
@@ -84,25 +85,26 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
     }
 
-    public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
+    public void startService(@NonNull ServiceType serviceType, HashMap<String, String> params,
+                             IServiceCallback callback) {
         if (controller != null) {
             controller.startService(serviceType, params, callback);
         }
     }
 
-    public void restartService(ServiceType serviceType) {
+    public void restartService(@NonNull ServiceType serviceType) {
         if (controller != null) {
             controller.restartService(serviceType);
         }
     }
 
-    public void pauseService(ServiceType serviceType) {
+    public void pauseService(@NonNull ServiceType serviceType) {
         if (controller != null) {
             controller.pauseService(serviceType);
         }
     }
 
-    public void stopService(ServiceType serviceType) {
+    public void stopService(@NonNull ServiceType serviceType) {
         if (controller != null) {
             controller.stopService(serviceType);
         }
