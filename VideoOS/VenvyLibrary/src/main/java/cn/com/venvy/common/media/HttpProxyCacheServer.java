@@ -183,7 +183,7 @@ public class HttpProxyCacheServer {
     }
 
     private String appendToProxyUrl(String url) {
-        return String.format(Locale.US, "http://%s:%d/%s", PROXY_HOST, port, ProxyCacheUtils.encode(url));
+        return String.format(Locale.US, "http://%s:%d/%s", PROXY_HOST, port, url);
     }
 
     private File getCacheFile(String url) {
@@ -225,7 +225,7 @@ public class HttpProxyCacheServer {
         try {
             GetRequest request = GetRequest.read(socket.getInputStream());
             VenvyLog.d("Request to cache proxy:" + request);
-            String url = ProxyCacheUtils.decode(request.uri);
+            String url = request.uri;
             if (pinger.isPingRequest(url)) {
                 pinger.responseToPing(socket);
             } else {
