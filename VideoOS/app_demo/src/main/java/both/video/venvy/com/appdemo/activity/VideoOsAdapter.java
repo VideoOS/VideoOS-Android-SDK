@@ -60,7 +60,10 @@ public class VideoOsAdapter extends VideoPlusAdapter {
      *
      * @return
      */
-    public VideoPlayerSize getVideoPlayerSize() {
+    public VideoPlayerSize getVideoPlayerSize(int fullScreenHeight) {
+        if (fullScreenHeight > 0) {
+            videoPlayerSize.mFullScreenContentHeight = fullScreenHeight;
+        }
         return videoPlayerSize;
     }
 
@@ -229,6 +232,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
             @Override
             public VideoPlayerSize getVideoSize() {
+                VenvyLog.w("getVideoSize : " + videoPlayerSize.mFullScreenContentWidth + " - " + videoPlayerSize.mFullScreenContentHeight);
                 return videoPlayerSize;
             }
         };
