@@ -1,10 +1,12 @@
 package cn.com.venvy;
 
+import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.com.venvy.common.download.DownloadImageTask;
 import cn.com.venvy.common.download.DownloadImageTaskRunner;
@@ -177,7 +179,37 @@ public class Platform implements Serializable {
             DownloadTask task = new DownloadTask(App.getContext(), url, StorageUtils.getIndividualCacheDirectory(App.getContext()).getAbsolutePath() + File.separator + new Md5FileNameGenerator().generate(url));
             arrayList.add(task);
         }
-        mDownloadTaskRunner.startTasks(arrayList, taskListener);
+        mDownloadTaskRunner.startTasks(arrayList, taskListener != null ? taskListener : new TaskListener<DownloadTask, Boolean>() {
+            @Override
+            public boolean isFinishing() {
+                return false;
+            }
+
+            @Override
+            public void onTaskStart(DownloadTask downloadTask) {
+
+            }
+
+            @Override
+            public void onTaskProgress(DownloadTask downloadTask, int progress) {
+
+            }
+
+            @Override
+            public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
+                downloadTask.failed();
+            }
+
+            @Override
+            public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
+
+            }
+
+            @Override
+            public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
+
+            }
+        });
     }
 
     public DownloadTaskRunner getDownloadTaskRunner() {
