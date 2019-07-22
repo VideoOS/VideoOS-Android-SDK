@@ -31,7 +31,6 @@ import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.okhttp.OkHttpHelper;
-import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
@@ -232,7 +231,6 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
             @Override
             public VideoPlayerSize getVideoSize() {
-                VenvyLog.w("getVideoSize : " + videoPlayerSize.mFullScreenContentWidth + " - " + videoPlayerSize.mFullScreenContentHeight);
                 return videoPlayerSize;
             }
         };

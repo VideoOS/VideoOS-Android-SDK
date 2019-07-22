@@ -58,7 +58,7 @@ local function generateBannerSize(isPortrait)
         h = w / 1.77
     else
         y = baikeWindow.landscapeHeight * 0.541
-        w = math.ceil(baikeWindow.landscapeWidth * 0.691)
+        w = math.ceil(baikeWindow.landscapeWidth * 0.8)
         h = w / 1.77
     end
     return x, y, w, h
@@ -82,17 +82,17 @@ local function setListSize(listView, isPortrait)
             listView:contentSize(baikeWindow.portraitWidth * 0.816, textHeight)
         else
             textSize = 12
-            listView:frame(0, baikeWindow.landscapeHeight * 0.186, baikeWindow.landscapeWidth * 0.696, baikeWindow.landscapeHeight * 0.28)
-            local textWidth, textHeight = Native:stringSizeWithWidth(baikeWindow.baikeDesc:text(), baikeWindow.landscapeWidth * 0.696, textSize)
-            baikeWindow.baikeDesc:frame(0, 0, baikeWindow.landscapeWidth * 0.696, textHeight)
-            listView:contentSize(baikeWindow.landscapeWidth * 0.696, textHeight)
+            listView:frame(0, baikeWindow.landscapeHeight * 0.186, baikeWindow.landscapeWidth * 0.8, baikeWindow.landscapeHeight * 0.28)
+            local textWidth, textHeight = Native:stringSizeWithWidth(baikeWindow.baikeDesc:text(), baikeWindow.landscapeWidth * 0.8, textSize)
+            baikeWindow.baikeDesc:frame(0, 0, baikeWindow.landscapeWidth * 0.8, textHeight)
+            listView:contentSize(baikeWindow.landscapeWidth * 0.8, textHeight)
         end
 
     else
         if (isPortrait) then
             listView:frame(0, baikeWindow.portraitHeight * 0.178, baikeWindow.portraitWidth * 0.816, baikeWindow.portraitHeight * 0.243)
         else
-            listView:frame(0, baikeWindow.landscapeHeight * 0.186, baikeWindow.landscapeWidth * 0.696, baikeWindow.landscapeHeight * 0.28)
+            listView:frame(0, baikeWindow.landscapeHeight * 0.186, baikeWindow.landscapeWidth * 0.8, baikeWindow.landscapeHeight * 0.28)
         end
     end
 
