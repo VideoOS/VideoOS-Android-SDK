@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
+import com.taobao.luaview.util.ToastUtil;
+
 import java.util.HashMap;
 
 import both.video.venvy.com.appdemo.R;
@@ -66,14 +68,15 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     public void onClick(View v) {
         int ID = v.getId();
         if (R.id.iv_os_setting == ID) {
-            mConfigDialog.showOsSetting();
+//            mConfigDialog.showOsSetting();
+            ToastUtil.showToast(this, "total SS : " + mVideoPlayer.getDuration());
         } else if (R.id.bt_os_setting_mall == ID) {
             if (mVideoPlusView == null)
                 return;
             mVideoPlusView.stop();
-            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_wedge_hotspot.lua&id=os_wedge_hotspot");
+            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_baike_hotspot.lua&id=os_baike_hotspot");
             HashMap<String, String> params = new HashMap<>();
-            params.put("data", AssetsUtil.readFileAssets("local_wedge.json", OsActivity.this));
+            params.put("data", AssetsUtil.readFileAssets("local_baike.json", OsActivity.this));
             mVideoPlusView.navigation(uri, params, new IRouterCallback() {
                 @Override
                 public void arrived() {
