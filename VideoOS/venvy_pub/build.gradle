@@ -11,7 +11,7 @@ android {
                 arguments = [moduleName: project.getName()]
             }
         }
-        buildConfigField "String", "SDK_VERSION", project.hasProperty('OS_VERSION') ? OS_VERSION : "\"3.0.0\""
+        buildConfigField "String", "SDK_VERSION", "\"${VERSION_NAME}\""
         buildConfigField "boolean", "ReportAble", "true"
     }
 

@@ -72,6 +72,7 @@ dependencies {
     compile "com.github.bumptech.glide:glide:3.7.0"
     compile "com.squareup.okhttp3:okhttp:3.4.1"
     compile "com.squareup.okio:okio:1.12.0"
+    compile "com.videoli:venvy_glide:1.0.4"
     compile project(':venvy_pub')
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.6.2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
