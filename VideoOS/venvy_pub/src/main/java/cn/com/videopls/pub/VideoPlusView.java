@@ -7,8 +7,6 @@ import android.widget.FrameLayout;
 
 import java.util.HashMap;
 
-import cn.com.venvy.common.interf.IServiceCallback;
-import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
 
 /**
@@ -81,30 +79,6 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     public void stop() {
         if (controller != null) {
             controller.stop();
-        }
-    }
-
-    public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
-        if (controller != null) {
-            controller.startService(serviceType, params, callback);
-        }
-    }
-
-    public void restartService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.restartService(serviceType);
-        }
-    }
-
-    public void pauseService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.pauseService(serviceType);
-        }
-    }
-
-    public void stopService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.stopService(serviceType);
         }
     }
 }
