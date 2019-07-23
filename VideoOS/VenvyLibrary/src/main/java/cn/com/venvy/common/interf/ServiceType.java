@@ -6,9 +6,11 @@ package cn.com.venvy.common.interf;
 
 public enum ServiceType {
     VPIServiceTypeNone(0),
-    VPIServiceTypeVideoMode(1),//视联网模式
-    VPIServiceTypeVideoAd(2),//视频广告，包括前后帖广告
-    VPIServiceTypePictureAd(3);//暂停广告
+    VPIServiceTypeCloud(1),//云图
+    VPIServiceTypeWedge(2),//中插
+    VPIServiceTypeFrontVideo(3),//前贴
+    VPIServiceTypeLaterVideo(4),//后贴
+    VPIServiceTypePictureAd(5);//暂停广告
 
 
     int id;
@@ -22,10 +24,14 @@ public enum ServiceType {
     }
 
     public static ServiceType getStatusById(int id) {
-        if (id == VPIServiceTypeVideoMode.getId()) {
-            return VPIServiceTypeVideoMode;
-        } else if (id == VPIServiceTypeVideoAd.getId()) {
-            return VPIServiceTypeVideoAd;
+        if (id == VPIServiceTypeCloud.getId()) {
+            return VPIServiceTypeCloud;
+        } else if (id == VPIServiceTypeWedge.getId()) {
+            return VPIServiceTypeWedge;
+        } else if (id == VPIServiceTypeFrontVideo.getId()) {
+            return VPIServiceTypeFrontVideo;
+        } else if (id == VPIServiceTypeLaterVideo.getId()) {
+            return VPIServiceTypeLaterVideo;
         } else if (id == VPIServiceTypePictureAd.getId()) {
             return VPIServiceTypePictureAd;
         } else {
