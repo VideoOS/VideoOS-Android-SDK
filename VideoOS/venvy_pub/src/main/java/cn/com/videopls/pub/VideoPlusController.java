@@ -10,16 +10,13 @@ import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
 import cn.com.venvy.common.debug.DebugHelper;
-import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
-import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
@@ -94,30 +91,6 @@ public abstract class VideoPlusController implements VenvyObserver {
 
             }
         });
-    }
-
-    public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
-        if (!VenvyAPIUtil.isSupport(16)) {
-            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
-            return;
-        }
-        if (mVideoPlusAdapter == null) {
-            VenvyLog.e("Video++ View 未设置adapter");
-            return;
-        }
-        //TODO 开启网络请求
-    }
-
-    public void restartService(ServiceType serviceType) {
-
-    }
-
-    public void pauseService(ServiceType serviceType) {
-
-    }
-
-    public void stopService(ServiceType serviceType) {
-
     }
 
     public void stop() {
