@@ -24,6 +24,7 @@ import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
 import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.interf.ScreenStatus;
+import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.os.VideoOsView;
@@ -67,6 +68,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
         // Step2 : 为VideoOsView设置Adapter
         mAdapter = new VideoOsAdapter(mVideoPlayer, isLiveOS());
+        mAdapter.setWedgeListener(new WedgeListener() {
+            @Override
+            public void goBack() {
+                finish();
+            }
+        });
         mVideoPlusView.setVideoOSAdapter(mAdapter);
 
         // Step3 : 在播放器的相关CallBack中启动VideoOsView  ---  mVideoPlusView.start()

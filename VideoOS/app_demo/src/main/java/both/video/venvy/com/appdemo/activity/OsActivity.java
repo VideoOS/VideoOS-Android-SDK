@@ -68,8 +68,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     public void onClick(View v) {
         int ID = v.getId();
         if (R.id.iv_os_setting == ID) {
-//            mConfigDialog.showOsSetting();
-            ToastUtil.showToast(this, "total SS : " + mVideoPlayer.getDuration());
+            mConfigDialog.showOsSetting();
         } else if (R.id.bt_os_setting_mall == ID) {
             if (mVideoPlusView == null)
                 return;
