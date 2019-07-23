@@ -15,7 +15,7 @@
         android:text="显示状态栏"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="250dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         />
     <cn.com.videopls.pub.os.VideoOsView
         android:id="@+id/os_view"
