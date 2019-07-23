@@ -11,7 +11,7 @@ android {
                 arguments = [moduleName: project.getName()]
             }
         }
-        buildConfigField "String", "SDK_VERSION", project.hasProperty('OS_VERSION') ? OS_VERSION : "\"3.0.0\""
+        buildConfigField "String", "SDK_VERSION", "\"${VERSION_NAME}\""
         buildConfigField "boolean", "ReportAble", "true"
     }
 
@@ -51,10 +51,12 @@ android {
     packageBuildConfig(false)
 }
 
-//apply from: 'fat-aar.gradle'
+apply from: 'fat-aar.gradle'
 dependencies {
     compile project(path: ':VenvyLibrary')
     compile project(path: ':LuaViewSDK')
+//    embedded project(path: ':VenvyLibrary')
+//    embedded project(path: ':LuaViewSDK')
 //    compile project(path: ':venvy_ai')
 
     provided 'com.android.support:support-v4:25.3.1'
