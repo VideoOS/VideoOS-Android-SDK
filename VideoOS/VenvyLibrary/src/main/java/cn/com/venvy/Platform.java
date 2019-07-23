@@ -1,9 +1,12 @@
 package cn.com.venvy;
 
+import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.com.venvy.common.download.DownloadImageTask;
 import cn.com.venvy.common.download.DownloadImageTaskRunner;
@@ -18,9 +21,10 @@ import cn.com.venvy.common.interf.IWidgetPrepareShowListener;
 import cn.com.venvy.common.interf.IWidgetShowListener;
 import cn.com.venvy.common.interf.OnTagKeyListener;
 import cn.com.venvy.common.interf.WedgeListener;
+import cn.com.venvy.common.media.StorageUtils;
+import cn.com.venvy.common.media.file.Md5FileNameGenerator;
 import cn.com.venvy.common.track.TrackHelper;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
-import cn.com.venvy.common.utils.VenvyFileUtil;
 
 /**
  * Created by yanjiangbo on 2017/5/2.
@@ -149,47 +153,63 @@ public class Platform implements Serializable {
     }
 
     public void preloadImage(final String[] imageUrls, final TaskListener taskListener) {
-
+        if (imageUrls == null || imageUrls.length <= 0) {
+            return;
+        }
         if (mDownloadImageTaskRunner == null) {
             mDownloadImageTaskRunner = new DownloadImageTaskRunner(App.getContext());
         }
-        VenvyAsyncTaskUtil.doAsyncTask(PRE_LOAD_IMAGE, new VenvyAsyncTaskUtil.IDoAsyncTask<String, Void>() {
-            @Override
-            public Void doAsyncTask(String... strings) throws Exception {
-                if (strings == null || strings.length <= 0) {
-                    return null;
-                }
-                ArrayList<DownloadImageTask> arrayList = new ArrayList<>();
-                for (String url : strings) {
-                    DownloadImageTask task = new DownloadImageTask(App.getContext(), url);
-                    arrayList.add(task);
-                }
-                mDownloadImageTaskRunner.startTasks(arrayList, taskListener);
-                return null;
-            }
-        }, null, imageUrls);
+        ArrayList<DownloadImageTask> arrayList = new ArrayList<>();
+        for (String url : imageUrls) {
+            DownloadImageTask task = new DownloadImageTask(App.getContext(), url);
+            arrayList.add(task);
+        }
+        mDownloadImageTaskRunner.startTasks(arrayList, taskListener);
     }
 
     public void preloadMedia(final String[] mediaUrls, final TaskListener taskListener) {
+        if (mediaUrls == null || mediaUrls.length <= 0) {
+            return;
+        }
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(this);
         }
-        VenvyAsyncTaskUtil.doAsyncTask(PRE_LOAD_MEDIA, new VenvyAsyncTaskUtil.IDoAsyncTask<String, Void>() {
+        ArrayList<DownloadTask> arrayList = new ArrayList<>();
+        for (String url : mediaUrls) {
+            DownloadTask task = new DownloadTask(App.getContext(), url, StorageUtils.getIndividualCacheDirectory(App.getContext()).getAbsolutePath() + File.separator + new Md5FileNameGenerator().generate(url));
+            arrayList.add(task);
+        }
+        mDownloadTaskRunner.startTasks(arrayList, taskListener != null ? taskListener : new TaskListener<DownloadTask, Boolean>() {
             @Override
-            public Void doAsyncTask(String... strings) throws Exception {
-                if (strings == null || strings.length <= 0) {
-                    return null;
-                }
-                ArrayList<DownloadTask> arrayList = new ArrayList<>();
-                for (String url : strings) {
-                    DownloadTask task = new DownloadTask(App.getContext(), url, VenvyFileUtil
-                            .getCacheDir(App.getContext()) + "/media/" + url.hashCode());
-                    arrayList.add(task);
-                }
-                mDownloadTaskRunner.startTasks(arrayList, taskListener);
-                return null;
+            public boolean isFinishing() {
+                return false;
             }
-        }, null, mediaUrls);
+
+            @Override
+            public void onTaskStart(DownloadTask downloadTask) {
+
+            }
+
+            @Override
+            public void onTaskProgress(DownloadTask downloadTask, int progress) {
+
+            }
+
+            @Override
+            public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
+                downloadTask.failed();
+            }
+
+            @Override
+            public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
+
+            }
+
+            @Override
+            public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
+
+            }
+        });
     }
 
     public DownloadTaskRunner getDownloadTaskRunner() {

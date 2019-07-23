@@ -1,0 +1,41 @@
+{
+  "creativeId":671,
+  "data":{
+    "creativeName":"测试轮播",
+    "hotEdit":{
+      "isShowAds":true,
+      "adArray":[
+        {
+          "adImage":"https://os-saas-share.oss-cn-beijing.aliyuncs.com/test/app_info/696/57d84599-4223-4465-bd35-4155e3733546.gif",
+          "btnTxt":"按钮1按钮1按钮1按钮1按钮1按钮1",
+          "linkUrl":"1",
+          "describe":"描述文字111111111111111 描述文字111111111111111描述文字111111111111111描述文字111111111111111描述文字111111111111111描述文字111111111111111描述文字111111111111111"
+        },
+        {
+          "adImage":"https://os-saas-share.oss-cn-beijing.aliyuncs.com/test/app_info/696/da44b18d-d7fe-4aba-9547-d22eac8c3ff6.png",
+          "btnTxt":"按钮2",
+          "linkUrl":"2",
+          "describe":"描述文字2描述文字2描述文字2描述文字2描述文字2描述文字2描述文字2描述文字2"
+        },
+        {
+          "adImage":"https://os-saas-share.oss-cn-beijing.aliyuncs.com/test/app_info/696/3d49afe6-9b04-468a-9383-36edd2f5e215.png",
+          "btnTxt":"按钮3",
+          "linkUrl":"3",
+          "describe":"描述文字3描述文字3"
+        }
+      ],
+      "isShowClose":true
+    },
+    "miniAppId":"9881",
+    "interactionTypeId":"1613"
+  },
+  "deviceType":3,
+  "duration":15000,
+  "hotspotOrder":0,
+  "id":"60312ecd-3bf6-4bbf-8558-888b06ff321d",
+  "launchPlanId":"1416",
+  "sumHotspot":1,
+  "template":"os_vote1_hotspot.lua",
+  "videoEndTime":20000,
+  "videoStartTime":5000
+}

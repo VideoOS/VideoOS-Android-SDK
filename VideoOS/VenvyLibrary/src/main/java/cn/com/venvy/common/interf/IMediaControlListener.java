@@ -32,4 +32,5 @@ public interface IMediaControlListener {
     //优先级高于Provided的设置
     VideoPlayerSize getVideoSize();
 
+    long getDuration();
 }

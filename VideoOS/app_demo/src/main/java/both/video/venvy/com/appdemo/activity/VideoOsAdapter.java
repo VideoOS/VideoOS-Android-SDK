@@ -15,7 +15,6 @@ import both.video.venvy.com.appdemo.widget.FullScreenWebViewDialog;
 import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
 import cn.com.venvy.common.bean.VideoPlayerSize;
 import cn.com.venvy.common.bean.WidgetInfo;
-import cn.com.venvy.common.glide.GlideImageLoader;
 import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.image.IImageLoader;
 import cn.com.venvy.common.interf.IMediaControlListener;
@@ -30,6 +29,7 @@ import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.okhttp.OkHttpHelper;
 import cn.com.venvy.common.utils.VenvyUIUtil;
+import cn.com.venvy.glide.GlideImageLoader;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
 
@@ -43,6 +43,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     private StandardVideoOSPlayer mPlayer;
     private boolean isLive; // 是否为直播
 
+    // 本例中为了演示状态栏的影响，故通过getVideoPlayerSize()供UI层支持修改内容区Size（考虑状态栏，异形屏等），确保内容区始终为屏幕宽高
     private VideoPlayerSize videoPlayerSize = new VideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.getScreenHeight(MyApp.getInstance()),
             VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.dip2px(MyApp.getInstance(), 200));
 
