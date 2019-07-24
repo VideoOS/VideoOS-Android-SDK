@@ -1,0 +1,66 @@
+{
+  "creativeId": 442,
+  "data": {
+    "isShowAds": true,
+    "resList": [{
+      "adtype": 1,
+      "resUrl": "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/images/automobile_1.png",
+      "duration": 15,
+      "linkUrl": "https://www.baidu.com",
+      "deepLink": "taobao://test",
+      "trackList": [{
+        "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",
+        "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176288,c3925,i0,m202,8a2,8b3,h"
+      },
+        {
+          "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176289,c3925,i0,m101,8a2,8b3,h",
+          "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176289,c3925,i0,m202,8a2,8b3,h"
+        }],
+      "adId": "3ij3ij2ioj3oij23920309du"
+    },
+      {
+        "adtype": 2,
+        "resUrl": "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/video/cm/cm1.mp4",
+        "duration": 15,
+        "linkUrl": "https://www.baidu.com",
+        "deepLink": "deeplink",
+        "trackList": [{
+          "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",
+          "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176288,c3925,i0,m202,8a2,8b3,h"
+        },
+          {
+            "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176289,c3925,i0,m101,8a2,8b3,h",
+            "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176289,c3925,i0,m202,8a2,8b3,h"
+          }],
+        "adId": "3ij3ij2ioj3oij23920309du"
+      }
+    ],
+
+    "isShowClose": true,
+    "creativeId": "442"
+  },
+  "duration": 10000,
+  "hotspotTrackLink": [{
+    "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",
+    "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176288,c3925,i0,m202,8a2,8b3,h"
+  },
+    {
+      "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176289,c3925,i0,m101,8a2,8b3,h",
+      "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176289,c3925,i0,m202,8a2,8b3,h"
+    }
+  ],
+  "id": "10e2c51a-cbd3-45c5-9b45-343568971b0f",
+  "infoTrackLink": [{
+    "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176291,c3925,i0,m101,8a2,8b3,h",
+    "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176291,c3925,i0,m202,8a2,8b3,h"
+  }],
+  "launchPlanId": 1275,
+  "template": "os_card_hotspot.lua",
+  "fileList": [{
+    "url": "lua1",
+    "md5": ""
+  }, {
+    "url": "lua1",
+    "md5": ""
+  }]
+}

@@ -111,8 +111,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             mVideoPlayer.setUp(DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
         }
         mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
-        mVideoPlayer.startPlayLogic();
-
+        // 开启前贴
+        startMixStandAd();
     }
 
 
@@ -125,6 +125,15 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * 开启前贴, 前贴结束后会开始播放正片
+     */
+    private void startMixStandAd() {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("data", AssetsUtil.readFileAssets("local_mix_stand.json",
+                BasePlayerActivity.this));
+        mVideoPlusView.startService(ServiceType.VPIServiceTypeVideoAd, params, null);
+    }
 
     private void toggleStatusBar(boolean isChecked) {
         if (isChecked) {
@@ -200,6 +209,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
             @Override
             public void onClickStop(String url, Object... objects) {
+                // 暂停广告
                 VenvyLog.i("videoCallBack onClickStop ----");
                 HashMap<String, String> params = new HashMap<>();
                 params.put("data", AssetsUtil.readFileAssets("local_cloud.json",
@@ -215,6 +225,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             @Override
             public void onClickResume(String url, Object... objects) {
                 VenvyLog.i("videoCallBack onClickResume ----");
+                // 关闭暂停广告
                 mVideoPlusView.stopService(ServiceType.VPIServiceTypePictureAd);
             }
 
@@ -235,7 +246,9 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
             @Override
             public void onAutoComplete(String url, Object... objects) {
-
+                VenvyLog.i("videoCallBack onAutoComplete -----------");
+                // 播放后贴
+                startMixStandAd();
             }
 
             @Override
