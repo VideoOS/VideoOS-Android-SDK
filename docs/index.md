@@ -20,6 +20,11 @@ dependencies {
 	implementation 'com.videoli:VideoOS:1.2.0'
 	implementation 'com.videoli:venvy_processor_annotation:1.0.0'
 	annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
+	// SDK Glide图片加载插件 目前仅支持Glide 和 fresco
+	// glide 可选 com.videoli:venvy_glide:1.0.4  or com.videoli:venvy_glide_v4:1.0.1
+	// fresco 选 com.videoli:venvy_fresco:1.0.4
+	implementation "com.videoli:venvy_glide:1.0.4"
+	
 	// 依赖的其他第三方库，具体视平台不同版本而不一致
 	implementation "com.github.bumptech.glide:glide:3.7.0"
 	implementation "com.squareup.okhttp3:okhttp:3.8.0"
@@ -32,6 +37,9 @@ dependencies {
 ```
 <!-- 授予网络权限 -->
 <uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
 ```
 
 
