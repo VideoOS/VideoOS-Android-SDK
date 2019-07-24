@@ -37,7 +37,7 @@ public class ConfigUtil {
     public static final String DEFAULT_APPSECRET = TEST_APP_SECRET;
 
 //    public static final String DEFAULT_VIDEO_ID = "d67eba2a3e549b75e42746b79721d0bf";
-    public static final String DEFAULT_VIDEO_ID = "d67eba2a3e549b75e42746b79721d0bf";
+    public static final String DEFAULT_VIDEO_ID = "ce17564ff7cd649645af87994c7a1424";
 
 
     public static final String SP_DEMO_CONFIG = "sp_demo_config";
