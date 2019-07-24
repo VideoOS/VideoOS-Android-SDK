@@ -17,7 +17,6 @@ import both.video.venvy.com.appdemo.widget.FullScreenWebViewDialog;
 import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
 import cn.com.venvy.common.bean.VideoPlayerSize;
 import cn.com.venvy.common.bean.WidgetInfo;
-import cn.com.venvy.common.glide.GlideImageLoader;
 import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.image.IImageLoader;
 import cn.com.venvy.common.interf.IMediaControlListener;
@@ -32,6 +31,7 @@ import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.okhttp.OkHttpHelper;
 import cn.com.venvy.common.utils.VenvyUIUtil;
+import cn.com.venvy.glide.v4.GlideImageLoader;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
 
