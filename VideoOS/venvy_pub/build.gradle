@@ -51,7 +51,7 @@ android {
     packageBuildConfig(false)
 }
 
-apply from: 'fat-aar.gradle'
+//apply from: 'fat-aar.gradle'
 dependencies {
     compile project(path: ':VenvyLibrary')
     compile project(path: ':LuaViewSDK')
