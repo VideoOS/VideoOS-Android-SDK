@@ -15,6 +15,7 @@ import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.utils.VenvyAesUtil;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 
 /**
@@ -24,6 +25,7 @@ import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 
 public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
     private static final String SERVICE_QUERYALL_ADS_URL = "/api/queryAllAds";
+    private static final String SERVICE_QUERYALL_ADS_URL_MOCK = "http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/queryAllAds#!method=POST&queryParameters=%5B%5D&body=&headers=%5B%5D";
     private ServiceQueryAdsCallback mQueryAdsCallback;
     private Map<String, String> mParams = new HashMap<>();
 
@@ -33,17 +35,45 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
         this.mParams = params;
     }
 
+    private VideoServiceQueryAdsModel.ServiceQueryAdsCallback getQueryAdsCallback() {
+        return mQueryAdsCallback;
+    }
+
     @Override
     public IRequestHandler createRequestHandler() {
         return new IRequestHandler() {
             @Override
             public void requestFinish(Request request, IResponse response) {
-
+                try {
+                    if (!response.isSuccess()) {
+                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                        if (callback != null) {
+                            callback.queryError(new Exception("query ads data error"));
+                            return;
+                        }
+                    }
+                    JSONObject value = new JSONObject(response.getResult());
+                    //TODO 先不做判断
+                    ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                    if (callback != null) {
+                        callback.queryComplete(value.toString());
+                    }
+                } catch (Exception e) {
+                    VenvyLog.e(VideoServiceQueryAdsModel.class.getName(), e);
+                    ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                    if (callback != null) {
+                        callback.queryError(e);
+                    }
+                }
             }
 
             @Override
             public void requestError(Request request, @Nullable Exception e) {
-
+                VenvyLog.e(VideoServiceQueryAdsModel.class.getName(), e);
+                ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                if (callback != null) {
+                    callback.queryError(e);
+                }
             }
 
             @Override
@@ -60,7 +90,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-        return HttpRequest.post(Config.HOST_VIDEO_OS + SERVICE_QUERYALL_ADS_URL, createBody(mParams));
+        return HttpRequest.post(SERVICE_QUERYALL_ADS_URL_MOCK, createBody(mParams));
     }
 
     private Map<String, String> createBody(Map<String, String> params) {
@@ -74,10 +104,11 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
     }
 
     public interface ServiceQueryAdsCallback {
-        void queryComplete();
+        void queryComplete(String queryAdsData);
 
         void queryError(Throwable t);
     }
+
     public void destroy() {
         mQueryAdsCallback = null;
     }

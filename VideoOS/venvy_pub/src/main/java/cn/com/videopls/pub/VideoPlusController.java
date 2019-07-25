@@ -117,9 +117,9 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
         params.put("adsType", serviceType.getId() + "");
-        startQueryConnect(params, new IStartResult() {
+        startQueryConnect(params, new IStartQueryResult() {
             @Override
-            public void successful() {
+            public void successful(String result) {
                 if (callback != null) {
                     callback.onCompleteForService();
                 }
@@ -128,9 +128,9 @@ public abstract class VideoPlusController implements VenvyObserver {
             }
 
             @Override
-            public void failed() {
+            public void failed(Throwable throwable) {
                 if (callback != null) {
-                    callback.onFailToCompleteForService(new Throwable("null"));
+                    callback.onFailToCompleteForService(throwable);
                 }
             }
         });
@@ -339,18 +339,23 @@ public abstract class VideoPlusController implements VenvyObserver {
         mLuaUpdateModel.startRequest();
     }
 
-    private void startQueryConnect(Map<String, String> params, final IStartResult result) {
+    private void startQueryConnect(Map<String, String> params, final IStartQueryResult result) {
         mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params, new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
             @Override
-            public void queryComplete() {
-
+            public void queryComplete(String queryAdsData) {
+                if (result != null) {
+                    result.successful(queryAdsData);
+                }
             }
 
             @Override
             public void queryError(Throwable throwable) {
-
+                if (result != null) {
+                    result.failed(throwable);
+                }
             }
         });
+        mQueryAdsModel.startRequest();
     }
 
     protected void closeInfoView() {
