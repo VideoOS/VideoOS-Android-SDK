@@ -82,7 +82,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    JSONArray fileListArray = value.optJSONArray("fileList");
+                    JSONArray fileListArray = value.optJSONArray("templates");
                     if (fileListArray == null || fileListArray.length() <= 0) {
                         ServiceQueryAdsCallback callback = getQueryAdsCallback();
                         if (callback != null) {
