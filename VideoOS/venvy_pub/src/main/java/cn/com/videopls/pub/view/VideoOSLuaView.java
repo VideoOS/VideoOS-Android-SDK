@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.util.HashMap;
 
 import cn.com.venvy.Platform;
+import cn.com.venvy.common.interf.EventType;
 import cn.com.venvy.common.router.RouteType;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
@@ -59,6 +60,9 @@ public class VideoOSLuaView extends VideoOSBaseView {
 
     @VenvyAutoData(name = "priority")
     private String priority;
+
+    @VenvyAutoData(name = "eventType")
+    private String eventType = String.valueOf(-1);
 
     public VideoOSLuaView(Context context) {
         super(context);
@@ -109,6 +113,28 @@ public class VideoOSLuaView extends VideoOSBaseView {
             callLuaFunction(mLuaView, data);
 
         }
+    }
+
+    @VenvyAutoRun
+    private void restartService() {
+        if (mLuaView == null) {
+            return;
+        }
+        if (!TextUtils.equals(eventType, String.valueOf(EventType.EventTypeRestart.getId()))) {
+            return;
+        }
+        mLuaView.getGlobals().callLuaFunction("event", eventType);
+    }
+
+    @VenvyAutoRun
+    private void pauseService() {
+        if (mLuaView == null) {
+            return;
+        }
+        if (!TextUtils.equals(eventType, String.valueOf(EventType.EventTypePause.getId()))) {
+            return;
+        }
+        mLuaView.getGlobals().callLuaFunction("event", eventType);
     }
 
     private void callLuaFunction(LuaView luaView, Object object) {
