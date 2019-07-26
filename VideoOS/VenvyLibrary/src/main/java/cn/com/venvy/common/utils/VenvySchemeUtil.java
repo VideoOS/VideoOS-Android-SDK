@@ -21,7 +21,6 @@ public class VenvySchemeUtil {
     public static final String QUERY_PARAMETER_PRIORITY = "priority";
     public static final String QUERY_PARAMETER_ENENT_TYPE = "eventType";
     public static final String QUERY_PARAMETER_ADS_TYPE = "adsType";
-    public static final String QUERY_PARAMETER_FRONT_TOTAL_DURATION = "frontTotalDuration";
-    public static final String QUERY_PARAMETER_BACK_TOTAL_DURATION = "backTotalDuration";
+    public static final String QUERY_PARAMETER_DURATION = "duration";
 
 }
