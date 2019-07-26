@@ -9,6 +9,4 @@ public interface IServiceCallback {
     void onCompleteForService();
 
     void onFailToCompleteForService(Throwable throwable);
-
-    void onClickForService(ServiceType type, String eventType);
 }
