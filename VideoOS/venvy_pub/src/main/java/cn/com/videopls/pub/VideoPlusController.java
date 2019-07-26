@@ -7,9 +7,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+
+import com.taobao.luaview.global.LuaView;
+
+import org.luaj.vm2.ast.Str;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +25,7 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
 import cn.com.venvy.common.debug.DebugHelper;
+import cn.com.venvy.common.interf.EventType;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.interf.ServiceType;
@@ -44,6 +53,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     private VideoPlusAdapter mVideoPlusAdapter;
     private VideoPlusView mContentView;
     private Platform mPlatform;
+    private HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
     private VideoServiceQueryAdsModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
@@ -84,8 +94,8 @@ public abstract class VideoPlusController implements VenvyObserver {
                 Uri.Builder builder = new Uri.Builder();
                 builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                         .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                        .appendQueryParameter("template", "main.lua")
-                        .appendQueryParameter("id", MAIN_DEFAULT_ID);
+                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_TEMPLATE, "main.lua")
+                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, MAIN_DEFAULT_ID);
                 navigation(builder.build(), null, null);
             }
 
@@ -116,15 +126,39 @@ public abstract class VideoPlusController implements VenvyObserver {
             Log.e("Video++", "startService api 调用参数为空");
             return;
         }
-        params.put("adsType", serviceType.getId() + "");
+        params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
         startQueryConnect(params, new IStartQueryResult() {
             @Override
-            public void successful(String result) {
-                if (callback != null) {
-                    callback.onCompleteForService();
+            public void successful(String result, final ServiceQueryAdsInfo queryAdsInfo) {
+                if (queryAdsInfo == null) {
+                    if (callback != null) {
+                        callback.onFailToCompleteForService(new Exception("error query ads params is null"));
+                    }
+                    return;
                 }
-                Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_vote_hotspot.lua&id=os_vote_hotspot");
-                navigation(uri, params, null);
+                mQueryAdsArray.add(queryAdsInfo);
+                Uri.Builder builder = new Uri.Builder();
+                builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+                        .path(VenvySchemeUtil.PATH_LUA_VIEW)
+                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_TEMPLATE, queryAdsInfo.getQueryAdsTemplate())
+                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
+                HashMap<String, String> skipParams = new HashMap<>();
+                skipParams.put("data", result);
+                navigation(builder.build(), skipParams, new IRouterCallback() {
+                    @Override
+                    public void arrived() {
+                        if (callback != null) {
+                            callback.onCompleteForService();
+                        }
+                    }
+
+                    @Override
+                    public void lost() {
+                        if (callback != null) {
+                            callback.onFailToCompleteForService(new Exception("start startService failed"));
+                        }
+                    }
+                });
             }
 
             @Override
@@ -137,16 +171,52 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     public void restartService(ServiceType serviceType) {
-
+        if (serviceType == null) {
+            return;
+        }
+        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
+            return;
+        }
+        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+                    .path(VenvySchemeUtil.PATH_LUA_VIEW)
+                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ENENT_TYPE, String.valueOf(EventType.EventTypeRestart))
+                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
+            navigation(builder.build(), null, null);
+        }
     }
 
     public void pauseService(ServiceType serviceType) {
-
+        if (serviceType == null) {
+            return;
+        }
+        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
+            return;
+        }
+        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+                    .path(VenvySchemeUtil.PATH_LUA_VIEW)
+                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ENENT_TYPE, String.valueOf(EventType.EventTypePause))
+                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
+            navigation(builder.build(), null, null);
+        }
     }
 
     public void stopService(ServiceType serviceType) {
-        if (mQueryAdsModel != null) {
-            mQueryAdsModel.destroy();
+        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
+            return;
+        }
+        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
+            View tagView = mContentView.findViewWithTag(queryAdsInfo.getQueryAdsId());
+            if (tagView != null) {
+                mContentView.removeView(tagView);
+                queryAdsInfoArray.remove(queryAdsInfo);
+            }
         }
     }
 
@@ -154,6 +224,12 @@ public abstract class VideoPlusController implements VenvyObserver {
         unRegisterObservable();
         if (mLuaUpdateModel != null) {
             mLuaUpdateModel.destroy();
+        }
+        if (mQueryAdsModel != null) {
+            mQueryAdsModel.destroy();
+        }
+        if (mQueryAdsArray != null) {
+            mQueryAdsArray.clear();
         }
         if (mContentView != null) {
             mContentView.removeAllViews();
@@ -341,10 +417,11 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     private void startQueryConnect(Map<String, String> params, final IStartQueryResult result) {
         mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params, new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
+
             @Override
-            public void queryComplete(String queryAdsData) {
+            public void queryComplete(String queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
                 if (result != null) {
-                    result.successful(queryAdsData);
+                    result.successful(queryAdsData, queryAdsInfo);
                 }
             }
 
@@ -390,5 +467,15 @@ public abstract class VideoPlusController implements VenvyObserver {
             //忽略此处异常
         }
         return 0;
+    }
+
+    private List<ServiceQueryAdsInfo> getRunningService(ServiceType serviceType) {
+        List<ServiceQueryAdsInfo> queryAdsInfoArray = new ArrayList<>();
+        for (ServiceQueryAdsInfo queryAdsInfo : mQueryAdsArray) {
+            if (queryAdsInfo.getQueryAdsType() == serviceType.getId()) {
+                queryAdsInfoArray.add(queryAdsInfo);
+            }
+        }
+        return queryAdsInfoArray;
     }
 }
