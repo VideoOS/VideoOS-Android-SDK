@@ -5,12 +5,12 @@ package cn.com.venvy.common.interf;
  */
 
 public enum ServiceType {
-    VPIServiceTypeNone(0),
-    VPIServiceTypeCloud(1),//云图
-    VPIServiceTypeWedge(2),//中插
-    VPIServiceTypeFrontVideo(3),//前贴
-    VPIServiceTypeLaterVideo(4),//后贴
-    VPIServiceTypePictureAd(5);//暂停广告
+    ServiceTypeNone(0),
+    ServiceTypeCloud(1),//云图
+    ServiceTypeWedge(2),//中插
+    ServiceTypeFrontVideo(3),//前贴
+    ServiceTypeLaterVideo(4),//后贴
+    ServiceTypePictureAd(5);//暂停广告
 
 
     int id;
@@ -24,18 +24,21 @@ public enum ServiceType {
     }
 
     public static ServiceType getStatusById(int id) {
-        if (id == VPIServiceTypeCloud.getId()) {
-            return VPIServiceTypeCloud;
-        } else if (id == VPIServiceTypeWedge.getId()) {
-            return VPIServiceTypeWedge;
-        } else if (id == VPIServiceTypeFrontVideo.getId()) {
-            return VPIServiceTypeFrontVideo;
-        } else if (id == VPIServiceTypeLaterVideo.getId()) {
-            return VPIServiceTypeLaterVideo;
-        } else if (id == VPIServiceTypePictureAd.getId()) {
-            return VPIServiceTypePictureAd;
-        } else {
-            return VPIServiceTypeNone;
+        switch (id) {
+            case 0:
+                return ServiceTypeNone;
+            case 1:
+                return ServiceTypeCloud;
+            case 2:
+                return ServiceTypeWedge;
+            case 3:
+                return ServiceTypeFrontVideo;
+            case 4:
+                return ServiceTypeLaterVideo;
+            case 5:
+                return ServiceTypePictureAd;
+            default:
+                return ServiceTypeNone;
         }
     }
 }
