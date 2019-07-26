@@ -120,7 +120,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (mLuaView == null) {
             return;
         }
-        if (!TextUtils.equals(eventType, String.valueOf(EventType.EventTypeRestart.getId()))) {
+        if (!TextUtils.equals(eventType, String.valueOf(EventType.EventTypeRestart))) {
             return;
         }
         mLuaView.getGlobals().callLuaFunction("event", eventType);
@@ -131,7 +131,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (mLuaView == null) {
             return;
         }
-        if (!TextUtils.equals(eventType, String.valueOf(EventType.EventTypePause.getId()))) {
+        if (!TextUtils.equals(eventType, String.valueOf(EventType.EventTypePause))) {
             return;
         }
         mLuaView.getGlobals().callLuaFunction("event", eventType);
