@@ -150,6 +150,6 @@ public class VideoPlusLuaUpdate {
      * @return
      */
     private String getFileLuaEncoderByMd5(String fileName) {
-        return VenvyMD5Util.EncoderByMd5(VenvyFileUtil.readFormFile(App.getContext(), VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + fileName));
+        return VenvyMD5Util.EncoderByMd5(new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + fileName));
     }
 }
