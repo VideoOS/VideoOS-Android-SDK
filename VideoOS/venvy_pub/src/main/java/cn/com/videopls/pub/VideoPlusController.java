@@ -11,6 +11,8 @@ import android.view.ViewParent;
 
 import com.taobao.luaview.global.LuaView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.luaj.vm2.ast.Str;
 
 import java.lang.reflect.Field;
@@ -181,11 +183,12 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
         for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
             Uri.Builder builder = new Uri.Builder();
+
+            HashMap<String, String> params = eventService(serviceType, EventType.EventTypeAction, ActionType.EventTypeResume);
             builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                     .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ENENT_TYPE, String.valueOf(ActionType.EventTypeResume))
                     .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
-            navigation(builder.build(), null, null);
+            navigation(builder.build(), params, null);
         }
     }
 
@@ -199,11 +202,10 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
         for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
             Uri.Builder builder = new Uri.Builder();
+            HashMap<String, String> params = eventService(serviceType, EventType.EventTypeAction, ActionType.EventTypePause);
             builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
-                    .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ENENT_TYPE, String.valueOf(ActionType.EventTypePause))
-                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
-            navigation(builder.build(), null, null);
+                    .path(VenvySchemeUtil.PATH_LUA_VIEW).appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
+            navigation(builder.build(), params, null);
         }
     }
 
@@ -478,5 +480,12 @@ public abstract class VideoPlusController implements VenvyObserver {
             }
         }
         return queryAdsInfoArray;
+    }
+
+    private HashMap<String, String> eventService(ServiceType serviceType, EventType eventType, ActionType actionType) {
+        HashMap<String, String> eventParams = new HashMap<>();
+        eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_EVENT_TYPE, String.valueOf(eventType.getId()));
+        eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE, String.valueOf(actionType.getId()));
+        return eventParams;
     }
 }

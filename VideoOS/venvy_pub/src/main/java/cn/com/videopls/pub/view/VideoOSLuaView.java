@@ -10,6 +10,8 @@ import com.taobao.luaview.scriptbundle.ScriptFile;
 import com.taobao.luaview.util.JsonUtil;
 import com.taobao.luaview.util.LuaUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.luaj.vm2.LuaValue;
 
 import java.io.ByteArrayOutputStream;
@@ -60,8 +62,8 @@ public class VideoOSLuaView extends VideoOSBaseView {
     @VenvyAutoData(name = "priority")
     private String priority;
 
-    @VenvyAutoData(name = "eventType")
-    private String eventType = String.valueOf(-1);
+    @VenvyAutoData(name = "event")
+    private String eventData;
 
     public VideoOSLuaView(Context context) {
         super(context);
@@ -115,14 +117,23 @@ public class VideoOSLuaView extends VideoOSBaseView {
     }
 
     @VenvyAutoRun
-    private void restartService() {
+    private void reResumeService() {
         if (mLuaView == null) {
             return;
         }
-        if (!TextUtils.equals(eventType, String.valueOf(ActionType.EventTypeResume))) {
+        if (TextUtils.isEmpty(eventData)) {
             return;
         }
-        mLuaView.getGlobals().callLuaFunction("event", eventType);
+        try {
+            JSONObject obj = new JSONObject(eventData);
+            String eventActionPause = obj.optString(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE);
+            if (!TextUtils.equals(eventActionPause, String.valueOf(ActionType.EventTypeResume.getId()))) {
+                return;
+            }
+            mLuaView.getGlobals().callLuaFunction("event", JsonUtil.toLuaTable(eventData));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @VenvyAutoRun
@@ -130,10 +141,19 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (mLuaView == null) {
             return;
         }
-        if (!TextUtils.equals(eventType, String.valueOf(ActionType.EventTypePause))) {
+        if (TextUtils.isEmpty(eventData)) {
             return;
         }
-        mLuaView.getGlobals().callLuaFunction("event", eventType);
+        try {
+            JSONObject obj = new JSONObject(eventData);
+            String eventActionPause = obj.optString(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE);
+            if (!TextUtils.equals(eventActionPause, String.valueOf(ActionType.EventTypePause.getId()))) {
+                return;
+            }
+            mLuaView.getGlobals().callLuaFunction("event", JsonUtil.toLuaTable(eventData));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void callLuaFunction(LuaView luaView, Object object) {
