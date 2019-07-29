@@ -6,7 +6,7 @@
       "adtype": 1,
       "resUrl": "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/images/automobile_1.png",
       "duration": 15,
-      "linkUrl": "https://www.baidu.com",
+      "linkUrl": "https://www.baidu.com?from=image",
       "deepLink": "taobao://test",
       "trackList": [{
         "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",
@@ -22,7 +22,7 @@
         "adtype": 2,
         "resUrl": "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/video/cm/cm1.mp4",
         "duration": 15,
-        "linkUrl": "https://www.baidu.com",
+        "linkUrl": "https://www.baidu.com?from=video",
         "deepLink": "deeplink",
         "trackList": [{
           "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",

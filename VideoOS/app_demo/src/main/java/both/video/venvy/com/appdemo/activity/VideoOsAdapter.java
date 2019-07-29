@@ -278,6 +278,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     }
 
     private void loadUrl(String url) {
+        VenvyLog.i("widget action load url : " + url);
         if (TextUtils.isEmpty(url)) {
             return;
         }
