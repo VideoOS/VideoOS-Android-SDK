@@ -3,6 +3,7 @@ package cn.com.videopls.pub;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -41,7 +42,6 @@ import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyLog;
-import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.view.VideoOSLuaView;
@@ -52,10 +52,12 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 public abstract class VideoPlusController implements VenvyObserver {
 
+    protected VideoPlusView mContentView;
+
+    protected Platform mPlatform;
+
     private Context mContext;
     private VideoPlusAdapter mVideoPlusAdapter;
-    private VideoPlusView mContentView;
-    private Platform mPlatform;
     private HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
     private VideoServiceQueryAdsModel mQueryAdsModel;
@@ -91,23 +93,23 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.setVisibility(View.VISIBLE);
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-        startConnect(new IStartResult() {
-            @Override
-            public void successful() {
-                Uri.Builder builder = new Uri.Builder();
-                builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
-                        .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_TEMPLATE, "main.lua")
-                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, MAIN_DEFAULT_ID);
-                navigation(builder.build(), null, null);
-            }
-
-            @Override
-            public void failed() {
-                VenvyLog.e(VideoPlusController.class.getName(), "VideoOS start error");
-
-            }
-        });
+//        startConnect(new IStartResult() {
+//            @Override
+//            public void successful() {
+//                Uri.Builder builder = new Uri.Builder();
+//                builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+//                        .path(VenvySchemeUtil.PATH_LUA_VIEW)
+//                        .appendQueryParameter("template", "main.lua")
+//                        .appendQueryParameter("id", MAIN_DEFAULT_ID);
+//                navigation(builder.build(), null, null);
+//            }
+//
+//            @Override
+//            public void failed() {
+//                VenvyLog.e(VideoPlusController.class.getName(), "VideoOS start error");
+//
+//            }
+//        });
     }
 
     /***

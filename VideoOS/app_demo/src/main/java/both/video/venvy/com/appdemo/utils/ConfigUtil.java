@@ -24,8 +24,10 @@ public class ConfigUtil {
     public static final String CONFIG_VIDEO_NAME = "videoName";
 
     // 正式环境appKey&appSecret (ps : 只有这一对)
-    public static final String RELEASE_APP_KEY = "de3a49c7-1c00-4822-b187-9120be3394aa";
-    public static final String RELEASE_APP_SECRET = "ea8b3c7985124277";
+//    public static final String RELEASE_APP_KEY = "de3a49c7-1c00-4822-b187-9120be3394aa";
+//    public static final String RELEASE_APP_SECRET = "ea8b3c7985124277";
+    public static final String RELEASE_APP_KEY = "de3a49c7-1c00-4822-b187";
+    public static final String RELEASE_APP_SECRET = "ss";
 
     private static final String TEST_APP_KEY = "eed99d68-6f1d-403a-a9f4-0583cccc20e9";
     private static final String TEST_APP_SECRET = "941f336cf231470b";
