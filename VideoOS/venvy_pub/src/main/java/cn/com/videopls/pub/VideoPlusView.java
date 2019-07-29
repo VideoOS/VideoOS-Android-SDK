@@ -90,9 +90,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
     }
 
-    public void restartService(ServiceType serviceType) {
+    public void reResumeService(ServiceType serviceType) {
         if (controller != null) {
-            controller.restartService(serviceType);
+            controller.reResumeService(serviceType);
         }
     }
 

@@ -2,7 +2,6 @@ package cn.com.videopls.pub.view;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.taobao.luaview.global.LuaScriptLoader;
 import com.taobao.luaview.global.LuaView;
@@ -19,7 +18,7 @@ import java.io.FileInputStream;
 import java.util.HashMap;
 
 import cn.com.venvy.Platform;
-import cn.com.venvy.common.interf.EventType;
+import cn.com.venvy.common.interf.ActionType;
 import cn.com.venvy.common.router.RouteType;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
@@ -120,7 +119,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (mLuaView == null) {
             return;
         }
-        if (!TextUtils.equals(eventType, String.valueOf(EventType.EventTypeRestart))) {
+        if (!TextUtils.equals(eventType, String.valueOf(ActionType.EventTypeResume))) {
             return;
         }
         mLuaView.getGlobals().callLuaFunction("event", eventType);
@@ -131,7 +130,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (mLuaView == null) {
             return;
         }
-        if (!TextUtils.equals(eventType, String.valueOf(EventType.EventTypePause))) {
+        if (!TextUtils.equals(eventType, String.valueOf(ActionType.EventTypePause))) {
             return;
         }
         mLuaView.getGlobals().callLuaFunction("event", eventType);

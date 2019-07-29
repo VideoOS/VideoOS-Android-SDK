@@ -25,6 +25,7 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
 import cn.com.venvy.common.debug.DebugHelper;
+import cn.com.venvy.common.interf.ActionType;
 import cn.com.venvy.common.interf.EventType;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
@@ -170,7 +171,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         });
     }
 
-    public void restartService(ServiceType serviceType) {
+    public void reResumeService(ServiceType serviceType) {
         if (serviceType == null) {
             return;
         }
@@ -182,7 +183,7 @@ public abstract class VideoPlusController implements VenvyObserver {
             Uri.Builder builder = new Uri.Builder();
             builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                     .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ENENT_TYPE, String.valueOf(EventType.EventTypeRestart))
+                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ENENT_TYPE, String.valueOf(ActionType.EventTypeResume))
                     .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
             navigation(builder.build(), null, null);
         }
@@ -200,7 +201,7 @@ public abstract class VideoPlusController implements VenvyObserver {
             Uri.Builder builder = new Uri.Builder();
             builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                     .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ENENT_TYPE, String.valueOf(EventType.EventTypePause))
+                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ENENT_TYPE, String.valueOf(ActionType.EventTypePause))
                     .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
             navigation(builder.build(), null, null);
         }
