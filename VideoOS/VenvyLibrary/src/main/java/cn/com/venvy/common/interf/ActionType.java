@@ -5,13 +5,15 @@ package cn.com.venvy.common.interf;
  * 事件处理通知类型枚举
  */
 
-public enum EventType {
+public enum ActionType {
     EventTypeNone(0),
-    EventTypeAction(1);
+    EventTypeResume(1),//重新开启
+    EventTypePause(2);//暂停
+
 
     int id;
 
-    EventType(int id) {
+    ActionType(int id) {
         this.id = id;
     }
 
@@ -19,12 +21,14 @@ public enum EventType {
         return id;
     }
 
-    public static EventType getStatusById(int id) {
+    public static ActionType getStatusById(int id) {
         switch (id) {
             case 0:
                 return EventTypeNone;
             case 1:
-                return EventTypeAction;
+                return EventTypeResume;
+            case 2:
+                return EventTypePause;
             default:
                 return EventTypeNone;
         }
