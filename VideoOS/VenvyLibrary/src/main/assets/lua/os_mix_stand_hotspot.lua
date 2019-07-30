@@ -1357,6 +1357,10 @@ local function setDefaultValue(data)
     data.data.positionX = 0.0
 end
 
+function event(args)
+    print("lua event :: "..Native:tableToJson(args))
+end
+
 --入口Native调用--
 function show(args)
     print("media callback Show second-------")

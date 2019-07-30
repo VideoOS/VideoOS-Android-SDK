@@ -55,7 +55,7 @@
     "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176291,c3925,i0,m202,8a2,8b3,h"
   }],
   "launchPlanId": 1275,
-  "template": "os_card_hotspot.lua",
+  "template": "os_mix_stand_hotspot.lua",
   "fileList": [{
     "url": "lua1",
     "md5": ""

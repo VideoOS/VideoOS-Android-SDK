@@ -90,29 +90,40 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
-                            @Override
-                            public void updateComplete(boolean isUpdateByNetWork) {
-                                ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                                if (callback != null) {
-                                    Map<String, String> params = getQueryAdsParams();
-                                    String adsType = params != null ? params.get(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
-                                    ServiceQueryAdsInfo queryAdsInfo = new ServiceQueryAdsInfo.Builder().setQueryAdsTemplate(queryAdsTemplate).setQueryAdsId(queryAdsId).setQueryAdsType(!TextUtils.isEmpty(adsType) ? Integer.valueOf(adsType) : 0).build();
-                                    callback.queryComplete(value.toString(), queryAdsInfo);
-                                }
-                            }
-
-                            @Override
-                            public void updateError(Throwable t) {
-                                ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                                if (callback != null) {
-                                    callback.queryError(new Exception("query ads down lua failed"));
-                                }
-                            }
-                        });
+//                    if (mDownLuaUpdate == null) {
+//                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
+//                            @Override
+//                            public void updateComplete(boolean isUpdateByNetWork) {
+//                                ServiceQueryAdsCallback callback = getQueryAdsCallback();
+//                                if (callback != null) {
+//                                    Map<String, String> params = getQueryAdsParams();
+//                                    String adsType = params != null ? params.get(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
+//                                    ServiceQueryAdsInfo queryAdsInfo = new ServiceQueryAdsInfo.Builder().setQueryAdsTemplate(queryAdsTemplate).setQueryAdsId(queryAdsId).setQueryAdsType(!TextUtils.isEmpty(adsType) ? Integer.valueOf(adsType) : 0).build();
+//                                    callback.queryComplete(value.toString(), queryAdsInfo);
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void updateError(Throwable t) {
+//                                ServiceQueryAdsCallback callback = getQueryAdsCallback();
+//                                if (callback != null) {
+//                                    callback.queryError(new Exception("query ads down lua failed"));
+//                                }
+//                            }
+//                        });
+//                    }
+//                    mDownLuaUpdate.startDownloadLuaFile(fileListArray);
+                    ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                    if (callback != null) {
+                        Map<String, String> params = getQueryAdsParams();
+                        String adsType = params != null ? params.get(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
+                        ServiceQueryAdsInfo queryAdsInfo = new ServiceQueryAdsInfo.Builder()
+                                .setQueryAdsTemplate("os_mix_stand_hotspot.lua")
+                                .setQueryAdsId(queryAdsId)
+                                .setQueryAdsType(!TextUtils.isEmpty(adsType) ? Integer.valueOf(adsType) : 0)
+                                .build();
+                        callback.queryComplete(value.toString(), queryAdsInfo);
                     }
-                    mDownLuaUpdate.startDownloadLuaFile(fileListArray);
                 } catch (Exception e) {
                     VenvyLog.e(VideoServiceQueryAdsModel.class.getName(), e);
                     ServiceQueryAdsCallback callback = getQueryAdsCallback();

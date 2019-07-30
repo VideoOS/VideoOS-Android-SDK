@@ -3,18 +3,12 @@ package cn.com.videopls.pub;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 
-import com.taobao.luaview.global.LuaView;
-
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.luaj.vm2.ast.Str;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -42,6 +36,7 @@ import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.view.VideoOSLuaView;
@@ -56,9 +51,10 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     protected Platform mPlatform;
 
+    protected HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
+
     private Context mContext;
     private VideoPlusAdapter mVideoPlusAdapter;
-    private HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
     private VideoServiceQueryAdsModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";

@@ -72,6 +72,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
         // Step2 : 为VideoOsView设置Adapter
         mAdapter = new VideoOsAdapter(mVideoPlayer, isLiveOS());
+        mAdapter.setIOnWebViewDialogDismissCallback(new VideoOsAdapter.IOnWebViewDialogDismissCallback() {
+            @Override
+            public void onDismiss() {
+                mVideoPlusView.reResumeService(ServiceType.ServiceTypeFrontVideo);
+            }
+        });
         mVideoPlusView.setVideoOSAdapter(mAdapter);
 
         // Step3 : 在播放器的相关CallBack中启动VideoOsView  ---  mVideoPlusView.start()
@@ -111,6 +117,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             mVideoPlayer.setUp(DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
         }
         mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
+        mVideoPlusView.start();
         // 开启前贴
         startMixStandAd();
     }
@@ -132,7 +139,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         HashMap<String, String> params = new HashMap<>();
         params.put("data", AssetsUtil.readFileAssets("local_mix_stand.json",
                 BasePlayerActivity.this));
-        mVideoPlusView.startService(ServiceType.VPIServiceTypeVideoAd, params, null);
+        mVideoPlusView.startService(ServiceType.ServiceTypeFrontVideo, params, null);
     }
 
     private void toggleStatusBar(boolean isChecked) {
@@ -179,7 +186,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                 if (isFirstPlayVideo) {
 //                    Log.d(TAG, "onStartPrepared : First");
                     // 首次播放，只需调用start启动
-                    mVideoPlusView.start();
+//                    mVideoPlusView.start();
                     isFirstPlayVideo = false;
                 } else {
 //                    Log.d(TAG, "onStartPrepared : Second + ");
@@ -214,7 +221,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                 HashMap<String, String> params = new HashMap<>();
                 params.put("data", AssetsUtil.readFileAssets("local_cloud.json",
                         BasePlayerActivity.this));
-                mVideoPlusView.startService(ServiceType.VPIServiceTypePictureAd, params, null);
+                mVideoPlusView.startService(ServiceType.ServiceTypePictureAd, params, null);
             }
 
             @Override
@@ -226,7 +233,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             public void onClickResume(String url, Object... objects) {
                 VenvyLog.i("videoCallBack onClickResume ----");
                 // 关闭暂停广告
-                mVideoPlusView.stopService(ServiceType.VPIServiceTypePictureAd);
+                mVideoPlusView.stopService(ServiceType.ServiceTypePictureAd);
             }
 
             @Override
@@ -349,6 +356,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         }
         if (mVideoPlusView != null) {
             // cancel getCurrentPosition()
+            mAdapter.setIOnWebViewDialogDismissCallback(null);
             VideoPositionHelper.getInstance().cancel();
             mVideoPlusView.stop();
         }

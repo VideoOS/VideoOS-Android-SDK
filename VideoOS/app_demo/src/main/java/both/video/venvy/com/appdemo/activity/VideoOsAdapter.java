@@ -46,6 +46,8 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     private StandardVideoOSPlayer mPlayer;
     private boolean isLive; // 是否为直播
 
+    private IOnWebViewDialogDismissCallback mDismissCallback;
+
     // 本例中为了演示状态栏的影响，故通过getVideoPlayerSize()供UI层支持修改内容区Size（考虑状态栏，异形屏等），确保内容区始终为屏幕宽高
     private VideoPlayerSize videoPlayerSize =
             new VideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()),
@@ -56,6 +58,10 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     public VideoOsAdapter(StandardVideoOSPlayer mPlayer, boolean isLive) {
         this.mPlayer = mPlayer;
         this.isLive = isLive;
+    }
+
+    public void setIOnWebViewDialogDismissCallback(IOnWebViewDialogDismissCallback callback) {
+        mDismissCallback = callback;
     }
 
     /**
@@ -288,8 +294,15 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             public void onDismiss(DialogInterface dialog) {
                 //处理ACTION_OPEN_URL事件结束后 平台方需调用此事件 唤醒继续播放广告中插
                 notifyMediaStatusChanged(MediaStatus.PLAYING);
+                if (mDismissCallback != null) {
+                    mDismissCallback.onDismiss();
+                }
             }
         });
         dialog.loadUrl(url);
+    }
+
+    public interface IOnWebViewDialogDismissCallback {
+        void onDismiss();
     }
 }
