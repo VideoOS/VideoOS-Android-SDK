@@ -1,4 +1,5 @@
 # VideoOS Android SDK
+VideoOS Android SDK 开源地址：[https://github.com/VideoOS/VideoOS-Android-SDK](https://github.com/VideoOS/VideoOS-Android-SDK)
 
 ## SDK集成
 
