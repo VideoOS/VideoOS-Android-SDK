@@ -21,13 +21,14 @@ import java.util.HashMap;
 
 import both.video.venvy.com.appdemo.MyApp;
 import both.video.venvy.com.appdemo.R;
-import both.video.venvy.com.appdemo.utils.AssetsUtil;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
 import cn.com.venvy.VideoPositionHelper;
+import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.os.VideoOsView;
 
@@ -119,7 +120,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
         mVideoPlusView.start();
         // 开启前贴
-        startMixStandAd();
+        startMixStandAd(ServiceType.ServiceTypeFrontVideo);
+//        mVideoPlayer.startPlayLogic();
     }
 
 
@@ -135,11 +137,22 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     /**
      * 开启前贴, 前贴结束后会开始播放正片
      */
-    private void startMixStandAd() {
+    private void startMixStandAd(final ServiceType type) {
         HashMap<String, String> params = new HashMap<>();
-        params.put("data", AssetsUtil.readFileAssets("local_mix_stand.json",
-                BasePlayerActivity.this));
-        mVideoPlusView.startService(ServiceType.ServiceTypeFrontVideo, params, null);
+        params.put(VenvySchemeUtil.QUERY_PARAMETER_DURATION, "30");
+        mVideoPlusView.startService(type, params, new IServiceCallback() {
+            @Override
+            public void onCompleteForService() {
+
+            }
+
+            @Override
+            public void onFailToCompleteForService(Throwable throwable) {
+                if (type == ServiceType.ServiceTypeFrontVideo) {
+                    mVideoPlayer.startPlayLogic();
+                }
+            }
+        });
     }
 
     private void toggleStatusBar(boolean isChecked) {
@@ -218,10 +231,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             public void onClickStop(String url, Object... objects) {
                 // 暂停广告
                 VenvyLog.i("videoCallBack onClickStop ----");
-                HashMap<String, String> params = new HashMap<>();
-                params.put("data", AssetsUtil.readFileAssets("local_cloud.json",
-                        BasePlayerActivity.this));
-                mVideoPlusView.startService(ServiceType.ServiceTypePictureAd, params, null);
+                mVideoPlusView.startService(ServiceType.ServiceTypePictureAd,
+                        new HashMap<String, String>(), null);
             }
 
             @Override
@@ -255,7 +266,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             public void onAutoComplete(String url, Object... objects) {
                 VenvyLog.i("videoCallBack onAutoComplete -----------");
                 // 播放后贴
-                startMixStandAd();
+                startMixStandAd(ServiceType.ServiceTypeLaterVideo);
             }
 
             @Override
