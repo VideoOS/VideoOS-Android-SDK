@@ -1,66 +1,47 @@
 {
-  "creativeId": 442,
-  "data": {
-    "isShowAds": true,
-    "resList": [{
-      "adtype": 1,
-      "resUrl": "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/images/automobile_1.png",
-      "duration": 15,
-      "linkUrl": "https://www.baidu.com?from=image",
-      "deepLink": "taobao://test",
-      "trackList": [{
-        "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",
-        "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176288,c3925,i0,m202,8a2,8b3,h"
-      },
-        {
-          "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176289,c3925,i0,m101,8a2,8b3,h",
-          "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176289,c3925,i0,m202,8a2,8b3,h"
-        }],
-      "adId": "3ij3ij2ioj3oij23920309du"
-    },
-      {
-        "adtype": 2,
-        "resUrl": "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/video/cm/cm1.mp4",
-        "duration": 15,
-        "linkUrl": "https://www.baidu.com?from=video",
-        "deepLink": "deeplink",
-        "trackList": [{
-          "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",
-          "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176288,c3925,i0,m202,8a2,8b3,h"
-        },
-          {
-            "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176289,c3925,i0,m101,8a2,8b3,h",
-            "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176289,c3925,i0,m202,8a2,8b3,h"
-          }],
-        "adId": "3ij3ij2ioj3oij23920309du"
-      }
-    ],
-
-    "isShowClose": true,
-    "creativeId": "442"
-  },
-  "duration": 10000,
-  "hotspotTrackLink": [{
-    "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",
-    "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176288,c3925,i0,m202,8a2,8b3,h"
-  },
-    {
-      "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176289,c3925,i0,m101,8a2,8b3,h",
-      "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176289,c3925,i0,m202,8a2,8b3,h"
-    }
-  ],
-  "id": "10e2c51a-cbd3-45c5-9b45-343568971b0f",
-  "infoTrackLink": [{
-    "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176291,c3925,i0,m101,8a2,8b3,h",
-    "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176291,c3925,i0,m202,8a2,8b3,h"
+  "templates": [{
+    "path": "",
+    "url": "http://os-saas-share.videojj.com/dev/app_info/499/1.0.9-template/os_mix_stand_hotspot.lua",
+    "name": "os_mix_stand_hotspot.lua",
+    "md5": "cfe497b017a7deb49062c16f6a250927"
   }],
-  "launchPlanId": 1275,
+  "id": "177c53ce417e4aa2a66b663f3eca76b0",
+  "data": {
+    "adsList": [{
+      "materialType": 1,
+      "resUrl": "https://asmp-cdn.videojj.com/dev/y4pwm3fajnjuieixl9/WX20190415-213208.jpg",
+      "linkData": {
+        "linkUrl": "http://www.baidu.com",
+        "selfLink": "",
+        "deepLink": ""
+      },
+      "adsId": "22746",
+      "duration": 15000,
+      "hotspotTrackLink": [{
+        "clickTrackLink": "https://dev-asmp.videojj.com/api/delivery/statistic/click/st.gif?platform_id=5075&v=http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4&ads_id=22746&type=1&uid=1564538459.428303&time=1564538621597&product=&version=2",
+        "exposureTrackLink": "https://dev-asmp.videojj.com/api/delivery/statistic/exposure/st.gif?platform_id=5075&v=http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4&ads_id=22746&type=1&uid=1564538459.428303&time=1564538621597&product=&version=2"
+      }],
+      "adsType": 4
+    }, {
+      "materialType": 2,
+      "resUrl": "http://asmp-cdn.videojj.com/test/rod5ixlyurjy6vakg5/1557295530697556.mp4",
+      "linkData": {
+        "linkUrl": "http://www.baidu.com",
+        "selfLink": "",
+        "deepLink": ""
+      },
+      "adsId": "22747",
+      "duration": 15000,
+      "hotspotTrackLink": [{
+        "clickTrackLink": "https://dev-asmp.videojj.com/api/delivery/statistic/click/st.gif?platform_id=5075&v=http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4&ads_id=22747&type=1&uid=1564538459.428303&time=1564538621597&product=&version=2",
+        "exposureTrackLink": "https://dev-asmp.videojj.com/api/delivery/statistic/exposure/st.gif?platform_id=5075&v=http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4&ads_id=22747&type=1&uid=1564538459.428303&time=1564538621597&product=&version=2"
+      }],
+      "adsType": 4
+    }],
+    "isShowClose": true,
+    "isShowAds": true
+  },
+  "launchPlanId": "Asmp_2274622747",
   "template": "os_mix_stand_hotspot.lua",
-  "fileList": [{
-    "url": "lua1",
-    "md5": ""
-  }, {
-    "url": "lua1",
-    "md5": ""
-  }]
+  "duration": 30
 }

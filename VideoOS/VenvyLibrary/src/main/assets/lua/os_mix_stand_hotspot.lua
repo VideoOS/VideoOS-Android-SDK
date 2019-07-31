@@ -21,7 +21,7 @@ local currentAdIndex = 1
 
 local isVideoAdPlaying = false
 
-local totalDuration = 30 -- TODO 设置广告总时长
+local totalDuration = 30 -- 广告总时长
 
 local passedDuration = 0
 
@@ -38,56 +38,18 @@ local function onVideoStart()
     end
 end
 
-local function getHotspotExposureTrackLink(data, index)
-    if (data == nil or index == nil) then
-        return nil
-    end
-    local hotspotTrackLinkTable = data.hotspotTrackLink
-    if (hotspotTrackLinkTable == nil) then
-        return nil
-    end
-    local indexHotspotTrackLinkTable = hotspotTrackLinkTable[index]
-    if (indexHotspotTrackLinkTable == nil) then
-        return nil
-    end
-    return indexHotspotTrackLinkTable.exposureTrackLink
-end
-
-local function getHotspotClickTrackLink(data, index)
-    if (data == nil or index == nil) then
-        return nil
-    end
-    local hotspotTrackLinkTable = data.hotspotTrackLink
-    if (hotspotTrackLinkTable == nil) then
-        return nil
-    end
-    local indexHotspotTrackLinkTable = hotspotTrackLinkTable[index]
-    if (indexHotspotTrackLinkTable == nil) then
-        return nil
-    end
-    return indexHotspotTrackLinkTable.clickTrackLink
-end
-
 local function getLinkUrl(data)
     if (data == nil) then
         return nil
     end
-    local link = data.linkUrl
-    if (link ~= nil and string.match(tostring(link), "http") == "http") then
-        return link
+    local link = data.linkData
+    local deepLink = data.deepLink
+    local selfLink = data.selfLink
+    if (link ~= nil and string.match(tostring(link), "http") == "http"
+            and deepLink ~= nil and selfLink ~= nil) then
+        return ""
     else
         return nil
-    end
-end
-
-local function trackUrlList(urlList)
-    if urlList == nil then
-        return
-    end
-    for i, v in ipairs(urlList) do
-        if v ~= nil then
-            leTrack(v)
-        end
     end
 end
 
@@ -103,7 +65,7 @@ local function exposureTrack(data)
         end
     end
 
-    local hotspotTrackLinkTable = data.trackList
+    local hotspotTrackLinkTable = data.hotspotTrackLink
     if (hotspotTrackLinkTable == nil) then
         return
     end
@@ -111,7 +73,7 @@ local function exposureTrack(data)
     for i, v in ipairs(hotspotTrackLinkTable) do
         local showLinkUrl = v.exposureTrackLink
         if (showLinkUrl ~= nil) then
-             print("luaView showLinkUrl " .. tostring(showLinkUrl))
+            print("luaView showLinkUrl " .. tostring(showLinkUrl))
             Native:get(showLinkUrl)
         end
     end
@@ -133,7 +95,7 @@ local function clickTrack(data)
 
     for i, v in ipairs(hotspotTrackLinkTable) do
         local clickLinkUrl = v.clickTrackLink
-         print("luaView clickLinkUrl " .. tostring(clickLinkUrl))
+        print("luaView clickLinkUrl " .. tostring(clickLinkUrl))
         if (clickLinkUrl ~= nil) then
             Native:get(clickLinkUrl)
         end
@@ -171,8 +133,6 @@ local function wedgeConfig(data)
         wedge.mediaPlayPaused = false
         return
     end
-    wedge.videoDuration = contentDataTable.videoDuration
-    wedge.videoDuration = 0
     wedge.isShowClose = contentDataTable.isShowClose
     wedge.isShowAds = contentDataTable.isShowAds
     if (contentDataTable.closeAfter ~= nil) then
@@ -212,12 +172,11 @@ local function wedgeLinkUrl(data)
     if (data == nil) then
         return nil
     end
-    local link = data.linkUrl
-    if (link ~= nil and string.len(link) > 0) then
-        return link
-    else
+    local linkTable = data.linkData
+    if (linkTable == nil) then
         return nil
     end
+    return linkTable.linkUrl, linkTable.deepLink, linkTable.selfLink
 end
 
 local function getWedgeUrl(data)
@@ -554,12 +513,14 @@ end
 
 local function setGuideViewSize(guideParentView, guideView, guideImage, guideLabel, guideVoiceView, guideVoiceImage, data, isPortrait)
     --设置底部详情大小
-    print("setGuideViewSize start:"..tostring(data.adtype))
+    print("setGuideViewSize start:" .. tostring(data.materialType))
     if (guideParentView == nil or guideView == nil) then
+        print("setGuideViewSize shut 1")
         return
-    elseif (data.adtype == AD_TYPE_IMAGE) then
+    elseif (data.materialType == AD_TYPE_IMAGE) then
+        print("setGuideViewSize shut 2")
         guideVoiceView:hide()
-        return;
+        return ;
     end
 
     if System.android() then
@@ -568,9 +529,9 @@ local function setGuideViewSize(guideParentView, guideView, guideImage, guideLab
         guideParentView:alignRight()
         guideParentView:alignBottom()
     end
-    local linkUrl = wedgeLinkUrl(data)
-    print("setGuideViewSize __________linkUrl:"..tostring(linkUrl))
-    if (linkUrl == nil) then
+    local linkUrl, deepLink, selfLink = wedgeLinkUrl(data)
+    print("setGuideViewSize linkUrl:"..tostring(linkUrl)..", deepLink:"..tostring(deepLink)..",selfLink:"..tostring(selfLink))
+    if (linkUrl == nil and deepLink == nil and selfLink == nil) then
         guideVoiceView:frame(17 * scale, 0, 30 * scale, 30 * scale)
         guideVoiceView:corner(15 * scale, 15 * scale, 15 * scale, 15 * scale, 15 * scale, 15 * scale, 15 * scale, 15 * scale)
         guideVoiceImage:frame(0, 0, 10 * scale, 10 * scale)
@@ -596,7 +557,7 @@ local function setGuideViewSize(guideParentView, guideView, guideImage, guideLab
         onEnd = function()
             guideImage:alpha(1)
         end
-    }):start()
+    })   :start()
     performWithDelay(function()
         print("setGuideViewSize ____________________performWithDelay")
         guideParentView:frame(0, 0, 162 * scale, 43 * scale)
@@ -632,7 +593,7 @@ local function setGuideViewSize(guideParentView, guideView, guideImage, guideLab
             end,
             onResume = function()
             end,
-        }):start()
+        })         :start()
     end, 2000)
     --if (isPortrait) then
     --    guideParentView:show()
@@ -641,11 +602,18 @@ local function setGuideViewSize(guideParentView, guideView, guideImage, guideLab
     --end
 end
 
+local function clearLastPlayer()
+    if (wedge.mediaPlayer ~= nil) then
+        wedge.mediaPlayer:stopPlay()
+        wedge.luaView:removeView(wedge.mediaPlayer)
+    end
+end
+
 --[[
     分发广告列表中的广告
 ]]
 local function dispatchAdsEvent()
-    wedge.currentAdData = wedge.data.data.resList[currentAdIndex]
+    wedge.currentAdData = wedge.data.data.adsList[currentAdIndex]
     if (wedge.currentAdData == nil or wedge.cloudImage == nil) then
         if (wedge.timer ~= nil) then
             wedge.timer:cancel()
@@ -654,54 +622,54 @@ local function dispatchAdsEvent()
         -- 结束了
         return
     end
-    passedDuration = passedDuration + wedge.currentAdData.duration
-    print("dispatchAdsEvent : 当前广告的位置:" .. currentAdIndex .. " type:" .. wedge.currentAdData.adtype)
-    if wedge.currentAdData.adtype == AD_TYPE_VIDEO then
+    passedDuration = passedDuration + wedge.currentAdData.duration / 1000
+    print("dispatchAdsEvent : 当前广告的位置:" .. currentAdIndex .. " type:" .. wedge.currentAdData.materialType)
+    if wedge.currentAdData.materialType == AD_TYPE_VIDEO then
         -- 中插广告
-        --if (wedge.mediaPlayer:isHide()) then
-            wedge.mediaPlayer = createMediaPlay(Native:isPortraitScreen())
-            local tag = "mediaPlayer callback"
-            wedge.mediaPlayer:callback({
-                onStart = function(url)
-                    print(tag .. " onStart")
-                    --开始播放
-                    onVideoStart()
-                end,
-                onPause = function(url)
-                    print(tag .. " onPause")
-                    wedge.mediaPlayPaused = true
-                    --暂停播放
-                end,
-                onFinished = function(url)
-                    print(tag .. " onFinished")
-                    --停止播放
-                    --closeWedge()
-                end,
-                onPrepare = function(url)
-                    print(tag .. " onPrepare")
-                    --准备播放
-                    if System.ios() then
-                        wedge.mediaPlayer:show()
-                    end
-                end,
-                onError = function(url)
-                    print(tag .. " onError")
-                    --播放错误
-                    --closeWedge()
-                    dispatchAdsEvent()
-                end,
-                onChangeVolume = function(volme)
-                    if (wedge.guideVoiceImage == nil) then
-                        return
-                    end
-                    if (volme > 0) then
-                        wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
-                    else
-                        wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
-                    end
+        clearLastPlayer()
+        wedge.mediaPlayer = createMediaPlay(Native:isPortraitScreen())
+        local tag = "mediaPlayer callback"
+        wedge.mediaPlayer:callback({
+            onStart = function(url)
+                print(tag .. " onStart")
+                --开始播放
+                onVideoStart()
+            end,
+            onPause = function(url)
+                print(tag .. " onPause")
+                wedge.mediaPlayPaused = true
+                --暂停播放
+            end,
+            onFinished = function(url)
+                print(tag .. " onFinished")
+                --停止播放
+                --closeWedge()
+            end,
+            onPrepare = function(url)
+                print(tag .. " onPrepare")
+                --准备播放
+                if System.ios() then
+                    wedge.mediaPlayer:show()
                 end
-            })
-            wedge.luaView:addView(wedge.mediaPlayer, 1)
+            end,
+            onError = function(url)
+                print(tag .. " onError")
+                --播放错误
+                --closeWedge()
+                dispatchAdsEvent()
+            end,
+            onChangeVolume = function(volme)
+                if (wedge.guideVoiceImage == nil) then
+                    return
+                end
+                if (volme > 0) then
+                    wedge.guideVoiceImage:image(Data(OS_ICON_VOICE))
+                else
+                    wedge.guideVoiceImage:image(Data(OS_ICON_NO_VOICE))
+                end
+            end
+        })
+        wedge.luaView:addView(wedge.mediaPlayer, 1)
         --end
         wedge.mediaPlayer:show()
         wedge.mediaPlayer:startPlay(wedge.currentAdData.resUrl)
@@ -710,10 +678,7 @@ local function dispatchAdsEvent()
     else
         -- 静态图片
         wedge.loading:stop()
-        if (wedge.mediaPlayer ~= nil) then
-            wedge.mediaPlayer:stopPlay()
-            wedge.luaView:removeView(wedge.mediaPlayer)
-        end
+        clearLastPlayer()
         wedge.cloudImage:show()
         wedge.cloudImage:image(wedge.currentAdData.resUrl, nil)
     end
@@ -1304,18 +1269,15 @@ local function onCreate()
         Native:widgetEvent(eventTypeBack, wedge.id, adTypeName, actionTypeNone, "")
     end)
     local clickFunction = function()
-        local linkUrl = wedgeLinkUrl(wedge.currentAdData)
-        if (linkUrl == nil) then
+        local linkUrl, deepLink, selfLink = wedgeLinkUrl(wedge.currentAdData)
+        if (linkUrl == nil and deepLink == nil and selfLink == nil) then
             return
         end
 
         clickTrack(wedge.currentAdData)
-
-        local adId = wedgeID(wedge.currentAdData)
-        local adType = "os_wedge.lua"
-        local linkTable = { link = linkUrl, adType = adType, adId = adId }
-        Native:widgetEvent(eventTypeClick, wedge.id, adTypeName, actionTypeOpenUrl, linkUrl)
-        if (wedge.mediaPlayer ~= nil and wedge.currentAdData.adtype == AD_TYPE_VIDEO) then
+        widgetEvent(eventTypeClick, wedge.id, adTypeName, actionTypeOpenUrl, linkUrl, deepLink, selfLink)
+        --Native:widgetEvent(eventTypeClick, wedge.id, adTypeName, actionTypeOpenUrl, linkUrl)
+        if (wedge.mediaPlayer ~= nil and wedge.currentAdData.materialType == AD_TYPE_VIDEO) then
             wedge.mediaPlayer:pausePlay()
         end
         wedge.mediaPlayPaused = true
@@ -1358,12 +1320,19 @@ local function setDefaultValue(data)
 end
 
 function event(args)
-    print("lua event :: "..Native:tableToJson(args))
+    print("lua event :: " .. Native:tableToJson(args))
+    if (args == nil) then
+        return
+    end
+    if (wedge.currentAdData.materialType == AD_TYPE_IMAGE and args.eventType == tostring(1)) then
+        -- resume
+        wedge.mediaPlayPaused = false
+    end
 end
 
 --入口Native调用--
 function show(args)
-    print("media callback Show second-------")
+    print("mix stand Show -------")
     if (args == nil) then
         if (wedge.mediaPlayer ~= nil) then
             print("media callback onShow -------11")
@@ -1376,24 +1345,23 @@ function show(args)
     if (dataTable == nil) then
         return
     end
-
-    if (dataTable.data == nil or dataTable.data.resList == nil) then
-        return;
+    if (dataTable.data == nil or dataTable.data.adsList == nil) then
+        return ;
     end
 
     setDefaultValue(dataTable)
     wedgeConfig(dataTable)
     wedge.id = dataTable.id
     wedge.launchPlanId = dataTable.launchPlanId
+    totalDuration = dataTable.duration
 
-    Native:widgetEvent(eventTypeShow, wedge.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeShow, wedge.id, adTypeName, actionTypeNone, "")
     Native:saveCacheData(wedge.id, tostring(eventTypeShow))
     wedge.data = dataTable
     wedge.media = registerMedia()
     wedge.window = registerWindow()
 
     onCreate()
-    --registerCallback()
     dispatchAdsEvent()
     showControl(Native:isPortraitScreen(), true)
     if wedge.timer == nil then
