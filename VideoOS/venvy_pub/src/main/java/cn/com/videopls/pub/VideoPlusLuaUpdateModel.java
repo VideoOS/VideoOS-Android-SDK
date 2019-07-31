@@ -1,7 +1,9 @@
 package cn.com.videopls.pub;
 
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,9 +29,8 @@ import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
-import cn.com.venvy.common.utils.VenvyPreferenceHelper;
+import cn.com.venvy.common.utils.VenvyMD5Util;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
-
 /*
  * Created by yanjiangbo on 2018/1/29.
  */
@@ -37,13 +38,14 @@ import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
     public static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
-    private static final String LUA_MANIFEST_JSON = "/lua/os/manifest.json";
-    private static final String LUA_CACHE_FILE_NAME = "venvy_lua_cache";
-    private static final String LUA_CACHE_VERSION = "venvy_lua_version";
-    private static final String LUA_CACHE_FILEMD5 = "venvy_lua_fileMd5";
+    private static final String LUA_MANIFEST_JSON = "manifest.json";
     private static final String UNZIP_LUA_ASYNC_TAG = "unzip_lua";
     private static final String LOCAL_ASSETS_PATH = "lua";
     private static final String LUA_LOAD = "load_luas";
+    private static final String PARSE_LOCAL_LUA_NAME = "parse_name_luas";
+    private static final String PARSE_LOCAL_LUA_MD5 = "parse_md5_luas";
+    private static final String LUA_FILE_VERSION = "lua_version";
+    private static final String LUA_FILE_SDK_VERSION = "sdk_version";
     private static final String UPDATE_VERSION = "/api/detailedFileVersion";
     private DownloadTaskRunner mDownloadTaskRunner;
     private LuaUpdateCallback mUpdateCallback;
@@ -97,25 +99,23 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                     }
                     String luaPackageUrl = needValue.optString("downloadUrl");
                     String luaVersion = needValue.optString("version");
-                    String luaFileMd5 = needValue.optString("fileMd5");
                     // 判定当有下载url，同时版本比当前版本高，同时本地不存在lua文件的时候下载
                     if (!TextUtils.isEmpty(luaPackageUrl)) {
-                        if (!isOldVersionLua(luaVersion)) {
-                            if (isValidLuaFile()) {
-                                List<JSONObject> jsonObjectList = readErrorLua(new File(getManifestJsonPath(luaVersion)), new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH));
-                                int len = jsonObjectList.size();
-                                if (len > 0) {
-                                    startDownloadLuaFile(jsonObjectList.toArray(new JSONObject[len]), luaFileMd5, luaVersion);
-                                } else {
-                                    LuaUpdateCallback callback = getLuaUpdateCallback();
-                                    if (callback != null) {
-                                        callback.updateComplete(false);
-                                    }
-                                }
-                                return;
-                            }
+                        if (!isOldVersionLua(Config.SDK_VERSION, LUA_FILE_SDK_VERSION)) {
+                            VenvyFileUtil.copyFilesFromAssets(App.getContext(), LOCAL_ASSETS_PATH, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
+                            writeToFileVersion(Config.SDK_VERSION, LUA_FILE_SDK_VERSION);
                         }
-                        startDownloadManifestJsonFile(luaVersion, luaFileMd5, luaPackageUrl);
+                        if (isOldVersionLua(luaVersion, LUA_FILE_VERSION)) {
+                            //读取manifestJson文件内容
+                            final String manifestJson = readManifestJson();
+                            if (TextUtils.isEmpty(manifestJson)) {
+                                startDownloadManifestJsonFile(luaVersion, luaPackageUrl);
+                            } else {
+                                checkDownLuaNameUrls(new LuaUpdateInfo.Builder().setVersion(luaVersion).setDownloadUrl(luaPackageUrl).setManifestJson(manifestJson).build());
+                            }
+                            return;
+                        }
+                        startDownloadManifestJsonFile(luaVersion, luaPackageUrl);
                     }
                 } catch (Exception e) {
                     VenvyLog.e(VideoPlusLuaUpdateModel.class.getName(), e);
@@ -159,7 +159,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
         return paramBody;
     }
 
-    private void startDownloadManifestJsonFile(final String version, final String fileMd5, String url) {
+    private void startDownloadManifestJsonFile(final String version, final String url) {
         if (TextUtils.isEmpty(url)) {
             VenvyLog.e(VideoPlusLuaUpdateModel.class.getName(), "download url can't be null");
             LuaUpdateCallback callback = getLuaUpdateCallback();
@@ -168,9 +168,8 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
             }
             return;
         }
-        VenvyFileUtil.copyFilesFromAssets(App.getContext(), LOCAL_ASSETS_PATH, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
         mDownloadTaskRunner = new DownloadTaskRunner(getRequestConnect());
-        mDownloadTaskRunner.startTask(new DownloadTask(App.getContext(), url, getManifestJsonPath(version), true), new SingleDownloadListener<DownloadTask, Boolean>() {
+        mDownloadTaskRunner.startTask(new DownloadTask(App.getContext(), url, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + LUA_MANIFEST_JSON, true), new SingleDownloadListener<DownloadTask, Boolean>() {
             @Override
             public boolean isFinishing() {
                 return false;
@@ -187,6 +186,9 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
             @Override
             public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
+                if (downloadTask != null) {
+                    downloadTask.failed();
+                }
                 LuaUpdateCallback callback = getLuaUpdateCallback();
                 if (callback != null) {
                     callback.updateError(new Exception("update error,because downloadTask error"));
@@ -211,67 +213,24 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                     }
                     return;
                 }
-                File oldManifestFile = new File(getManifestJsonPath(getOldVersion()));
-                if (isOldManifestJson(oldManifestFile)) {
-                    if (isSameMd5WithManifestJson(hasDownFile)) {
-                        deleteOldManifestJson(version);
-                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
-                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
-                        LuaUpdateCallback callback = getLuaUpdateCallback();
-                        if (callback != null) {
-                            callback.updateComplete(true);
-                        }
-                        return;
-                    } else {
-                        List<JSONObject> jsonObjectList = readLuaWithFile(hasDownFile, oldManifestFile);
-                        int len = jsonObjectList.size();
-                        if (len <= 0) {
-                            deleteOldManifestJson(version);
-                            VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
-                            VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
-                            LuaUpdateCallback callback = getLuaUpdateCallback();
-                            if (callback != null) {
-                                callback.updateComplete(false);
-                            }
-                            return;
-                        } else {
-                            startDownloadLuaFile(jsonObjectList.toArray(new JSONObject[len]), fileMd5, version);
-                        }
-                    }
-                } else {
-                    List<JSONObject> jsonObjectList = readLuaWithFile(hasDownFile);
-                    int len = jsonObjectList.size();
-                    if (len <= 0) {
-                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
-                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
-                        LuaUpdateCallback callback = getLuaUpdateCallback();
-                        if (callback != null) {
-                            callback.updateComplete(false);
-                        }
-                        return;
-                    } else {
-                        startDownloadLuaFile(jsonObjectList.toArray(new JSONObject[len]), fileMd5, version);
-                    }
-                }
+                checkDownLuaMD5Urls(new LuaUpdateInfo.Builder().setVersion(version).setDownloadUrl(url).setManifestJson(readManifestJson()).build());
             }
         });
     }
 
-    private void startDownloadLuaFile(JSONObject[] luaUrls, final String fileMd5, final String version) {
+    private void startDownloadLuaFile(final String version, String[] luaUrls) {
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(getRequestConnect());
         }
-        VenvyAsyncTaskUtil.doAsyncTask(LUA_LOAD, new VenvyAsyncTaskUtil.IDoAsyncTask<JSONObject, Void>() {
+        VenvyAsyncTaskUtil.doAsyncTask(LUA_LOAD, new VenvyAsyncTaskUtil.IDoAsyncTask<String, Void>() {
             @Override
-            public Void doAsyncTask(JSONObject... objs) throws Exception {
-                if (objs == null || objs.length <= 0) {
+            public Void doAsyncTask(String... urls) throws Exception {
+                if (urls == null || urls.length <= 0) {
                     return null;
                 }
                 ArrayList<DownloadTask> arrayList = new ArrayList<>();
-                for (JSONObject obj : objs) {
-                    String url = obj.optString("url");
-                    String name = obj.optString("name");
-                    DownloadTask task = new DownloadTask(App.getContext(), url, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + name);
+                for (String url : urls) {
+                    DownloadTask task = new DownloadTask(App.getContext(), url, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(url).getLastPathSegment());
                     arrayList.add(task);
                 }
                 mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
@@ -292,6 +251,9 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
                     @Override
                     public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
+                        if (downloadTask != null) {
+                            downloadTask.failed();
+                        }
                     }
 
                     @Override
@@ -300,9 +262,9 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
 
                     @Override
                     public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
-                        deleteOldManifestJson(version);
-                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, version);
-                        VenvyPreferenceHelper.put(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, fileMd5);
+                        if (failedTasks == null || failedTasks.size() <= 0) {
+                            writeToFileVersion(version, LUA_FILE_VERSION);
+                        }
                         LuaUpdateCallback callback = getLuaUpdateCallback();
                         if (callback != null) {
                             callback.updateComplete(true);
@@ -314,148 +276,200 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
         }, null, luaUrls);
     }
 
-    private List<JSONObject> readLuaWithFile(File manifestFile) {
-        List<JSONObject> jsonObjList = new ArrayList<>();
-        String manifestJson = VenvyFileUtil.readFormFile(App.getContext(), manifestFile.getAbsolutePath());
-        try {
-            JSONArray jsonArray = new JSONArray(manifestJson);
-            int length = jsonArray.length();
-            for (int i = 0; i < length; i++) {
-                jsonObjList.add(jsonArray.optJSONObject(i));
-            }
-        } catch (Exception e) {
-            VenvyLog.i(TAG, "readLuaWithFile ——> error：" + e.getMessage());
-            e.printStackTrace();
-        }
-        return jsonObjList;
-    }
-
-    private List<JSONObject> readErrorLua(File manifestFile, File luaFile) {
-        List<JSONObject> jsonObjList = new ArrayList<>();
-        try {
-            String manifestJson = VenvyFileUtil.readFormFile(App.getContext(), manifestFile.getAbsolutePath());
-
-            JSONArray jsonArray = new JSONArray(manifestJson);
-            String[] tempList = luaFile.list();
-            int len = tempList.length;
-            int manifestLen = jsonArray.length();
-            for (int i = 0; i < manifestLen; i++) {
-                JSONObject jsonItemObj = jsonArray.optJSONObject(i);
-                String luaName = jsonItemObj.optString("name");
-                boolean needDown = true;
-                for (int j = 0; j < len; j++) {
-                    File temp;
-                    if (luaFile.getAbsolutePath().endsWith(File.separator)) {
-                        temp = new File(luaFile.getAbsolutePath() + tempList[j]);
-                    } else {
-                        temp = new File(luaFile.getAbsolutePath() + File.separator + tempList[j]);
-                    }
-                    if (!temp.exists() || !temp.isFile()) {
-                        continue;
-                    }
-                    if (TextUtils.equals(luaName, temp.getName())) {
-                        needDown = false;
-                        break;
-                    }
-                    needDown = true;
-                }
-                if (needDown) {
-                    jsonObjList.add(jsonItemObj);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return jsonObjList;
-    }
-
-    private List<JSONObject> readLuaWithFile(File manifestFile, File oldManifestFile) {
-        List<JSONObject> jsonObjList = new ArrayList<>();
-        try {
-            String manifestJson = VenvyFileUtil.readFormFile(App.getContext(), manifestFile.getAbsolutePath());
-            String oldManifestJson = VenvyFileUtil.readFormFile(App.getContext(), oldManifestFile.getAbsolutePath());
-
-            JSONArray jsonArray = new JSONArray(manifestJson);
-            JSONArray oldJsonArray = new JSONArray(oldManifestJson);
-            int len = jsonArray.length();
-            int oldLen = oldJsonArray.length();
-            for (int i = 0; i < len; i++) {
-                JSONObject jsonItemObj = jsonArray.optJSONObject(i);
-                String luaName = jsonItemObj.optString("name");
-                String luaMd5 = jsonItemObj.optString("md5");
-                boolean needDown = true;
-                for (int j = 0; j < oldLen; j++) {
-                    JSONObject oldJsonItemObj = oldJsonArray.optJSONObject(j);
-                    String oldLuaName = oldJsonItemObj.optString("name");
-                    String oldLuaMd5 = oldJsonItemObj.optString("md5");
-                    if (TextUtils.equals(luaName, oldLuaName) && TextUtils.equals(luaMd5, oldLuaMd5)) {
-                        needDown = false;
-                        break;
-                    }
-                    needDown = true;
-                }
-                if (needDown) {
-                    jsonObjList.add(jsonItemObj);
-                }
-            }
-        } catch (Exception e) {
-            VenvyLog.i(TAG, "readLuaWithFile ——> error：" + e.getMessage());
-            e.printStackTrace();
-        }
-        return jsonObjList;
-    }
-
-    private boolean isSameMd5WithManifestJson(File manifestFile) {
-        String manifestJson = VenvyFileUtil.readFormFile(App.getContext(), manifestFile.getAbsolutePath());
-        String oldMd5 = getOldFileMd5();
-        if (!TextUtils.isEmpty(manifestJson)) {
+    private void writeToFileVersion(String version, String fileName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("version", version);
+        String path = VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH;
+        File file = new File(path, fileName);
+        if (!file.exists()) {
             try {
-                JSONObject jsonObj = new JSONObject(manifestJson);
-                return TextUtils.equals(jsonObj.optString("fileMd5"), oldMd5);
+                file.createNewFile();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return false;
+        VenvyFileUtil.writeToFile(App.getContext(), path + File.separator + fileName, new JSONObject(params).toString());
     }
 
-    private boolean isOldManifestJson(File oldManifestFile) {
-        if (!oldManifestFile.exists() || !TextUtils.equals("json", VenvyFileUtil.getExtension(oldManifestFile.getAbsolutePath()))) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isOldVersionLua(String version) {
+    private boolean isOldVersionLua(String version, String fileName) {
         if (TextUtils.isEmpty(version)) {
             return false;
         }
-        String oldVersion = VenvyPreferenceHelper.getString(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, "");
-        return !TextUtils.equals(oldVersion, version);
-    }
-
-    private String getOldVersion() {
-        return VenvyPreferenceHelper.getString(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_VERSION, "");
-    }
-
-    private String getOldFileMd5() {
-        return VenvyPreferenceHelper.getString(App.getContext(), LUA_CACHE_FILE_NAME, LUA_CACHE_FILEMD5, "");
-    }
-
-    private boolean isValidLuaFile() {
-        File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
-        return file.exists() && file.isDirectory() && file.listFiles() != null && file.listFiles().length > 0;
-    }
-
-    private String getManifestJsonPath(String version) {
-        return VenvyFileUtil.getCachePath(App.getContext()) + File.separator + version + LUA_MANIFEST_JSON;
-    }
-
-    private void deleteOldManifestJson(String version) {
-        String oldVersion = getOldVersion();
-        if (!TextUtils.isEmpty(oldVersion)&& TextUtils.equals(version,oldVersion)) {
-            VenvyFileUtil.delFolder(VenvyFileUtil.getCachePath(App.getContext()) + File.separator + getOldVersion());
+        File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName);
+        if (!file.exists() || !file.isFile()) {
+            return false;
         }
+        boolean isOldVersion = false;
+        String localVersion = VenvyFileUtil.readFormFile(App.getContext(), file.getAbsolutePath());
+        try {
+            JSONObject obj = new JSONObject(localVersion);
+            isOldVersion = TextUtils.equals(version, obj.optString("version"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isOldVersion;
+    }
+
+    private String readManifestJson() {
+        return VenvyFileUtil.readFormFile(App.getContext(), VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + LUA_MANIFEST_JSON);
+    }
+
+    private void checkDownLuaMD5Urls(final LuaUpdateInfo info) {
+        VenvyAsyncTaskUtil.doAsyncTask(PARSE_LOCAL_LUA_MD5, new VenvyAsyncTaskUtil.IDoAsyncTask<LuaUpdateInfo,
+                List<String>>() {
+            @Override
+            public List<String> doAsyncTask(LuaUpdateInfo... infos) throws Exception {
+                if (infos == null || infos.length == 0) {
+                    return null;
+                }
+                List<String> luaUrls = new ArrayList<>();
+                try {
+                    JSONArray jsonArray = new JSONArray(infos[0].getManifestJson());
+                    File luaFile = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
+                    String[] tempList = luaFile.list();
+                    int len = tempList.length;
+                    int manifestLen = jsonArray.length();
+                    for (int i = 0; i < manifestLen; i++) {
+                        JSONObject jsonItemObj = jsonArray.optJSONObject(i);
+                        String md5 = jsonItemObj.optString("md5");
+                        String name = jsonItemObj.optString("name");
+                        boolean needDown = true;
+                        for (int j = 0; j < len; j++) {
+                            File temp;
+                            if (luaFile.getAbsolutePath().endsWith(File.separator)) {
+                                temp = new File(luaFile.getAbsolutePath() + tempList[j]);
+                            } else {
+                                temp = new File(luaFile.getAbsolutePath() + File.separator + tempList[j]);
+                            }
+                            if (!temp.exists() || !temp.isFile()) {
+                                continue;
+                            }
+                            if (TextUtils.equals(md5, VenvyMD5Util.EncoderByMd5(temp)) && TextUtils.equals(name, tempList[j])) {
+                                needDown = false;
+                                break;
+                            }
+                            needDown = true;
+                        }
+                        if (needDown) {
+                            luaUrls.add(jsonItemObj.optString("url"));
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    VenvyLog.i(TAG, "VideoPlusLuaUpdateModel ——> checkDownLuaUrls error：" + e.getMessage());
+                }
+                return luaUrls;
+            }
+        }, new VenvyAsyncTaskUtil.IAsyncCallback<List<String>>() {
+            @Override
+            public void onPreExecute() {
+            }
+
+            @Override
+            public void onPostExecute(List<String> urls) {
+                if (urls == null) {
+                    return;
+                }
+                if (urls.size() > 0) {
+                    startDownloadLuaFile(info.getVersion(), urls.toArray(new String[urls.size()]));
+                    return;
+                }
+                LuaUpdateCallback callback = getLuaUpdateCallback();
+                if (callback != null) {
+                    callback.updateComplete(false);
+                }
+            }
+
+            @Override
+            public void onCancelled() {
+                VenvyLog.e("cancel");
+            }
+
+            @Override
+            public void onException(Exception ie) {
+
+            }
+        }, info);
+
+
+    }
+
+    private void checkDownLuaNameUrls(final LuaUpdateInfo info) {
+        VenvyAsyncTaskUtil.doAsyncTask(PARSE_LOCAL_LUA_NAME, new VenvyAsyncTaskUtil.IDoAsyncTask<LuaUpdateInfo,
+                List<String>>() {
+            @Override
+            public List<String> doAsyncTask(LuaUpdateInfo... infos) throws Exception {
+                if (infos == null || infos.length == 0) {
+                    return null;
+                }
+                List<String> luaUrls = new ArrayList<>();
+                try {
+                    JSONArray jsonArray = new JSONArray(infos[0].getManifestJson());
+                    File luaFile = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
+                    String[] tempList = luaFile.list();
+                    int len = tempList.length;
+                    int manifestLen = jsonArray.length();
+                    for (int i = 0; i < manifestLen; i++) {
+                        JSONObject jsonItemObj = jsonArray.optJSONObject(i);
+                        String name = jsonItemObj.optString("name");
+                        boolean needDown = true;
+                        for (int j = 0; j < len; j++) {
+                            File temp;
+                            if (luaFile.getAbsolutePath().endsWith(File.separator)) {
+                                temp = new File(luaFile.getAbsolutePath() + tempList[j]);
+                            } else {
+                                temp = new File(luaFile.getAbsolutePath() + File.separator + tempList[j]);
+                            }
+                            if (!temp.exists() || !temp.isFile()) {
+                                continue;
+                            }
+                            if (TextUtils.equals(name, tempList[j])) {
+                                needDown = false;
+                                break;
+                            }
+                            needDown = true;
+                        }
+                        if (needDown) {
+                            luaUrls.add(jsonItemObj.optString("url"));
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    VenvyLog.i(TAG, "VideoPlusLuaUpdateModel ——> checkDownLuaUrls error：" + e.getMessage());
+                }
+                return luaUrls;
+            }
+        }, new VenvyAsyncTaskUtil.IAsyncCallback<List<String>>() {
+            @Override
+            public void onPreExecute() {
+            }
+
+            @Override
+            public void onPostExecute(List<String> urls) {
+                if (urls == null) {
+                    return;
+                }
+                if (urls.size() > 0) {
+                    startDownloadLuaFile(info.getVersion(), urls.toArray(new String[urls.size()]));
+                    return;
+                }
+                LuaUpdateCallback callback = getLuaUpdateCallback();
+                if (callback != null) {
+                    callback.updateComplete(false);
+                }
+            }
+
+            @Override
+            public void onCancelled() {
+                VenvyLog.e("cancel");
+            }
+
+            @Override
+            public void onException(Exception ie) {
+            }
+        }, info);
+
+
     }
 
     public interface LuaUpdateCallback {
@@ -469,7 +483,8 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
         if (mDownloadTaskRunner != null) {
             mDownloadTaskRunner.destroy();
         }
-
+        VenvyAsyncTaskUtil.cancel(PARSE_LOCAL_LUA_NAME);
+        VenvyAsyncTaskUtil.cancel(PARSE_LOCAL_LUA_MD5);
         VenvyAsyncTaskUtil.cancel(UNZIP_LUA_ASYNC_TAG);
         mUpdateCallback = null;
     }
