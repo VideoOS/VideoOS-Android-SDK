@@ -2,6 +2,9 @@ package cn.com.venvy.common.utils;
 
 import android.text.TextUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -92,5 +95,28 @@ public class VenvyMD5Util {
         }
 
         return strResult;
+    }
+
+    public static String EncoderByMd5(File file) {
+        if (!file.isFile()) {
+            return null;
+        }
+        String encodeMd5String;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            FileInputStream in = new FileInputStream(file);
+            byte buffer[] = new byte[1024];
+            int len;
+            while ((len = in.read(buffer, 0, 1024)) != -1) {
+                digest.update(buffer, 0, len);
+            }
+            in.close();
+            BigInteger bigInt = new BigInteger(1, digest.digest());
+            encodeMd5String = bigInt.toString(16);
+        } catch (Exception e) {
+            e.printStackTrace();
+            encodeMd5String = null;
+        }
+        return encodeMd5String;
     }
 }
