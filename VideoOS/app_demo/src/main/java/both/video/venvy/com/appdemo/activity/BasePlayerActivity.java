@@ -117,7 +117,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             // 点播
             mVideoPlayer.setUp(DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
         }
-        mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
+//        mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
+        mVideoPlayer.setPlayTag(DEFAULT_VIDEO);
         mVideoPlusView.start();
         // 开启前贴
         startMixStandAd(ServiceType.ServiceTypeFrontVideo);
@@ -149,7 +150,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             @Override
             public void onFailToCompleteForService(Throwable throwable) {
                 if (type == ServiceType.ServiceTypeFrontVideo) {
-                    mVideoPlayer.startPlayLogic();
+                    VenvyUIUtil.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mVideoPlayer.startPlayLogic();
+                        }
+                    });
                 }
             }
         });
