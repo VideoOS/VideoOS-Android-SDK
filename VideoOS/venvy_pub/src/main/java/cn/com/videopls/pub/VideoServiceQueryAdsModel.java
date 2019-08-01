@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.venvy.AppSecret;
+import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.common.http.HttpRequest;
@@ -27,13 +28,14 @@ import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
  */
 
 public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
-    private static final String SERVICE_QUERYALL_ADS_URL = "/api/queryAllAds";
-    private static final String SERVICE_QUERYALL_ADS_URL_MOCK = "https://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/queryAllAds";
+    private static final String SERVICE_QUERYALL_ADS_URL_MOCK = Config.HOST_VIDEO_OS
+            + "/api/queryAllAds";
     private ServiceQueryAdsCallback mQueryAdsCallback;
     private VideoPlusLuaUpdate mDownLuaUpdate;
     private Map<String, String> mQueryAdsParams;
 
-    public VideoServiceQueryAdsModel(Platform platform, Map<String, String> params, VideoServiceQueryAdsModel.ServiceQueryAdsCallback callback) {
+    public VideoServiceQueryAdsModel(Platform platform, Map<String, String> params,
+                                     VideoServiceQueryAdsModel.ServiceQueryAdsCallback callback) {
         super(platform);
         this.mQueryAdsCallback = callback;
         this.mQueryAdsParams = params;
@@ -65,52 +67,62 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    final JSONObject value = new JSONObject(response.getResult());
-                    final String queryAdsId = value.optString("id");
-                    if (TextUtils.isEmpty(queryAdsId)) {
-                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query ads data with id is null"));
-                        }
-                        return;
-                    }
-                    final String queryAdsTemplate = value.optString("template");
+                    JSONObject value = new JSONObject(response.getResult());
+                    String encryptData = value.optString("encryptData");
+                    String decrypt = VenvyAesUtil.decrypt(encryptData,
+                            AppSecret.getAppSecret(getPlatform()),
+                            AppSecret.getAppSecret(getPlatform()));
+                    final JSONObject encrypt = new JSONObject(decrypt).optJSONObject("launchInfo");
+                    final String queryAdsId = encrypt.optString("id");
+                    final String queryAdsTemplate = encrypt.optString("template");
                     if (TextUtils.isEmpty(queryAdsTemplate)) {
                         ServiceQueryAdsCallback callback = getQueryAdsCallback();
                         if (callback != null) {
-                            callback.queryError(new Exception("query ads data with template is null"));
+                            callback.queryError(new Exception("query ads data with template is " +
+                                    "null"));
                         }
                         return;
                     }
-                    JSONArray fileListArray = value.optJSONArray("templates");
+                    JSONArray fileListArray = encrypt.optJSONArray("templates");
                     if (fileListArray == null || fileListArray.length() <= 0) {
                         ServiceQueryAdsCallback callback = getQueryAdsCallback();
                         if (callback != null) {
-                            callback.queryError(new Exception("query ads data with fileList is null"));
+                            callback.queryError(new Exception("query ads data with fileList is " +
+                                    "null"));
                         }
                         return;
                     }
                     if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
-                            @Override
-                            public void updateComplete(boolean isUpdateByNetWork) {
-                                ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                                if (callback != null) {
-                                    Map<String, String> params = getQueryAdsParams();
-                                    String adsType = params != null ? params.get(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
-                                    ServiceQueryAdsInfo queryAdsInfo = new ServiceQueryAdsInfo.Builder().setQueryAdsTemplate(queryAdsTemplate).setQueryAdsId(queryAdsId).setQueryAdsType(!TextUtils.isEmpty(adsType) ? Integer.valueOf(adsType) : 0).build();
-                                    callback.queryComplete(value.toString(), queryAdsInfo);
-                                }
-                            }
+                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new
+                                VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
+                                    @Override
+                                    public void updateComplete(boolean isUpdateByNetWork) {
+                                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                                        if (callback != null) {
+                                            Map<String, String> params = getQueryAdsParams();
+                                            String adsType = params != null ? params.get
+                                                    (VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
+                                            ServiceQueryAdsInfo queryAdsInfo =
+                                                    new ServiceQueryAdsInfo
+                                                            .Builder()
+                                                            .setQueryAdsTemplate(queryAdsTemplate)
+                                                            .setQueryAdsId(queryAdsId)
+                                                            .setQueryAdsType(!TextUtils.isEmpty(adsType) ?
+                                                                    Integer.valueOf(adsType) : 0).build();
+                                            callback.queryComplete(encrypt.toString(),
+                                                    queryAdsInfo);
+                                        }
+                                    }
 
-                            @Override
-                            public void updateError(Throwable t) {
-                                ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                                if (callback != null) {
-                                    callback.queryError(new Exception("query ads down lua failed"));
-                                }
-                            }
-                        });
+                                    @Override
+                                    public void updateError(Throwable t) {
+                                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                                        if (callback != null) {
+                                            callback.queryError(new Exception("query ads down lua" +
+                                                    " failed"));
+                                        }
+                                    }
+                                });
                     }
                     mDownLuaUpdate.startDownloadLuaFile(fileListArray);
                 } catch (Exception e) {
@@ -145,27 +157,29 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-        return HttpRequest.post(SERVICE_QUERYALL_ADS_URL_MOCK, new HashMap<String, String>());
+        return HttpRequest.post(SERVICE_QUERYALL_ADS_URL_MOCK, createBody(mQueryAdsParams));
     }
 
     private Map<String, String> createBody(Map<String, String> params) {
-        Map<String, String> paramBody = new HashMap<>();
-        paramBody.put("commonParam", LVCommonParamPlugin.getCommonParamJson());
+        Map<String, String> bodyParams = new HashMap<>();
+        bodyParams.put("commonParam", LVCommonParamPlugin.getCommonParamJson());
         Platform platform = getPlatform();
         if (platform != null) {
             PlatformInfo info = platform.getPlatformInfo();
             if (info != null) {
                 String videoId = info.getVideoId();
                 if (!TextUtils.isEmpty(videoId)) {
-                    paramBody.put("videoId", videoId);
+                    bodyParams.put("videoId", videoId);
                 }
             }
         }
         if (params != null) {
-            paramBody.putAll(params);
+            bodyParams.putAll(params);
         }
-        paramBody.put("data", VenvyAesUtil.encrypt(AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform()), new JSONObject(paramBody).toString()));
-        return paramBody;
+        HashMap<String, String> dataParams = new HashMap<>();
+        dataParams.put("data", VenvyAesUtil.encrypt(AppSecret.getAppSecret(getPlatform()),
+                AppSecret.getAppSecret(getPlatform()), new JSONObject(bodyParams).toString()));
+        return dataParams;
     }
 
     public interface ServiceQueryAdsCallback {

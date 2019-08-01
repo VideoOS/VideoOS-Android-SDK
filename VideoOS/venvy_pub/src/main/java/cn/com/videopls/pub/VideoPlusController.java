@@ -7,13 +7,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 
-import com.taobao.luaview.global.LuaView;
-
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.luaj.vm2.ast.Str;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -52,11 +47,14 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 public abstract class VideoPlusController implements VenvyObserver {
 
+    protected VideoPlusView mContentView;
+
+    protected Platform mPlatform;
+
+    protected HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
+
     private Context mContext;
     private VideoPlusAdapter mVideoPlusAdapter;
-    private VideoPlusView mContentView;
-    private Platform mPlatform;
-    private HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
     private VideoServiceQueryAdsModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
@@ -97,8 +95,8 @@ public abstract class VideoPlusController implements VenvyObserver {
                 Uri.Builder builder = new Uri.Builder();
                 builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                         .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_TEMPLATE, "main.lua")
-                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, MAIN_DEFAULT_ID);
+                        .appendQueryParameter("template", "main.lua")
+                        .appendQueryParameter("id", MAIN_DEFAULT_ID);
                 navigation(builder.build(), null, null);
             }
 
@@ -116,7 +114,8 @@ public abstract class VideoPlusController implements VenvyObserver {
      * @param params
      * @param callback
      */
-    public void startService(ServiceType serviceType, final HashMap<String, String> params, final IServiceCallback callback) {
+    public void startService(ServiceType serviceType, final HashMap<String, String> params,
+                             final IServiceCallback callback) {
         if (!VenvyAPIUtil.isSupport(16)) {
             Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
             return;
@@ -135,7 +134,8 @@ public abstract class VideoPlusController implements VenvyObserver {
             public void successful(String result, final ServiceQueryAdsInfo queryAdsInfo) {
                 if (queryAdsInfo == null) {
                     if (callback != null) {
-                        callback.onFailToCompleteForService(new Exception("error query ads params is null"));
+                        callback.onFailToCompleteForService(new Exception("error query ads params" +
+                                " is null"));
                     }
                     return;
                 }
@@ -143,8 +143,10 @@ public abstract class VideoPlusController implements VenvyObserver {
                 Uri.Builder builder = new Uri.Builder();
                 builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                         .path(VenvySchemeUtil.PATH_LUA_VIEW)
-                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_TEMPLATE, queryAdsInfo.getQueryAdsTemplate())
-                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
+                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_TEMPLATE,
+                                queryAdsInfo.getQueryAdsTemplate())
+                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID,
+                                queryAdsInfo.getQueryAdsId());
                 HashMap<String, String> skipParams = new HashMap<>();
                 skipParams.put("data", result);
                 navigation(builder.build(), skipParams, new IRouterCallback() {
@@ -158,7 +160,8 @@ public abstract class VideoPlusController implements VenvyObserver {
                     @Override
                     public void lost() {
                         if (callback != null) {
-                            callback.onFailToCompleteForService(new Exception("start startService failed"));
+                            callback.onFailToCompleteForService(new Exception("start startService" +
+                                    " failed"));
                         }
                     }
                 });
@@ -185,7 +188,8 @@ public abstract class VideoPlusController implements VenvyObserver {
             Uri.Builder builder = new Uri.Builder();
             builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                     .path(VenvySchemeUtil.PATH_LUA_VIEW).appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_EVENT, eventService(serviceType, EventType.EventTypeAction, ActionType.EventTypeResume))
-                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
+                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID,
+                            queryAdsInfo.getQueryAdsId());
             navigation(builder.build(), null, null);
         }
     }
@@ -387,7 +391,8 @@ public abstract class VideoPlusController implements VenvyObserver {
     private void startConnect(final IStartResult result) {
 
         //开始访问Lua增量更新接口
-        mLuaUpdateModel = new VideoPlusLuaUpdateModel(mPlatform, new VideoPlusLuaUpdateModel.LuaUpdateCallback() {
+        mLuaUpdateModel = new VideoPlusLuaUpdateModel(mPlatform,
+                new VideoPlusLuaUpdateModel.LuaUpdateCallback() {
             @Override
             public void updateComplete(boolean isUpdateByNetwork) {
                 if (isUpdateByNetwork) {
@@ -405,7 +410,8 @@ public abstract class VideoPlusController implements VenvyObserver {
 
             @Override
             public void updateError(Throwable throwable) {
-//                VenvyLog.e(VideoPlusController.class.getName(), "lua 更新失败, : " + throwable.getMessage());
+//                VenvyLog.e(VideoPlusController.class.getName(), "lua 更新失败, : " + throwable
+//                .getMessage());
                 if (result != null) {
                     result.failed();
                 }
@@ -416,7 +422,8 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     private void startQueryConnect(Map<String, String> params, final IStartQueryResult result) {
-        mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params, new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
+        mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params,
+                new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
 
             @Override
             public void queryComplete(String queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
@@ -479,10 +486,13 @@ public abstract class VideoPlusController implements VenvyObserver {
         return queryAdsInfoArray;
     }
 
-    private String eventService(ServiceType serviceType, EventType eventType, ActionType actionType) {
+    private String eventService(ServiceType serviceType, EventType eventType,
+                                ActionType actionType) {
         HashMap<String, String> eventParams = new HashMap<>();
-        eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_EVENT_TYPE, String.valueOf(eventType.getId()));
-        eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE, String.valueOf(actionType.getId()));
+        eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_EVENT_TYPE,
+                String.valueOf(eventType.getId()));
+        eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE,
+                String.valueOf(actionType.getId()));
         return new JSONObject(eventParams).toString();
     }
 }

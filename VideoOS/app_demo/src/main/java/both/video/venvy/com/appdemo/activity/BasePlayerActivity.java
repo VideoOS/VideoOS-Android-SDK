@@ -17,12 +17,18 @@ import android.widget.CompoundButton;
 import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 
+import java.util.HashMap;
+
 import both.video.venvy.com.appdemo.MyApp;
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
 import cn.com.venvy.VideoPositionHelper;
+import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
+import cn.com.venvy.common.interf.ServiceType;
+import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.os.VideoOsView;
 
@@ -35,8 +41,10 @@ import cn.com.videopls.pub.os.VideoOsView;
  */
 public abstract class BasePlayerActivity extends AppCompatActivity {
     private static final String TAG = BasePlayerActivity.class.getSimpleName();
-    private static final String LIVE_DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4";
-    private static final String DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4";
+    private static final String LIVE_DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs" +
+            ".com/ai/buRan.mp4";
+    private static final String DEFAULT_VIDEO = "http://qa-video.oss-cn-beijing.aliyuncs" +
+            ".com/mp4/mby02.mp4";
     protected ViewGroup mRootView; //  Activity 根布局
     protected StandardVideoOSPlayer mVideoPlayer; // 播放器控件
     protected VideoOsView mVideoPlusView; // VideoOs 视图（填充根布局）
@@ -65,6 +73,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
         // Step2 : 为VideoOsView设置Adapter
         mAdapter = new VideoOsAdapter(mVideoPlayer, isLiveOS());
+        mAdapter.setIOnWebViewDialogDismissCallback(new VideoOsAdapter.IOnWebViewDialogDismissCallback() {
+            @Override
+            public void onDismiss() {
+                mVideoPlusView.reResumeService(ServiceType.ServiceTypeFrontVideo);
+            }
+        });
         mVideoPlusView.setVideoOSAdapter(mAdapter);
 
         // Step3 : 在播放器的相关CallBack中启动VideoOsView  ---  mVideoPlusView.start()
@@ -103,9 +117,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             // 点播
             mVideoPlayer.setUp(DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
         }
-        mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
-        mVideoPlayer.startPlayLogic();
-
+//        mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
+        mVideoPlayer.setPlayTag(DEFAULT_VIDEO);
+        mVideoPlusView.start();
+        // 开启前贴
+        startMixStandAd(ServiceType.ServiceTypeFrontVideo);
+//        mVideoPlayer.startPlayLogic();
     }
 
 
@@ -118,6 +135,31 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * 开启前贴, 前贴结束后会开始播放正片
+     */
+    private void startMixStandAd(final ServiceType type) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put(VenvySchemeUtil.QUERY_PARAMETER_DURATION, "30");
+        mVideoPlusView.startService(type, params, new IServiceCallback() {
+            @Override
+            public void onCompleteForService() {
+
+            }
+
+            @Override
+            public void onFailToCompleteForService(Throwable throwable) {
+                if (type == ServiceType.ServiceTypeFrontVideo) {
+                    VenvyUIUtil.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mVideoPlayer.startPlayLogic();
+                        }
+                    });
+                }
+            }
+        });
+    }
 
     private void toggleStatusBar(boolean isChecked) {
         if (isChecked) {
@@ -163,13 +205,14 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                 if (isFirstPlayVideo) {
 //                    Log.d(TAG, "onStartPrepared : First");
                     // 首次播放，只需调用start启动
-                    mVideoPlusView.start();
+//                    mVideoPlusView.start();
                     isFirstPlayVideo = false;
                 } else {
 //                    Log.d(TAG, "onStartPrepared : Second + ");
                     // 非首次播放，在此demo种视为切集操作
                     mVideoPlusView.stop();
-                    mAdapter.updateProvider(mAdapter.generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(), ConfigUtil.getVideoId()));
+                    mAdapter.updateProvider(mAdapter.generateProvider(ConfigUtil.getAppKey(),
+                            ConfigUtil.getAppSecret(), ConfigUtil.getVideoId()));
                     mVideoPlusView.start();
                 }
 
@@ -192,7 +235,10 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
             @Override
             public void onClickStop(String url, Object... objects) {
-
+                // 暂停广告
+                VenvyLog.i("videoCallBack onClickStop ----");
+                mVideoPlusView.startService(ServiceType.ServiceTypePictureAd,
+                        new HashMap<String, String>(), null);
             }
 
             @Override
@@ -202,7 +248,9 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
             @Override
             public void onClickResume(String url, Object... objects) {
-
+                VenvyLog.i("videoCallBack onClickResume ----");
+                // 关闭暂停广告
+                mVideoPlusView.stopService(ServiceType.ServiceTypePictureAd);
             }
 
             @Override
@@ -222,7 +270,9 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
             @Override
             public void onAutoComplete(String url, Object... objects) {
-
+                VenvyLog.i("videoCallBack onAutoComplete -----------");
+                // 播放后贴
+                startMixStandAd(ServiceType.ServiceTypeLaterVideo);
             }
 
             @Override
@@ -323,6 +373,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         }
         if (mVideoPlusView != null) {
             // cancel getCurrentPosition()
+            mAdapter.setIOnWebViewDialogDismissCallback(null);
             VideoPositionHelper.getInstance().cancel();
             mVideoPlusView.stop();
         }
@@ -344,7 +395,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         }
         ViewGroup.LayoutParams params = mVideoPlayer.getLayoutParams();
         if (params == null) {
-            params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
         }
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // 手机竖屏
@@ -364,7 +416,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN); //横屏隐藏状态栏
             // 横屏状态下，重置内容区为屏幕宽度
-            mAdapter.getVideoPlayerSize().mFullScreenContentHeight = VenvyUIUtil.getScreenWidth(MyApp.getInstance());
+            mAdapter.getVideoPlayerSize().mFullScreenContentHeight =
+                    VenvyUIUtil.getScreenWidth(MyApp.getInstance());
             if (mAdapter != null) {
                 mAdapter.notifyVideoScreenChanged(ScreenStatus.LANDSCAPE);
             }

@@ -10,7 +10,6 @@ import com.taobao.luaview.scriptbundle.ScriptFile;
 import com.taobao.luaview.util.JsonUtil;
 import com.taobao.luaview.util.LuaUtil;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.luaj.vm2.LuaValue;
 
@@ -91,7 +90,8 @@ public class VideoOSLuaView extends VideoOSBaseView {
 
     @VenvyAutoRun
     private void showTargetView() {
-        VenvyLog.d("Router", "LuaView run and template is " + luaName + ", time is " + System.currentTimeMillis());
+        VenvyLog.d("Router",
+                "LuaView run and template is " + luaName + ", time is " + System.currentTimeMillis());
         if (TextUtils.isEmpty(luaName)) {
             removeFromSuper(this);
             return;
@@ -102,7 +102,8 @@ public class VideoOSLuaView extends VideoOSBaseView {
         hasCallShowFunction = false;
         if (mLuaView == null) {
             // 可能mLuaView 正在异步创建中，此时数据delay执行，等待LuaView 的创建完毕
-            LuaHelper.createLuaViewAsync(getContext(), mPlatform, this, new LuaView.CreatedCallback() {
+            LuaHelper.createLuaViewAsync(getContext(), mPlatform, this,
+                    new LuaView.CreatedCallback() {
                 @Override
                 public void onCreated(LuaView luaView) {
                     mLuaView = luaView;
@@ -127,7 +128,8 @@ public class VideoOSLuaView extends VideoOSBaseView {
         try {
             JSONObject obj = new JSONObject(eventData);
             String eventActionPause = obj.optString(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE);
-            if (!TextUtils.equals(eventActionPause, String.valueOf(ActionType.EventTypeResume.getId()))) {
+            if (!TextUtils.equals(eventActionPause,
+                    String.valueOf(ActionType.EventTypeResume.getId()))) {
                 return;
             }
             mLuaView.getGlobals().callLuaFunction("event", JsonUtil.toLuaTable(eventData));
@@ -147,7 +149,8 @@ public class VideoOSLuaView extends VideoOSBaseView {
         try {
             JSONObject obj = new JSONObject(eventData);
             String eventActionPause = obj.optString(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE);
-            if (!TextUtils.equals(eventActionPause, String.valueOf(ActionType.EventTypePause.getId()))) {
+            if (!TextUtils.equals(eventActionPause,
+                    String.valueOf(ActionType.EventTypePause.getId()))) {
                 return;
             }
             mLuaView.getGlobals().callLuaFunction("event", JsonUtil.toLuaTable(eventData));
@@ -185,8 +188,10 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
+
         if (sScriptBundle == null) {
-            VenvyAsyncTaskUtil.doAsyncTask(INIT_SCRIPT, new VenvyAsyncTaskUtil.IDoAsyncTask<Object, ScriptBundle>() {
+            VenvyAsyncTaskUtil.doAsyncTask(INIT_SCRIPT,
+                    new VenvyAsyncTaskUtil.IDoAsyncTask<Object, ScriptBundle>() {
                 @Override
                 public ScriptBundle doAsyncTask(Object... objects) throws Exception {
                     return initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + VideoPlusLuaUpdateModel.LUA_CACHE_PATH);
@@ -195,8 +200,10 @@ public class VideoOSLuaView extends VideoOSBaseView {
                 @Override
                 public void onPostExecute(ScriptBundle scriptBundle) {
                     if (scriptBundle != null) {
-                        VenvyLog.d("Router", "LuaView begin run and template is " + luaName + ", time is " + System.currentTimeMillis());
-                        luaView.loadScriptBundle(scriptBundle, luaName, new LuaCallbackImpl(valueData));
+                        VenvyLog.d("Router", "LuaView begin run and template is " + luaName + ", " +
+                                "time is " + System.currentTimeMillis());
+                        luaView.loadScriptBundle(scriptBundle, luaName,
+                                new LuaCallbackImpl(valueData));
                         sScriptBundle = scriptBundle;
                     } else {
                         runLua(luaView, luaName, valueData);
@@ -220,6 +227,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
+
         LuaValue table = null;
         LuaValue dataTable = null;
         String key = "data";
