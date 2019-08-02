@@ -444,4 +444,19 @@ public class VenvyFileUtil {
             return new File(parent, fileName);
         }
     }
+
+    public static byte[] readBytes(File file) {
+        if (file != null && file.exists() && file.isFile()) {
+            InputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(file);
+                return VenvyIOUtils.toBytes(inputStream);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                VenvyIOUtils.close(inputStream);
+            }
+        }
+        return null;
+    }
 }
