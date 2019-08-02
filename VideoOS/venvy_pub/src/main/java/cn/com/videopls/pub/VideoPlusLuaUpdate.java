@@ -42,7 +42,7 @@ public class VideoPlusLuaUpdate {
     }
 
     public void destroy() {
-        if (mDownloadTaskRunner == null) {
+        if (mDownloadTaskRunner != null) {
             mDownloadTaskRunner.destroy();
         }
         mUpdateCallback = null;
