@@ -168,7 +168,7 @@ public class HttpProxyCacheServer {
         if (info == null) {
             return false;
         }
-        return info.status == DownloadDbHelper.DownloadStatus.DOWNLOAD_SUCCESS;
+        return info.status == DownloadDbHelper.DownloadStatus.DOWNLOAD_SUCCESS&&getCacheFile(url).exists();
 //        return getCacheFile(url).exists();
     }
 

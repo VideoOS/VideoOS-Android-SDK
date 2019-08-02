@@ -10,16 +10,13 @@ import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
 import cn.com.venvy.common.debug.DebugHelper;
-import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
-import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
@@ -45,7 +42,6 @@ public abstract class VideoPlusController implements VenvyObserver {
     private VideoPlusView mContentView;
     private Platform mPlatform;
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
-    private VideoServiceQueryAdsModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
 
     public VideoPlusController(VideoPlusView videoPlusView) {
@@ -95,59 +91,6 @@ public abstract class VideoPlusController implements VenvyObserver {
 
             }
         });
-    }
-
-    /***
-     * 开启Service
-     * @param serviceType
-     * @param params
-     * @param callback
-     */
-    public void startService(ServiceType serviceType, final HashMap<String, String> params, final IServiceCallback callback) {
-        if (!VenvyAPIUtil.isSupport(16)) {
-            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
-            return;
-        }
-        if (mVideoPlusAdapter == null) {
-            VenvyLog.e("Video++ View 未设置adapter");
-            return;
-        }
-        if (params == null || serviceType == null) {
-            Log.e("Video++", "startService api 调用参数为空");
-            return;
-        }
-        params.put("adsType", serviceType.getId() + "");
-        startQueryConnect(params, new IStartResult() {
-            @Override
-            public void successful() {
-                if (callback != null) {
-                    callback.onCompleteForService();
-                }
-                Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_vote_hotspot.lua&id=os_vote_hotspot");
-                navigation(uri, params, null);
-            }
-
-            @Override
-            public void failed() {
-                if (callback != null) {
-                    callback.onFailToCompleteForService(new Throwable("null"));
-                }
-            }
-        });
-    }
-
-    public void restartService(ServiceType serviceType) {
-
-    }
-
-    public void pauseService(ServiceType serviceType) {
-
-    }
-
-    public void stopService(ServiceType serviceType) {
-        if (mQueryAdsModel != null) {
-            mQueryAdsModel.destroy();
-        }
     }
 
     public void stop() {
@@ -337,20 +280,6 @@ public abstract class VideoPlusController implements VenvyObserver {
             }
         });
         mLuaUpdateModel.startRequest();
-    }
-
-    private void startQueryConnect(Map<String, String> params, final IStartResult result) {
-        mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params, new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
-            @Override
-            public void queryComplete() {
-
-            }
-
-            @Override
-            public void queryError(Throwable throwable) {
-
-            }
-        });
     }
 
     protected void closeInfoView() {

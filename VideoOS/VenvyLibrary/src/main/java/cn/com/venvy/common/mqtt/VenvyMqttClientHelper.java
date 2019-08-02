@@ -40,9 +40,6 @@ public class VenvyMqttClientHelper {
     //  SecretId
     //  MQTT客户端
     private volatile VenvyMqttClient mClient;
-    //  MQTT参数设置
-//    private static final String MQTT_KEY = "CSwtMsBf6OXprzjS";
-//    private static final String MQTT_HOST = "tcp://post-cn-45908b8cn07.mqtt.aliyuncs.com:1883";
     private volatile Map<String, List<SocketConnectItem>> mTotalTopicFilters;
     private static VenvyMqttClientHelper sMqttClientHelper;
     private String socketKey = "";

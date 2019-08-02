@@ -25,7 +25,6 @@ import cn.com.venvy.common.media.StorageUtils;
 import cn.com.venvy.common.media.file.Md5FileNameGenerator;
 import cn.com.venvy.common.track.TrackHelper;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
-import cn.com.venvy.common.utils.VenvyLog;
 
 /**
  * Created by yanjiangbo on 2017/5/2.
@@ -203,6 +202,7 @@ public class Platform implements Serializable {
 
             @Override
             public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
+
             }
 
             @Override

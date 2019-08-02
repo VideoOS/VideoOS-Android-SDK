@@ -14,7 +14,6 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.interf.MediaStatus;
 import cn.com.venvy.common.interf.ScreenStatus;
-import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.view.VenvyLVMediaCallback;
 
 /**

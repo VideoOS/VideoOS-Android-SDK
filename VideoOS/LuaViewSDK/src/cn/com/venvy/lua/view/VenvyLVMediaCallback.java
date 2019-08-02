@@ -15,7 +15,6 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObserver;
-import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.ud.VenvyUDMediaLifeCycle;
 
 import static cn.com.venvy.common.observer.VenvyObservableTarget.TAG_MEDIA_POSITION_CHANGED;
