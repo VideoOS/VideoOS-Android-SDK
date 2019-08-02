@@ -17,7 +17,14 @@ import cn.com.venvy.common.router.IRouterCallback;
 
 public abstract class VideoPlusView<T extends VideoPlusController> extends FrameLayout {
 
-    protected T controller;
+
+    // A 类小程序
+    protected VideoProgramView programViewA;
+
+    // B 类小程序
+    protected VideoProgramTypeBView programViewB;
+
+    private VideoPlusViewHelper plusViewHelper;
 
     public VideoPlusView(Context context) {
         super(context);
@@ -35,76 +42,97 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (controller != null) {
-            controller.destroy();
-        }
-    }
-
     private void init() {
-        controller = initVideoPlusController();
+        plusViewHelper = new VideoPlusViewHelper(this);
+
+        programViewA = createTypeAProgram();
+        programViewB = createTypeBProgram();
+        addView(programViewA);
+        addView(programViewB);
     }
+
+    /**
+     * 生成A类小程序容器
+     *
+     * @return
+     */
+    private VideoProgramView createTypeAProgram() {
+        VideoProgramView mainProgram = new VideoProgramView(getContext());
+        return mainProgram;
+    }
+
+
+    /**
+     * 生成B类小程序容器
+     *
+     * @return
+     */
+    private VideoProgramTypeBView createTypeBProgram() {
+        VideoProgramTypeBView bProgram = new VideoProgramTypeBView(getContext());
+        return bProgram;
+    }
+
 
     public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
-        if (controller != null) {
-            controller.navigation(uri, params, callback);
+        if (programViewA != null) {
+            programViewA.navigation(uri, params, callback);
         }
     }
 
     public void closeInfoView() {
-        if (controller != null) {
-            controller.closeInfoView();
+        if (programViewA != null) {
+            programViewA.closeInfoView();
         }
     }
 
     public void setVideoOSAdapter(VideoPlusAdapter adapter) {
-        if (controller != null) {
-            controller.setAdapter(adapter);
+        if (programViewA != null) {
+            programViewA.setVideoOSAdapter(adapter);
         }
     }
 
     public abstract T initVideoPlusController();
 
     public void start() {
-        if (controller != null) {
-            controller.start();
+        if (programViewA != null) {
+            programViewA.start();
         }
     }
 
     public void stop() {
-        if (controller != null) {
-            controller.stop();
+        if (programViewA != null) {
+            programViewA.stop();
+        }
+    }
+
+    public void startPlanB() {
+        if (programViewA != null) {
+            programViewB.start();
         }
     }
 
     public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
-        if (controller != null) {
-            controller.startService(serviceType, params, callback);
+        if (programViewA != null) {
+            programViewA.startService(serviceType, params, callback);
         }
     }
 
     public void reResumeService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.reResumeService(serviceType);
+
+        if (programViewA != null) {
+            programViewA.reResumeService(serviceType);
         }
     }
 
     public void pauseService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.pauseService(serviceType);
+        if (programViewA != null) {
+            programViewA.pauseService(serviceType);
         }
     }
 
     public void stopService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.stopService(serviceType);
+        if (programViewA != null) {
+            programViewA.stopService(serviceType);
         }
     }
 }

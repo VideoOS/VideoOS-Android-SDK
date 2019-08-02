@@ -98,6 +98,7 @@ public class VideoPlusLuaUpdateModel extends VideoPlusBaseModel {
                     String luaPackageUrl = needValue.optString("downloadUrl");
                     String luaVersion = needValue.optString("version");
                     String luaFileMd5 = needValue.optString("fileMd5");
+                    VenvyLog.d("luaPackageUrl is : " +luaPackageUrl);
                     // 判定当有下载url，同时版本比当前版本高，同时本地不存在lua文件的时候下载
                     if (!TextUtils.isEmpty(luaPackageUrl)) {
                         if (!isOldVersionLua(luaVersion)) {

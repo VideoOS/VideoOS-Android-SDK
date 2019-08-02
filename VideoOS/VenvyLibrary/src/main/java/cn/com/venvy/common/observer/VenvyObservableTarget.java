@@ -17,5 +17,7 @@ public class VenvyObservableTarget {
     public static final String TAG_JS_BRIDGE_OBSERVER = "notifyJSBridge";
     public static final String TAG_KEYBOARD_STATUS_CHANGED = "notifyKeyboardChanged";
     public static final String TAG_VOLUME_STATUS_CHANGED = "notifyVolumeStatusChanged";
+    // 启动一个视联网小程序
+    public static final String TAG_LAUNCH_VISION_PROGRAM = "notifyLaunchVisionProgram";
 
 }

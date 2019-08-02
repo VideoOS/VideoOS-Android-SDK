@@ -5,19 +5,25 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
  * Created by Lucas on 2019/7/30.
+ *
  */
 
-public abstract class VideoProgramView<T extends VideoPlusController> extends FrameLayout {
+public class VideoProgramView<T extends VideoPlusController> extends FrameLayout {
 
-    protected T controller;
+
+    private T controller;
+
 
     public VideoProgramView(Context context) {
         super(context);
@@ -48,8 +54,12 @@ public abstract class VideoProgramView<T extends VideoPlusController> extends Fr
         }
     }
 
+
     private void init() {
-        controller = initVideoPlusController();
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        controller = (T) new VideoPlusController(this){
+
+        };
     }
 
     public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
@@ -70,7 +80,6 @@ public abstract class VideoProgramView<T extends VideoPlusController> extends Fr
         }
     }
 
-    public abstract T initVideoPlusController();
 
     public void start() {
         if (controller != null) {
@@ -105,6 +114,12 @@ public abstract class VideoProgramView<T extends VideoPlusController> extends Fr
     public void stopService(ServiceType serviceType) {
         if (controller != null) {
             controller.stopService(serviceType);
+        }
+    }
+
+    public void startPlanB(MiniAppConfigModel.MiniAppConfigCallback callback){
+        if (controller != null) {
+            controller.startTypeBProgram(callback);
         }
     }
 }

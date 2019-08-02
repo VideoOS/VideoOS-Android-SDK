@@ -38,6 +38,14 @@ import cn.com.videopls.pub.VideoPlusLuaUpdateModel;
  * Created by yanjiangbo on 2018/1/18.
  */
 
+/**
+ *
+ * A类小程序   L uaView://defaultLuaView?template=xxx.lua&id=xxx
+ * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
+ *
+ * B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
+ */
+
 @VenvyRouter(name = VenvySchemeUtil.SCHEME_LUA_VIEW, type = RouteType.TYPE_VIEW)
 public class VideoOSLuaView extends VideoOSBaseView {
 

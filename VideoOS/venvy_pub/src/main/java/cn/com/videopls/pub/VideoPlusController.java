@@ -54,14 +54,14 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     private Context mContext;
     private VideoPlusAdapter mVideoPlusAdapter;
-    private VideoPlusView mContentView;
+    private VideoProgramView mContentView;
     private Platform mPlatform;
     private HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
     private VideoServiceQueryAdsModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
 
-    public VideoPlusController(VideoPlusView videoPlusView) {
+    public VideoPlusController(VideoProgramView videoPlusView) {
         mContext = videoPlusView.getContext();
         this.mContentView = videoPlusView;
         initDebugView(videoPlusView);
@@ -380,6 +380,8 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
     }
 
+
+
     private void initDebugView(ViewGroup viewGroup) {
         DebugHelper.addDebugLayout(viewGroup);
     }
@@ -484,5 +486,12 @@ public abstract class VideoPlusController implements VenvyObserver {
         eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_EVENT_TYPE, String.valueOf(eventType.getId()));
         eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE, String.valueOf(actionType.getId()));
         return new JSONObject(eventParams).toString();
+    }
+
+
+
+    public void startTypeBProgram(MiniAppConfigModel.MiniAppConfigCallback callback){
+        MiniAppConfigModel model = new MiniAppConfigModel(mPlatform, "11", callback);
+        model.startRequest();
     }
 }
