@@ -183,7 +183,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
     }
 
     public interface ServiceQueryAdsCallback {
-        void queryComplete(String queryAdsData, ServiceQueryAdsInfo queryAdsInfo);
+        void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo);
 
         void queryError(Throwable t);
     }

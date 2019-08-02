@@ -8,7 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.com.venvy.App;
@@ -18,7 +20,7 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
-import cn.com.venvy.common.download.SingleDownloadListener;
+import cn.com.venvy.common.download.TaskListener;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -114,31 +116,12 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    final JSONObject dataJsonObj = dataJsonArray.optJSONObject(0);
-                    if (dataJsonObj == null) {
-                        ServiceQueryChainCallback callback = getQueryChainCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query chain data with jsonList is " +
-                                    "null"));
-                        }
-                        return;
-                    }
-                    final String dataJsonUrl = dataJsonObj.optString("url");
-                    if (TextUtils.isEmpty(dataJsonUrl)) {
-                        ServiceQueryChainCallback callback = getQueryChainCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query chain data with jsonList is " +
-                                    "null"));
-                        }
-                        return;
-                    }
-
                     if (mDownLuaUpdate == null) {
                         mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new
                                 VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
                                     @Override
                                     public void updateComplete(boolean isUpdateByNetWork) {
-                                        startDownloadZipFile(dataJsonUrl, template);
+                                        startDownloadZipFile(dataJsonArray, template);
                                     }
 
                                     @Override
@@ -209,16 +192,24 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
         return dataParams;
     }
 
-    private void startDownloadZipFile(final String url, final String template) {
-        if (TextUtils.isEmpty(url)) {
+    private void startDownloadZipFile(JSONArray zipUrls, final String template) {
+        if (zipUrls == null || zipUrls.length() <= 0) {
             ServiceQueryChainCallback callback = getQueryChainCallback();
             if (callback != null) {
                 callback.queryError(new Exception("download url can't be null"));
             }
             return;
         }
+        int len = zipUrls.length();
+        ArrayList<DownloadTask> arrayList = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            JSONObject obj = zipUrls.optJSONObject(i);
+            String url = obj.optString("url");
+            DownloadTask task = new DownloadTask(App.getContext(), obj.optString("url"), VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP + File.separator + Uri.parse(url).getLastPathSegment());
+            arrayList.add(task);
+        }
         mDownloadTaskRunner = new DownloadTaskRunner(getRequestConnect());
-        mDownloadTaskRunner.startTask(new DownloadTask(App.getContext(), url, VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP, true), new SingleDownloadListener<DownloadTask, Boolean>() {
+        mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
             @Override
             public boolean isFinishing() {
                 return false;
@@ -236,66 +227,76 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
 
             @Override
             public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
-                ServiceQueryChainCallback callback = getQueryChainCallback();
-                if (callback != null) {
-                    callback.queryError(throwable);
+                if (downloadTask != null) {
+                    downloadTask.failed();
                 }
             }
 
             @Override
-            public void onTaskSuccess(final DownloadTask downloadTask, Boolean aBoolean) {
-                final String fileCachePath = downloadTask.getDownloadCacheUrl();
-                if (TextUtils.isEmpty(fileCachePath)) {
+            public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
+
+            }
+
+            @Override
+            public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
+                if (failedTasks != null && failedTasks.size() > 0) {
                     ServiceQueryChainCallback callback = getQueryChainCallback();
                     if (callback != null) {
                         callback.queryError(new Exception("update error,because downloadTask error"));
                     }
                     return;
                 }
-                File hasDownFile = new File(fileCachePath);
-                if (!hasDownFile.exists() || !TextUtils.equals("zip", VenvyFileUtil.getExtension(fileCachePath))) {
-                    ServiceQueryChainCallback callback = getQueryChainCallback();
-                    if (callback != null) {
-                        callback.queryError(new Exception("update error, because downloadFile not find"));
-                    }
-                    return;
-                }
-                VenvyAsyncTaskUtil.doAsyncTask("unzip_lua", new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Boolean>() {
-
-                    @Override
-                    public Boolean doAsyncTask(Void... voids) throws Exception {
-                        long value = VenvyGzipUtil.unzipFile(fileCachePath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, true);
-                        File file = new File(fileCachePath);
-                        file.delete();
-                        return value > 0;
-
-                    }
-                }, new VenvyAsyncTaskUtil.CommonAsyncCallback<Boolean>() {
-                    @Override
-                    public void onPostExecute(Boolean aBoolean) {
-                        if (!aBoolean) {
-                            ServiceQueryChainCallback callback = getQueryChainCallback();
-                            if (callback != null) {
-                                callback.queryError(new Exception("unzip error"));
-                            }
-                            return;
-                        }
+                final JSONArray queryArray = new JSONArray();
+                for (DownloadTask downloadTask : successfulTasks) {
+                    final String cacheUrlPath = downloadTask.getDownloadCacheUrl();
+                    File hasDownFile = new File(downloadTask.getDownloadCacheUrl());
+                    if (!hasDownFile.exists() || !TextUtils.equals("zip", VenvyFileUtil.getExtension(cacheUrlPath))) {
                         ServiceQueryChainCallback callback = getQueryChainCallback();
                         if (callback != null) {
-                            String fileName = Uri.parse(url).getLastPathSegment().replace(".zip", "");
-                            if (TextUtils.isEmpty(fileName)) {
-                                callback.queryError(new Exception(""));
+                            callback.queryError(new Exception("update error, because downloadFile not find"));
+                        }
+                        return;
+                    }
+                    VenvyAsyncTaskUtil.doAsyncTask("unzip_lua", new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Boolean>() {
+
+                        @Override
+                        public Boolean doAsyncTask(Void... voids) throws Exception {
+                            long value = VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, true);
+                            File file = new File(cacheUrlPath);
+                            file.delete();
+                            return value > 0;
+
+                        }
+                    }, new VenvyAsyncTaskUtil.CommonAsyncCallback<Boolean>() {
+                        @Override
+                        public void onPostExecute(Boolean aBoolean) {
+                            if (!aBoolean) {
+                                ServiceQueryChainCallback callback = getQueryChainCallback();
+                                if (callback != null) {
+                                    callback.queryError(new Exception("unzip error"));
+                                }
                                 return;
                             }
-                            File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName);
-                            if (!file.exists() || !file.isFile()) {
-                                callback.queryError(new Exception(""));
-                                return;
-                            }
-                            String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), file.getAbsolutePath());
-                            if (TextUtils.isEmpty(queryChainData)) {
-                                callback.queryError(new Exception(""));
-                                return;
+                            ServiceQueryChainCallback callback = getQueryChainCallback();
+                            if (callback != null) {
+                                String fileName = Uri.parse(cacheUrlPath).getLastPathSegment();
+                                if (TextUtils.isEmpty(fileName)) {
+                                    callback.queryError(new Exception(""));
+                                    return;
+                                }
+                                File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName);
+                                if (!file.exists() || !file.isFile()) {
+                                    callback.queryError(new Exception(""));
+                                    return;
+                                }
+                                String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), file.getAbsolutePath());
+                                if (TextUtils.isEmpty(queryChainData)) {
+                                    callback.queryError(new Exception(""));
+                                    return;
+                                }
+                                Map<String, String> params = new HashMap<>();
+                                params.put("data", queryChainData);
+                                queryArray.put(new JSONObject(params));
                             }
                             Map<String, String> params = getQueryChainParams();
                             String adsType = params != null ? params.get
@@ -307,31 +308,32 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                             .setQueryAdsId(null)
                                             .setQueryAdsType(!TextUtils.isEmpty(adsType) ?
                                                     Integer.valueOf(adsType) : 0).build();
-                            callback.queryComplete(queryChainData,
+                            callback.queryComplete(queryArray,
                                     queryAdsInfo);
                         }
-                    }
 
-                    @Override
-                    public void onCancelled() {
-                        ServiceQueryChainCallback callback = getQueryChainCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("unzip error"));
+                        @Override
+                        public void onCancelled() {
+                            ServiceQueryChainCallback callback = getQueryChainCallback();
+                            if (callback != null) {
+                                callback.queryError(new Exception("unzip error"));
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onException(Exception ie) {
-                        onTaskFailed(downloadTask, ie);
-                    }
-                });
+                        @Override
+                        public void onException(Exception ie) {
+
+                        }
+                    });
+                }
+
             }
         });
 
     }
 
     public interface ServiceQueryChainCallback {
-        void queryComplete(String queryAdsData, ServiceQueryAdsInfo queryAdsInfo);
+        void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo);
 
         void queryError(Throwable t);
     }
