@@ -18,6 +18,7 @@ import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyMD5Util;
+import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by videojj_pls on 2019/7/25.
@@ -65,7 +66,9 @@ public class VideoPlusLuaUpdate {
             //本地存在 无需下载直接返回成功回调
             CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
             if (callback != null) {
-                callback.updateComplete(true);
+                //如果是在线更新的版本，需要强制更新lua路径地址
+                VideoOSLuaView.destroyLuaScript();
+                callback.updateComplete(false);
             }
             return;
         }
@@ -110,6 +113,8 @@ public class VideoPlusLuaUpdate {
                     if (failedTasks != null && failedTasks.size() > 0) {
                         callback.updateError(new Exception("update Lua error,because down urls is failed"));
                     } else {
+                        //如果是在线更新的版本，需要强制更新lua路径地址
+                        VideoOSLuaView.destroyLuaScript();
                         callback.updateComplete(true);
                     }
                 }
