@@ -609,7 +609,7 @@ local function clearLastPlayer()
     if (wedge.mediaPlayers[currentPlayerIndex - 1] ~= nil) then
         wedge.mediaPlayers[currentPlayerIndex - 1]:stopPlay()
         -- wedge.mediaPlayers[currentPlayerIndex - 1]:hide()
-       
+
     end
 end
 
@@ -617,7 +617,7 @@ end
     分发广告列表中的广告
 ]]
 local function dispatchAdsEvent()
-	currentAdIndex = currentAdIndex + 1
+    currentAdIndex = currentAdIndex + 1
     wedge.currentAdData = wedge.data.data.adsList[currentAdIndex]
     if (wedge.currentAdData == nil or wedge.cloudImage == nil) then
         if (wedge.timer ~= nil) then
@@ -640,9 +640,9 @@ local function dispatchAdsEvent()
                 print(tag .. " onStart")
                 wedge.loading:stop()
                 if (wedge.mediaPlayers[currentPlayerIndex - 1] ~= nil) then
-			        wedge.mediaPlayers[currentPlayerIndex - 1]:hide()
-			    end
-            
+                    wedge.mediaPlayers[currentPlayerIndex - 1]:hide()
+                end
+
                 --开始播放
                 onVideoStart()
             end,
@@ -686,6 +686,24 @@ local function dispatchAdsEvent()
         wedge.mediaPlayers[currentPlayerIndex]:startPlay(wedge.currentAdData.resUrl)
         wedge.loading:start()
         isVideoAdPlaying = true
+        local clickFunction = function()
+            print("clickFunction")
+            local linkUrl, deepLink, selfLink = wedgeLinkUrl(wedge.currentAdData)
+            if (linkUrl == nil and deepLink == nil and selfLink == nil) then
+                return
+            end
+
+            clickTrack(wedge.currentAdData)
+            widgetEvent(eventTypeClick, wedge.id, adTypeName, actionTypeOpenUrl, linkUrl, deepLink, selfLink)
+            --Native:widgetEvent(eventTypeClick, wedge.id, adTypeName, actionTypeOpenUrl, linkUrl)
+            if (wedge.mediaPlayers[currentPlayerIndex] ~= nil and wedge.currentAdData.materialType == AD_TYPE_VIDEO) then
+                wedge.mediaPlayers[currentPlayerIndex]:pausePlay()
+            end
+            wedge.mediaPlayPaused = true
+        end
+        if System.ios() then
+            wedge.mediaPlayers[currentPlayerIndex]:onClick(clickFunction)
+        end
     else
         -- 静态图片
         wedge.loading:stop()
@@ -989,6 +1007,7 @@ local function createParent(isPortrait)
     else
         luaView = ThroughView()
     end
+    luaView:backgroundColor(0x000000)
     setLuaViewSize(luaView, isPortrait)
     return luaView
 end
@@ -998,7 +1017,7 @@ end
 ]]
 local function createCloudImage(isPortrait)
     local cloudImage = Image(Native)
-    cloudImage:scaleType(ScaleType.FIT_XY)
+    cloudImage:scaleType(ScaleType.FIT_CENTER)
     setLuaViewSize(cloudImage, isPortrait)
     return cloudImage
 end
