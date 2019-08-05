@@ -73,6 +73,9 @@ public class VideoOSLuaView extends VideoOSBaseView {
     @VenvyAutoData(name = "event")
     private String eventData;
 
+    @VenvyAutoData(name = "appletId")
+    private String appletId;
+
     public VideoOSLuaView(Context context) {
         super(context);
     }
@@ -191,6 +194,10 @@ public class VideoOSLuaView extends VideoOSBaseView {
 
     private void runLuaFile(final LuaView luaView, final String luaName, final Object valueData) {
         if (TextUtils.isEmpty(luaName)) {
+            return;
+        }
+        if(luaName.contains("os_vote_hotspot")){
+            runLua(luaView, luaName, valueData);
             return;
         }
         if (sScriptBundle == null) {

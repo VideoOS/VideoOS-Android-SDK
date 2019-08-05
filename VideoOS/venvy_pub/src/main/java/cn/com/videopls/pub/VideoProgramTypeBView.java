@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -13,16 +14,25 @@ import java.util.HashMap;
 /**
  * Created by Lucas on 2019/7/31.
  * 视联网小程序容器
+ * <p>
+ * A类小程序   LuaView://defaultLuaView?template=xxx.lua&id=xxx
+ * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
+ * <p>
+ * B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
  */
 public class VideoProgramTypeBView extends FrameLayout {
 
     /**
      * 会有多个B类小程序侧边栏覆盖的情况，所以需要一个Map统一管理
      */
-    private HashMap<String, String> programMap = new HashMap<>();
+    private HashMap<String, VideoProgramToolBarView> programMap = new HashMap<>();
 
     private VideoProgramToolBarView currentProgram;
     private FrameLayout programContent;
+
+    private VideoPlusAdapter mAdapter;
+
+    private String currentProgramId;
 
     public VideoProgramTypeBView(@NonNull Context context) {
         super(context);
@@ -68,19 +78,32 @@ public class VideoProgramTypeBView extends FrameLayout {
     }
 
 
-    public void start() {
+    public void setVideoOSAdapter(VideoPlusAdapter adapter) {
+        this.mAdapter = adapter;
+    }
+
+    public void start(@NonNull String appletId, String data, int type) {
+        this.currentProgramId = appletId;
         currentProgram = createProgram();
-        currentProgram.start(new MiniAppConfigModel.MiniAppConfigCallback() {
-            @Override
-            public void downComplete(String originData) {
-                // 视联网小程序需要的lua下载完毕，加载对应的入口文件
-            }
+        if (mAdapter != null) {
+            currentProgram.setVideoOSAdapter(mAdapter);
+        }
+        programMap.put(appletId, currentProgram);
+        currentProgram.start(appletId, data, type);
+    }
 
-            @Override
-            public void downError(Throwable t) {
-
+    /**
+     * 关闭一个小程序
+     * @param appletId
+     */
+    public void close(String appletId) {
+        if (!TextUtils.isEmpty(appletId)) {
+            VideoProgramToolBarView programView = programMap.get(appletId);
+            if (programView != null) {
+                programContent.removeView(programView);
+                programMap.remove(appletId);
             }
-        });
+        }
     }
 
 }

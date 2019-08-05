@@ -2,7 +2,6 @@ package cn.com.videopls.pub;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,9 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.venvy.AppSecret;
-import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
-import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -27,23 +24,23 @@ import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
  * <p>
  * 视联网小程序配置接口
  */
-public class MiniAppConfigModel extends VideoPlusBaseModel {
+public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
 
     private static final String CONFIG = "/vision/getMiniAppConf";
 
-    private MiniAppConfigCallback callback;
+    private VisionProgramConfigCallback callback;
     private VideoPlusLuaUpdate mDownLuaUpdate;
     private String miniAppId;
 
-    public MiniAppConfigModel(@NonNull Platform platform, String miniAppId, MiniAppConfigCallback configCallback) {
+    public VisionProgramConfigModel(@NonNull Platform platform, String miniAppId, VisionProgramConfigCallback configCallback) {
         super(platform);
         this.callback = configCallback;
         this.miniAppId = miniAppId;
     }
 
 
-    public MiniAppConfigCallback getCallback() {
+    public VisionProgramConfigCallback getCallback() {
         return callback;
     }
 
@@ -75,7 +72,7 @@ public class MiniAppConfigModel extends VideoPlusBaseModel {
             public void requestFinish(Request request, IResponse response) {
                 try {
                     if (!response.isSuccess()) {
-                        MiniAppConfigModel.MiniAppConfigCallback callback = getCallback();
+                        VisionProgramConfigCallback callback = getCallback();
                         if (callback != null) {
                             callback.downError(new Exception("download lua script error"));
                         }
@@ -84,7 +81,7 @@ public class MiniAppConfigModel extends VideoPlusBaseModel {
                    final  JSONObject decryptData = new JSONObject(response.getResult());
 //                    String encryptData = value.optString("encryptData");
 //                    if (TextUtils.isEmpty(encryptData)) {
-//                        MiniAppConfigModel.MiniAppConfigCallback callback = getCallback();
+//                        VisionProgramConfigModel.VisionProgramConfigCallback callback = getCallback();
 //                        if (callback != null) {
 //                            callback.downError(new NullPointerException("response lua script is null"));
 //                        }
@@ -94,7 +91,7 @@ public class MiniAppConfigModel extends VideoPlusBaseModel {
 
 
                     JSONArray fileListArray = decryptData.optJSONArray("luaList");// lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
-                    String template = decryptData.optString("template"); //  入口lua文件名称
+                   final  String template = decryptData.optString("template"); //  入口lua文件名称
                     String resCode = decryptData.optString("resCode"); //  应答码  00-成功  01-失败
                     String resMsg = decryptData.optString("resMsg"); //  应答信息
 
@@ -103,18 +100,18 @@ public class MiniAppConfigModel extends VideoPlusBaseModel {
                         mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
                             @Override
                             public void updateComplete(boolean isUpdateByNetWork) {
-                                MiniAppConfigModel.MiniAppConfigCallback callback = getCallback();
+                                VisionProgramConfigCallback callback = getCallback();
                                 if (callback != null) {
 //                                    Map<String, String> params = getQueryAdsParams();
 //                                    String adsType = params != null ? params.get(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
 //                                    ServiceQueryAdsInfo queryAdsInfo = new ServiceQueryAdsInfo.Builder().setQueryAdsTemplate(queryAdsTemplate).setQueryAdsId(queryAdsId).setQueryAdsType(!TextUtils.isEmpty(adsType) ? Integer.valueOf(adsType) : 0).build();
-                                    callback.downComplete(decryptData.toString());
+                                    callback.downComplete(decryptData.toString(),template,isUpdateByNetWork);
                                 }
                             }
 
                             @Override
                             public void updateError(Throwable t) {
-                                MiniAppConfigModel.MiniAppConfigCallback callback = getCallback();
+                                VisionProgramConfigCallback callback = getCallback();
                                 if (callback != null) {
                                     callback.downError(new Exception("download mini app  down lua failed"));
                                 }
@@ -125,8 +122,8 @@ public class MiniAppConfigModel extends VideoPlusBaseModel {
 
 
                 } catch (Exception e) {
-                    VenvyLog.e(MiniAppConfigModel.class.getName(), e);
-                    MiniAppConfigModel.MiniAppConfigCallback callback = getCallback();
+                    VenvyLog.e(VisionProgramConfigModel.class.getName(), e);
+                    VisionProgramConfigCallback callback = getCallback();
                     if (callback != null) {
                         callback.downError(e);
                     }
@@ -135,8 +132,8 @@ public class MiniAppConfigModel extends VideoPlusBaseModel {
 
             @Override
             public void requestError(Request request, @Nullable Exception e) {
-                VenvyLog.e(MiniAppConfigModel.class.getName(), "视联网小程序加载失败 " + (e != null ? e.getMessage() : ""));
-                MiniAppConfigModel.MiniAppConfigCallback callback = getCallback();
+                VenvyLog.e(VisionProgramConfigModel.class.getName(), "视联网小程序加载失败 " + (e != null ? e.getMessage() : ""));
+                VisionProgramConfigCallback callback = getCallback();
                 if (callback != null) {
                     callback.downError(e);
                 }
@@ -154,8 +151,8 @@ public class MiniAppConfigModel extends VideoPlusBaseModel {
         };
     }
 
-    public interface MiniAppConfigCallback {
-        void downComplete(String originData);
+    public interface VisionProgramConfigCallback {
+        void downComplete(String originData,String entranceLua,boolean isUpdateByNet);
 
         void downError(Throwable t);
     }

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.utils.AssetsUtil;
 import cn.com.venvy.common.router.IRouterCallback;
-import cn.com.videopls.pub.MiniAppConfigModel;
 
 /**
  * Created by videojj_pls on 2018/9/13.
@@ -37,26 +36,24 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     public void onClick(View v) {
         int ID = v.getId();
         if (R.id.bt_os_setting_mall == ID) {
-//            if (mVideoPlusView == null)
-//                return;
-//            mVideoPlusView.stop();
-//            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_vote_hotspot.lua&id=os_vote_hotspot");
-//            HashMap<String, String> params = new HashMap<>();
-//            params.put("data", AssetsUtil.readFileAssets("local_vote.json", OsActivity.this));
-//            mVideoPlusView.navigation(uri, params, new IRouterCallback() {
-//                @Override
-//                public void arrived() {
-//                    mVideoPlusView.start();
-//                }
-//
-//                @Override
-//                public void lost() {
-//
-//                }
-//            });
+            if (mVideoPlusView == null)
+                return;
+            mVideoPlusView.stop();
+            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_vote_hotspot.lua&id=os_vote_hotspot");
+//            Uri uri = Uri.parse("LuaView://applets?appletId=123&template=test.lua&id=test");
+            HashMap<String, String> params = new HashMap<>();
+            params.put("data", AssetsUtil.readFileAssets("local_vote.json", OsActivity.this));
+            mVideoPlusView.navigation(uri, params, new IRouterCallback() {
+                @Override
+                public void arrived() {
+                    mVideoPlusView.start();
+                }
 
+                @Override
+                public void lost() {
 
-            mVideoPlusView.startPlanB();
+                }
+            });
 
         } else if (R.id.bt_os_setting_close_window == ID) {
             if (mVideoPlusView == null)

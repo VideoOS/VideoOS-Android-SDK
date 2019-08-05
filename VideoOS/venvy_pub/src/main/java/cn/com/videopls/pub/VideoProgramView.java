@@ -3,20 +3,18 @@ package cn.com.videopls.pub;
 import android.content.Context;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
-import cn.com.venvy.common.utils.VenvyUIUtil;
+import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by Lucas on 2019/7/30.
- *
  */
 
 public class VideoProgramView<T extends VideoPlusController> extends FrameLayout {
@@ -57,7 +55,7 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
 
     private void init() {
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        controller = (T) new VideoPlusController(this){
+        controller = (T) new VideoPlusController(this) {
 
         };
     }
@@ -73,6 +71,13 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
             controller.closeInfoView();
         }
     }
+
+    public void removeTopView() {
+        if (controller != null) {
+            controller.removeTopChild();
+        }
+    }
+
 
     public void setVideoOSAdapter(VideoPlusAdapter adapter) {
         if (controller != null) {
@@ -117,9 +122,25 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
         }
     }
 
-    public void startPlanB(MiniAppConfigModel.MiniAppConfigCallback callback){
+    public void startVision(String appletId, String data, int type) {
         if (controller != null) {
-            controller.startTypeBProgram(callback);
+            controller.startVisionProgram(appletId, data, type);
         }
+    }
+
+    /**
+     * 筛出所有的luaview
+     *
+     * @return
+     */
+    public int getAllOfLuaView() {
+        int count = 0;
+        for (int i = 0, len = getChildCount(); i < len; i++) {
+            View child = getChildAt(i);
+            if (child instanceof VideoOSLuaView) {
+                count += 1;
+            }
+        }
+        return count;
     }
 }

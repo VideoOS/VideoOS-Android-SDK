@@ -2,6 +2,7 @@ package cn.com.videopls.pub;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
@@ -41,6 +42,14 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         init();
     }
 
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (plusViewHelper != null) {
+            plusViewHelper.detachedFromWindow();
+        }
+    }
 
     private void init() {
         plusViewHelper = new VideoPlusViewHelper(this);
@@ -89,6 +98,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (programViewA != null) {
             programViewA.setVideoOSAdapter(adapter);
         }
+        if (programViewB != null) {
+            programViewB.setVideoOSAdapter(adapter);
+        }
     }
 
     public abstract T initVideoPlusController();
@@ -105,9 +117,31 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
     }
 
-    public void startPlanB() {
-        if (programViewA != null) {
-            programViewB.start();
+    /**
+     * 拉起一个视联网小程序
+     */
+    public void launchVisionProgram(@NonNull String appletId, String data, int orientationType,boolean currentScreenStatus) {
+        if (programViewB != null) {
+            programViewB.start(appletId, data, orientationType);
+        }
+        screenChange(currentScreenStatus);
+    }
+
+    /**
+     * 根据指定ID关闭一个视联网小程序
+     *
+     * @param appletId
+     */
+    public void closeVisionProgram(String appletId) {
+        if (programViewB != null) {
+            programViewB.close(appletId);
+        }
+    }
+
+
+    public void screenChange(boolean isLandscape) {
+        if (programViewB != null) {
+            programViewB.setVisibility(isLandscape ? VISIBLE : GONE);
         }
     }
 

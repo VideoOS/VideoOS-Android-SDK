@@ -3,17 +3,13 @@ package cn.com.videopls.pub;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 
-import com.taobao.luaview.global.LuaView;
-
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.luaj.vm2.ast.Str;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -42,6 +38,7 @@ import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.view.VideoOSLuaView;
@@ -381,7 +378,6 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
 
-
     private void initDebugView(ViewGroup viewGroup) {
         DebugHelper.addDebugLayout(viewGroup);
     }
@@ -453,6 +449,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
     }
 
+
     private int getViewPriority(View view) {
         try {
             if (view != null) {
@@ -470,6 +467,21 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
         return 0;
     }
+
+
+    /**
+     * 移除最上层的childView
+     */
+    protected void removeTopChild(){
+        if (mContentView == null) {
+            return;
+        }
+        int childCount = mContentView.getChildCount();
+        if(childCount > 0){
+            mContentView.removeViewAt(childCount -1);
+        }
+    }
+
 
     private List<ServiceQueryAdsInfo> getRunningService(ServiceType serviceType) {
         List<ServiceQueryAdsInfo> queryAdsInfoArray = new ArrayList<>();
@@ -489,9 +501,63 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
 
+    public void startVisionProgram(final String appletId, final String data, final int type) {
+        if (!VenvyAPIUtil.isSupport(16)) {
+            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
+            return;
+        }
+        if (mVideoPlusAdapter == null) {
+            VenvyLog.e("Video++ View 未设置adapter");
+            return;
+        }
+        if (mContentView != null) {
+            mContentView.setVisibility(View.VISIBLE);
+        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
 
-    public void startTypeBProgram(MiniAppConfigModel.MiniAppConfigCallback callback){
-        MiniAppConfigModel model = new MiniAppConfigModel(mPlatform, "11", callback);
+
+
+        VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, new VisionProgramConfigModel.VisionProgramConfigCallback() {
+
+            @Override
+            public void downComplete(String originData,final String entranceLua, boolean isUpdateByNet) {
+                VenvyLog.d("vision program downComplete : " + isUpdateByNet + "   - " + entranceLua);
+                if(Thread.currentThread() == Looper.getMainLooper().getThread()){
+                    VenvyLog.d("Thread is UI model");
+                }else{
+                    VenvyLog.d("Thread is not UI model");
+                }
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String luaId = entranceLua;
+                        if (entranceLua.contains(".")) {
+                            luaId = entranceLua.split("\\.")[0];
+                        }
+                        //LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
+                        Uri uri = Uri.parse("LuaView://applets?appletId=" + appletId + "&template=" + entranceLua + "&id=" + luaId);
+                        HashMap<String, String> params = new HashMap<>();
+                        params.put("data", data);
+                        mContentView.navigation(uri, params, new IRouterCallback() {
+                            @Override
+                            public void arrived() {
+                            }
+
+                            @Override
+                            public void lost() {
+
+                            }
+                        });
+                    }
+                });
+
+            }
+
+            @Override
+            public void downError(Throwable t) {
+
+            }
+        });
         model.startRequest();
     }
 }
