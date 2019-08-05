@@ -3,17 +3,13 @@ package cn.com.videopls.pub;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.luaj.vm2.ast.Str;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cn.com.venvy.App;
 import cn.com.venvy.Platform;
@@ -24,7 +20,6 @@ import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyGzipUtil;
 import cn.com.venvy.common.utils.VenvyMD5Util;
-import cn.com.venvy.common.utils.VenvySchemeUtil;
 
 /**
  * Created by videojj_pls on 2019/7/25.

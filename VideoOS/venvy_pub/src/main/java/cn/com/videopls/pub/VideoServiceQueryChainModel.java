@@ -3,7 +3,6 @@ package cn.com.videopls.pub;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -146,7 +145,6 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         mDownZipUpdate = new VideoPlusZipUpdate(getPlatform(), new VideoPlusZipUpdate.CacheZipUpdateCallback() {
                             @Override
                             public void updateComplete(JSONArray zipJsonDataArray) {
-                                Log.i("video++","=start=updateComplete====");
                                 Map<String, String> params = getQueryChainParams();
                                 String adsType = params != null ? params.get
                                         (VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
@@ -164,9 +162,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         jsonObject.put("data",zipJsonDataArray);
                                         callback.queryComplete(jsonObject,
                                                 queryAdsInfo);
-                                        Log.i("video++","=start=完成22====");
                                     } catch (Exception e) {
-                                        Log.i("video++","=start=error===="+e.getMessage());
                                         e.printStackTrace();
                                     }
                                 }
