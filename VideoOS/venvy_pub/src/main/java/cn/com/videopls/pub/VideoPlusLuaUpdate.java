@@ -65,7 +65,7 @@ public class VideoPlusLuaUpdate {
             //本地存在 无需下载直接返回成功回调
             CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
             if (callback != null) {
-                callback.updateComplete(false);
+                callback.updateComplete(true);
             }
             return;
         }
