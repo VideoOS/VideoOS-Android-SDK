@@ -25,6 +25,7 @@ import com.taobao.luaview.fun.binder.constants.ViewEffectBinder;
 import com.taobao.luaview.fun.binder.indicator.UICircleViewPagerIndicatorBinder;
 import com.taobao.luaview.fun.binder.kit.ActionBarBinder;
 import com.taobao.luaview.fun.binder.kit.DataBinder;
+import com.taobao.luaview.fun.binder.kit.FileBinder;
 import com.taobao.luaview.fun.binder.kit.JsonBinder;
 import com.taobao.luaview.fun.binder.kit.SystemBinder;
 import com.taobao.luaview.fun.binder.kit.TimerBinder;
@@ -192,6 +193,7 @@ public class LuaViewManager {
         globals.tryLazyLoad(new ActionBarBinder());
         globals.tryLazyLoad(new DataBinder());
         globals.tryLazyLoad(new JsonBinder());
+        globals.tryLazyLoad(new FileBinder());
 
         //常量
         globals.tryLazyLoad(new AlignBinder());

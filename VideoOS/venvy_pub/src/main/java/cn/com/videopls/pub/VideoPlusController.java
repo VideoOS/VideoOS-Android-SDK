@@ -56,7 +56,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     private Context mContext;
     private VideoPlusAdapter mVideoPlusAdapter;
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
-    private VideoServiceQueryAdsModel mQueryAdsModel;
+    private VideoPlusBaseModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
 
     public VideoPlusController(VideoPlusView videoPlusView) {
@@ -129,9 +129,9 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
         params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
-        startQueryConnect(params, new IStartQueryResult() {
+        startQueryConnect(serviceType, params, new IStartQueryResult() {
             @Override
-            public void successful(String result, final ServiceQueryAdsInfo queryAdsInfo) {
+            public void successful(Object result, final ServiceQueryAdsInfo queryAdsInfo) {
                 if (queryAdsInfo == null) {
                     if (callback != null) {
                         callback.onFailToCompleteForService(new Exception("error query ads params" +
@@ -148,7 +148,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                         .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID,
                                 queryAdsInfo.getQueryAdsId());
                 HashMap<String, String> skipParams = new HashMap<>();
-                skipParams.put("data", result);
+                skipParams.put("data", result.toString());
                 navigation(builder.build(), skipParams, new IRouterCallback() {
                     @Override
                     public void arrived() {
@@ -393,52 +393,73 @@ public abstract class VideoPlusController implements VenvyObserver {
         //开始访问Lua增量更新接口
         mLuaUpdateModel = new VideoPlusLuaUpdateModel(mPlatform,
                 new VideoPlusLuaUpdateModel.LuaUpdateCallback() {
-            @Override
-            public void updateComplete(boolean isUpdateByNetwork) {
-                if (isUpdateByNetwork) {
-                    VenvyLog.d(VideoPlusController.class.getName(), "lua 在线更新成功");
-                    //如果是在线更新的版本，需要强制更新lua路径地址
-                    VideoOSLuaView.destroyLuaScript();
-                } else {
-                    VenvyLog.d(VideoPlusController.class.getName(), "lua 校验版本成功");
-                }
-                if (result != null) {
-                    result.successful();
-                }
-                registerObservable();
-            }
+                    @Override
+                    public void updateComplete(boolean isUpdateByNetwork) {
+                        if (isUpdateByNetwork) {
+                            VenvyLog.d(VideoPlusController.class.getName(), "lua 在线更新成功");
+                            //如果是在线更新的版本，需要强制更新lua路径地址
+                            VideoOSLuaView.destroyLuaScript();
+                        } else {
+                            VenvyLog.d(VideoPlusController.class.getName(), "lua 校验版本成功");
+                        }
+                        if (result != null) {
+                            result.successful();
+                        }
+                        registerObservable();
+                    }
 
-            @Override
-            public void updateError(Throwable throwable) {
+                    @Override
+                    public void updateError(Throwable throwable) {
 //                VenvyLog.e(VideoPlusController.class.getName(), "lua 更新失败, : " + throwable
 //                .getMessage());
-                if (result != null) {
-                    result.failed();
-                }
-                registerObservable();
-            }
-        });
+                        if (result != null) {
+                            result.failed();
+                        }
+                        registerObservable();
+                    }
+                });
         mLuaUpdateModel.startRequest();
     }
 
-    private void startQueryConnect(Map<String, String> params, final IStartQueryResult result) {
-        mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params,
-                new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
+    private void startQueryConnect(ServiceType serviceType, Map<String, String> params, final IStartQueryResult result) {
+        switch (serviceType) {
+            case ServiceTypeVideoMode:
+                mQueryAdsModel = new VideoServiceQueryChainModel(mPlatform, params, new VideoServiceQueryChainModel.ServiceQueryChainCallback() {
+                    @Override
+                    public void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
+                        if (result != null) {
+                            result.successful(queryAdsData, queryAdsInfo);
+                        }
+                    }
 
-            @Override
-            public void queryComplete(String queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
-                if (result != null) {
-                    result.successful(queryAdsData, queryAdsInfo);
-                }
-            }
+                    @Override
+                    public void queryError(Throwable throwable) {
+                        if (result != null) {
+                            result.failed(throwable);
+                        }
+                    }
+                });
+                break;
+            default:
+                mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params,
+                        new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
 
-            @Override
-            public void queryError(Throwable throwable) {
-                if (result != null) {
-                    result.failed(throwable);
-                }
-            }
-        });
+                            @Override
+                            public void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
+                                if (result != null) {
+                                    result.successful(queryAdsData, queryAdsInfo);
+                                }
+                            }
+
+                            @Override
+                            public void queryError(Throwable throwable) {
+                                if (result != null) {
+                                    result.failed(throwable);
+                                }
+                            }
+                        });
+                break;
+        }
         mQueryAdsModel.startRequest();
     }
 

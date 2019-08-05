@@ -5,7 +5,7 @@ package cn.com.videopls.pub;
  */
 
 public interface IStartQueryResult {
-    void successful(String result, ServiceQueryAdsInfo queryAdsInfo);
+    void successful(Object result, ServiceQueryAdsInfo queryAdsInfo);
 
     void failed(Throwable throwable);
 }
