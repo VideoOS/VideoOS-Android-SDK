@@ -140,7 +140,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
      */
     private void startMixStandAd(final ServiceType type) {
         HashMap<String, String> params = new HashMap<>();
-        params.put(VenvySchemeUtil.QUERY_PARAMETER_DURATION, "30");
+        params.put(VenvySchemeUtil.QUERY_PARAMETER_DURATION, "60");
         mVideoPlusView.startService(type, params, new IServiceCallback() {
             @Override
             public void onCompleteForService() {
