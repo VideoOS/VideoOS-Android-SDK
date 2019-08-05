@@ -3,6 +3,7 @@ package cn.com.videopls.pub;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,6 +32,7 @@ import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyGzipUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 
 /**
@@ -40,13 +42,14 @@ import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 
 public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
     private static final String SERVICE_QUERYALL_CHAIN_URL_MOCK = Config.HOST_VIDEO_OS
-            + "/api/queryAllAds";
+            + "/vision/getLabelConf";
     private static final String MOCK = "http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/getLabelConf#!method=POST&queryParameters=%5B%5D&body=&headers=%5B%5D";
     private static final String LUA_ZIP = "/lua/os/chain.zip";
     public static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private DownloadTaskRunner mDownloadTaskRunner;
     private ServiceQueryChainCallback mQueryChainCallback;
     private VideoPlusLuaUpdate mDownLuaUpdate;
+    private VideoPlusZipUpdate mDownZipUpdate;
     private Map<String, String> mQueryAdsParams;
 
     public VideoServiceQueryChainModel(Platform platform, Map<String, String> params,
@@ -121,7 +124,12 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                 VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
                                     @Override
                                     public void updateComplete(boolean isUpdateByNetWork) {
-                                        startDownloadZipFile(dataJsonArray, template);
+                                        VenvyUIUtil.runOnUIThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mDownZipUpdate.startDownloadZipFile(dataJsonArray);
+                                            }
+                                        });
                                     }
 
                                     @Override
@@ -133,6 +141,46 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         }
                                     }
                                 });
+                    }
+                    if (mDownZipUpdate == null) {
+                        mDownZipUpdate = new VideoPlusZipUpdate(getPlatform(), new VideoPlusZipUpdate.CacheZipUpdateCallback() {
+                            @Override
+                            public void updateComplete(JSONArray zipJsonDataArray) {
+                                Log.i("video++","=start=updateComplete====");
+                                Map<String, String> params = getQueryChainParams();
+                                String adsType = params != null ? params.get
+                                        (VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
+                                ServiceQueryAdsInfo queryAdsInfo =
+                                        new ServiceQueryAdsInfo
+                                                .Builder()
+                                                .setQueryAdsTemplate(template)
+                                                .setQueryAdsId(null)
+                                                .setQueryAdsType(!TextUtils.isEmpty(adsType) ?
+                                                        Integer.valueOf(adsType) : 0).build();
+                                ServiceQueryChainCallback callback = getQueryChainCallback();
+                                if (callback != null) {
+                                    try {
+                                        JSONObject jsonObject=new JSONObject();
+                                        jsonObject.put("data",zipJsonDataArray);
+                                        callback.queryComplete(jsonObject,
+                                                queryAdsInfo);
+                                        Log.i("video++","=start=完成22====");
+                                    } catch (Exception e) {
+                                        Log.i("video++","=start=error===="+e.getMessage());
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void updateError(Throwable t) {
+                                ServiceQueryChainCallback callback = getQueryChainCallback();
+                                if (callback != null) {
+                                    callback.queryError(new Exception("chain ads down lua" +
+                                            " failed"));
+                                }
+                            }
+                        });
                     }
                     mDownLuaUpdate.startDownloadLuaFile(luaJsonArray);
                 } catch (Exception e) {
@@ -167,7 +215,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-        return HttpRequest.post(MOCK, createBody(mQueryAdsParams));
+        return HttpRequest.post(SERVICE_QUERYALL_CHAIN_URL_MOCK, createBody(mQueryAdsParams));
     }
 
     private Map<String, String> createBody(Map<String, String> params) {
@@ -261,7 +309,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
 
                         @Override
                         public Boolean doAsyncTask(Void... voids) throws Exception {
-                            long value = VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, true);
+                            long value = VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, false);
                             File file = new File(cacheUrlPath);
                             file.delete();
                             return value > 0;
@@ -284,7 +332,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                     callback.queryError(new Exception(""));
                                     return;
                                 }
-                                File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName);
+                                File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName.replace(".zip", ".json"));
                                 if (!file.exists() || !file.isFile()) {
                                     callback.queryError(new Exception(""));
                                     return;
@@ -343,8 +391,12 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
         if (mQueryAdsParams != null) {
             mQueryAdsParams.clear();
         }
+        VenvyAsyncTaskUtil.cancel(LUA_ZIP);
         if (mDownloadTaskRunner != null) {
             mDownloadTaskRunner.destroy();
+        }
+        if (mDownZipUpdate != null) {
+            mDownZipUpdate.destroy();
         }
         if (mDownLuaUpdate != null) {
             mDownLuaUpdate.destroy();

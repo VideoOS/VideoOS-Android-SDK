@@ -434,6 +434,7 @@ public abstract class VideoPlusController implements VenvyObserver {
 
                     @Override
                     public void queryError(Throwable throwable) {
+                        Log.i("video++","=start=queryError===="+throwable.getMessage());
                         if (result != null) {
                             result.failed(throwable);
                         }
