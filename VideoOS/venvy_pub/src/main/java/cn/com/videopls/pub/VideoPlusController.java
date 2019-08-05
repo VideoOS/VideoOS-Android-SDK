@@ -215,11 +215,12 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
         }
-        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
-            View tagView = mContentView.findViewWithTag(queryAdsInfo.getQueryAdsId());
+        for (int i = 0; i < queryAdsInfoArray.size(); i++) {
+            ServiceQueryAdsInfo serviceQueryAdsInfo = queryAdsInfoArray.get(i);
+            View tagView = mContentView.findViewWithTag(serviceQueryAdsInfo.getQueryAdsId());
             if (tagView != null) {
                 mContentView.removeView(tagView);
-                queryAdsInfoArray.remove(queryAdsInfo);
+                queryAdsInfoArray.remove(serviceQueryAdsInfo);
             }
         }
     }
