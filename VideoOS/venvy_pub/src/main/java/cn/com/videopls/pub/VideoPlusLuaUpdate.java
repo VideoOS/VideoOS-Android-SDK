@@ -66,8 +66,6 @@ public class VideoPlusLuaUpdate {
             //本地存在 无需下载直接返回成功回调
             CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
             if (callback != null) {
-                //如果是在线更新的版本，需要强制更新lua路径地址
-                VideoOSLuaView.destroyLuaScript();
                 callback.updateComplete(false);
             }
             return;
