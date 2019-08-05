@@ -45,6 +45,7 @@ public class VideoPlusZipUpdate {
     }
 
     public void destroy() {
+        VenvyAsyncTaskUtil.cancel(LUA_ZIP);
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner.destroy();
         }
@@ -90,13 +91,13 @@ public class VideoPlusZipUpdate {
                     }, new VenvyAsyncTaskUtil.CommonAsyncCallback<Boolean>() {
                         @Override
                         public void onPostExecute(Boolean aBoolean) {
-//                            if (!aBoolean) {
-//                                VideoServiceQueryChainModel.ServiceQueryChainCallback callback = getQueryChainCallback();
-//                                if (callback != null) {
-//                                    callback.queryError(new Exception("unzip error"));
-//                                }
-//                                return;
-//                            }
+                            if (!aBoolean) {
+                                CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
+                                if (callback != null) {
+                                    callback.updateError(new Exception("unzip error"));
+                                }
+                                return;
+                            }
                             final JSONArray queryArray = new JSONArray();
                             CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                             if (callback != null) {
@@ -207,13 +208,13 @@ public class VideoPlusZipUpdate {
                     }, new VenvyAsyncTaskUtil.CommonAsyncCallback<Boolean>() {
                         @Override
                         public void onPostExecute(Boolean aBoolean) {
-//                            if (!aBoolean) {
-//                                VideoServiceQueryChainModel.ServiceQueryChainCallback callback = getQueryChainCallback();
-//                                if (callback != null) {
-//                                    callback.queryError(new Exception("unzip error"));
-//                                }
-//                                return;
-//                            }
+                            if (!aBoolean) {
+                                CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
+                                if (callback != null) {
+                                    callback.updateError(new Exception("unzip error"));
+                                }
+                                return;
+                            }
                             final JSONArray queryArray = new JSONArray();
                             CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                             if (callback != null) {
