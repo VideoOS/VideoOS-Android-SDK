@@ -3,6 +3,7 @@ package cn.com.videopls.pub;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -95,33 +96,31 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     JSONArray fileListArray = decryptData.optJSONArray("luaList");// lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
                    final  String template = decryptData.optString("template"); //  入口lua文件名称
                     String resCode = decryptData.optString("resCode"); //  应答码  00-成功  01-失败
-                    String resMsg = decryptData.optString("resMsg"); //  应答信息
 
-
-                    if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
-                            @Override
-                            public void updateComplete(boolean isUpdateByNetWork) {
-                                VisionProgramConfigCallback callback = getCallback();
-                                if (callback != null) {
-//                                    Map<String, String> params = getQueryAdsParams();
-//                                    String adsType = params != null ? params.get(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
-//                                    ServiceQueryAdsInfo queryAdsInfo = new ServiceQueryAdsInfo.Builder().setQueryAdsTemplate(queryAdsTemplate).setQueryAdsId(queryAdsId).setQueryAdsType(!TextUtils.isEmpty(adsType) ? Integer.valueOf(adsType) : 0).build();
-                                    callback.downComplete(decryptData.toString(),template,isUpdateByNetWork);
+                    if(resCode.equalsIgnoreCase("00")){
+                        if (mDownLuaUpdate == null) {
+                            mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
+                                @Override
+                                public void updateComplete(boolean isUpdateByNetWork) {
+                                    VisionProgramConfigCallback callback = getCallback();
+                                    if (callback != null) {
+                                        callback.downComplete(decryptData.toString(),template,isUpdateByNetWork);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void updateError(Throwable t) {
-                                VisionProgramConfigCallback callback = getCallback();
-                                if (callback != null) {
-                                    callback.downError(new Exception("download mini app  down lua failed"));
+                                @Override
+                                public void updateError(Throwable t) {
+                                    VisionProgramConfigCallback callback = getCallback();
+                                    if (callback != null) {
+                                        callback.downError(new Exception("download mini app  down lua failed"));
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+                        mDownLuaUpdate.startDownloadLuaFile(fileListArray);
+                    }else{
+                        VenvyLog.e(decryptData.optString("resMsg")); //  应答信息
                     }
-                    mDownLuaUpdate.startDownloadLuaFile(fileListArray);
-
 
                 } catch (Exception e) {
                     VenvyLog.e(VisionProgramConfigModel.class.getName(), e);

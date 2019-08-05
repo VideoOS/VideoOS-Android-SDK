@@ -117,8 +117,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             // 点播
             mVideoPlayer.setUp(DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
         }
-//        mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
-        mVideoPlayer.setPlayTag(DEFAULT_VIDEO);
+        mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
         mVideoPlusView.start();
         // 开启前贴
         startMixStandAd(ServiceType.ServiceTypeFrontVideo);

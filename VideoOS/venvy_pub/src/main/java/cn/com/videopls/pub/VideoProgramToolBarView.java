@@ -28,6 +28,7 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
 
     protected VideoProgramView videoProgramView;
+    private View rlTitleBar;
     private ImageView ivBack;
     private TextView tvTitle;
     private ImageView ivClose;
@@ -70,6 +71,10 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
     private void init() {
         inflate(getContext(), R.layout.video_program_tool, this);
+        rlTitleBar = findViewById(R.id.rlTitleBar);
+        rlTitleBar.setAlpha(0.9f);
+
+
         videoProgramView = (VideoProgramView) findViewById(R.id.programView);
         ivBack = (ImageView) findViewById(R.id.ivBack);
         tvTitle = (TextView) findViewById(R.id.tvTitle);

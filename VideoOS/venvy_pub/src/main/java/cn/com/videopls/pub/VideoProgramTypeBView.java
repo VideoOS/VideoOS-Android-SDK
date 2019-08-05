@@ -1,5 +1,9 @@
 package cn.com.videopls.pub;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import java.util.HashMap;
+
+import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
  * Created by Lucas on 2019/7/31.
@@ -90,25 +96,35 @@ public class VideoProgramTypeBView extends FrameLayout {
         this.mAdapter = adapter;
     }
 
+    /**
+     * launch 一个视联网小程序
+     *
+     * @param appletId
+     * @param data
+     * @param type
+     */
     public void start(@NonNull String appletId, String data, int type) {
         this.currentProgramId = appletId;
         currentProgram = createProgram();
         if (mAdapter != null) {
             currentProgram.setVideoOSAdapter(mAdapter);
         }
+        doEntranceAnimation(currentProgram);
+
         programMap.put(appletId, currentProgram);
         currentProgram.start(appletId, data, type);
     }
 
     /**
      * 关闭一个小程序
+     *
      * @param appletId
      */
-    public void close(String appletId) {
+    public void close( String appletId) {
         if (!TextUtils.isEmpty(appletId)) {
             VideoProgramToolBarView programView = programMap.get(appletId);
             if (programView != null) {
-                programContent.removeView(programView);
+                doExitAnimation(programView);
                 programMap.remove(appletId);
             }
         }
@@ -117,18 +133,38 @@ public class VideoProgramTypeBView extends FrameLayout {
 
 
     /**
-     *  关闭所有小程序
+     * 关闭所有小程序
      */
-    public void closeAllProgram(){
-        for(VideoProgramToolBarView item : programMap.values()){
-            programContent.removeView(item);
+    public void closeAllProgram() {
+        for (VideoProgramToolBarView item : programMap.values()) {
+            doExitAnimation(item);
         }
         programMap.clear();
         setClickable(false);
     }
 
-    private void checkVisionProgram(){
-        setClickable(programMap.size() > 0 );
+    private void checkVisionProgram() {
+        setClickable(programMap.size() > 0);
     }
+
+
+    private void doEntranceAnimation(View view) {
+        ValueAnimator valueAnimator = ObjectAnimator.ofFloat(view, "translationX", VenvyUIUtil.dip2px(getContext(), 222), 0);
+        valueAnimator.setDuration(300);
+        valueAnimator.start();
+    }
+
+    private void doExitAnimation(final View view){
+        ValueAnimator valueAnimator = ObjectAnimator.ofFloat(view, "translationX", 0, VenvyUIUtil.dip2px(getContext(), 222));
+        valueAnimator.setDuration(300);
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                programContent.removeView(view);
+            }
+        });
+        valueAnimator.start();
+    }
+
 
 }
