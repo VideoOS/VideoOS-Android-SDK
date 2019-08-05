@@ -31,10 +31,10 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         appContext = this;
-        DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.RELEASE);
+        DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.DEBUG);
         VenvyLog.needLog = true;
-        ConfigUtil.putAppKey(ConfigUtil.RELEASE_APP_KEY);
-        ConfigUtil.putAppSecret(ConfigUtil.RELEASE_APP_SECRET);
+        ConfigUtil.putAppKey("66c9bafa-abd0-4aa9-8066-3deaf9dc7f71");
+        ConfigUtil.putAppSecret("bcfee675bca844bd");
         VideoPlus.appCreateSAAS(MyApp.this, ConfigUtil.getAppKey(), ConfigUtil.getAppSecret());
     }
 }

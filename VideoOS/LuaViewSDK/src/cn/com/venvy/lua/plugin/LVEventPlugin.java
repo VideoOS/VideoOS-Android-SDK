@@ -1,6 +1,7 @@
 package cn.com.venvy.lua.plugin;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.taobao.luaview.util.JsonUtil;
@@ -15,14 +16,22 @@ import java.util.HashMap;
 import java.util.Set;
 
 import cn.com.venvy.Platform;
+import cn.com.venvy.common.observer.ObservableManager;
+import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyBase64;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
 /**
  * lua路由插件
  * Created by Arthur on 2017/8/21.
+ * <p>
+ * * A类小程序   L uaView://defaultLuaView?template=xxx.lua&id=xxx
+ * * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
+ * *
+ * * B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
  */
 
 public class LVEventPlugin {
@@ -74,7 +83,31 @@ public class LVEventPlugin {
                 if (map.size() > 0) {
                     info.withSerializable("data", map);
                 }
-                info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();
+                String protocolHost = uri.getHost();
+                VenvyLog.d("protocolHost is "+protocolHost);
+                if (protocolHost.equalsIgnoreCase("defaultLuaView")) {
+                    // A类容器内部跳转
+                    info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();
+                } else if (protocolHost.equalsIgnoreCase("applets")) {
+                    String type = info.getBundle().getString("type");
+                    VenvyLog.d("type is "+type);
+                    if(TextUtils.isEmpty(type)){
+                        // B类小程序内部跳转
+                        info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();
+                        ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_VISION_PROGRAM, null);
+                    }else{
+                        // 发起一个视联网小程序
+                        Bundle bundle = new Bundle();
+                        bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, info.getBundle().getString("appletId"));
+                        bundle.putString(VenvyObservableTarget.KEY_ORIENTATION_TYPE, type);
+                        if (table != null) {
+                            bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, JsonUtil.toString(table));
+                        }
+                        ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_LAUNCH_VISION_PROGRAM, bundle);
+                    }
+
+
+                }
                 return LuaValue.TRUE;
             }
             return LuaValue.FALSE;

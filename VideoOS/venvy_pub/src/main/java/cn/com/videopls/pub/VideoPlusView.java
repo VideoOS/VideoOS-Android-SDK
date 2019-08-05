@@ -2,6 +2,7 @@ package cn.com.videopls.pub;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
@@ -17,7 +18,14 @@ import cn.com.venvy.common.router.IRouterCallback;
 
 public abstract class VideoPlusView<T extends VideoPlusController> extends FrameLayout {
 
-    protected T controller;
+
+    // A 类小程序
+    protected VideoProgramView programViewA;
+
+    // B 类小程序
+    protected VideoProgramTypeBView programViewB;
+
+    private VideoPlusViewHelper plusViewHelper;
 
     public VideoPlusView(Context context) {
         super(context);
@@ -36,75 +44,131 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
-
-    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (controller != null) {
-            controller.destroy();
+        if (plusViewHelper != null) {
+            plusViewHelper.detachedFromWindow();
         }
     }
 
     private void init() {
-        controller = initVideoPlusController();
+        plusViewHelper = new VideoPlusViewHelper(this);
+
+        programViewA = createTypeAProgram();
+        programViewB = createTypeBProgram();
+        addView(programViewA);
+        addView(programViewB);
+        programViewB.setClickable(false);
     }
 
+    /**
+     * 生成A类小程序容器
+     *
+     * @return
+     */
+    private VideoProgramView createTypeAProgram() {
+        VideoProgramView mainProgram = new VideoProgramView(getContext());
+        return mainProgram;
+    }
+
+
+    /**
+     * 生成B类小程序容器
+     *
+     * @return
+     */
+    private VideoProgramTypeBView createTypeBProgram() {
+        VideoProgramTypeBView bProgram = new VideoProgramTypeBView(getContext());
+        return bProgram;
+    }
+
+
     public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
-        if (controller != null) {
-            controller.navigation(uri, params, callback);
+        if (programViewA != null) {
+            programViewA.navigation(uri, params, callback);
         }
     }
 
     public void closeInfoView() {
-        if (controller != null) {
-            controller.closeInfoView();
+        if (programViewA != null) {
+            programViewA.closeInfoView();
         }
     }
 
     public void setVideoOSAdapter(VideoPlusAdapter adapter) {
-        if (controller != null) {
-            controller.setAdapter(adapter);
+        if (programViewA != null) {
+            programViewA.setVideoOSAdapter(adapter);
+        }
+        if (programViewB != null) {
+            programViewB.setVideoOSAdapter(adapter);
         }
     }
 
     public abstract T initVideoPlusController();
 
     public void start() {
-        if (controller != null) {
-            controller.start();
+        if (programViewA != null) {
+            programViewA.start();
         }
     }
 
     public void stop() {
-        if (controller != null) {
-            controller.stop();
+        if (programViewA != null) {
+            programViewA.stop();
+        }
+    }
+
+    /**
+     * 拉起一个视联网小程序
+     */
+    public void launchVisionProgram(@NonNull String appletId, String data, int orientationType, boolean currentScreenStatus) {
+        if (programViewB != null) {
+            programViewB.setClickable(true);
+            programViewB.start(appletId, data, orientationType);
+        }
+        screenChange(currentScreenStatus);
+    }
+
+    /**
+     * 根据指定ID关闭一个视联网小程序
+     *
+     * @param appletId
+     */
+    public void closeVisionProgram(String appletId) {
+        if (programViewB != null) {
+            programViewB.close(appletId);
+        }
+    }
+
+
+    public void screenChange(boolean isLandscape) {
+        if (programViewB != null) {
+            programViewB.setVisibility(isLandscape ? VISIBLE : GONE);
         }
     }
 
     public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
-        if (controller != null) {
-            controller.startService(serviceType, params, callback);
+        if (programViewA != null) {
+            programViewA.startService(serviceType, params, callback);
         }
     }
 
     public void reResumeService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.reResumeService(serviceType);
+
+        if (programViewA != null) {
+            programViewA.reResumeService(serviceType);
         }
     }
 
     public void pauseService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.pauseService(serviceType);
+        if (programViewA != null) {
+            programViewA.pauseService(serviceType);
         }
     }
 
     public void stopService(ServiceType serviceType) {
-        if (controller != null) {
-            controller.stopService(serviceType);
+        if (programViewA != null) {
+            programViewA.stopService(serviceType);
         }
     }
 }
