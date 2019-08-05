@@ -2,6 +2,7 @@ package cn.com.videopls.pub;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.venvy.AppSecret;
+import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
@@ -46,8 +48,8 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-//        return HttpRequest.get(Config.HOST_VIDEO_OS + CONFIG, createBody());
-        return HttpRequest.get("http://mock.videojj.com/mock/5d42ae7eb4383d45dfd0367c/vision/getMiniAppConf");
+        return HttpRequest.post(Config.HOST_VIDEO_OS + CONFIG, createBody());
+//        return HttpRequest.get("http://mock.videojj.com/mock/5d42ae7eb4383d45dfd0367c/vision/getMiniAppConf");
     }
 
 
@@ -78,16 +80,16 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                         }
                     }
                     // 解密返回数据
-                   final  JSONObject decryptData = new JSONObject(response.getResult());
-//                    String encryptData = value.optString("encryptData");
-//                    if (TextUtils.isEmpty(encryptData)) {
-//                        VisionProgramConfigModel.VisionProgramConfigCallback callback = getCallback();
-//                        if (callback != null) {
-//                            callback.downError(new NullPointerException("response lua script is null"));
-//                        }
-//                        return;
-//                    }
-//                    final JSONObject decryptData = new JSONObject(VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform())));
+                   final  JSONObject value = new JSONObject(response.getResult());
+                    String encryptData = value.optString("encryptData");
+                    if (TextUtils.isEmpty(encryptData)) {
+                        VisionProgramConfigModel.VisionProgramConfigCallback callback = getCallback();
+                        if (callback != null) {
+                            callback.downError(new NullPointerException("response lua script is null"));
+                        }
+                        return;
+                    }
+                    final JSONObject decryptData = new JSONObject(VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform())));
 
 
                     JSONArray fileListArray = decryptData.optJSONArray("luaList");// lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
