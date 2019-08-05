@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -61,6 +63,13 @@ public class VideoProgramTypeBView extends FrameLayout {
 //        setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.holo_red_light));
 //        setAlpha(0.5f);
         programContent = (FrameLayout) findViewById(R.id.programContent);
+
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeAllProgram();
+            }
+        });
     }
 
 
@@ -104,6 +113,23 @@ public class VideoProgramTypeBView extends FrameLayout {
                 programMap.remove(appletId);
             }
         }
+        checkVisionProgram();
+    }
+
+
+    /**
+     *  关闭所有小程序
+     */
+    public void closeAllProgram(){
+        for(VideoProgramToolBarView item : programMap.values()){
+            programContent.removeView(item);
+        }
+        programMap.clear();
+        setClickable(false);
+    }
+
+    private void checkVisionProgram(){
+        setClickable(programMap.size() > 0 );
     }
 
 }

@@ -58,6 +58,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         programViewB = createTypeBProgram();
         addView(programViewA);
         addView(programViewB);
+        programViewB.setClickable(false);
     }
 
     /**
@@ -120,8 +121,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     /**
      * 拉起一个视联网小程序
      */
-    public void launchVisionProgram(@NonNull String appletId, String data, int orientationType,boolean currentScreenStatus) {
+    public void launchVisionProgram(@NonNull String appletId, String data, int orientationType, boolean currentScreenStatus) {
         if (programViewB != null) {
+            programViewB.setClickable(true);
             programViewB.start(appletId, data, orientationType);
         }
         screenChange(currentScreenStatus);

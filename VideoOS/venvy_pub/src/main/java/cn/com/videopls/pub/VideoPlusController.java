@@ -522,11 +522,6 @@ public abstract class VideoPlusController implements VenvyObserver {
             @Override
             public void downComplete(String originData,final String entranceLua, boolean isUpdateByNet) {
                 VenvyLog.d("vision program downComplete : " + isUpdateByNet + "   - " + entranceLua);
-                if(Thread.currentThread() == Looper.getMainLooper().getThread()){
-                    VenvyLog.d("Thread is UI model");
-                }else{
-                    VenvyLog.d("Thread is not UI model");
-                }
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {

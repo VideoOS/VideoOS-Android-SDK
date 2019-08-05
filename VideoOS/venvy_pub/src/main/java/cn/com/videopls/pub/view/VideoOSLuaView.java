@@ -196,7 +196,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
-        if(luaName.contains("os_vote_hotspot")){
+            if(luaName.contains("os_vote_hotspot")){
             runLua(luaView, luaName, valueData);
             return;
         }
