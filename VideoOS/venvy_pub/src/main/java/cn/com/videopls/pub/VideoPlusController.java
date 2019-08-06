@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -181,7 +182,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (serviceType == null) {
             return;
         }
-        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
         }
@@ -199,7 +200,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (serviceType == null) {
             return;
         }
-        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
         }
@@ -212,15 +213,17 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     public void stopService(ServiceType serviceType) {
-        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
         }
-        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
+        Iterator<ServiceQueryAdsInfo> infoIterator = queryAdsInfoArray.iterator();
+        while (infoIterator.hasNext()) {
+            ServiceQueryAdsInfo queryAdsInfo = infoIterator.next();
             View tagView = mContentView.findViewWithTag(queryAdsInfo.getQueryAdsId());
             if (tagView != null) {
                 mContentView.removeView(tagView);
-                queryAdsInfoArray.remove(queryAdsInfo);
+                infoIterator.remove();
             }
         }
     }
@@ -515,8 +518,8 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
 
-    private List<ServiceQueryAdsInfo> getRunningService(ServiceType serviceType) {
-        List<ServiceQueryAdsInfo> queryAdsInfoArray = new ArrayList<>();
+    private ArrayList<ServiceQueryAdsInfo> getRunningService(ServiceType serviceType) {
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = new ArrayList<>();
         for (ServiceQueryAdsInfo queryAdsInfo : mQueryAdsArray) {
             if (queryAdsInfo.getQueryAdsType() == serviceType.getId()) {
                 queryAdsInfoArray.add(queryAdsInfo);
