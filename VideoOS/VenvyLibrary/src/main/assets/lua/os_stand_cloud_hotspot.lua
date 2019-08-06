@@ -437,5 +437,5 @@ function show(args)
     Native:saveCacheData(cloud.id, tostring(eventTypeShow))
     onCreate(dataTable)
     cloud.media = registerMedia()
-    cloud.window = registerWindow()
+    --cloud.window = registerWindow()
 end
