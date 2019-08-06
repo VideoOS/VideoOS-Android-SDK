@@ -30,8 +30,9 @@ import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.okhttp.OkHttpHelper;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
-import cn.com.venvy.glide.v4.GlideImageLoader;
+import cn.com.venvy.glide.GlideImageLoader;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
 
@@ -46,10 +47,14 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     private boolean isLive; // 是否为直播
 
     private WedgeListener wedgeListener;
+    private IOnWebViewDialogDismissCallback mDismissCallback;
 
     // 本例中为了演示状态栏的影响，故通过getVideoPlayerSize()供UI层支持修改内容区Size（考虑状态栏，异形屏等），确保内容区始终为屏幕宽高
-    private VideoPlayerSize videoPlayerSize = new VideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.getScreenHeight(MyApp.getInstance()),
-            VenvyUIUtil.getScreenWidth(MyApp.getInstance()), VenvyUIUtil.dip2px(MyApp.getInstance(), 200));
+    private VideoPlayerSize videoPlayerSize =
+            new VideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()),
+                    VenvyUIUtil.getScreenHeight(MyApp.getInstance()),
+            VenvyUIUtil.getScreenWidth(MyApp.getInstance()),
+                    VenvyUIUtil.dip2px(MyApp.getInstance(), 200));
 
     public VideoOsAdapter(StandardVideoOSPlayer mPlayer, boolean isLive) {
         this.mPlayer = mPlayer;
@@ -58,6 +63,9 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
     public void setWedgeListener(WedgeListener wedgeListener) {
         this.wedgeListener = wedgeListener;
+    }
+    public void setIOnWebViewDialogDismissCallback(IOnWebViewDialogDismissCallback callback) {
+        mDismissCallback = callback;
     }
 
     /**
@@ -92,7 +100,8 @@ public class VideoOsAdapter extends VideoPlusAdapter {
      * @param creativeName 素材名称
      * @return
      */
-    public Provider generateProvider(String appKey, String appSecret, String videoId, String creativeName) {
+    public Provider generateProvider(String appKey, String appSecret, String videoId,
+                                     String creativeName) {
         if (TextUtils.isEmpty(creativeName)) {
             return new Provider.Builder().setAppKey(appKey).setAppSecret(appSecret)
                     .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
@@ -113,7 +122,8 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     //设置参数
     @Override
     public Provider createProvider() {
-        return generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(), mPlayer.getPlayTag());
+        return generateProvider(ConfigUtil.getAppKey(), ConfigUtil.getAppSecret(),
+                mPlayer.getPlayTag());
     }
 
 
@@ -261,7 +271,14 @@ public class VideoOsAdapter extends VideoPlusAdapter {
                 break;
             //平台方重新开启播放器事件
             case ACTION_PLAY_VIDEO:
-                if (mPlayer != null) {
+                VenvyLog.i("widget action play video ^^^^^^^^^^^^^^^");
+                if (mPlayer == null || mPlayer.getCurrentState() == GSYVideoView.CURRENT_STATE_AUTO_COMPLETE) {
+                    return;
+                }
+                if (!mPlayer.isInPlayingState()) {
+                    // 视频未开始播放, 前贴结束后开始播放
+                    mPlayer.startPlayLogic();
+                } else {
                     mPlayer.onVideoResume(false);
                 }
                 break;
@@ -290,6 +307,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     }
 
     private void loadUrl(String url) {
+        VenvyLog.i("widget action load url : " + url);
         if (TextUtils.isEmpty(url)) {
             return;
         }
@@ -299,8 +317,15 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             public void onDismiss(DialogInterface dialog) {
                 //处理ACTION_OPEN_URL事件结束后 平台方需调用此事件 唤醒继续播放广告中插
                 notifyMediaStatusChanged(MediaStatus.PLAYING);
+                if (mDismissCallback != null) {
+                    mDismissCallback.onDismiss();
+                }
             }
         });
         dialog.loadUrl(url);
+    }
+
+    public interface IOnWebViewDialogDismissCallback {
+        void onDismiss();
     }
 }

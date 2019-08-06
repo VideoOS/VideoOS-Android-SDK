@@ -17,5 +17,22 @@ public class VenvyObservableTarget {
     public static final String TAG_JS_BRIDGE_OBSERVER = "notifyJSBridge";
     public static final String TAG_KEYBOARD_STATUS_CHANGED = "notifyKeyboardChanged";
     public static final String TAG_VOLUME_STATUS_CHANGED = "notifyVolumeStatusChanged";
+    // 启动一个视联网小程序
+    public static final String TAG_LAUNCH_VISION_PROGRAM = "notifyLaunchVisionProgram";
+    public static final String KEY_APPLETS_ID = "appletId";
+    public static final String KEY_ORIENTATION_TYPE = "orientationType"; // 1横屏,2竖屏
+
+    // 关闭一个视联网小程序
+    public static final String TAG_CLOSE_VISION_PROGRAM = "notifyCloseVisionProgram";
+    // 添加一个lua视图到当前视联网小程序容器上
+    public static final String TAG_ADD_LUA_SCRIPT_TO_VISION_PROGRAM = "notifyAddLuaScriptToContainer";
+
+
+    public static class Constant {
+        public static final int CONSTANT_LANDSCAPE = 1;
+        public static final int CONSTANT_PORTRAIT = 2;
+        public static final String CONSTANT_DATA = "data";
+        public static final String CONSTANT_SCREEN_CHANGE = "screen_changed";
+    }
 
 }

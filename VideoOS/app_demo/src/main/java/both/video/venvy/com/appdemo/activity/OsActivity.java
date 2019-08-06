@@ -1,23 +1,21 @@
 package both.video.venvy.com.appdemo.activity;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import com.taobao.luaview.util.ToastUtil;
-
 import java.util.HashMap;
 
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
-import both.video.venvy.com.appdemo.utils.AssetsUtil;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.VideoOsConfigDialog;
+import cn.com.venvy.common.interf.IServiceCallback;
+import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.interf.VideoType;
-import cn.com.venvy.common.router.IRouterCallback;
+import cn.com.venvy.common.utils.VenvyLog;
 
 /**
  * Created by videojj_pls on 2018/9/13.
@@ -70,21 +68,35 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         if (R.id.iv_os_setting == ID) {
             mConfigDialog.showOsSetting();
         } else if (R.id.bt_os_setting_mall == ID) {
-            if (mVideoPlusView == null)
-                return;
-            mVideoPlusView.stop();
-            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_baike_hotspot.lua&id=os_baike_hotspot");
-            HashMap<String, String> params = new HashMap<>();
-            params.put("data", AssetsUtil.readFileAssets("local_baike.json", OsActivity.this));
-            mVideoPlusView.navigation(uri, params, new IRouterCallback() {
+//            if (mVideoPlusView == null)
+//                return;
+//            mVideoPlusView.stop();
+//            Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_vote_hotspot.lua&id=os_vote_hotspot");
+////            Uri uri = Uri.parse("LuaView://applets?appletId=123&template=test.lua&id=test");
+//            HashMap<String, String> params = new HashMap<>();
+//            params.put("data", AssetsUtil.readFileAssets("local_vote.json", OsActivity.this));
+//            mVideoPlusView.navigation(uri, params, new IRouterCallback() {
+//                @Override
+//                public void arrived() {
+//                    mVideoPlusView.start();
+//                }
+//
+//                @Override
+//                public void lost() {
+//
+//                }
+//            });
+            Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
+            mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String, String>(), new IServiceCallback() {
+
                 @Override
-                public void arrived() {
-                    mVideoPlusView.start();
+                public void onCompleteForService() {
+                    VenvyLog.d("onCompleteForService");
                 }
 
                 @Override
-                public void lost() {
-
+                public void onFailToCompleteForService(Throwable throwable) {
+                    VenvyLog.d("onFailToCompleteForService");
                 }
             });
         } else if (R.id.bt_os_setting_close_window == ID) {

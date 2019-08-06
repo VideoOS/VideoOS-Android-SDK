@@ -20,7 +20,9 @@ import both.video.venvy.com.appdemo.adapter.AppSecretConfigAdapter;
 import both.video.venvy.com.appdemo.adapter.VideoIdConfigAdapter;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
 import both.video.venvy.com.appdemo.bean.ConfigData;
+import both.video.venvy.com.appdemo.bean.VideoInfoData;
 import both.video.venvy.com.appdemo.http.AppConfigModel;
+import both.video.venvy.com.appdemo.http.VideoConfigModel;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import cn.com.venvy.common.debug.DebugStatus;
 import cn.com.venvy.common.interf.VideoType;
@@ -43,6 +45,8 @@ public class VideoOsConfigDialog {
     private AppSecretPopup mAppSecretPopup;
 
     private AppConfigModel mAppConfigModel;
+
+    private VideoConfigModel mVideoConfigModel;
 
     public VideoOsConfigDialog(final Context context, VideoType type) {
         mContext = context;
@@ -245,7 +249,7 @@ public class VideoOsConfigDialog {
         return data;
     }
 
-    protected void queryAppKey(){
+    protected void queryAppKey() {
         if (mAppConfigModel == null) {
             mAppConfigModel = new AppConfigModel(new AppConfigModel.AppConfigCallback() {
                 @Override
@@ -262,7 +266,7 @@ public class VideoOsConfigDialog {
                                 return;
                             }
                             List<ConfigBean> data = new ArrayList<>();
-                            for(ConfigData.ConfigInfo.AppInfo info : configInfo.getApps()){
+                            for (ConfigData.ConfigInfo.AppInfo info : configInfo.getApps()) {
                                 data.add(new ConfigBean(info.getAppKey(), info.getAppSecret()));
                             }
                             mAppKeyPopup.addData(data);
@@ -273,11 +277,51 @@ public class VideoOsConfigDialog {
                     });
 
                 }
+
                 @Override
                 public void updateError(Throwable t) {
                     List<ConfigBean> data = generatePopupData();
                     mAppKeyPopup.addData(data);
                     mAppSecretPopup.addData(data);
+                }
+            });
+        }
+        mAppConfigModel.startRequest();
+    }
+
+
+    protected void queryVideoInfo() {
+        if (mVideoConfigModel == null) {
+            mVideoConfigModel = new VideoConfigModel(new VideoConfigModel.VideoConfigCallback() {
+                @Override
+                public void requestComplete(final String result) {
+                    VenvyUIUtil.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            VideoInfoData videoData = JSON.parseObject(result, VideoInfoData.class);
+                            if (videoData == null) {
+                                return;
+                            }
+                            VideoInfoData.VideoData video = videoData.getData();
+                            if (video == null) {
+                                return;
+                            }
+                            List<ConfigBean> data = new ArrayList<>();
+                            for (VideoInfoData.VideoData.VideoInfo info : video.getInfoList()) {
+                                data.add(new ConfigBean.Builder()
+                                        .setVideoId(info.getVideoId())
+                                        .setVideoUrl(info.getVideoUrl())
+                                        .build());
+                            }
+
+                        }
+                    });
+
+                }
+
+                @Override
+                public void requestError(Throwable t) {
+                    VenvyLog.e("video requestError : " + t.getMessage());
                 }
             });
         }

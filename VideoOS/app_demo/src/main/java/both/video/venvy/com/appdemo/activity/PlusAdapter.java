@@ -14,7 +14,7 @@ import cn.com.venvy.common.interf.VideoOSMediaController;
 import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.mqtt.VenvyMqtt;
 import cn.com.venvy.common.utils.VenvyUIUtil;
-import cn.com.venvy.glide.v4.GlideImageLoader;
+import cn.com.venvy.glide.GlideImageLoader;
 import cn.com.videopls.pub.Provider;
 import cn.com.videopls.pub.VideoPlusAdapter;
 

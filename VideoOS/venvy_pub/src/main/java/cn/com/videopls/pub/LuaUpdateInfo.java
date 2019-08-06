@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import org.luaj.vm2.ast.Str;
+
 /**
  * Created by yanjiangbo on 2017/5/16.
  */
@@ -17,7 +19,7 @@ public class LuaUpdateInfo implements Parcelable {
     private LuaUpdateInfo(Builder builder) {
         this.mVersion = builder.mVersion;
         this.mDownloadUrl = builder.mDownloadUrl;
-        this.mManifestJson = builder.mManifestJson;
+        this.mManifestJson=builder.mManifestJson;
     }
 
     public String getDownloadUrl() {
@@ -50,7 +52,6 @@ public class LuaUpdateInfo implements Parcelable {
             }
             return this;
         }
-
         public Builder setManifestJson(String manifestJson) {
             if (!TextUtils.isEmpty(manifestJson)) {
                 this.mManifestJson = manifestJson;
@@ -104,7 +105,7 @@ public class LuaUpdateInfo implements Parcelable {
         if (obj == null) {
             return super.equals(obj);
         }
-        if (!(obj instanceof LuaUpdateInfo)) {
+        if (!(obj instanceof ServiceQueryAdsInfo)) {
             return super.equals(obj);
         }
         LuaUpdateInfo luaUpdateInfo = (LuaUpdateInfo) obj;

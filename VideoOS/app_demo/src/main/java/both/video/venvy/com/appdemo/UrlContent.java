@@ -19,6 +19,9 @@ public class UrlContent {
     public static final String DEFAULT_APPSECRET = RELEASE_APP_SECRET;
 
     public static final String URL_APP_INFO = "https://mock.videojj.com/mock/5c8224a5380a47002f43f740/asmpapi/videoos_test_demo_appinfo";
+
+    public static final String URL_VIDEO_INFO = "http://mock.videojj.com/mock/5c8224a5380a47002f43f740/asmpapi/videoos_test_videoinfo";
+
 //    public static final String URL_APP_QUERY_LAUNCH_INFO = "https://os-saas.videojj.com/os-api-saas/api/config";
     public static final String URL_APP_QUERY_LAUNCH_INFO = "https://os-saas.videojj.com/os-api-saas/api/queryLaunchInfo";
 }

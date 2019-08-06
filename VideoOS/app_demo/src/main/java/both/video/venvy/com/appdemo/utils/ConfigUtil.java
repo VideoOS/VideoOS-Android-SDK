@@ -26,6 +26,8 @@ public class ConfigUtil {
     // 正式环境appKey&appSecret (ps : 只有这一对)
     public static final String RELEASE_APP_KEY = "de3a49c7-1c00-4822-b187-9120be3394aa";
     public static final String RELEASE_APP_SECRET = "ea8b3c7985124277";
+//    public static final String RELEASE_APP_KEY = "40d95699-de87-4d10-81a9-0827008311af";
+//    public static final String RELEASE_APP_SECRET = "6afc3bc3e76c4974";
 
     public static final String DEV_APP_KEY = "93db5ef3-7fbc-485a-97b0-fc9f4e7209f5";
     public static final String DEV_APP_SECRET = "74f251d40a49468a";
@@ -37,7 +39,7 @@ public class ConfigUtil {
     public static final String DEFAULT_APPSECRET = TEST_APP_SECRET;
 
 //    public static final String DEFAULT_VIDEO_ID = "d67eba2a3e549b75e42746b79721d0bf";
-    public static final String DEFAULT_VIDEO_ID = "ce17564ff7cd649645af87994c7a1424";
+    public static final String DEFAULT_VIDEO_ID = "987654";
 
 
     public static final String SP_DEMO_CONFIG = "sp_demo_config";
