@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -180,7 +181,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (serviceType == null) {
             return;
         }
-        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
         }
@@ -198,7 +199,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (serviceType == null) {
             return;
         }
-        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
         }
@@ -211,16 +212,17 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     public void stopService(ServiceType serviceType) {
-        List<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
         }
-        for (int i = 0; i < queryAdsInfoArray.size(); i++) {
-            ServiceQueryAdsInfo serviceQueryAdsInfo = queryAdsInfoArray.get(i);
-            View tagView = mContentView.findViewWithTag(serviceQueryAdsInfo.getQueryAdsId());
+        Iterator<ServiceQueryAdsInfo> infoIterator = queryAdsInfoArray.iterator();
+        while (infoIterator.hasNext()) {
+            ServiceQueryAdsInfo queryAdsInfo = infoIterator.next();
+            View tagView = mContentView.findViewWithTag(queryAdsInfo.getQueryAdsId());
             if (tagView != null) {
                 mContentView.removeView(tagView);
-                queryAdsInfoArray.remove(serviceQueryAdsInfo);
+                infoIterator.remove();
             }
         }
     }
@@ -497,9 +499,22 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
         return 0;
     }
+    /**
+     * 移除最上层的childView
+     */
+    protected void removeTopChild() {
+        if (mContentView == null) {
+            return;
+        }
+        int childCount = mContentView.getChildCount();
+        if (childCount > 0) {
+            mContentView.removeViewAt(childCount - 1);
+        }
+    }
 
-    private List<ServiceQueryAdsInfo> getRunningService(ServiceType serviceType) {
-        List<ServiceQueryAdsInfo> queryAdsInfoArray = new ArrayList<>();
+
+    private ArrayList<ServiceQueryAdsInfo> getRunningService(ServiceType serviceType) {
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = new ArrayList<>();
         for (ServiceQueryAdsInfo queryAdsInfo : mQueryAdsArray) {
             if (queryAdsInfo.getQueryAdsType() == serviceType.getId()) {
                 queryAdsInfoArray.add(queryAdsInfo);
