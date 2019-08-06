@@ -469,9 +469,10 @@ end
 
 --屏幕旋转--  TODO
 local function rotationScreen(isPortrait)
-    if (wedge.mediaPlayers[currentPlayerIndex] == nil or wedge.data == nil) then
+    if (wedge.data == nil) then
         return
     end
+
     local x, y, w, h
     if (isPortrait) then
         x, y, w, h = getPortraitLocation(wedge.data)
@@ -481,8 +482,12 @@ local function rotationScreen(isPortrait)
         --        wedge.guideParentView:show()
     end
     setLuaViewSize(wedge.luaView, isPortrait)
+    setLuaViewSize(wedge.cloudImage, isPortrait)
     setBackViewSize(wedge.backView, isPortrait)
-    wedge.mediaPlayers[currentPlayerIndex]:frame(x, y, w, h)
+    if (wedge.mediaPlayers[currentPlayerIndex] ~= nil) then
+        wedge.mediaPlayers[currentPlayerIndex]:frame(x, y, w, h)
+        return
+    end
 end
 
 local function registerMedia()
@@ -492,6 +497,7 @@ local function registerMedia()
     local callbackTable = {
         --0: 竖屏小屏幕，1 竖屏全凭，2 横屏全屏
         onPlayerSize = function(type)
+            print("onPlayerSize change ::"..tostring(type))
             if (type == 0) then
                 rotationScreen(true)
             elseif (type == 1) then
