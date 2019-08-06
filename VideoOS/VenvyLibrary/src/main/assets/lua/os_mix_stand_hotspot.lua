@@ -91,7 +91,7 @@ local function clickTrack(data)
         osTrack(wedge.launchPlanId, 3, 2)
     end
 
-    local hotspotTrackLinkTable = data.trackList
+    local hotspotTrackLinkTable = data.hotspotTrackLink
     if (hotspotTrackLinkTable == nil) then
         return nil
     end
