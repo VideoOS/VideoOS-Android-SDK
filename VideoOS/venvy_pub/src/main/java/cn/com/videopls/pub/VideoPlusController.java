@@ -216,13 +216,11 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
         }
-        Iterator<ServiceQueryAdsInfo> infoIterator = queryAdsInfoArray.iterator();
-        while (infoIterator.hasNext()) {
-            ServiceQueryAdsInfo queryAdsInfo = infoIterator.next();
+        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
             View tagView = mContentView.findViewWithTag(queryAdsInfo.getQueryAdsId());
             if (tagView != null) {
                 mContentView.removeView(tagView);
-                infoIterator.remove();
+                mQueryAdsArray.remove(queryAdsInfo);
             }
         }
     }
@@ -499,6 +497,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
         return 0;
     }
+
     /**
      * 移除最上层的childView
      */
