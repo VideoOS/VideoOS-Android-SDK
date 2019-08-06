@@ -57,6 +57,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     private int statusBarHeight;
     private int osViewHasStatusHeight;// 有状态栏时的高度
     private int osViewNotIncludeHeight;// 状态栏隐藏时的高度
+    private ServiceType mCurrentServiceType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         mAdapter.setIOnWebViewDialogDismissCallback(new VideoOsAdapter.IOnWebViewDialogDismissCallback() {
             @Override
             public void onDismiss() {
-                mVideoPlusView.reResumeService(ServiceType.ServiceTypeFrontVideo);
+                mVideoPlusView.reResumeService(mCurrentServiceType);
             }
         });
         mVideoPlusView.setVideoOSAdapter(mAdapter);
@@ -139,6 +140,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
      * 开启前贴, 前贴结束后会开始播放正片
      */
     private void startMixStandAd(final ServiceType type) {
+        mCurrentServiceType = type;
         HashMap<String, String> params = new HashMap<>();
         params.put(VenvySchemeUtil.QUERY_PARAMETER_DURATION, "60");
         mVideoPlusView.startService(type, params, new IServiceCallback() {
