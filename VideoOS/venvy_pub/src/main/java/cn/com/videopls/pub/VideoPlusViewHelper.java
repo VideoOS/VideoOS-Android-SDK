@@ -1,17 +1,16 @@
 package cn.com.videopls.pub;
 
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.utils.VenvyLog;
-
-import static cn.com.venvy.common.interf.ScreenStatus.LANDSCAPE;
 
 /**
  * Created by Lucas on 2019/8/2.
@@ -43,7 +42,20 @@ public class VideoPlusViewHelper implements VenvyObserver {
                     }
 
                     if (videoPlusView != null) {
-                        videoPlusView.launchVisionProgram(appletsId, data, orientationType,isHorizontal());
+                        if (VenvyObservableTarget.Constant.CONSTANT_LANDSCAPE == orientationType && !isHorizontal()) {
+                            // 请求一个横屏视联网小程序，如果是竖屏需要强转
+                            videoPlusView.clearAllVisionProgram();
+                            ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        }
+
+                        if (VenvyObservableTarget.Constant.CONSTANT_PORTRAIT == orientationType && isHorizontal()) {
+                            // 请求一个竖屏屏视联网小程序，如果是横屏需要强转
+                            videoPlusView.clearAllVisionProgram();
+                            ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                        }
+
+
+                        videoPlusView.launchVisionProgram(appletsId, data, orientationType, isHorizontal());
                     }
                 }
                 return;
@@ -62,17 +74,10 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 }
                 return;
             }
-            case VenvyObservableTarget.TAG_SCREEN_CHANGED:{
-                // 屏幕改变通知
-                if(bundle != null){
-                    ScreenStatus screenStatus = (ScreenStatus) bundle.getSerializable(VenvyObservableTarget.Constant.CONSTANT_SCREEN_CHANGE);
-                    if (screenStatus == null) {
-                        return;
-                    }
-
-                    if (videoPlusView != null) {
-                        videoPlusView.screenChange(screenStatus == LANDSCAPE);
-                    }
+            case VenvyObservableTarget.TAG_SCREEN_CHANGED: {
+                // 当目前展示的是横屏小程序，切横屏的时候销毁掉
+                if (videoPlusView != null) {
+                    videoPlusView.clearAllVisionProgramByOrientation(isHorizontal() ? VenvyObservableTarget.Constant.CONSTANT_PORTRAIT : VenvyObservableTarget.Constant.CONSTANT_LANDSCAPE);
                 }
 
                 return;
@@ -87,7 +92,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_SCREEN_CHANGED, this);
     }
 
-    public boolean isHorizontal(){
+    public boolean isHorizontal() {
         Configuration configuration = videoPlusView.getContext().getResources().getConfiguration();
         return configuration.orientation == Configuration.ORIENTATION_LANDSCAPE;
     }

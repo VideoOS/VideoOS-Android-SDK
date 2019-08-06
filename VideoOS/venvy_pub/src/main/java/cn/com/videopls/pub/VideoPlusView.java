@@ -1,6 +1,7 @@
 package cn.com.videopls.pub;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -51,6 +52,18 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
     }
 
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // 手机竖屏
+
+        }else if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            // 手机横屏
+
+        }
+    }
+
     private void init() {
         plusViewHelper = new VideoPlusViewHelper(this);
 
@@ -82,6 +95,24 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         return bProgram;
     }
 
+    /**
+     * clear所有的视联网小程序
+     */
+    public void clearAllVisionProgram(){
+        if(programViewB != null){
+            programViewB.closeAllProgram();
+        }
+    }
+
+    /**
+     * clear指定方向的视联网小程序
+     * @param orientationType
+     */
+    public void clearAllVisionProgramByOrientation(int orientationType){
+        if(programViewB != null){
+            programViewB.closeAllProgramByOrientation(orientationType);
+        }
+    }
 
     public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
         if (programViewA != null) {
@@ -126,7 +157,6 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
             programViewB.setClickable(true);
             programViewB.start(appletId, data, orientationType);
         }
-        screenChange(currentScreenStatus);
     }
 
     /**
@@ -141,11 +171,6 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
 
-    public void screenChange(boolean isLandscape) {
-        if (programViewB != null) {
-            programViewB.setVisibility(isLandscape ? VISIBLE : GONE);
-        }
-    }
 
     public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
         if (programViewA != null) {

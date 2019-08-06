@@ -14,6 +14,7 @@ import both.video.venvy.com.appdemo.utils.AssetsUtil;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
+import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 
 /**
@@ -28,7 +29,6 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         View settingView = getSettingView();
         mRootView.addView(settingView);
-
     }
 
     @Override
@@ -58,7 +58,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
 //
 //                }
 //            });
-            Toast.makeText(this,"start service",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "click",Toast.LENGTH_SHORT).show();
             mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String, String>(), new IServiceCallback() {
                 @Override
                 public void onCompleteForService() {

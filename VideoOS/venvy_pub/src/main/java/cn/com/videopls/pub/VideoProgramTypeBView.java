@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -78,8 +79,9 @@ public class VideoProgramTypeBView extends FrameLayout {
     }
 
 
-    public VideoProgramToolBarView createProgram() {
+    public VideoProgramToolBarView createProgram(int orientationType) {
         VideoProgramToolBarView programToolBarView = generateVideoProgram();
+        programToolBarView.setTag(orientationType);
         programContent.addView(programToolBarView);
         return programToolBarView;
     }
@@ -101,18 +103,18 @@ public class VideoProgramTypeBView extends FrameLayout {
      *
      * @param appletId
      * @param data
-     * @param type
+     * @param orientationType
      */
-    public void start(@NonNull String appletId, String data, int type) {
+    public void start(@NonNull String appletId, String data, int orientationType) {
         this.currentProgramId = appletId;
-        currentProgram = createProgram();
+        currentProgram = createProgram(orientationType);
         if (mAdapter != null) {
             currentProgram.setVideoOSAdapter(mAdapter);
         }
         doEntranceAnimation(currentProgram);
 
         programMap.put(appletId, currentProgram);
-        currentProgram.start(appletId, data, type);
+        currentProgram.start(appletId, data, orientationType);
     }
 
     /**
@@ -142,6 +144,20 @@ public class VideoProgramTypeBView extends FrameLayout {
         programMap.clear();
         setClickable(false);
     }
+
+    /**
+     * 删除所有指定方向的视联网小程序
+     * @param orientationType
+     */
+    public void closeAllProgramByOrientation(int orientationType){
+        for (Map.Entry<String, VideoProgramToolBarView> item : programMap.entrySet()) {
+           if((int)item.getValue().getTag() == orientationType){
+               programContent.removeView(item.getValue());
+               programMap.remove(item.getKey());
+           }
+        }
+    }
+
 
     private void checkVisionProgram() {
         setClickable(programMap.size() > 0);

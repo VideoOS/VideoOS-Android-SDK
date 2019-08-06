@@ -20,6 +20,7 @@ import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.router.IRouterCallback;
+import cn.com.venvy.common.utils.VenvyDeviceUtil;
 
 /**
  * Created by Lucas on 2019/7/31.
@@ -28,12 +29,19 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
 
     protected VideoProgramView videoProgramView;
+
+    private View mainContent;
+    private View disConnectWifiContent;
+    private TextView tvRetry;
     private View rlTitleBar;
     private ImageView ivBack;
     private TextView tvTitle;
     private ImageView ivClose;
 
     private String currentAppletId;
+
+    private String cacheData;
+    private int cacheType;
 
     public VideoProgramToolBarView(@NonNull Context context) {
         super(context);
@@ -74,7 +82,21 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         rlTitleBar = findViewById(R.id.rlTitleBar);
         rlTitleBar.setAlpha(0.9f);
 
+        mainContent = findViewById(R.id.mainContent);
+        disConnectWifiContent = findViewById(R.id.disConnectWifiContent);
 
+
+        tvRetry = (TextView) findViewById(R.id.tvRetry);
+        tvRetry.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (VenvyDeviceUtil.isNetworkAvailable(getContext())) {
+                    start(currentAppletId, cacheData, cacheType);
+                    cacheData = "";
+                    cacheType = 0;
+                }
+            }
+        });
         videoProgramView = (VideoProgramView) findViewById(R.id.programView);
         ivBack = (ImageView) findViewById(R.id.ivBack);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
@@ -101,8 +123,19 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
 
     public void start(String appletId, String data, int type) {
-        this.currentAppletId = appletId;
-        videoProgramView.startVision(appletId, data, type);
+        if (VenvyDeviceUtil.isNetworkAvailable(getContext())) {
+            mainContent.setVisibility(VISIBLE);
+            disConnectWifiContent.setVisibility(GONE);
+            this.currentAppletId = appletId;
+            videoProgramView.startVision(appletId, data, type);
+        } else {
+            this.currentAppletId = appletId;
+            cacheData = data;
+            cacheType = type;
+            mainContent.setVisibility(GONE);
+            disConnectWifiContent.setVisibility(VISIBLE);
+        }
+
     }
 
     public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
