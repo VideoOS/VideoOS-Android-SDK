@@ -2,4 +2,5 @@
 <resources>
     <string name="disconnectWifiDesc">当前网络不可用请检查设置</string>
     <string name="clickAndRetry">点击重试</string>
+    <string name="loading">正在拼命加载中...</string>
 </resources>

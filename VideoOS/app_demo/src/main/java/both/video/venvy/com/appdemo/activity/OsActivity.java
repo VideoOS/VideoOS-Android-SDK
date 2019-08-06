@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
-import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.VideoOsConfigDialog;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
@@ -45,13 +44,10 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
                 }
 
                 String videoId = bean.getVideoId();
-                String creativeName = bean.getCreativeName();//素材名称
+                String videoUrl = bean.getVideoUrl();
                 tvVideoId.setText(videoId);
-                ConfigUtil.putAppKey(bean.getAppKey());
-                ConfigUtil.putAppSecret(bean.getAppSecret());
-                ConfigUtil.putVideoId(videoId);
                 //正在播放视频需要切集操作调用逻辑 不需要重新创建VideoPlusView 以及VideoPlusAdapter
-                startDefaultVideo(videoId);
+                startDefaultVideo(videoId, videoUrl);
             }
         });
 

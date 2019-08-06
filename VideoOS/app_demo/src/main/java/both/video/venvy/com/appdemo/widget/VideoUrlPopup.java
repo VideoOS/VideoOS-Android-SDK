@@ -11,17 +11,17 @@ import android.view.animation.Animation;
 import java.util.List;
 
 import both.video.venvy.com.appdemo.R;
-import both.video.venvy.com.appdemo.adapter.VideoIdConfigAdapter;
+import both.video.venvy.com.appdemo.adapter.VideoUrlConfigAdapter;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
 import razerdp.basepopup.BasePopupWindow;
 
 /**
- * Created by Lucas on 2019/5/23.
+ * Created by Lucas on 2019/8/6.
  */
-public class VideoIdPopup extends BasePopupWindow {
-    private VideoIdConfigAdapter mConfigAdapter;
+public class VideoUrlPopup extends BasePopupWindow {
+    private VideoUrlConfigAdapter mConfigAdapter;
 
-    public VideoIdPopup(Context context) {
+    public VideoUrlPopup(Context context) {
         super(context);
         setBackgroundColor(Color.TRANSPARENT);
     }
@@ -32,7 +32,7 @@ public class VideoIdPopup extends BasePopupWindow {
         RecyclerView mRecyclerView = root.findViewById(R.id.rv_list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mConfigAdapter = new VideoIdConfigAdapter(null);
+        mConfigAdapter = new VideoUrlConfigAdapter(null);
         mRecyclerView.setAdapter(mConfigAdapter);
         return root;
     }
@@ -59,7 +59,7 @@ public class VideoIdPopup extends BasePopupWindow {
         mConfigAdapter.addData(info);
     }
 
-    public VideoIdConfigAdapter getAdapter() {
+    public VideoUrlConfigAdapter getAdapter() {
         return mConfigAdapter;
     }
 }

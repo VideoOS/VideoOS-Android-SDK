@@ -536,7 +536,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
 
-    public void startVisionProgram(final String appletId, final String data, final int type) {
+    public void startVisionProgram(final String appletId, final String data, final int type,final IRouterCallback callback) {
         if (!VenvyAPIUtil.isSupport(16)) {
             Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
             return;
@@ -549,7 +549,6 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.setVisibility(View.VISIBLE);
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-
 
         VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
@@ -567,16 +566,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                         Uri uri = Uri.parse("LuaView://applets?appletId=" + appletId + "&template=" + entranceLua + "&id=" + luaId);
                         HashMap<String, String> params = new HashMap<>();
                         params.put("data", data);
-                        mContentView.navigation(uri, params, new IRouterCallback() {
-                            @Override
-                            public void arrived() {
-                            }
-
-                            @Override
-                            public void lost() {
-
-                            }
-                        });
+                        mContentView.navigation(uri, params, callback);
                     }
                 });
 

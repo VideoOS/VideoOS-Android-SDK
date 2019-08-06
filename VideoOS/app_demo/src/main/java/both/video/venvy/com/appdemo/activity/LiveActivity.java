@@ -42,14 +42,11 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
                     return;
                 }
                 String videoId = bean.getVideoId();
-                String creativeName = bean.getCreativeName();//素材名称
+                String videoUrl = bean.getVideoUrl();//素材名称
                 tvVideoId.setText(videoId);
-                ConfigUtil.putAppKey(bean.getAppKey());
-                ConfigUtil.putAppSecret(bean.getAppSecret());
-                ConfigUtil.putVideoId(videoId);
 
                 //正在播放视频需要切集操作调用逻辑 没有必须重新创建VideoPlusView 以及VideoPlusAdapter
-                startDefaultVideo(videoId);
+                startDefaultVideo(videoId,videoUrl);
             }
         });
 

@@ -27,9 +27,8 @@ import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
 import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
-import cn.com.venvy.common.interf.WedgeListener;
-import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.interf.ServiceType;
+import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
@@ -92,7 +91,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         initVideoPlayerSetting();
 
         // Step4 : 启动播放
-        startDefaultVideo(null);
+        startDefaultVideo(null, null);
 
         statusBarHeight = VenvyUIUtil.getStatusBarHeight(this);
 
@@ -130,13 +129,13 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     /**
      * 默认自动播放上次缓存的VideoId,子类有需要可自己实现
      */
-    protected void startDefaultVideo(String videoId) {
+    protected void startDefaultVideo(String videoId, String videoUrl) {
         if (isLiveOS()) {
             // 直播
-            mVideoPlayer.setUp(LIVE_DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
+            mVideoPlayer.setUp(TextUtils.isEmpty(videoUrl) ? ConfigUtil.getVideoName() : videoUrl, true, ConfigUtil.getVideoName());
         } else {
             // 点播
-            mVideoPlayer.setUp(DEFAULT_VIDEO, true, ConfigUtil.getVideoName());
+            mVideoPlayer.setUp(TextUtils.isEmpty(videoUrl) ? ConfigUtil.getVideoName() : videoUrl, true, ConfigUtil.getVideoName());
         }
         mVideoPlayer.setPlayTag(TextUtils.isEmpty(videoId) ? ConfigUtil.getVideoId() : videoId);
         mVideoPlusView.start();
@@ -438,6 +437,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
     /**
      * TODO :  未来还需要考虑底部虚拟导航栏的case
+     *
      * @param rootView
      */
     private void calculateHeight(final View rootView) {

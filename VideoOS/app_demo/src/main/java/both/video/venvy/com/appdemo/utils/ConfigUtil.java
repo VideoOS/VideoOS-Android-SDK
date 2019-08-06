@@ -42,6 +42,9 @@ public class ConfigUtil {
     public static final String DEFAULT_VIDEO_ID = "987654";
 
 
+    public static final String DEFAULT_VIDEO_URL = "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/test/SwordArtOnlineAlicization22.mp4";
+
+
     public static final String SP_DEMO_CONFIG = "sp_demo_config";
     private static final String SP_DEMO_CONFIG_UID = "u_id";
     private static final String SP_DEMO_CONFIG_ROOMID = "room_id";
@@ -235,7 +238,7 @@ public class ConfigUtil {
     }
 
     public static String getVideoName(){
-        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_VIDEO_NAME, "");
+        return VenvyPreferenceHelper.getString(MyApp.getInstance(), CONFIG_FILE_NAME, CONFIG_VIDEO_NAME, DEFAULT_VIDEO_URL);
     }
 
     public static void putVideoName(String videoName){

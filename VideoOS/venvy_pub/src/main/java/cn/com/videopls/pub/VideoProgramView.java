@@ -122,9 +122,9 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
         }
     }
 
-    public void startVision(String appletId, String data, int type) {
+    public void startVision(String appletId, String data, int type,final IRouterCallback callback) {
         if (controller != null) {
-            controller.startVisionProgram(appletId, data, type);
+            controller.startVisionProgram(appletId, data, type,callback);
         }
     }
 

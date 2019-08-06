@@ -18,15 +18,15 @@ public class VideoInfoData {
     }
 
     public static class VideoData {
-        private List<VideoInfo> infoList;
+        private List<VideoInfo> videos;
 
 
-        public List<VideoInfo> getInfoList() {
-            return infoList;
+        public List<VideoInfo> getVideos() {
+            return videos;
         }
 
-        public void setInfoList(List<VideoInfo> infoList) {
-            this.infoList = infoList;
+        public void setVideos(List<VideoInfo> videos) {
+            this.videos = videos;
         }
 
         public static class VideoInfo {
