@@ -641,6 +641,8 @@ local function dispatchAdsEvent()
                 wedge.loading:stop()
                 if (wedge.mediaPlayers[currentPlayerIndex - 1] ~= nil) then
                     wedge.mediaPlayers[currentPlayerIndex - 1]:hide()
+                    wedge.mediaPlayers[currentPlayerIndex - 1]:removeFromSuper()
+                    wedge.mediaPlayers[currentPlayerIndex - 1] = nil
                 end
 
                 --开始播放
@@ -1384,7 +1386,7 @@ function show(args)
     wedge.launchPlanId = dataTable.launchPlanId
     totalDuration = dataTable.duration
 
-    widgetEvent(eventTypeShow, wedge.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeShow, wedge.id, adTypeName, actionTypePauseVideo, "")
     Native:saveCacheData(wedge.id, tostring(eventTypeShow))
     wedge.data = dataTable
     wedge.media = registerMedia()
