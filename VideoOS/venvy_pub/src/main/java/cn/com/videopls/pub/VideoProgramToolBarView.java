@@ -37,6 +37,7 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
     private View mainContent;
     private View disConnectWifiContent;
     private View loadingContent;
+    private View errorContent;
     private TextView tvRetry;
     private View rlTitleBar;
     private ImageView ivBack;
@@ -96,8 +97,9 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         mainContent = findViewById(R.id.mainContent);
         loadingContent = findViewById(R.id.loadingContent);
         disConnectWifiContent = findViewById(R.id.disConnectWifiContent);
-
-
+        errorContent = findViewById(R.id.errorContent);
+        disConnectWifiContent.setClickable(true);
+        errorContent.setClickable(true);
         tvRetry = (TextView) findViewById(R.id.tvRetry);
         tvRetry.setOnClickListener(new OnClickListener() {
             @Override
@@ -145,6 +147,7 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
             videoProgramView.setVisibility(GONE);
             loadingContent.setVisibility(VISIBLE);
+            errorContent.setVisibility(GONE);
             startLoadingAnimation();
             videoProgramView.startVision(appletId, data, type, this);
         } else {
@@ -178,12 +181,15 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         // lua 加载成功回调
         videoProgramView.setVisibility(VISIBLE);
         loadingContent.setVisibility(GONE);
+        errorContent.setVisibility(GONE);
         cancelLoadingAnimation();
     }
 
     @Override
     public void lost() {
-
+        videoProgramView.setVisibility(GONE);
+        loadingContent.setVisibility(GONE);
+        errorContent.setVisibility(VISIBLE);
     }
 
 
