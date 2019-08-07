@@ -102,6 +102,8 @@ public class VideoOsAdapter extends VideoPlusAdapter {
      */
     public Provider generateProvider(String appKey, String appSecret, String videoId,
                                      String creativeName) {
+        appSecret = "c276b70aba84491a";
+        appKey = "73d5a8f8-3682-4080-ad7c-996c4e19fc1e";
         if (TextUtils.isEmpty(creativeName)) {
             return new Provider.Builder().setAppKey(appKey).setAppSecret(appSecret)
                     .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
