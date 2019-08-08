@@ -33,11 +33,10 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
         tv_app_key = findViewById(R.id.tv_app_key);
         tv_app_secret = findViewById(R.id.tv_app_secret);
 
-
         ((RadioButton) findViewById(R.id.rb_release)).setChecked(DebugStatus.isRelease());
         ((RadioButton) findViewById(R.id.rb_debug)).setChecked(DebugStatus.isDebug());
         ((RadioButton) findViewById(R.id.rb_preview)).setChecked(DebugStatus.isPreView());
-
+        ((RadioGroup) findViewById(R.id.rg_environment)).setVisibility(View.GONE);
         ((RadioGroup) findViewById(R.id.rg_environment)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {

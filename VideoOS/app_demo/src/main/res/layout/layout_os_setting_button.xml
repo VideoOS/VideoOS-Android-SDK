@@ -30,7 +30,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="@+id/guideline9"
         app:layout_constraintRight_toRightOf="parent"
-        android:visibility="visible"
+        android:visibility="invisible"
         />
 
     <android.support.constraint.Guideline
@@ -50,6 +50,6 @@
         app:layout_constraintRight_toLeftOf="@+id/bt_os_setting_mall"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        android:visibility="visible"
+        android:visibility="invisible"
         />
 </android.support.constraint.ConstraintLayout>

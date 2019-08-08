@@ -125,6 +125,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/tv_app_secret"
+        android:visibility="invisible"
         />
 
     <TextView
@@ -139,6 +140,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/rg_environment"
+        android:visibility="invisible"
         />
 
     <RadioGroup
@@ -152,6 +154,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginBottom="40dp"
+        android:visibility="invisible"
         >
         <RadioButton
             android:id="@+id/rb_release"
@@ -185,6 +188,7 @@
         android:gravity="center"
         android:text="切换环境需要更新对应环境的AppKey和AppSecret"
         android:layout_marginBottom="12dp"
+        android:visibility="gone"
         />
 
 
