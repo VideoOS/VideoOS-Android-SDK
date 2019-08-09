@@ -19,6 +19,7 @@ import cn.com.venvy.common.download.TaskListener;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyGzipUtil;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyMD5Util;
 
 /**
@@ -27,8 +28,11 @@ import cn.com.venvy.common.utils.VenvyMD5Util;
  */
 
 public class VideoPlusZipUpdate {
+    private final static String TAG = VideoPlusZipUpdate.class.getName();
     private static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private static final String LUA_ZIP = "/lua/os/chain.zip";
+    private final String PARSE_LOCAL_ZIP = "parse_local_zip";
+    private final String PARSE_UNZIP = "unzip";
     private DownloadTaskRunner mDownloadTaskRunner;
     private CacheZipUpdateCallback mUpdateCallback;
     private Platform mPlatform;
@@ -45,7 +49,8 @@ public class VideoPlusZipUpdate {
     }
 
     public void destroy() {
-        VenvyAsyncTaskUtil.cancel(LUA_ZIP);
+        VenvyAsyncTaskUtil.cancel(PARSE_LOCAL_ZIP);
+        VenvyAsyncTaskUtil.cancel(PARSE_UNZIP);
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner.destroy();
         }
@@ -60,88 +65,170 @@ public class VideoPlusZipUpdate {
         if (luaUrls == null || luaUrls.length() <= 0) {
             CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
             if (callback != null) {
-                callback.updateError(new Exception("update Lua error,because down urls is null"));
+                callback.updateError(new Exception("update zip data error,because down urls is null"));
             }
             return;
         }
-        List<String> needDownZipUrls = checkUpdateZip(luaUrls);
-        if (needDownZipUrls.size() == 0) {
-            //本地存在 无需下载直接返回成功回调
-            CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
-            if (callback != null) {
-                List<File> zipFiles = getZipFilesWithUrl(needDownZipUrls);
-                if (zipFiles == null || zipFiles.size() <= 0) {
-                    if (callback != null) {
-                        callback.updateError(new Exception("update Lua error,because down urls is failed"));
+        //检查 需要下载的Url
+        checkDownZipUrls(luaUrls);
+    }
+
+    /***
+     * 检查获取需要下载的Zip文件
+     * @param zipUrls
+     */
+    private void checkDownZipUrls(final JSONArray zipUrls) {
+        VenvyAsyncTaskUtil.doAsyncTask(PARSE_LOCAL_ZIP, new VenvyAsyncTaskUtil.IDoAsyncTask<JSONArray,
+                List<String>>() {
+            @Override
+            public List<String> doAsyncTask(JSONArray... zips) throws Exception {
+                if (zips == null || zips.length == 0) {
+                    return null;
+                }
+                List<String> needDownUrls = new ArrayList<>();
+                try {
+                    JSONArray jsonArray = zips[0];
+                    int len = jsonArray.length();
+                    for (int i = 0; i < len; i++) {
+                        JSONObject obj = jsonArray.optJSONObject(i);
+                        if (obj == null) {
+                            break;
+                        }
+                        String url = obj.optString("url");
+                        String md5 = obj.optString("md5");
+                        String cacheMd5 = getFileZipEncoderByMd5(Uri.parse(url).getLastPathSegment());
+                        if (!TextUtils.equals(md5, cacheMd5)) {
+                            needDownUrls.add(url);
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    VenvyLog.i(TAG, "VideoPlusZipUpdate ——> checkDownZipUrls error：" + e.getMessage());
+                }
+                return needDownUrls;
+            }
+        }, new VenvyAsyncTaskUtil.IAsyncCallback<List<String>>() {
+            @Override
+            public void onPreExecute() {
+            }
+
+            @Override
+            public void onPostExecute(List<String> urls) {
+                if (urls == null) {
                     return;
                 }
-                for (File file : zipFiles) {
-                    final String cacheUrlPath = file.getAbsolutePath();
-                    VenvyAsyncTaskUtil.doAsyncTask("unzip_lua", new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Boolean>() {
-
-                        @Override
-                        public Boolean doAsyncTask(Void... voids) throws Exception {
-                            long value = VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, false);
-                            File file = new File(cacheUrlPath);
-                            file.delete();
-                            return value > 0;
-
+                List<String> zipUrlArray = getAllZipUrls(zipUrls);
+                if (urls.size() == 0) {
+                    CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
+                    List<File> zipFiles = getZipFilesWithUrl(zipUrlArray);
+                    if (zipFiles == null || zipFiles.size() <= 0) {
+                        if (callback != null) {
+                            callback.updateError(new Exception("update zip error,because down urls is failed"));
                         }
-                    }, new VenvyAsyncTaskUtil.CommonAsyncCallback<Boolean>() {
-                        @Override
-                        public void onPostExecute(Boolean aBoolean) {
-                            if (!aBoolean) {
-                                CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
-                                if (callback != null) {
-                                    callback.updateError(new Exception("unzip error"));
-                                }
-                                return;
-                            }
-                            final JSONArray queryArray = new JSONArray();
-                            CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
-                            if (callback != null) {
-                                String fileName = Uri.parse(cacheUrlPath).getLastPathSegment();
-                                if (TextUtils.isEmpty(fileName)) {
-                                    callback.updateError(new Exception(""));
-                                    return;
-                                }
-                                File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName.replace(".zip", ".json"));
-                                if (!file.exists() || !file.isFile()) {
-                                    callback.updateError(new Exception(""));
-                                    return;
-                                }
-                                String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), file.getAbsolutePath());
-                                if (TextUtils.isEmpty(queryChainData)) {
-                                    callback.updateError(new Exception(""));
-                                    return;
-                                }
-                                try {
-                                    queryArray.put(new JSONObject(queryChainData));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            callback.updateComplete(queryArray);
-                        }
-
-                        @Override
-                        public void onCancelled() {
-                            CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
-                            if (callback != null) {
-                                callback.updateError(new Exception("unzip error"));
-                            }
-                        }
-
-                        @Override
-                        public void onException(Exception ie) {
-
-                        }
-                    });
+                        return;
+                    }
+                    unZipAndReadData(zipFiles);
+                    return;
                 }
+                startDownloadZipFile(zipUrlArray, urls);
+            }
+
+            @Override
+            public void onCancelled() {
+                VenvyLog.e("cancel");
+            }
+
+            @Override
+            public void onException(Exception ie) {
+            }
+        }, zipUrls);
+    }
+
+    /***
+     * 解压Zip并读取文件
+     * @param zipFiles
+     */
+    private void unZipAndReadData(final List<File> zipFiles) {
+        if (zipFiles == null || zipFiles.size() <= 0) {
+            CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
+            if (callback != null) {
+                callback.updateError(new Exception("update zip data error,because down urls is failed"));
             }
             return;
         }
+        VenvyAsyncTaskUtil.doAsyncTask(PARSE_UNZIP, new VenvyAsyncTaskUtil.IDoAsyncTask<File, List<String>>() {
+
+            @Override
+            public List<String> doAsyncTask(File... files) throws Exception {
+                List<String> cacheUrls = new ArrayList<>();
+                for (File file : files) {
+                    final String cacheUrlPath = file.getAbsolutePath();
+                    long value = VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, false);
+                    if (value > 0) {
+                        cacheUrls.add(cacheUrlPath);
+                    }
+                }
+                return cacheUrls;
+
+            }
+        }, new VenvyAsyncTaskUtil.IAsyncCallback<List<String>>() {
+            @Override
+            public void onPreExecute() {
+
+            }
+
+            @Override
+            public void onPostExecute(List<String> cacheUrls) {
+                final JSONArray queryArray = new JSONArray();
+                CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
+                for (String cacheUrlPath : cacheUrls) {
+                    if (callback != null) {
+                        String fileName = Uri.parse(cacheUrlPath).getLastPathSegment();
+                        if (TextUtils.isEmpty(fileName)) {
+                            callback.updateError(new Exception(""));
+                            return;
+                        }
+                        File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName.replace(".zip", ".json"));
+                        if (!file.exists() || !file.isFile()) {
+                            callback.updateError(new Exception(""));
+                            return;
+                        }
+                        String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), file.getAbsolutePath());
+                        if (TextUtils.isEmpty(queryChainData)) {
+                            callback.updateError(new Exception(""));
+                            return;
+                        }
+                        try {
+                            queryArray.put(new JSONObject(queryChainData));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                callback.updateComplete(queryArray);
+            }
+
+            @Override
+            public void onCancelled() {
+                CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
+                if (callback != null) {
+                    callback.updateError(new Exception("unzip error"));
+                }
+            }
+
+            @Override
+            public void onException(Exception ie) {
+
+            }
+        }, zipFiles.toArray(new File[zipFiles.size()]));
+    }
+
+    /***
+     * 下载Zip
+     * @param downZipUrls 全部的Url
+     * @param needDownZipUrls 需要下载的Url
+     */
+    private void startDownloadZipFile(final List<String> downZipUrls, final List<String> needDownZipUrls) {
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(mPlatform);
         }
@@ -185,104 +272,47 @@ public class VideoPlusZipUpdate {
                     }
                     return;
                 }
-                List<File> zipFiles = getZipFiles(arrayList);
+                List<File> zipFiles = getZipFilesWithUrl(downZipUrls);
                 if (zipFiles == null || zipFiles.size() <= 0) {
                     CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                     if (callback != null) {
-                        callback.updateError(new Exception("update Lua error,because down urls is failed"));
+                        callback.updateError(new Exception("update zip data error,because down urls is failed"));
                     }
                     return;
                 }
-                for (File file : zipFiles) {
-                    final String cacheUrlPath = file.getAbsolutePath();
-                    VenvyAsyncTaskUtil.doAsyncTask("unzip_lua", new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Boolean>() {
-
-                        @Override
-                        public Boolean doAsyncTask(Void... voids) throws Exception {
-                            long value = VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, false);
-                            File file = new File(cacheUrlPath);
-                            file.delete();
-                            return value > 0;
-
-                        }
-                    }, new VenvyAsyncTaskUtil.CommonAsyncCallback<Boolean>() {
-                        @Override
-                        public void onPostExecute(Boolean aBoolean) {
-                            if (!aBoolean) {
-                                CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
-                                if (callback != null) {
-                                    callback.updateError(new Exception("unzip error"));
-                                }
-                                return;
-                            }
-                            final JSONArray queryArray = new JSONArray();
-                            CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
-                            if (callback != null) {
-                                String fileName = Uri.parse(cacheUrlPath).getLastPathSegment();
-                                if (TextUtils.isEmpty(fileName)) {
-                                    callback.updateError(new Exception(""));
-                                    return;
-                                }
-                                File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName.replace(".zip", ".json"));
-                                if (!file.exists() || !file.isFile()) {
-                                    callback.updateError(new Exception(""));
-                                    return;
-                                }
-                                String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), file.getAbsolutePath());
-                                if (TextUtils.isEmpty(queryChainData)) {
-                                    callback.updateError(new Exception(""));
-                                    return;
-                                }
-                                try {
-                                    queryArray.put(new JSONObject(queryChainData));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            callback.updateComplete(queryArray);
-                        }
-
-                        @Override
-                        public void onCancelled() {
-                            CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
-                            if (callback != null) {
-                                callback.updateError(new Exception("unzip error"));
-                            }
-                        }
-
-                        @Override
-                        public void onException(Exception ie) {
-
-                        }
-                    });
-                }
+                unZipAndReadData(zipFiles);
             }
         });
     }
 
     /***
-     * 检测列表需要下载的Lua文件
-     * @param luaUrls
+     * 获取所有Zip Down urls
+     * @param zipUrls
      * @return
      */
-    private List<String> checkUpdateZip(JSONArray luaUrls) {
-        List<String> needDownUrls = new ArrayList<>();
-        int len = luaUrls.length();
+    private List<String> getAllZipUrls(JSONArray zipUrls) {
+        List<String> zipUrlArray = new ArrayList<>();
+        if (zipUrls == null || zipUrls.length() <= 0) {
+            return zipUrlArray;
+        }
+        int len = zipUrls.length();
         for (int i = 0; i < len; i++) {
-            JSONObject obj = luaUrls.optJSONObject(i);
+            JSONObject obj = zipUrls.optJSONObject(i);
             if (obj == null) {
                 break;
             }
             String url = obj.optString("url");
-            String md5 = obj.optString("md5");
-            String cacheMd5 = getFileZipEncoderByMd5(Uri.parse(url).getLastPathSegment());
-            if (!TextUtils.equals(md5, cacheMd5)) {
-                needDownUrls.add(url);
+            if (!TextUtils.isEmpty(url)) {
+                zipUrlArray.add(url);
             }
         }
-        return needDownUrls;
+        return zipUrlArray;
     }
 
+    /***
+     * 获取回调
+     * @return
+     */
     private VideoPlusZipUpdate.CacheZipUpdateCallback getCacheLuaUpdateCallback() {
         return mUpdateCallback;
     }
@@ -301,21 +331,6 @@ public class VideoPlusZipUpdate {
             zipFlies.add(hasDownFile);
         }
         return zipFlies;
-    }
-
-    private List<File> getZipFiles(ArrayList<DownloadTask> downloadTasks) {
-        List<File> paths = new ArrayList<>();
-        if (downloadTasks == null || downloadTasks.size() <= 0) {
-            return paths;
-        }
-        for (DownloadTask downloadTask : downloadTasks) {
-            File hasDownFile = new File(downloadTask.getDownloadCacheUrl());
-            if (!hasDownFile.exists() || !TextUtils.equals("zip", VenvyFileUtil.getExtension(downloadTask.getDownloadCacheUrl()))) {
-                continue;
-            }
-            paths.add(hasDownFile);
-        }
-        return paths;
     }
 
     /***
