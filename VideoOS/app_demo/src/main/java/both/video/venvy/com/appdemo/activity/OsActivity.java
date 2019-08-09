@@ -9,11 +9,8 @@ import android.widget.Toast;
 import java.util.HashMap;
 
 import both.video.venvy.com.appdemo.R;
-import both.video.venvy.com.appdemo.bean.ConfigBean;
-import both.video.venvy.com.appdemo.widget.VideoOsConfigDialog;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
-import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.utils.VenvyLog;
 
 /**
@@ -22,7 +19,6 @@ import cn.com.venvy.common.utils.VenvyLog;
 
 public class OsActivity extends BasePlayerActivity implements View.OnClickListener {
 
-    private VideoOsConfigDialog mConfigDialog; // 应用配置Dialog
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,25 +27,6 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         View settingView = getSettingView();
         mRootView.addView(settingView);
 
-
-        mConfigDialog = new VideoOsConfigDialog(this, VideoType.VIDEOOS);
-        mConfigDialog.onChangeListener(new VideoOsConfigDialog.SettingChangedListener() {
-            @Override
-            public void onChangeStat(ConfigBean bean) {
-                if (mAdapter == null || mVideoPlusView == null)
-                    return;
-                if (bean == null) {
-                    Toast.makeText(OsActivity.this, "配置错误，请确认你输入的配置信息", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                String videoId = bean.getVideoId();
-                String videoUrl = bean.getVideoUrl();
-                tvVideoId.setText(videoId);
-                //正在播放视频需要切集操作调用逻辑 不需要重新创建VideoPlusView 以及VideoPlusAdapter
-                startDefaultVideo(videoId, videoUrl);
-            }
-        });
 
     }
 
@@ -61,9 +38,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         int ID = v.getId();
-        if (R.id.iv_os_setting == ID) {
-            mConfigDialog.showOsSetting();
-        } else if (R.id.bt_os_setting_mall == ID) {
+        if (R.id.bt_os_setting_mall == ID) {
 //            if (mVideoPlusView == null)
 //                return;
 //            mVideoPlusView.stop();
@@ -82,7 +57,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
 //
 //                }
 //            });
-            Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "start service", Toast.LENGTH_SHORT).show();
             mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String, String>(), new IServiceCallback() {
 
                 @Override
@@ -95,10 +70,6 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
                     VenvyLog.d("onFailToCompleteForService");
                 }
             });
-        } else if (R.id.bt_os_setting_close_window == ID) {
-            if (mVideoPlusView == null)
-                return;
-            mVideoPlusView.closeInfoView();
         }
 
     }
@@ -111,9 +82,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         if (mSettingView == null) {
             mSettingView = (ConstraintLayout) LayoutInflater.from(this)
                     .inflate(R.layout.layout_os_setting_button, mRootView, false);
-            mSettingView.findViewById(R.id.iv_os_setting).setOnClickListener(this);
             mSettingView.findViewById(R.id.bt_os_setting_mall).setOnClickListener(this);
-            mSettingView.findViewById(R.id.bt_os_setting_close_window).setOnClickListener(this);
         }
         return mSettingView;
     }

@@ -39,7 +39,7 @@ public class ConfigUtil {
     public static final String DEFAULT_APPSECRET = TEST_APP_SECRET;
 
 //    public static final String DEFAULT_VIDEO_ID = "d67eba2a3e549b75e42746b79721d0bf";
-    public static final String DEFAULT_VIDEO_ID = "1565081762490-100";
+    public static final String DEFAULT_VIDEO_ID = "d67eba2a3e549b75e42746b79721d0bf";
 
 
     public static final String DEFAULT_VIDEO_URL = "https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/test/SwordArtOnlineAlicization22.mp4";
