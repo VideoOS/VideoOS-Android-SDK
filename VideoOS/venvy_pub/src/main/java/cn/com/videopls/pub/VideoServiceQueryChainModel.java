@@ -77,6 +77,19 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                             AppSecret.getAppSecret(getPlatform()),
                             AppSecret.getAppSecret(getPlatform()));
                     JSONObject obj = new JSONObject(decrypt);
+                    String resCode = obj.optString("resCode");
+                    if (TextUtils.equals(resCode, "01")) {
+                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                        if (callback != null) {
+                            String resMsg = obj.optString("resMsg");
+                            if (!TextUtils.isEmpty(resMsg)) {
+                                callback.queryError(new Exception(resMsg));
+                            } else {
+                                callback.queryError(new Exception("query chain data is error"));
+                            }
+                        }
+                        return;
+                    }
                     final String template = obj.optString("template");
                     final JSONArray dataJsonArray = obj.optJSONArray("jsonList");
                     final JSONArray luaJsonArray = obj.optJSONArray("luaList");
