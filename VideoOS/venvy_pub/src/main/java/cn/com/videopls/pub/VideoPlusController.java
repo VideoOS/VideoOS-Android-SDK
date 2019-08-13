@@ -14,8 +14,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +39,11 @@ import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
+import cn.com.videopls.pub.exception.DownloadException;
 import cn.com.videopls.pub.view.VideoOSLuaView;
+
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
 
 /**
  * Created by yanjiangbo on 2017/5/17.
@@ -536,7 +538,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
 
-    public void startVisionProgram(final String appletId, final String data, final int type,final IRouterCallback callback) {
+    public void startVisionProgram(final String appletId, final String data, final int type, final IRouterCallback callback) {
         if (!VenvyAPIUtil.isSupport(16)) {
             Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
             return;
@@ -574,7 +576,19 @@ public abstract class VideoPlusController implements VenvyObserver {
 
             @Override
             public void downError(Throwable t) {
+                //网络不通，请求不到小程序内容 | 网络请求错误，为底层通讯错误如,404,500等
+                Bundle bundle = new Bundle();
 
+                if (t instanceof DownloadException) {
+                    bundle.putString(CONSTANT_MSG, getContext().getString(R.string.loadMiniAppError));
+                } else {
+                    bundle.putString(CONSTANT_MSG, getContext().getString(R.string.networkBusy));
+                }
+
+                bundle.putBoolean(CONSTANT_NEED_RETRY, true);
+
+
+                ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
             }
         });
         model.startRequest();

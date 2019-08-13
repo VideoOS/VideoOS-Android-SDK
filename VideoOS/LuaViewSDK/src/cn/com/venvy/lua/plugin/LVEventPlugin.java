@@ -84,7 +84,6 @@ public class LVEventPlugin {
                     info.withSerializable("data", map);
                 }
                 String protocolHost = uri.getHost();
-                VenvyLog.d("protocolHost is "+protocolHost);
                 if (protocolHost.equalsIgnoreCase("defaultLuaView")) {
                     // A类容器内部跳转
                     info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();

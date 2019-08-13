@@ -25,8 +25,4 @@ public class VideoOsView extends VideoPlusView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public VideoPlusController initVideoPlusController() {
-        return new VideoOsController(new VideoProgramView(getContext()));
-    }
 }

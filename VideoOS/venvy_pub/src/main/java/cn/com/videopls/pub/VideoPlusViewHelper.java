@@ -24,6 +24,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_LAUNCH_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_SCREEN_CHANGED, this);
+        ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, this);
     }
 
 
@@ -82,6 +83,14 @@ public class VideoPlusViewHelper implements VenvyObserver {
 
                 return;
             }
+            case VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC: {
+                String msg = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_MSG);
+                boolean needRetry = bundle.getBoolean(VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY);
+                if (videoPlusView != null) {
+                    videoPlusView.showExceptionLogic(msg,needRetry);
+                }
+                return;
+            }
         }
     }
 
@@ -90,6 +99,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_LAUNCH_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_SCREEN_CHANGED, this);
+        ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, this);
     }
 
     public boolean isHorizontal() {

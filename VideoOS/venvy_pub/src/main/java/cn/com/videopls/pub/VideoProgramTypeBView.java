@@ -159,6 +159,13 @@ public class VideoProgramTypeBView extends FrameLayout {
     }
 
 
+    public void showExceptionLogic(String msg, boolean needRetry) {
+        if (currentProgram != null) {
+            currentProgram.showExceptionLogic(msg,needRetry);
+        }
+    }
+
+
     private void checkVisionProgram() {
         setClickable(programMap.size() > 0);
     }

@@ -505,9 +505,6 @@ function show(args)
     if (args == nil or args.data == nil or vote.luaview ~= nil) then
         return
     end
-    local width,height = Applet.appletSize()
-
-    print("vision width & height : ",width,height)
 
     vote.id = args.data.id
     vote.launchPlanId = args.data.launchPlanId

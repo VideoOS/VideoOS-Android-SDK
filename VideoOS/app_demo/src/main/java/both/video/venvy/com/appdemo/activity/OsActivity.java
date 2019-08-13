@@ -57,7 +57,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
 //
 //                }
 //            });
-            Toast.makeText(this, "start service", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
             mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String, String>(), new IServiceCallback() {
 
                 @Override
@@ -70,6 +70,10 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
                     VenvyLog.d("onFailToCompleteForService");
                 }
             });
+        } else if (R.id.bt_os_setting_close_window == ID) {
+            if (mVideoPlusView == null)
+                return;
+            mVideoPlusView.closeInfoView();
         }
 
     }

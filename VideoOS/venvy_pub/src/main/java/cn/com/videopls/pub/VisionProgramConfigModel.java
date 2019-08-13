@@ -1,9 +1,9 @@
 package cn.com.videopls.pub;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,9 +18,16 @@ import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.observer.ObservableManager;
+import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
+import cn.com.videopls.pub.exception.DownloadException;
+
+import static cn.com.venvy.App.getContext;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
 
 /**
  * Created by Lucas on 2019/8/1.
@@ -62,6 +69,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
         data.put("data", VenvyAesUtil.encrypt(AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform()), new JSONObject(paramBody).toString()));
         return data;
     }
+
     @Override
     public boolean needCheckResponseValid() {
         return false;
@@ -81,7 +89,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                         }
                     }
                     // 解密返回数据
-                   final  JSONObject value = new JSONObject(response.getResult());
+                    final JSONObject value = new JSONObject(response.getResult());
                     String encryptData = value.optString("encryptData");
                     if (TextUtils.isEmpty(encryptData)) {
                         VisionProgramConfigModel.VisionProgramConfigCallback callback = getCallback();
@@ -94,17 +102,17 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
 
                     JSONArray fileListArray = decryptData.optJSONArray("luaList");// lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
-                   final  String template = decryptData.optString("template"); //  入口lua文件名称
+                    final String template = decryptData.optString("template"); //  入口lua文件名称
                     String resCode = decryptData.optString("resCode"); //  应答码  00-成功  01-失败
 
-                    if(resCode.equalsIgnoreCase("00")){
+                    if (resCode.equalsIgnoreCase("00")) {
                         if (mDownLuaUpdate == null) {
                             mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
                                 @Override
                                 public void updateComplete(boolean isUpdateByNetWork) {
                                     VisionProgramConfigCallback callback = getCallback();
                                     if (callback != null) {
-                                        callback.downComplete(decryptData.toString(),template,isUpdateByNetWork);
+                                        callback.downComplete(decryptData.toString(), template, isUpdateByNetWork);
                                     }
                                 }
 
@@ -112,13 +120,19 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                 public void updateError(Throwable t) {
                                     VisionProgramConfigCallback callback = getCallback();
                                     if (callback != null) {
-                                        callback.downError(new Exception("download mini app  down lua failed"));
+                                        callback.downError(new DownloadException());
                                     }
                                 }
                             });
                         }
                         mDownLuaUpdate.startDownloadLuaFile(fileListArray);
-                    }else{
+                    } else if (resCode.equalsIgnoreCase("01")) {
+                        // 小程序下架不可用
+                        Bundle bundle = new Bundle();
+                        bundle.putString(CONSTANT_MSG, getContext().getString(R.string.errorDesc));
+                        bundle.putBoolean(CONSTANT_NEED_RETRY, false);
+                        ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
+                    } else {
                         VenvyLog.e(decryptData.optString("resMsg")); //  应答信息
                     }
 
@@ -153,7 +167,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
     }
 
     public interface VisionProgramConfigCallback {
-        void downComplete(String originData,String entranceLua,boolean isUpdateByNet);
+        void downComplete(String originData, String entranceLua, boolean isUpdateByNet);
 
         void downError(Throwable t);
     }

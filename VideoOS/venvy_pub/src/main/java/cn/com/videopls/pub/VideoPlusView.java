@@ -104,6 +104,19 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
     }
 
+
+    /**
+     * 展示视联网小程序异常情况
+     * @param msg
+     * @param needRetry
+     */
+    public void showExceptionLogic(String msg,boolean needRetry){
+        if(programViewB != null){
+            programViewB.showExceptionLogic(msg,needRetry);
+        }
+
+    }
+
     /**
      * clear指定方向的视联网小程序
      * @param orientationType
@@ -134,8 +147,6 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
             programViewB.setVideoOSAdapter(adapter);
         }
     }
-
-    public abstract T initVideoPlusController();
 
     public void start() {
         if (programViewA != null) {
