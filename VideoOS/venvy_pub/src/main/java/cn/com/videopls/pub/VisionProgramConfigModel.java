@@ -130,8 +130,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                 }
                             });
                         }
-//                        mDownLuaUpdate.startDownloadLuaFile(fileListArray);
-                        getCallback().downError(new DownloadException());
+                        mDownLuaUpdate.startDownloadLuaFile(fileListArray);
                     } else if (resCode.equalsIgnoreCase("01")) {
                         // 小程序下架不可用
                         Bundle bundle = new Bundle();
