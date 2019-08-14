@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -25,9 +24,7 @@ import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.router.IRouterCallback;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
-
-import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
-import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
+import cn.com.venvy.common.utils.VenvyLog;
 
 /**
  * Created by Lucas on 2019/7/31.
@@ -97,17 +94,17 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         inflate(getContext(), R.layout.video_program_tool, this);
         rlTitleBar = findViewById(R.id.rlTitleBar);
         rlTitleBar.setAlpha(0.9f);
-        // TODO :  for test
-        rlTitleBar.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "error~~", Toast.LENGTH_SHORT).show();
-                Bundle bundle = new Bundle();
-                bundle.putString(CONSTANT_MSG, getContext().getString(R.string.networkBusy));
-                bundle.putBoolean(CONSTANT_NEED_RETRY, false);
-                ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
-            }
-        });
+//        // TODO :  for test
+//        rlTitleBar.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(getContext(), "error~~", Toast.LENGTH_SHORT).show();
+//                Bundle bundle = new Bundle();
+//                bundle.putString(CONSTANT_MSG, getContext().getString(R.string.networkBusy));
+//                bundle.putBoolean(CONSTANT_NEED_RETRY, false);
+//                ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
+//            }
+//        });
 
         loadingContent = findViewById(R.id.loadingContent);
         retryContent = findViewById(R.id.disConnectWifiContent);
@@ -137,14 +134,7 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         ivBack.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 优先处理异常视图，再考虑lua的back
-                if (errorContent.getVisibility() == VISIBLE) {
-                    errorContent.setVisibility(GONE);
-                } else if (retryContent.getVisibility() == VISIBLE) {
-                    retryContent.setVisibility(GONE);
-                } else {
-                    videoProgramView.removeTopView();
-                }
+                videoProgramView.removeTopView();
                 checkBackDisplayLogic();
             }
         });
@@ -191,7 +181,7 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
 
     public void showExceptionLogic(String msg, boolean needRetry) {
-
+        VenvyLog.d("showExceptionLogic : " + msg + "  " + needRetry);
         if (needRetry) {
             retryContent.setVisibility(VISIBLE);
             loadingContent.setVisibility(GONE);
@@ -206,7 +196,7 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         checkBackDisplayLogic();
     }
 
-    public void setTitle(String title){
+    public void setTitle(final String title) {
         tvTitle.setText(title);
     }
 
@@ -221,27 +211,25 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
     private void checkBackDisplayLogic() {
         int luaViewCount = videoProgramView.getAllOfLuaView();
-        if (luaViewCount > 1) {
-            ivBack.setVisibility(VISIBLE);
-        } else if (luaViewCount == 1 && (errorContent.getVisibility() == VISIBLE || retryContent.getVisibility() == VISIBLE)) {
-            ivBack.setVisibility(VISIBLE);
-        } else {
-            ivBack.setVisibility(GONE);
-        }
+        VenvyLog.d("checkBackDisplayLogic : " + luaViewCount);
+        ivBack.setVisibility(luaViewCount > 1 ? VISIBLE : GONE);
     }
 
 
     @Override
     public void arrived() {
+        VenvyLog.d("arrived called");
         // lua 加载成功回调
         loadingContent.setVisibility(GONE);
         errorContent.setVisibility(GONE);
         retryContent.setVisibility(GONE);
         cancelLoadingAnimation();
+        checkBackDisplayLogic();
     }
 
     @Override
     public void lost() {
+        VenvyLog.d("lost called");
         // 需要判断是否是入口小程序失败，还是小程序之间内部跳转失败
         if (videoProgramView.getAllOfLuaView() > 0) {
             // 首次视联网小程序加载失败

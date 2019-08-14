@@ -51,7 +51,7 @@ public class UDApplet extends BaseLuaTable {
         @Override
         public Varargs invoke(Varargs args) {
             int fixIndex = VenvyLVLibBinder.fixIndex(args);
-            LuaValue target = args.arg(fixIndex + 1);  //key
+            LuaValue target = args.arg(fixIndex + 2);  //key
             String msg = luaValueToString(target);
 
             Bundle bundle = new Bundle();
@@ -68,13 +68,12 @@ public class UDApplet extends BaseLuaTable {
         @Override
         public Varargs invoke(Varargs args) {
             int fixIndex = VenvyLVLibBinder.fixIndex(args);
-            LuaValue target = args.arg(fixIndex + 1);  //key
+            LuaValue target = args.arg(fixIndex + 2);  //key
             String msg = luaValueToString(target);
             Bundle bundle = new Bundle();
             bundle.putString(CONSTANT_MSG, msg);
             bundle.putBoolean(CONSTANT_NEED_RETRY, false);
             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
-
             return LuaValue.valueOf(msg);
         }
     }

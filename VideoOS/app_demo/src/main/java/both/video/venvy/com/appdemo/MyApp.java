@@ -7,6 +7,7 @@ import android.support.multidex.MultiDex;
 import com.taobao.luaview.util.ToastUtil;
 
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
+import cn.com.venvy.Config;
 import cn.com.venvy.common.debug.DebugStatus;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.videopls.pub.VideoPlus;

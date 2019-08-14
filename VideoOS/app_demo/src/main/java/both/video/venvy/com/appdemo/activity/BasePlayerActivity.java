@@ -520,6 +520,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
     protected void startVisionModeAnim(String assetName) {
         imgSvga.setVisibility(View.VISIBLE);
+        imgSvga.clearAnimation();
         svgaParser.parse(assetName, new SVGAParser.ParseCompletion() {
             @Override
             public void onComplete(@NotNull SVGAVideoEntity svgaVideoEntity) {

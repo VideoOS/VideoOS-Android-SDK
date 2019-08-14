@@ -598,9 +598,9 @@ public abstract class VideoPlusController implements VenvyObserver {
 
             @Override
             public void downError(Throwable t) {
+                VenvyLog.e("getMiniAppConf downError");
                 //网络不通，请求不到小程序内容 | 网络请求错误，为底层通讯错误如,404,500等
                 Bundle bundle = new Bundle();
-
                 if (t instanceof DownloadException) {
                     bundle.putString(CONSTANT_MSG, getContext().getString(R.string.loadMiniAppError));
                 } else {

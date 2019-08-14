@@ -11,6 +11,7 @@ import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
  * Created by Lucas on 2019/8/2.
@@ -30,7 +31,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
 
 
     @Override
-    public void notifyChanged(VenvyObservable observable, String tag, Bundle bundle) {
+    public void notifyChanged(VenvyObservable observable, String tag, final Bundle bundle) {
         switch (tag) {
             case VenvyObservableTarget.TAG_LAUNCH_VISION_PROGRAM: {
                 // 创建一个视联网小程序
@@ -85,18 +86,28 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 return;
             }
             case VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC: {
-                String msg = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_MSG);
-                boolean needRetry = bundle.getBoolean(VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY);
-                if (videoPlusView != null) {
-                    videoPlusView.showExceptionLogic(msg,needRetry);
-                }
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String msg = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_MSG);
+                        boolean needRetry = bundle.getBoolean(VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY);
+                        if (videoPlusView != null) {
+                            videoPlusView.showExceptionLogic(msg,needRetry);
+                        }
+                    }
+                });
                 return;
             }
             case VenvyObservableTarget.TAG_UPDATE_VISION_TITLE:{
-                String title = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TITLE);
-                if (videoPlusView != null) {
-                    videoPlusView.setCurrentVisionProgramTitle(title);
-                }
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String title = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TITLE);
+                        if (videoPlusView != null) {
+                            videoPlusView.setCurrentVisionProgramTitle(title);
+                        }
+                    }
+                });
                 return;
             }
         }
