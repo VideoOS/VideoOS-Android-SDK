@@ -27,7 +27,9 @@ public class VenvyObservableTarget {
     // 添加一个lua视图到当前视联网小程序容器上
     public static final String TAG_ADD_LUA_SCRIPT_TO_VISION_PROGRAM = "notifyAddLuaScriptToContainer";
     // 展示视联网小程序异常处理逻辑
-    public static final String TAG_SHOW_VISION_ERROR_LOGIC  = "notifyVisionProgramErrorLogic";
+    public static final String TAG_SHOW_VISION_ERROR_LOGIC = "notifyVisionProgramErrorLogic";
+    // 更新视联网小程序Title
+    public static final String TAG_UPDATE_VISION_TITLE = "notifyUpdateVisionProgramTitle";
 
     public static class Constant {
         public static final int CONSTANT_LANDSCAPE = 1;
@@ -36,6 +38,7 @@ public class VenvyObservableTarget {
         public static final String CONSTANT_SCREEN_CHANGE = "screen_changed";
         public static final String CONSTANT_MSG = "msg";
         public static final String CONSTANT_NEED_RETRY = "needRetry";
+        public static final String CONSTANT_TITLE = "title";
     }
 
 }

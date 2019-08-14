@@ -25,6 +25,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_SCREEN_CHANGED, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, this);
+        ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, this);
     }
 
 
@@ -91,6 +92,13 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 }
                 return;
             }
+            case VenvyObservableTarget.TAG_UPDATE_VISION_TITLE:{
+                String title = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TITLE);
+                if (videoPlusView != null) {
+                    videoPlusView.setCurrentVisionProgramTitle(title);
+                }
+                return;
+            }
         }
     }
 
@@ -100,6 +108,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_SCREEN_CHANGED, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, this);
+        ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, this);
     }
 
     public boolean isHorizontal() {

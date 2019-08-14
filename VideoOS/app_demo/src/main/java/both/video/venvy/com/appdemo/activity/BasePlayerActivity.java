@@ -8,15 +8,20 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.opensource.svgaplayer.SVGACallback;
+import com.opensource.svgaplayer.SVGAImageView;
+import com.opensource.svgaplayer.SVGAParser;
+import com.opensource.svgaplayer.SVGAVideoEntity;
 import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -53,10 +58,15 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     protected CheckBox cbShowStatusBar; // 控制是否显示状态栏
     private boolean isFirstPlayVideo = true;
     protected TextView tvVideoId; // 当前VideoId
+    protected SVGAImageView imgSvga;
 
+    private SVGAParser svgaParser;
     private int statusBarHeight;
     private int hideStatusBarHeight = -1;// 状态栏隐藏时的高度
     private int existStatusBarHeight = -1;// 有状态栏时的高度
+
+    private boolean isVisionMode = false; // 是否是视联网模式
+    private boolean isAutoLaunchVisionMode = true;// 是否自动打开视联网模式
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +77,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         mRootView = (ViewGroup) LayoutInflater.from(this)
                 .inflate(R.layout.activity_base_player, null);
         setContentView(mRootView);
-
+        svgaParser = new SVGAParser(this);
         // Step1 : 初始化VideoOsView和播放器相关控件
         initViews();
 
@@ -124,6 +134,8 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         tvVideoId = mRootView.findViewById(R.id.tvVideoId);
         mVideoPlayer = mRootView.findViewById(R.id.player);
         mVideoPlusView = mRootView.findViewById(R.id.os_view);
+        imgSvga = mRootView.findViewById(R.id.imgSvga);
+        imgSvga.setVisibility(View.GONE);
     }
 
     /**
@@ -189,7 +201,35 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         mVideoPlayer.getFullscreenButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOrientationUtils.resolveByClick();
+                if (isHorizontal()) {
+                    // 横屏则处理视联网模式开关
+                    if (isVisionMode) {
+                        mVideoPlusView.stopService(ServiceType.ServiceTypeVideoMode);
+                        isVisionMode = false;
+                        updateVisionModeStatus();
+                        startVisionModeAnim("scan_off.svga");
+                    } else {
+                        mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String, String>(), new IServiceCallback() {
+
+                            @Override
+                            public void onCompleteForService() {
+                                VenvyLog.d("onCompleteForService");
+                                isVisionMode = true;
+                                updateVisionModeStatus();
+                                startVisionModeAnim("scan_on.svga");
+                            }
+
+                            @Override
+                            public void onFailToCompleteForService(Throwable throwable) {
+                                VenvyLog.d("onFailToCompleteForService");
+                            }
+                        });
+                    }
+
+                } else {
+                    // 竖屏处理屏幕方向切换
+                    mOrientationUtils.resolveByClick();
+                }
             }
         });
         //是否可以滑动调整
@@ -198,7 +238,13 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         mVideoPlayer.getBackButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                if (isHorizontal()) {
+                    // 横屏处理 切回竖屏
+                    mOrientationUtils.resolveByClick();
+                } else {
+                    // 竖屏处理返回
+                    onBackPressed();
+                }
             }
         });
         // 在播放器的回调用启动OsView
@@ -399,6 +445,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         if (mVideoPlayer == null) {
             return;
         }
+
+        if(imgSvga.isAnimating()){
+            // 正在执行动画的过程中如果触发了屏幕切换，则中断动态
+            hideSvgaImg();
+        }
+
         ViewGroup.LayoutParams params = mVideoPlayer.getLayoutParams();
         if (params == null) {
             params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -406,6 +458,10 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         }
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // 手机竖屏
+            hideSvgaImg();
+            mVideoPlayer.getFullscreenButton().setImageResource(R.drawable.video_enlarge);
+
+
             cbShowStatusBar.setVisibility(View.VISIBLE);
             tvVideoId.setVisibility(View.VISIBLE);
 
@@ -420,6 +476,10 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             }
         } else {
             // 手机横屏
+
+            tryToLaunchVisionMode();
+
+
             tvVideoId.setVisibility(View.GONE);
             // 竖屏状态下获得的高度不包含状态栏，切换到横屏需要更新一下VideoPlayerSize的高
             mAdapter.getVideoPlayerSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()));
@@ -435,23 +495,64 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * TODO :  未来还需要考虑底部虚拟导航栏的case
-     *
-     * @param rootView
-     */
-    private void calculateHeight(final View rootView) {
-        rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                if (hideStatusBarHeight <= 0) {
-                    hideStatusBarHeight = rootView.getMeasuredHeight();
-                    existStatusBarHeight = hideStatusBarHeight + statusBarHeight;
-//                    VenvyLog.w("计算高度 ： " + hideStatusBarHeight + "  - " + existStatusBarHeight);
-                }
+    private boolean isHorizontal() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
 
-                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
-                return true;
+    private void hideSvgaImg() {
+        imgSvga.clearAnimation();
+        imgSvga.setVisibility(View.GONE);
+    }
+
+
+    private void tryToLaunchVisionMode() {
+        if (!isVisionMode && isAutoLaunchVisionMode) {
+            mVideoPlayer.getFullscreenButton().performClick();
+            isAutoLaunchVisionMode = false;
+        }else{
+            updateVisionModeStatus();
+        }
+    }
+
+    private void updateVisionModeStatus() {
+        mVideoPlayer.getFullscreenButton().setImageResource(isVisionMode ? R.mipmap.vision_mode_on : R.mipmap.vision_mode_off);
+    }
+
+    protected void startVisionModeAnim(String assetName) {
+        imgSvga.setVisibility(View.VISIBLE);
+        svgaParser.parse(assetName, new SVGAParser.ParseCompletion() {
+            @Override
+            public void onComplete(@NotNull SVGAVideoEntity svgaVideoEntity) {
+                imgSvga.setVideoItem(svgaVideoEntity);
+                imgSvga.setLoops(1); // 动画只执行一次
+                imgSvga.startAnimation();
+
+                imgSvga.setCallback(new SVGACallback() {
+                    @Override
+                    public void onPause() {
+
+                    }
+
+                    @Override
+                    public void onFinished() {
+                        hideSvgaImg();
+                    }
+
+                    @Override
+                    public void onRepeat() {
+
+                    }
+
+                    @Override
+                    public void onStep(int i, double v) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onError() {
+                imgSvga.setVisibility(View.GONE);
             }
         });
     }
