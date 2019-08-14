@@ -206,6 +206,10 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         checkBackDisplayLogic();
     }
 
+    public void setTitle(String title){
+        tvTitle.setText(title);
+    }
+
 
     @Override
     public void notifyChanged(VenvyObservable observable, String tag, Bundle bundle) {
@@ -217,7 +221,7 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
     private void checkBackDisplayLogic() {
         int luaViewCount = videoProgramView.getAllOfLuaView();
-        if (luaViewCount > 1 || (errorContent.getVisibility() == VISIBLE || retryContent.getVisibility() == VISIBLE)) {
+        if (luaViewCount > 1) {
             ivBack.setVisibility(VISIBLE);
         } else if (luaViewCount == 1 && (errorContent.getVisibility() == VISIBLE || retryContent.getVisibility() == VISIBLE)) {
             ivBack.setVisibility(VISIBLE);

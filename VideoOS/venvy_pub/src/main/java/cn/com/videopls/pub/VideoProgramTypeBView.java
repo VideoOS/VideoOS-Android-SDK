@@ -166,6 +166,13 @@ public class VideoProgramTypeBView extends FrameLayout {
     }
 
 
+    public void setCurrentProgramTitle(String title){
+        if (currentProgram != null) {
+            currentProgram.setTitle(title);
+        }
+    }
+
+
     private void checkVisionProgram() {
         setClickable(programMap.size() > 0);
     }

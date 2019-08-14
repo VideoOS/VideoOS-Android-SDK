@@ -117,6 +117,12 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     }
 
+    public void setCurrentVisionProgramTitle(String title){
+        if(programViewB != null){
+            programViewB.setCurrentProgramTitle(title);
+        }
+    }
+
     /**
      * clear指定方向的视联网小程序
      * @param orientationType

@@ -28,6 +28,7 @@ import cn.com.videopls.pub.exception.DownloadException;
 import static cn.com.venvy.App.getContext;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_TITLE;
 
 /**
  * Created by Lucas on 2019/8/1.
@@ -104,6 +105,10 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     JSONArray fileListArray = decryptData.optJSONArray("luaList");// lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
                     final String template = decryptData.optString("template"); //  入口lua文件名称
                     String resCode = decryptData.optString("resCode"); //  应答码  00-成功  01-失败
+                    JSONObject displayObj = decryptData.optJSONObject("display");
+                    final String nativeTitle = displayObj.optString("navTitle");
+                    updateVisionTitle(nativeTitle);
+
 
                     if (resCode.equalsIgnoreCase("00")) {
                         if (mDownLuaUpdate == null) {
@@ -112,7 +117,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                 public void updateComplete(boolean isUpdateByNetWork) {
                                     VisionProgramConfigCallback callback = getCallback();
                                     if (callback != null) {
-                                        callback.downComplete(decryptData.toString(), template, isUpdateByNetWork);
+                                        callback.downComplete(nativeTitle, template, isUpdateByNetWork);
                                     }
                                 }
 
@@ -166,8 +171,16 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
         };
     }
 
+    private void updateVisionTitle(String title) {
+        if (TextUtils.isEmpty(title)) return;
+        Bundle bundle = new Bundle();
+        bundle.putString(CONSTANT_TITLE, title);
+        ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, bundle);
+    }
+
+
     public interface VisionProgramConfigCallback {
-        void downComplete(String originData, String entranceLua, boolean isUpdateByNet);
+        void downComplete(String barTitle, String entranceLua, boolean isUpdateByNet);
 
         void downError(Throwable t);
     }
