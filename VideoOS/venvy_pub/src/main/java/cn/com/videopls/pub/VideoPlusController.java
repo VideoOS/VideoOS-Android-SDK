@@ -40,6 +40,7 @@ import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.exception.DownloadException;
+import cn.com.videopls.pub.track.ChainTrackModel;
 import cn.com.videopls.pub.view.VideoOSLuaView;
 
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
@@ -118,7 +119,7 @@ public abstract class VideoPlusController implements VenvyObserver {
      * @param params
      * @param callback
      */
-    public void startService(ServiceType serviceType, final HashMap<String, String> params,
+    public void startService(final ServiceType serviceType, final HashMap<String, String> params,
                              final IServiceCallback callback) {
         if (!VenvyAPIUtil.isSupport(16)) {
             Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
@@ -178,6 +179,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                 }
             }
         });
+        serviceTypeVideoModeTrack(serviceType, String.valueOf(1));
     }
 
     public void reResumeService(ServiceType serviceType) {
@@ -215,6 +217,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     public void stopService(ServiceType serviceType) {
+        serviceTypeVideoModeTrack(serviceType, String.valueOf(0));
         ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
         if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
             return;
@@ -235,6 +238,9 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
         if (mQueryAdsModel != null) {
             mQueryAdsModel.destroy();
+        }
+        if (mChainTrackModel != null) {
+            mChainTrackModel.destroy();
         }
         if (mQueryAdsArray != null) {
             mQueryAdsArray.clear();
@@ -537,6 +543,22 @@ public abstract class VideoPlusController implements VenvyObserver {
         return new JSONObject(eventParams).toString();
     }
 
+    private ChainTrackModel mChainTrackModel;
+
+    /***
+     *
+     * @param serviceType
+     * @param onOrOff 0:关闭 1:开启
+     */
+    private void serviceTypeVideoModeTrack(ServiceType serviceType, String onOrOff) {
+        if (serviceType != ServiceType.ServiceTypeVideoMode) {
+            return;
+        }
+        if (mChainTrackModel == null) {
+            mChainTrackModel = new ChainTrackModel(mPlatform, onOrOff, null);
+        }
+        mChainTrackModel.startRequest();
+    }
 
     public void startVisionProgram(final String appletId, final String data, final int type, final IRouterCallback callback) {
         if (!VenvyAPIUtil.isSupport(16)) {
