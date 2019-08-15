@@ -106,8 +106,11 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     final String template = decryptData.optString("template"); //  入口lua文件名称
                     String resCode = decryptData.optString("resCode"); //  应答码  00-成功  01-失败
                     JSONObject displayObj = decryptData.optJSONObject("display");
-                    final String nativeTitle = displayObj.optString("navTitle");
-                    updateVisionTitle(nativeTitle);
+
+                    if (displayObj != null) {
+                        final String nativeTitle = displayObj.optString("navTitle");
+                        updateVisionTitle(nativeTitle);
+                    }
 
 
                     if (resCode.equalsIgnoreCase("00")) {
@@ -117,7 +120,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                 public void updateComplete(boolean isUpdateByNetWork) {
                                     VisionProgramConfigCallback callback = getCallback();
                                     if (callback != null) {
-                                        callback.downComplete(nativeTitle, template, isUpdateByNetWork);
+                                        callback.downComplete(template, isUpdateByNetWork);
                                     }
                                 }
 
@@ -180,7 +183,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
 
     public interface VisionProgramConfigCallback {
-        void downComplete(String barTitle, String entranceLua, boolean isUpdateByNet);
+        void downComplete(String entranceLua, boolean isUpdateByNet);
 
         void downError(Throwable t);
     }

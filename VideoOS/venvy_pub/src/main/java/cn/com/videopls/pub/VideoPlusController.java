@@ -575,7 +575,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
             @Override
-            public void downComplete(String barTitle, final String entranceLua, boolean isUpdateByNet) {
+            public void downComplete( final String entranceLua, boolean isUpdateByNet) {
                 VenvyLog.d("vision program downComplete : " + isUpdateByNet + "   - " + entranceLua);
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override

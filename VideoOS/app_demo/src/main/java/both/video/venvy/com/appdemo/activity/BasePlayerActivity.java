@@ -292,7 +292,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             public void onClickStop(String url, Object... objects) {
                 // 暂停广告
                 VenvyLog.i("videoCallBack onClickStop ----");
-                mVideoPlusView.startService(ServiceType.ServiceTypePictureAd,
+                mVideoPlusView.startService(ServiceType.ServiceTypePauseAd,
                         new HashMap<String, String>(), null);
             }
 
@@ -305,7 +305,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             public void onClickResume(String url, Object... objects) {
                 VenvyLog.i("videoCallBack onClickResume ----");
                 // 关闭暂停广告
-                mVideoPlusView.stopService(ServiceType.ServiceTypePictureAd);
+                mVideoPlusView.stopService(ServiceType.ServiceTypePauseAd);
             }
 
             @Override
