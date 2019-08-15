@@ -51,7 +51,7 @@ public class VideoPlusZipUpdate {
     public void destroy() {
         VenvyAsyncTaskUtil.cancel(PARSE_LOCAL_ZIP);
         VenvyAsyncTaskUtil.cancel(PARSE_UNZIP);
-        if (mDownloadTaskRunner == null) {
+        if (mDownloadTaskRunner != null) {
             mDownloadTaskRunner.destroy();
         }
         mUpdateCallback = null;
