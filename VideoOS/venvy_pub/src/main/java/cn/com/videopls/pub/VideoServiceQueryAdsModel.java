@@ -28,7 +28,7 @@ import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
  */
 
 public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
-    private static final String SERVICE_QUERYALL_ADS_URL_MOCK = Config.HOST_VIDEO_OS
+    private static final String SERVICE_QUERYALL_ADS_URL = Config.HOST_VIDEO_OS
             + "/api/queryAllAds";
     private ServiceQueryAdsCallback mQueryAdsCallback;
     private VideoPlusLuaUpdate mDownLuaUpdate;
@@ -171,7 +171,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-        return HttpRequest.post(SERVICE_QUERYALL_ADS_URL_MOCK, createBody(mQueryAdsParams));
+        return HttpRequest.post(SERVICE_QUERYALL_ADS_URL, createBody(mQueryAdsParams));
     }
 
     private Map<String, String> createBody(Map<String, String> params) {
