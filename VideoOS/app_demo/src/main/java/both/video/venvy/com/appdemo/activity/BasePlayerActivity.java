@@ -202,7 +202,9 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isHorizontal()) {
-                    // 横屏则处理视联网模式开关
+                    // 横屏则处理视联网模式开关,如果正常动画中则不处理这次点击事件，防止快速连续拨动开关
+                    if(imgSvga.isAnimating()) return;
+
                     if (isVisionMode) {
                         mVideoPlusView.stopService(ServiceType.ServiceTypeVideoMode);
                         isVisionMode = false;
