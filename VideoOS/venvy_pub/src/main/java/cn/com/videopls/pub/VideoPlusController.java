@@ -554,9 +554,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (serviceType != ServiceType.ServiceTypeVideoMode) {
             return;
         }
-        if (mChainTrackModel == null) {
-            mChainTrackModel = new ChainTrackModel(mPlatform, onOrOff, null);
-        }
+        mChainTrackModel = new ChainTrackModel(mPlatform, onOrOff, null);
         mChainTrackModel.startRequest();
     }
 
