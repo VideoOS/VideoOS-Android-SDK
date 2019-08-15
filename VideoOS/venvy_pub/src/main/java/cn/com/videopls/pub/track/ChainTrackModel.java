@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
@@ -16,7 +15,6 @@ import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
-import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 import cn.com.videopls.pub.VideoPlusBaseModel;
@@ -122,10 +120,7 @@ public class ChainTrackModel extends VideoPlusBaseModel {
         if (!TextUtils.isEmpty(mOnOff)) {
             bodyParams.put(ON_OR_OFF, mOnOff);
         }
-        HashMap<String, String> dataParams = new HashMap<>();
-        dataParams.put("data", VenvyAesUtil.encrypt(AppSecret.getAppSecret(getPlatform()),
-                AppSecret.getAppSecret(getPlatform()), new JSONObject(bodyParams).toString()));
-        return dataParams;
+        return bodyParams;
     }
 
     public interface ChainTrackCallback {
