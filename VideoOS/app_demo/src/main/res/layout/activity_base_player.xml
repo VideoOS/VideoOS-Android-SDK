@@ -8,13 +8,27 @@
         android:id="@+id/player"
         android:layout_width="match_parent"
         android:layout_height="@dimen/activity_player_height"/>
+    <TextView
+        android:id="@+id/tvVideoId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        android:text="http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4"
+        />
+
     <CheckBox
         android:id="@+id/cbShowStatusBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="显示状态栏"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="280dp"
         android:visibility="visible"
         />
     <cn.com.videopls.pub.os.VideoOsView
@@ -22,4 +36,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+    <com.opensource.svgaplayer.SVGAImageView
+        android:id="@+id/imgSvga"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>

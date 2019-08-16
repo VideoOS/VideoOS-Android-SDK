@@ -8,7 +8,6 @@
     <Button
         android:id="@+id/bt_os_setting_mall"
         style="@style/style_home_setting_menu_item"
-        android:layout_marginBottom="8dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="0dp"
         android:text="@string/home_setting_item_local"
@@ -21,7 +20,6 @@
         android:id="@+id/iv_os_setting"
         android:layout_width="@dimen/home_setting_menu"
         android:layout_height="@dimen/home_setting_menu"
-        android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="@dimen/os_setting_iv_margin"
         android:background="@drawable/shape_home_setting_menu_bg"
@@ -32,7 +30,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="@+id/guideline9"
         app:layout_constraintRight_toRightOf="parent"
-        android:visibility="gone"
+        android:visibility="invisible"
         />
 
     <android.support.constraint.Guideline
@@ -45,7 +43,6 @@
     <Button
         android:id="@+id/bt_os_setting_close_window"
         style="@style/style_home_setting_menu_item"
-        android:layout_marginBottom="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="0dp"
         android:text="关闭"

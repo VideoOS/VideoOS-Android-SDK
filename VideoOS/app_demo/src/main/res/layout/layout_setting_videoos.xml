@@ -22,7 +22,7 @@
         android:id="@+id/tv_layout_setting_app_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setting_layout_creative_name"
+        android:text="@string/setting_layout_video_path"
         app:layout_constraintLeft_toLeftOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/guideline2" />
 

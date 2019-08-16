@@ -5,8 +5,8 @@ import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.taobao.luaview.util.AndroidUtil;
 import com.taobao.luaview.util.LuaUtil;
 
 import org.luaj.vm2.LuaValue;
@@ -41,6 +41,10 @@ public class LVViewManagerPlugin {
                 if (!TextUtils.isEmpty(text)) {
                     Paint paint = new Paint();
                     if (size != null) {
+                        float density = AndroidUtil.getDensity(App.getContext());
+                        if (density < 3) {
+                            size = size - 2;
+                        }
                         paint.setTextSize(size);
                     }
                     float text_width = paint.measureText(String.valueOf(text));//得到总体长度
@@ -76,10 +80,10 @@ public class LVViewManagerPlugin {
                         mathWidth = width;
                     }
                     int charNumInThisLine = paint.breakText(text, 0, text.length(), true, mathWidth, null);
-                    if(charNumInThisLine>=text.length()){
+                    if (charNumInThisLine >= text.length()) {
                         mathHeight = (float) (hightMeasureSpec * (Math.ceil(text.length() / charNumInThisLine)));
-                    }else{
-                        mathHeight = (float) (hightMeasureSpec * (Math.ceil(text.length() / charNumInThisLine)+1));
+                    } else {
+                        mathHeight = (float) (hightMeasureSpec * (Math.ceil(text.length() / charNumInThisLine) + 1));
                     }
                 }
                 LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(mathWidth), LuaValue.valueOf(mathHeight)};

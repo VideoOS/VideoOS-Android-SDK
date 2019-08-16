@@ -33,7 +33,7 @@
     <string name="setting_apply">应用配置</string>
     <string name="toast_config_error">获取失败</string>
     <string name="setting_layout_app_id">AppId</string>
-    <string name="setting_layout_video_path">url</string>
+    <string name="setting_layout_video_path">video url</string>
     <string name="config_failed">配置未生效</string>
     <string name="config_success">设置成功</string>
     <string name="Home_progress_title">正在获取配置...</string>

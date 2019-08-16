@@ -46,6 +46,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     private StandardVideoOSPlayer mPlayer;
     private boolean isLive; // 是否为直播
 
+    private WedgeListener wedgeListener;
     private IOnWebViewDialogDismissCallback mDismissCallback;
 
     // 本例中为了演示状态栏的影响，故通过getVideoPlayerSize()供UI层支持修改内容区Size（考虑状态栏，异形屏等），确保内容区始终为屏幕宽高
@@ -60,6 +61,9 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         this.isLive = isLive;
     }
 
+    public void setWedgeListener(WedgeListener wedgeListener) {
+        this.wedgeListener = wedgeListener;
+    }
     public void setIOnWebViewDialogDismissCallback(IOnWebViewDialogDismissCallback callback) {
         mDismissCallback = callback;
     }
@@ -69,7 +73,10 @@ public class VideoOsAdapter extends VideoPlusAdapter {
      *
      * @return
      */
-    public VideoPlayerSize getVideoPlayerSize() {
+    public VideoPlayerSize getVideoPlayerSize(int fullScreenHeight) {
+        if (fullScreenHeight > 0) {
+            videoPlayerSize.mFullScreenContentHeight = fullScreenHeight;
+        }
         return videoPlayerSize;
     }
 
@@ -191,7 +198,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
      */
     @Override
     public WedgeListener buildWedgeListener() {
-        return new WedgeListener() {
+        return wedgeListener != null ? wedgeListener : new WedgeListener() {
             @Override
             public void goBack() {
 
@@ -208,7 +215,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             @Override
             public void start() {
                 if (mPlayer != null) {
-                    mPlayer.onVideoResume();
+                    mPlayer.onVideoResume(false);
                 }
             }
 
@@ -221,8 +228,10 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
             @Override
             public MediaStatus getCurrentMediaStatus() {
-                return mPlayer == null ? MediaStatus.PAUSE : mPlayer.isInPlayingState() ?
-                        MediaStatus.PLAYING : MediaStatus.PAUSE;
+                if (mPlayer == null) {
+                    return MediaStatus.PAUSE;
+                }
+                return mPlayer.getCurrentState() == GSYVideoView.CURRENT_STATE_PLAYING ? MediaStatus.PLAYING : MediaStatus.PAUSE;
             }
 
             /**
@@ -231,6 +240,8 @@ public class VideoOsAdapter extends VideoPlusAdapter {
              */
             @Override
             public long getCurrentPosition() {
+//                long position = mPlayer != null ? mPlayer.getCurrentPositionWhenPlaying() : -1;
+//                VenvyLog.w("video position is : "+position);
                 return mPlayer != null ? mPlayer.getCurrentPositionWhenPlaying() : -1;
             }
 
@@ -268,14 +279,26 @@ public class VideoOsAdapter extends VideoPlusAdapter {
                     // 视频未开始播放, 前贴结束后开始播放
                     mPlayer.startPlayLogic();
                 } else {
-                    mPlayer.onVideoResume();
+                    mPlayer.onVideoResume(false);
                 }
                 break;
             //平台方打开H5事件
             case ACTION_OPEN_URL:
+//                if (TextUtils.isEmpty(url))
+//                    return;
+//                loadUrl(url);
                 if (TextUtils.isEmpty(url))
                     return;
-                loadUrl(url);
+                String infoUrl = url;
+                if (infoUrl.contains("cv")) {   //本地播放器切换视频源
+                    String[] split = infoUrl.split("\\|");
+                    String videoUrl = split[1];
+                    mPlayer.setUp(videoUrl, true, "");
+                    mPlayer.setPlayTag(videoUrl);
+                    mPlayer.startPlayLogic();
+                } else {  //H5播放
+                    loadUrl(infoUrl);
+                }
                 break;
             case ACTION_GET_ITEM:
 

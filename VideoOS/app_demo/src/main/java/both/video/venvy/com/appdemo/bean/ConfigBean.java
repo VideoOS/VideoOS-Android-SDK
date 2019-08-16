@@ -7,6 +7,7 @@ package both.video.venvy.com.appdemo.bean;
 public class ConfigBean {
     private String creativeName;
     private String videoId;
+    private String videoUrl;
     private String appKey;
     private String appSecret;
 
@@ -48,5 +49,54 @@ public class ConfigBean {
 
     public void setAppSecret(String appSecret) {
         this.appSecret = appSecret;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+
+    public static class Builder {
+
+        private ConfigBean bean;
+
+        public Builder() {
+            bean = new ConfigBean();
+        }
+
+        public Builder setAppKey(String appKey) {
+            bean.setAppKey(appKey);
+            return this;
+        }
+
+        public Builder setAppSecret(String appSecret) {
+            bean.setAppSecret(appSecret);
+            return this;
+        }
+
+        public Builder setVideoId(String videoId) {
+            bean.setVideoId(videoId);
+            return this;
+        }
+
+        public Builder setVideoUrl(String videoUrl) {
+            bean.setVideoUrl(videoUrl);
+            return this;
+        }
+
+        public Builder setCreativeName(String creativeName) {
+            bean.setCreativeName(creativeName);
+            return this;
+        }
+
+        public ConfigBean build() {
+            return bean;
+        }
+
+
     }
 }

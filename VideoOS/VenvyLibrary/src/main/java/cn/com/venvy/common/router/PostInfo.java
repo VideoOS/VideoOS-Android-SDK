@@ -36,6 +36,18 @@ public class PostInfo {
         return this;
     }
 
+    public String getScheme() {
+        return scheme;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
+
     public PostInfo withTargetViewParent(ViewGroup viewParent) {
         this.targetViewParent = viewParent;
         return this;

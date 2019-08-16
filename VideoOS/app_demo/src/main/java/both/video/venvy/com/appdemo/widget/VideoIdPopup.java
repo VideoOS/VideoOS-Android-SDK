@@ -12,6 +12,7 @@ import java.util.List;
 
 import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.adapter.VideoIdConfigAdapter;
+import both.video.venvy.com.appdemo.bean.ConfigBean;
 import razerdp.basepopup.BasePopupWindow;
 
 /**
@@ -51,7 +52,7 @@ public class VideoIdPopup extends BasePopupWindow {
         return null;
     }
 
-    public void addData(List<String> info) {
+    public void addData(List<ConfigBean> info) {
         if (info == null || info.size() <= 0) {
             return;
         }

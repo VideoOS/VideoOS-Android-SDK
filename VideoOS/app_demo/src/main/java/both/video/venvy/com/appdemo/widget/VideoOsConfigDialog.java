@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
 import java.util.ArrayList;
@@ -17,10 +18,17 @@ import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.adapter.AppKeyConfigAdapter;
 import both.video.venvy.com.appdemo.adapter.AppSecretConfigAdapter;
 import both.video.venvy.com.appdemo.adapter.VideoIdConfigAdapter;
+import both.video.venvy.com.appdemo.adapter.VideoUrlConfigAdapter;
 import both.video.venvy.com.appdemo.bean.ConfigBean;
+import both.video.venvy.com.appdemo.bean.ConfigData;
+import both.video.venvy.com.appdemo.bean.VideoInfoData;
+import both.video.venvy.com.appdemo.http.AppConfigModel;
+import both.video.venvy.com.appdemo.http.VideoConfigModel;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import cn.com.venvy.common.debug.DebugStatus;
 import cn.com.venvy.common.interf.VideoType;
+import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
  * Created by videojj_pls on 2018/9/13.
@@ -32,10 +40,13 @@ public class VideoOsConfigDialog {
     private EditText mPathView, mNativeView, mAppKeyView, mAppSecretView;
     private SettingChangedListener listener;
 
-
+    private VideoUrlPopup mVideoUrlPopup;
     private VideoIdPopup mVideoIdPopup;
     private AppKeyPopup mAppKeyPopup;
     private AppSecretPopup mAppSecretPopup;
+
+    private AppConfigModel mAppConfigModel;
+    private VideoConfigModel mVideoConfigModel;
 
     public VideoOsConfigDialog(final Context context, VideoType type) {
         mContext = context;
@@ -57,8 +68,20 @@ public class VideoOsConfigDialog {
 
         mNativeView = (EditText) osConfigView.findViewById(R.id.sp_setting_app_id);
         mNativeView.setText(ConfigUtil.getVideoName());
-        mAppKeyView = (EditText) osConfigView.findViewById(R.id.sp_setting_app_video_appKey);
+        mNativeView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus || mVideoUrlPopup == null  || mVideoUrlPopup.isShowing()){
+                    return;
+                }
+                mVideoUrlPopup.showPopupWindow(mNativeView);
+            }
+        });
 
+
+
+
+        mAppKeyView = (EditText) osConfigView.findViewById(R.id.sp_setting_app_video_appKey);
         mAppKeyView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -97,6 +120,7 @@ public class VideoOsConfigDialog {
                 String videoId = mPathView.getText().toString();
                 String appKey = mAppKeyView.getText().toString();
                 String appSecret = mAppSecretView.getText().toString();
+                String videoUrl = mNativeView.getText().toString();
                 if (TextUtils.isEmpty(videoId) || TextUtils.isEmpty(appKey) || TextUtils.isEmpty(appSecret)) {
                     Toast.makeText(context, "请检查你输入的videoID,appKey,appSecret,参数不可为空", Toast.LENGTH_LONG).show();
                     return;
@@ -104,12 +128,14 @@ public class VideoOsConfigDialog {
                 ConfigUtil.putAppKey(appKey);
                 ConfigUtil.putAppSecret(appSecret);
                 ConfigUtil.putVideoId(videoId);
-                ConfigUtil.putVideoName(mNativeView.getText().toString());
-                ConfigBean bean = new ConfigBean();
-                bean.setCreativeName(mNativeView.getText().toString());
-                bean.setVideoId(mPathView.getText().toString());
-                bean.setAppKey(mAppKeyView.getText().toString());
-                bean.setAppSecret(mAppSecretView.getText().toString());
+                ConfigUtil.putVideoName(videoUrl);
+
+                ConfigBean bean = new ConfigBean.Builder()
+                        .setVideoUrl(videoUrl)
+                        .setVideoId(videoId)
+                        .setAppKey(appKey)
+                        .setAppSecret(appSecret)
+                        .build();
                 if (listener != null) {
                     listener.onChangeStat(bean);
                 }
@@ -121,6 +147,9 @@ public class VideoOsConfigDialog {
 
     public void showOsSetting() {
         mDialog.show();
+
+        queryAppKey();
+        queryVideoInfo();
     }
 
     /**
@@ -158,9 +187,13 @@ public class VideoOsConfigDialog {
 
 
     private void initPopup() {
+        mVideoUrlPopup = new VideoUrlPopup(mContext);
         mVideoIdPopup = new VideoIdPopup(mContext);
         mAppKeyPopup = new AppKeyPopup(mContext);
         mAppSecretPopup = new AppSecretPopup(mContext);
+
+
+        VideoUrlConfigAdapter videoUrlConfigAdapter = mVideoUrlPopup.getAdapter();
         VideoIdConfigAdapter videoIdConfigAdapter = mVideoIdPopup.getAdapter();
         AppKeyConfigAdapter appKeyConfigAdapter = mAppKeyPopup.getAdapter();
         AppSecretConfigAdapter appSecretConfigAdapter = mAppSecretPopup.getAdapter();
@@ -191,14 +224,26 @@ public class VideoOsConfigDialog {
                 @Override
                 public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                     mVideoIdPopup.dismiss();
-                    mPathView.setText((String) adapter.getData().get(position));
+                    ConfigBean bean = (ConfigBean) adapter.getData().get(position);
+                    mPathView.setText(bean.getVideoId());
+                    mNativeView.setText(bean.getVideoUrl());
                 }
             });
         }
-        List<ConfigBean> data = generatePopupData();
-        mAppKeyPopup.addData(data);
-        mAppSecretPopup.addData(data);
-        mVideoIdPopup.addData(generateVideoIdData());
+
+
+        if(videoUrlConfigAdapter != null){
+            videoUrlConfigAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                    mVideoUrlPopup.dismiss();
+                    ConfigBean bean = (ConfigBean) adapter.getData().get(position);
+                    mPathView.setText(bean.getVideoId());
+                    mNativeView.setText(bean.getVideoUrl());
+                }
+            });
+        }
+
     }
 
 
@@ -228,15 +273,96 @@ public class VideoOsConfigDialog {
         return data;
     }
 
-    private List<String> generateVideoIdData() {
-        List<String> data = new ArrayList<>();
-        data.add("http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4");
-        data.add("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/zongyi.mp4");
-        data.add("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4");
-        data.add("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/shn48.mp4");
-        data.add("25");
-        data.add("40");
+    private List<ConfigBean> generateVideoIdData() {
+        List<ConfigBean> data = new ArrayList<>();
+        data.add(new ConfigBean.Builder().setVideoId("http://qa-video.oss-cn-beijing.aliyuncs.com/ai/buRan.mp4").build());
+        data.add(new ConfigBean.Builder().setVideoId("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/zongyi.mp4").build());
+        data.add(new ConfigBean.Builder().setVideoId("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/mby02.mp4").build());
+        data.add(new ConfigBean.Builder().setVideoId("http://qa-video.oss-cn-beijing.aliyuncs.com/mp4/shn48.mp4").build());
+        data.add(new ConfigBean.Builder().setVideoId("25").build());
+        data.add(new ConfigBean.Builder().setVideoId("40").build());
         return data;
+    }
+
+    protected void queryAppKey() {
+        if (mAppConfigModel == null) {
+            mAppConfigModel = new AppConfigModel(new AppConfigModel.AppConfigCallback() {
+                @Override
+                public void updateComplete(final String result) {
+                    VenvyUIUtil.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ConfigData configData = JSON.parseObject(result, ConfigData.class);
+                            if (configData == null) {
+                                return;
+                            }
+                            ConfigData.ConfigInfo configInfo = configData.getData();
+                            if (configInfo == null) {
+                                return;
+                            }
+                            List<ConfigBean> data = new ArrayList<>();
+                            for (ConfigData.ConfigInfo.AppInfo info : configInfo.getApps()) {
+                                data.add(new ConfigBean(info.getAppKey(), info.getAppSecret()));
+                            }
+                            mAppKeyPopup.addData(data);
+                            mAppSecretPopup.addData(data);
+
+
+                        }
+                    });
+
+                }
+
+                @Override
+                public void updateError(Throwable t) {
+                    List<ConfigBean> data = generatePopupData();
+                    mAppKeyPopup.addData(data);
+                    mAppSecretPopup.addData(data);
+                }
+            });
+        }
+        mAppConfigModel.startRequest();
+    }
+
+
+    protected void queryVideoInfo() {
+        if (mVideoConfigModel == null) {
+            mVideoConfigModel = new VideoConfigModel(new VideoConfigModel.VideoConfigCallback() {
+                @Override
+                public void requestComplete(final String result) {
+                    VenvyUIUtil.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            VideoInfoData videoData = JSON.parseObject(result, VideoInfoData.class);
+                            if (videoData == null) {
+                                return;
+                            }
+                            VideoInfoData.VideoData video = videoData.getData();
+                            if (video == null) {
+                                return;
+                            }
+                            List<ConfigBean> data = new ArrayList<>();
+                            for (VideoInfoData.VideoData.VideoInfo info : video.getVideos()) {
+                                data.add(new ConfigBean.Builder()
+                                        .setVideoId(info.getVideoId())
+                                        .setVideoUrl(info.getVideoUrl())
+                                        .build());
+                            }
+                            mVideoIdPopup.addData(data);
+                            mVideoUrlPopup.addData(data);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void requestError(Throwable t) {
+                    VenvyLog.e("video requestError : " + t.getMessage());
+                    mVideoIdPopup.addData(generateVideoIdData());
+                }
+            });
+        }
+        mVideoConfigModel.startRequest();
     }
 
 

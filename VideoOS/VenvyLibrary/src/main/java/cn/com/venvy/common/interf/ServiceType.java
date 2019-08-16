@@ -6,11 +6,10 @@ package cn.com.venvy.common.interf;
 
 public enum ServiceType {
     ServiceTypeNone(0),
-    ServiceTypeCloud(1),
-    ServiceTypeVideoMode(2),//视联网模式
+    ServiceTypeVideoMode(1),//视联网模式
     ServiceTypeFrontVideo(3),//前帖广告
     ServiceTypeLaterVideo(4),//后贴广告
-    ServiceTypePictureAd(5);//暂停广告
+    ServiceTypePauseAd(5);//暂停广告
 
 
     int id;
@@ -28,15 +27,13 @@ public enum ServiceType {
             case 0:
                 return ServiceTypeNone;
             case 1:
-                return ServiceTypeCloud;
-            case 2:
                 return ServiceTypeVideoMode;
             case 3:
                 return ServiceTypeFrontVideo;
             case 4:
                 return ServiceTypeLaterVideo;
             case 5:
-                return ServiceTypePictureAd;
+                return ServiceTypePauseAd;
             default:
                 return ServiceTypeNone;
         }

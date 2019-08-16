@@ -15,6 +15,7 @@ public class LuaUpdateInfo implements Parcelable {
     private final String mVersion;
     private final String mDownloadUrl;
     private final String mManifestJson;
+
     private LuaUpdateInfo(Builder builder) {
         this.mVersion = builder.mVersion;
         this.mDownloadUrl = builder.mDownloadUrl;
@@ -79,7 +80,7 @@ public class LuaUpdateInfo implements Parcelable {
     protected LuaUpdateInfo(Parcel in) {
         this.mVersion = in.readString();
         this.mDownloadUrl = in.readString();
-        this.mManifestJson=in.readString();
+        this.mManifestJson = in.readString();
     }
 
     public static final Parcelable.Creator<LuaUpdateInfo> CREATOR = new Parcelable.Creator<LuaUpdateInfo>() {

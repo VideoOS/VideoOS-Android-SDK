@@ -37,6 +37,13 @@ import cn.com.videopls.pub.VideoPlusLuaUpdateModel;
  * Created by yanjiangbo on 2018/1/18.
  */
 
+/**
+ * A类小程序   L uaView://defaultLuaView?template=xxx.lua&id=xxx
+ * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
+ * <p>
+ * B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
+ */
+
 @VenvyRouter(name = VenvySchemeUtil.SCHEME_LUA_VIEW, type = RouteType.TYPE_VIEW)
 public class VideoOSLuaView extends VideoOSBaseView {
 
@@ -63,6 +70,9 @@ public class VideoOSLuaView extends VideoOSBaseView {
 
     @VenvyAutoData(name = "event")
     private String eventData;
+
+    @VenvyAutoData(name = "appletId")
+    private String appletId;
 
     public VideoOSLuaView(Context context) {
         super(context);
@@ -104,13 +114,13 @@ public class VideoOSLuaView extends VideoOSBaseView {
             // 可能mLuaView 正在异步创建中，此时数据delay执行，等待LuaView 的创建完毕
             LuaHelper.createLuaViewAsync(getContext(), mPlatform, this,
                     new LuaView.CreatedCallback() {
-                @Override
-                public void onCreated(LuaView luaView) {
-                    mLuaView = luaView;
-                    VideoOSLuaView.this.addView(luaView);
-                    runLuaFile(luaView, luaName, data);
-                }
-            });
+                        @Override
+                        public void onCreated(LuaView luaView) {
+                            mLuaView = luaView;
+                            VideoOSLuaView.this.addView(luaView);
+                            runLuaFile(luaView, luaName, data);
+                        }
+                    });
         } else {
             callLuaFunction(mLuaView, data);
 
@@ -188,36 +198,39 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
-
+        if(luaName.contains("os_vote")){
+            runLua(luaView, luaName, valueData);
+            return;
+        }
         if (sScriptBundle == null) {
             VenvyAsyncTaskUtil.doAsyncTask(INIT_SCRIPT,
                     new VenvyAsyncTaskUtil.IDoAsyncTask<Object, ScriptBundle>() {
-                @Override
-                public ScriptBundle doAsyncTask(Object... objects) throws Exception {
-                    return initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + VideoPlusLuaUpdateModel.LUA_CACHE_PATH);
-                }
-            }, new VenvyAsyncTaskUtil.CommonAsyncCallback<ScriptBundle>() {
-                @Override
-                public void onPostExecute(ScriptBundle scriptBundle) {
-                    if (scriptBundle != null) {
-                        VenvyLog.d("Router", "LuaView begin run and template is " + luaName + ", " +
-                                "time is " + System.currentTimeMillis());
-                        luaView.loadScriptBundle(scriptBundle, luaName,
-                                new LuaCallbackImpl(valueData));
-                        sScriptBundle = scriptBundle;
-                    } else {
-                        runLua(luaView, luaName, valueData);
-                    }
-                }
+                        @Override
+                        public ScriptBundle doAsyncTask(Object... objects) throws Exception {
+                            return initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + VideoPlusLuaUpdateModel.LUA_CACHE_PATH);
+                        }
+                    }, new VenvyAsyncTaskUtil.CommonAsyncCallback<ScriptBundle>() {
+                        @Override
+                        public void onPostExecute(ScriptBundle scriptBundle) {
+                            if (scriptBundle != null) {
+                                VenvyLog.d("Router", "LuaView begin run and template is " + luaName + ", " +
+                                        "time is " + System.currentTimeMillis());
+                                luaView.loadScriptBundle(scriptBundle, luaName,
+                                        new LuaCallbackImpl(valueData));
+                                sScriptBundle = scriptBundle;
+                            } else {
+                                runLua(luaView, luaName, valueData);
+                            }
+                        }
 
-                @Override
-                public void onCancelled() {
-                }
+                        @Override
+                        public void onCancelled() {
+                        }
 
-                @Override
-                public void onException(Exception ie) {
-                }
-            });
+                        @Override
+                        public void onException(Exception ie) {
+                        }
+                    });
         } else {
             luaView.loadScriptBundle(sScriptBundle, luaName, new LuaCallbackImpl(valueData));
         }

@@ -8,6 +8,8 @@
 
 package com.taobao.luaview.userdata.ui;
 
+import android.widget.Toast;
+
 import com.taobao.luaview.userdata.base.BaseUserdata;
 import com.taobao.luaview.util.LuaUtil;
 import com.taobao.luaview.util.ToastUtil;
@@ -15,6 +17,8 @@ import com.taobao.luaview.util.ToastUtil;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
+
+import cn.com.venvy.App;
 
 public class UDToast extends BaseUserdata {
 
@@ -31,7 +35,7 @@ public class UDToast extends BaseUserdata {
      */
     public UDToast show(CharSequence toastMessage) {
         if (toastMessage != null) {
-            ToastUtil.showToast(getContext(), toastMessage);
+            ToastUtil.showToast(App.getContext(), toastMessage);
         }
         return this;
     }

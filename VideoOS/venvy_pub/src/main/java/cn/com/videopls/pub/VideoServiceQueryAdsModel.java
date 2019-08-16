@@ -28,7 +28,7 @@ import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
  */
 
 public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
-    private static final String SERVICE_QUERYALL_ADS_URL_MOCK = Config.HOST_VIDEO_OS
+    private static final String SERVICE_QUERYALL_ADS_URL = Config.HOST_VIDEO_OS
             + "/api/queryAllAds";
     private ServiceQueryAdsCallback mQueryAdsCallback;
     private VideoPlusLuaUpdate mDownLuaUpdate;
@@ -69,10 +69,24 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                     }
                     JSONObject value = new JSONObject(response.getResult());
                     String encryptData = value.optString("encryptData");
-                    String decrypt = VenvyAesUtil.decrypt(encryptData,
+                    if (TextUtils.isEmpty(encryptData)) {
+                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                        if (callback != null) {
+                            callback.queryError(new Exception("query ads encryptData is null"));
+                        }
+                        return;
+                    }
+                    final JSONObject decryptObj = new JSONObject(VenvyAesUtil.decrypt(encryptData,
                             AppSecret.getAppSecret(getPlatform()),
-                            AppSecret.getAppSecret(getPlatform()));
-                    final JSONObject encrypt = new JSONObject(decrypt).optJSONObject("launchInfo");
+                            AppSecret.getAppSecret(getPlatform())));
+                    final JSONObject encrypt = decryptObj.optJSONObject("launchInfo");
+                    if (encrypt == null) {
+                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
+                        if (callback != null) {
+                            callback.queryError(new Exception("query ads launchInfo is null,未查询到有投放数据"));
+                        }
+                        return;
+                    }
                     final String queryAdsId = encrypt.optString("id");
                     final String queryAdsTemplate = encrypt.optString("template");
                     if (TextUtils.isEmpty(queryAdsTemplate)) {
@@ -157,7 +171,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-        return HttpRequest.post(SERVICE_QUERYALL_ADS_URL_MOCK, createBody(mQueryAdsParams));
+        return HttpRequest.post(SERVICE_QUERYALL_ADS_URL, createBody(mQueryAdsParams));
     }
 
     private Map<String, String> createBody(Map<String, String> params) {

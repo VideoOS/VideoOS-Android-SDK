@@ -16,7 +16,9 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyMD5Util;
 import cn.com.videopls.pub.view.VideoOSLuaView;
 
@@ -26,6 +28,8 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
  */
 
 public class VideoPlusLuaUpdate {
+    private final static String TAG = VideoPlusLuaUpdate.class.getName();
+    private final String PARSE_LOCAL_LUA = "parse_local_luas";
     public static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private DownloadTaskRunner mDownloadTaskRunner;
     private CacheLuaUpdateCallback mUpdateCallback;
@@ -46,6 +50,7 @@ public class VideoPlusLuaUpdate {
         if (mDownloadTaskRunner != null) {
             mDownloadTaskRunner.destroy();
         }
+        VenvyAsyncTaskUtil.cancel(PARSE_LOCAL_LUA);
         mUpdateCallback = null;
     }
 
@@ -61,20 +66,85 @@ public class VideoPlusLuaUpdate {
             }
             return;
         }
-        List<String> needDownLuaUrls = checkUpdateLua(luaUrls);
-        if (needDownLuaUrls.size() == 0) {
-            //本地存在 无需下载直接返回成功回调
-            CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
-            if (callback != null) {
-                callback.updateComplete(false);
+        checkUpdateLua(luaUrls);
+    }
+
+    /***
+     * 检测列表需要下载的Lua文件
+     * @param luaUrls
+     */
+    private void checkUpdateLua(final JSONArray luaUrls) {
+        VenvyAsyncTaskUtil.doAsyncTask(PARSE_LOCAL_LUA, new VenvyAsyncTaskUtil.IDoAsyncTask<JSONArray,
+                List<String>>() {
+            @Override
+            public List<String> doAsyncTask(JSONArray... urls) throws Exception {
+                if (urls == null || urls.length == 0) {
+                    return null;
+                }
+                List<String> needDownUrls = new ArrayList<>();
+                try {
+                    JSONArray jsonArray = urls[0];
+                    int len = luaUrls.length();
+                    for (int i = 0; i < len; i++) {
+                        JSONObject obj = jsonArray.optJSONObject(i);
+                        if (obj == null) {
+                            break;
+                        }
+                        String url = obj.optString("url");
+                        String md5 = obj.optString("md5");
+                        if (TextUtils.isEmpty(url)) {
+                            continue;
+                        }
+                        String cacheMd5 = getFileLuaEncoderByMd5(Uri.parse(url).getLastPathSegment());
+                        if (!TextUtils.equals(md5, cacheMd5)) {
+                            needDownUrls.add(url);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    VenvyLog.i(TAG, "VideoPlusLuaUpdate ——> checkDownLuaUrls error：" + e.getMessage());
+                }
+                return needDownUrls;
             }
-            return;
-        }
+        }, new VenvyAsyncTaskUtil.IAsyncCallback<List<String>>() {
+            @Override
+            public void onPreExecute() {
+            }
+
+            @Override
+            public void onPostExecute(List<String> urls) {
+                if (urls == null) {
+                    return;
+                }
+                if (urls.size() == 0) {
+                    //本地存在 无需下载直接返回成功回调
+                    CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
+                    if (callback != null) {
+                        callback.updateComplete(false);
+                    }
+                    return;
+                }
+                startDownloadLuaFile(urls);
+            }
+
+            @Override
+            public void onCancelled() {
+                VenvyLog.e("cancel");
+            }
+
+            @Override
+            public void onException(Exception ie) {
+            }
+        }, luaUrls);
+
+    }
+
+    private void startDownloadLuaFile(List<String> urls) {
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(mPlatform);
         }
         ArrayList<DownloadTask> arrayList = new ArrayList<>();
-        for (String string : needDownLuaUrls) {
+        for (String string : urls) {
             DownloadTask task = new DownloadTask(App.getContext(), string, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(string).getLastPathSegment());
             arrayList.add(task);
         }
@@ -118,29 +188,6 @@ public class VideoPlusLuaUpdate {
                 }
             }
         });
-    }
-
-    /***
-     * 检测列表需要下载的Lua文件
-     * @param luaUrls
-     * @return
-     */
-    private List<String> checkUpdateLua(JSONArray luaUrls) {
-        List<String> needDownUrls = new ArrayList<>();
-        int len = luaUrls.length();
-        for (int i = 0; i < len; i++) {
-            JSONObject obj = luaUrls.optJSONObject(i);
-            if (obj == null) {
-                break;
-            }
-            String url = obj.optString("url");
-            String md5 = obj.optString("md5");
-            String cacheMd5 = getFileLuaEncoderByMd5(Uri.parse(url).getLastPathSegment());
-            if (!TextUtils.equals(md5, cacheMd5)) {
-                needDownUrls.add(url);
-            }
-        }
-        return needDownUrls;
     }
 
     private VideoPlusLuaUpdate.CacheLuaUpdateCallback getCacheLuaUpdateCallback() {

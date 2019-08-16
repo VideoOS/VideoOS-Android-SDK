@@ -472,7 +472,10 @@ local function onCreate(args)
         if (vote.launchPlanId ~= nil) then
             osTrack(vote.launchPlanId, 3, 2)
         end
-        Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_vote_window.lua" .. "&id=" .. "os_vote_window" .. tostring(vote.id) .. "&priority=2"), args)
+        --Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_vote_window.lua" .. "&id=" .. "os_vote_window" .. tostring(vote.id) .. "&priority=2"), args)
+        -- LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
+
+        Native:sendAction(Native:base64Encode("LuaView://applets?appletId=123&type=1"), args)
     end)
     local dataTable = args.data
     if (dataTable == nil) then
@@ -502,6 +505,7 @@ function show(args)
     if (args == nil or args.data == nil or vote.luaview ~= nil) then
         return
     end
+
     vote.id = args.data.id
     vote.launchPlanId = args.data.launchPlanId
     vote.request = HttpRequest()

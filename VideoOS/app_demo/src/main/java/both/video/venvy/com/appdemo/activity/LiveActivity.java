@@ -53,10 +53,6 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
 
                 }
             });
-        } else if (R.id.bt_os_setting_close_window == ID) {
-            if (mVideoPlusView == null)
-                return;
-            mVideoPlusView.closeInfoView();
         }
 
     }
@@ -70,9 +66,7 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
         if (mSettingView == null) {
             mSettingView = (ConstraintLayout) LayoutInflater.from(this)
                     .inflate(R.layout.layout_os_setting_button, mRootView, false);
-            mSettingView.findViewById(R.id.iv_os_setting).setOnClickListener(this);
             mSettingView.findViewById(R.id.bt_os_setting_mall).setOnClickListener(this);
-            mSettingView.findViewById(R.id.bt_os_setting_close_window).setOnClickListener(this);
         }
         return mSettingView;
     }

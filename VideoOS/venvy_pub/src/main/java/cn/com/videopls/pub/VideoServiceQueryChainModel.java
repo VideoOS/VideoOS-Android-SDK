@@ -20,6 +20,7 @@ import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyMD5Util;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
@@ -76,7 +77,21 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                     String decrypt = VenvyAesUtil.decrypt(encryptData,
                             AppSecret.getAppSecret(getPlatform()),
                             AppSecret.getAppSecret(getPlatform()));
+                    final String queryAdsId = VenvyMD5Util.MD5(decrypt);
                     JSONObject obj = new JSONObject(decrypt);
+                    String resCode = obj.optString("resCode");
+                    if (TextUtils.equals(resCode, "01")) {
+                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                        if (callback != null) {
+                            String resMsg = obj.optString("resMsg");
+                            if (!TextUtils.isEmpty(resMsg)) {
+                                callback.queryError(new Exception(resMsg));
+                            } else {
+                                callback.queryError(new Exception("query chain data is error"));
+                            }
+                        }
+                        return;
+                    }
                     final String template = obj.optString("template");
                     final JSONArray dataJsonArray = obj.optJSONArray("jsonList");
                     final JSONArray luaJsonArray = obj.optJSONArray("luaList");
@@ -110,12 +125,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                 VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
                                     @Override
                                     public void updateComplete(boolean isUpdateByNetWork) {
-                                        VenvyUIUtil.runOnUIThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mDownZipUpdate.startDownloadZipFile(dataJsonArray);
-                                            }
-                                        });
+                                        mDownZipUpdate.startDownloadZipFile(dataJsonArray);
                                     }
 
                                     @Override
@@ -139,7 +149,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         new ServiceQueryAdsInfo
                                                 .Builder()
                                                 .setQueryAdsTemplate(template)
-                                                .setQueryAdsId(null)
+                                                .setQueryAdsId(queryAdsId)
                                                 .setQueryAdsType(!TextUtils.isEmpty(adsType) ?
                                                         Integer.valueOf(adsType) : 0).build();
                                 ServiceQueryChainCallback callback = getQueryChainCallback();
