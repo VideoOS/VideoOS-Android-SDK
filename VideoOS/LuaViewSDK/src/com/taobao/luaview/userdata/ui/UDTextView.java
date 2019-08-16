@@ -9,6 +9,7 @@
 package com.taobao.luaview.userdata.ui;
 
 import android.annotation.TargetApi;
+import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -328,6 +329,17 @@ public class UDTextView<T extends TextView> extends UDView<T> {
         if (view != null) {
             view.setShadowLayer(shadowRadius, 0, 0, shadowColor);
         }
+        return this;
+    }
+
+
+    /**
+     * 给文字添加删除线
+     * @return
+     */
+    public UDTextView setDelLine(){
+        T v = getView();
+        v.setPaintFlags(v.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         return this;
     }
 
