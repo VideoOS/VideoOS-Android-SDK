@@ -41,4 +41,6 @@ captures/
 .externalNativeBuild
 /app/src/test/
 
+app_demo
+
 .DS_Store
