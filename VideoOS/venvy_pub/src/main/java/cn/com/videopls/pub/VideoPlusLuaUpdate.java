@@ -92,6 +92,9 @@ public class VideoPlusLuaUpdate {
                         }
                         String url = obj.optString("url");
                         String md5 = obj.optString("md5");
+                        if (TextUtils.isEmpty(url)) {
+                            continue;
+                        }
                         String cacheMd5 = getFileLuaEncoderByMd5(Uri.parse(url).getLastPathSegment());
                         if (!TextUtils.equals(md5, cacheMd5)) {
                             needDownUrls.add(url);
