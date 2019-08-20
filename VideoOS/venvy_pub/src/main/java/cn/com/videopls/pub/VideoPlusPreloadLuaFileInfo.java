@@ -25,7 +25,6 @@ import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
  */
 
 public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
-    public static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private static final String PRE_LOAD_LUA_URL = "/api/preloadLuaFileInfo";
     private static final String PRE_LOAD_LUA_URL_MOCK = "http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/preloadLuaFileInfo";
     private PreloadLuaCallback mPreloadLuaCallback;
@@ -151,6 +150,9 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
     @Override
     public void destroy() {
         super.destroy();
+        if (mDownLuaUpdate != null) {
+            mDownLuaUpdate.destroy();
+        }
         mPreloadLuaCallback = null;
     }
 
