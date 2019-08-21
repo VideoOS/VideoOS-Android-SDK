@@ -1,0 +1,44 @@
+{
+  "creativeId":97,
+  "data":{
+    "hotEditInfor":{
+      "isShowAds":true,
+      "hotImage":"http://os-saas-share.videojj.com/dev/app_info/506/8824188c-54b9-4824-9e4d-74e35c996a01.jpeg",
+      "hotTitle":"壹贰叁肆伍陸壹贰叁肆伍陸",
+      "isShowClose":true
+    },
+    "inforEdit":{
+      "preferential":999999.9,
+      "originalPrice":99999.9,
+      "btnTxt":"快来加入购物车",
+      "goodsTag":"限时秒杀",
+      "goodsImage":"http://os-saas-share.videojj.com/dev/app_info/506/3d9d08e9-8dd5-481c-b2d6-3b0f32d9dae0.jpg",
+      "goodsTitle":"ONLY2019秋季新款桔梗气质高腰珠饰A字雪纺连衣裙女连衣裙衣裙",
+      "optionLinkUrl":"https://www.baidu.com"
+    },
+    "creativeName":"easy go title",
+    "miniAppId":"14062",
+    "interactionTypeId":"2867"
+  },
+  "deviceType":3,
+  "duration":10000,
+  "hotspotOrder":0,
+  "id":"61e91d65-d9d1-4ea9-a41a-5dbd36331e5b",
+  "hotspotTrackLink":[
+    {
+      "clickTrackLink":"http://clickc.admaster.com.cn/c/a122445,b3554598,c3925,i0,m101,8a2,8b3,h",
+      "exposureTrackLink":"http://v.admaster.com.cn/i/a122445,b3554598,c3925,i0,m202,8a2,8b3,h"
+    }
+  ],
+  "infoTrackLink":[
+    {
+      "clickTrackLink":"http://clickc.admaster.com.cn/c/a122445,b3554599,c3925,i0,m101,8a2,8b3,h",
+      "exposureTrackLink":"http://v.admaster.com.cn/i/a122445,b3554599,c3925,i0,m202,8a2,8b3,h"
+    }
+  ],
+  "launchPlanId":"103",
+  "sumHotspot":1,
+  "template":"os_easy_shop_hotspot.lua",
+  "videoEndTime":15000,
+  "videoStartTime":5000
+}

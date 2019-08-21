@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentBottom="true">
+
+    <Button
+        android:id="@+id/bt_os_setting_mall"
+        style="@style/style_home_setting_menu_item"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="0dp"
+        android:text="@string/home_setting_item_local"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/guideline9"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:id="@+id/iv_os_setting"
+        android:layout_width="@dimen/home_setting_menu"
+        android:layout_height="@dimen/home_setting_menu"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="@dimen/os_setting_iv_margin"
+        android:background="@drawable/shape_home_setting_menu_bg"
+        android:elevation="@dimen/home_item_elevation"
+        android:padding="@dimen/home_setting_menu_padding"
+        android:src="@mipmap/ic_home_setting_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline9"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="invisible"
+        />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <Button
+        android:id="@+id/bt_os_setting_close_window"
+        style="@style/style_home_setting_menu_item"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="0dp"
+        android:text="关闭"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/bt_os_setting_mall"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        android:visibility="invisible"
+        />
+</android.support.constraint.ConstraintLayout>

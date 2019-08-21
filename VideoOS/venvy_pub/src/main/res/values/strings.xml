@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="disconnectWifiDesc">当前网络不可用请检查设置</string>
+    <string name="clickAndRetry">点击重试</string>
+    <string name="loading">正在拼命加载中...</string>
+    <string name="errorDesc">小程序服务不可用，换个标签再试</string>
+    <string name="networkBusy">网络开小差啦，请重试</string>
+    <string name="loadMiniAppError">小程序加载失败，请重试</string>
+    <string name="miniAppCrashedTryOtherTag">小程序崩溃了，换个标签试试</string>
+    <string name="miniAppCrashed">小程序崩溃了</string>
+</resources>

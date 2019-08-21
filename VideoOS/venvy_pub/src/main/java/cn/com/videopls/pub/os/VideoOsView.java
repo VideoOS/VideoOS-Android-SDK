@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 
 import cn.com.videopls.pub.VideoPlusController;
 import cn.com.videopls.pub.VideoPlusView;
+import cn.com.videopls.pub.VideoProgramView;
 
 /**
  * Created by yanjiangbo on 2017/5/17.
@@ -24,8 +25,4 @@ public class VideoOsView extends VideoPlusView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public VideoPlusController initVideoPlusController() {
-        return new VideoOsController(this);
-    }
 }

@@ -1,0 +1,255 @@
+package cn.com.videopls.pub;
+
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import cn.com.venvy.AppSecret;
+import cn.com.venvy.Config;
+import cn.com.venvy.Platform;
+import cn.com.venvy.PlatformInfo;
+import cn.com.venvy.common.http.HttpRequest;
+import cn.com.venvy.common.http.base.IRequestHandler;
+import cn.com.venvy.common.http.base.IResponse;
+import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.utils.VenvyAesUtil;
+import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
+import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyMD5Util;
+import cn.com.venvy.common.utils.VenvySchemeUtil;
+import cn.com.venvy.common.utils.VenvyUIUtil;
+import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
+
+/**
+ * Created by videojj_pls on 2019/7/22.
+ * 视联网模式投放信息查询
+ */
+
+public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
+    private static final String SERVICE_QUERYALL_CHAIN_URL_MOCK = Config.HOST_VIDEO_OS
+            + "/vision/getLabelConf";
+    private static final String LUA_ZIP = "/lua/os/chain.zip";
+    private ServiceQueryChainCallback mQueryChainCallback;
+    private VideoPlusLuaUpdate mDownLuaUpdate;
+    private VideoPlusZipUpdate mDownZipUpdate;
+    private Map<String, String> mQueryAdsParams;
+
+    public VideoServiceQueryChainModel(Platform platform, Map<String, String> params,
+                                       VideoServiceQueryChainModel.ServiceQueryChainCallback callback) {
+        super(platform);
+        this.mQueryChainCallback = callback;
+        this.mQueryAdsParams = params;
+    }
+
+    private VideoServiceQueryChainModel.ServiceQueryChainCallback getQueryChainCallback() {
+        return mQueryChainCallback;
+    }
+
+    private Map<String, String> getQueryChainParams() {
+        return mQueryAdsParams;
+    }
+
+    @Override
+    public boolean needCheckResponseValid() {
+        return false;
+    }
+
+    @Override
+    public IRequestHandler createRequestHandler() {
+        return new IRequestHandler() {
+            @Override
+            public void requestFinish(Request request, IResponse response) {
+                try {
+                    if (!response.isSuccess()) {
+                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                        if (callback != null) {
+                            callback.queryError(new Exception("query ads data error"));
+                        }
+                        return;
+                    }
+                    JSONObject value = new JSONObject(response.getResult());
+                    String encryptData = value.optString("encryptData");
+                    String decrypt = VenvyAesUtil.decrypt(encryptData,
+                            AppSecret.getAppSecret(getPlatform()),
+                            AppSecret.getAppSecret(getPlatform()));
+                    final String queryAdsId = VenvyMD5Util.MD5(decrypt);
+                    JSONObject obj = new JSONObject(decrypt);
+                    String resCode = obj.optString("resCode");
+                    if (TextUtils.equals(resCode, "01")) {
+                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                        if (callback != null) {
+                            String resMsg = obj.optString("resMsg");
+                            if (!TextUtils.isEmpty(resMsg)) {
+                                callback.queryError(new Exception(resMsg));
+                            } else {
+                                callback.queryError(new Exception("query chain data is error"));
+                            }
+                        }
+                        return;
+                    }
+                    final String template = obj.optString("template");
+                    final JSONArray dataJsonArray = obj.optJSONArray("jsonList");
+                    final JSONArray luaJsonArray = obj.optJSONArray("luaList");
+
+                    if (TextUtils.isEmpty(template)) {
+                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                        if (callback != null) {
+                            callback.queryError(new Exception("query chain data with template is " +
+                                    "null"));
+                        }
+                        return;
+                    }
+                    if (dataJsonArray == null || dataJsonArray.length() <= 0) {
+                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                        if (callback != null) {
+                            callback.queryError(new Exception("query chain data with jsonList is " +
+                                    "null"));
+                        }
+                        return;
+                    }
+                    if (luaJsonArray == null || luaJsonArray.length() <= 0) {
+                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                        if (callback != null) {
+                            callback.queryError(new Exception("query chain data with luaList is " +
+                                    "null"));
+                        }
+                        return;
+                    }
+                    if (mDownLuaUpdate == null) {
+                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new
+                                VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
+                                    @Override
+                                    public void updateComplete(boolean isUpdateByNetWork) {
+                                        mDownZipUpdate.startDownloadZipFile(dataJsonArray);
+                                    }
+
+                                    @Override
+                                    public void updateError(Throwable t) {
+                                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                                        if (callback != null) {
+                                            callback.queryError(new Exception("chain ads down lua" +
+                                                    " failed"));
+                                        }
+                                    }
+                                });
+                    }
+                    if (mDownZipUpdate == null) {
+                        mDownZipUpdate = new VideoPlusZipUpdate(getPlatform(), new VideoPlusZipUpdate.CacheZipUpdateCallback() {
+                            @Override
+                            public void updateComplete(JSONArray zipJsonDataArray) {
+                                Map<String, String> params = getQueryChainParams();
+                                String adsType = params != null ? params.get
+                                        (VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE) : "";
+                                ServiceQueryAdsInfo queryAdsInfo =
+                                        new ServiceQueryAdsInfo
+                                                .Builder()
+                                                .setQueryAdsTemplate(template)
+                                                .setQueryAdsId(queryAdsId)
+                                                .setQueryAdsType(!TextUtils.isEmpty(adsType) ?
+                                                        Integer.valueOf(adsType) : 0).build();
+                                ServiceQueryChainCallback callback = getQueryChainCallback();
+                                if (callback != null) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject();
+                                        jsonObject.put("data", zipJsonDataArray);
+                                        callback.queryComplete(jsonObject,
+                                                queryAdsInfo);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void updateError(Throwable t) {
+                                ServiceQueryChainCallback callback = getQueryChainCallback();
+                                if (callback != null) {
+                                    callback.queryError(new Exception("chain ads down lua" +
+                                            " failed"));
+                                }
+                            }
+                        });
+                    }
+                    mDownLuaUpdate.startDownloadLuaFile(luaJsonArray);
+                } catch (Exception e) {
+                    VenvyLog.e(VideoServiceQueryChainModel.class.getName(), e);
+                    ServiceQueryChainCallback callback = getQueryChainCallback();
+                    if (callback != null) {
+                        callback.queryError(e);
+                    }
+                }
+            }
+
+            @Override
+            public void requestError(Request request, @Nullable Exception e) {
+                VenvyLog.e(VideoServiceQueryChainModel.class.getName(), e);
+                ServiceQueryChainCallback callback = getQueryChainCallback();
+                if (callback != null) {
+                    callback.queryError(e);
+                }
+            }
+
+            @Override
+            public void startRequest(Request request) {
+
+            }
+
+            @Override
+            public void requestProgress(Request request, int progress) {
+
+            }
+        };
+    }
+
+    @Override
+    public Request createRequest() {
+        return HttpRequest.post(SERVICE_QUERYALL_CHAIN_URL_MOCK, createBody(mQueryAdsParams));
+    }
+
+    private Map<String, String> createBody(Map<String, String> params) {
+        Map<String, String> bodyParams = new HashMap<>();
+        bodyParams.put("commonParam", LVCommonParamPlugin.getCommonParamJson());
+        Platform platform = getPlatform();
+        if (platform != null) {
+            PlatformInfo info = platform.getPlatformInfo();
+            if (info != null) {
+                String videoId = info.getVideoId();
+                if (!TextUtils.isEmpty(videoId)) {
+                    bodyParams.put("videoId", videoId);
+                }
+            }
+        }
+        if (params != null) {
+            bodyParams.putAll(params);
+        }
+        HashMap<String, String> dataParams = new HashMap<>();
+        dataParams.put("data", VenvyAesUtil.encrypt(AppSecret.getAppSecret(getPlatform()),
+                AppSecret.getAppSecret(getPlatform()), new JSONObject(bodyParams).toString()));
+        return dataParams;
+    }
+
+    public interface ServiceQueryChainCallback {
+        void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo);
+
+        void queryError(Throwable t);
+    }
+
+    public void destroy() {
+        VenvyAsyncTaskUtil.cancel(LUA_ZIP);
+        if (mDownZipUpdate != null) {
+            mDownZipUpdate.destroy();
+        }
+        if (mDownLuaUpdate != null) {
+            mDownLuaUpdate.destroy();
+        }
+        if (mQueryAdsParams != null) {
+            mQueryAdsParams.clear();
+        }
+        mQueryChainCallback = null;
+    }
+}
