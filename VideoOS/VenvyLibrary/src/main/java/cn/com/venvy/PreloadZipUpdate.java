@@ -1,4 +1,4 @@
-package cn.com.videopls.pub;
+package cn.com.venvy;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -11,8 +11,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.com.venvy.App;
-import cn.com.venvy.Platform;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
@@ -27,8 +25,8 @@ import cn.com.venvy.common.utils.VenvyMD5Util;
  * 结构下载Zip 以及解压
  */
 
-public class VideoPlusZipUpdate {
-    private final static String TAG = VideoPlusZipUpdate.class.getName();
+public class PreloadZipUpdate {
+    private final static String TAG = PreloadZipUpdate.class.getName();
     private static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private static final String LUA_ZIP = "/lua/os/chain.zip";
     private final String PARSE_LOCAL_ZIP = "parse_local_zip";
@@ -37,7 +35,7 @@ public class VideoPlusZipUpdate {
     private CacheZipUpdateCallback mUpdateCallback;
     private Platform mPlatform;
 
-    public VideoPlusZipUpdate(Platform platform, VideoPlusZipUpdate.CacheZipUpdateCallback callback) {
+    public PreloadZipUpdate(Platform platform, PreloadZipUpdate.CacheZipUpdateCallback callback) {
         this.mPlatform = platform;
         this.mUpdateCallback = callback;
     }
@@ -316,7 +314,7 @@ public class VideoPlusZipUpdate {
      * 获取回调
      * @return
      */
-    private VideoPlusZipUpdate.CacheZipUpdateCallback getCacheLuaUpdateCallback() {
+    private PreloadZipUpdate.CacheZipUpdateCallback getCacheLuaUpdateCallback() {
         return mUpdateCallback;
     }
 

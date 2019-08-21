@@ -14,6 +14,7 @@ import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.PreloadLuaUpdate;
+import cn.com.venvy.PreloadZipUpdate;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -38,7 +39,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
     private static final String LUA_ZIP = "/lua/os/chain.zip";
     private ServiceQueryChainCallback mQueryChainCallback;
     private PreloadLuaUpdate mDownLuaUpdate;
-    private VideoPlusZipUpdate mDownZipUpdate;
+    private PreloadZipUpdate mDownZipUpdate;
     private Map<String, String> mQueryAdsParams;
 
     public VideoServiceQueryChainModel(Platform platform, Map<String, String> params,
@@ -144,7 +145,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                 });
                     }
                     if (mDownZipUpdate == null) {
-                        mDownZipUpdate = new VideoPlusZipUpdate(getPlatform(), new VideoPlusZipUpdate.CacheZipUpdateCallback() {
+                        mDownZipUpdate = new PreloadZipUpdate(getPlatform(), new PreloadZipUpdate.CacheZipUpdateCallback() {
                             @Override
                             public void updateComplete(JSONArray zipJsonDataArray) {
                                 Map<String, String> params = getQueryChainParams();
