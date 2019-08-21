@@ -25,6 +25,7 @@ import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.router.IRouterCallback;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyResourceUtil;
 
 /**
  * Created by Lucas on 2019/7/31.
@@ -91,8 +92,9 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
 
     private void init() {
-        inflate(getContext(), R.layout.video_program_tool, this);
-        rlTitleBar = findViewById(R.id.rlTitleBar);
+        inflate(getContext(), VenvyResourceUtil.getLayoutId(getContext(),
+                "video_program_tool"), this);
+        rlTitleBar = findViewById(VenvyResourceUtil.getId(getContext(), "rlTitleBar"));
         rlTitleBar.setAlpha(0.9f);
 //        // TODO :  for test
 //        rlTitleBar.setOnClickListener(new OnClickListener() {
@@ -106,12 +108,16 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 //            }
 //        });
 
-        loadingContent = findViewById(R.id.loadingContent);
-        retryContent = findViewById(R.id.disConnectWifiContent);
-        errorContent = findViewById(R.id.errorContent);
+        loadingContent = findViewById(
+                VenvyResourceUtil.getId(getContext(), "loadingContent"));
+        retryContent = findViewById(
+                VenvyResourceUtil.getId(getContext(), "disConnectWifiContent"));
+        errorContent = findViewById(
+                VenvyResourceUtil.getId(getContext(), "errorContent"));
         retryContent.setClickable(true);
         errorContent.setClickable(true);
-        tvRetry = (TextView) findViewById(R.id.tvRetry);
+        tvRetry = (TextView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "tvRetry"));
         tvRetry.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,14 +128,22 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
                 }
             }
         });
-        videoProgramView = (VideoProgramView) findViewById(R.id.programView);
-        ivBack = (ImageView) findViewById(R.id.ivBack);
-        tvTitle = (TextView) findViewById(R.id.tvTitle);
-        ivClose = (ImageView) findViewById(R.id.ivClose);
-        circle1 = (ImageView) findViewById(R.id.circle1);
-        circle2 = (ImageView) findViewById(R.id.circle2);
-        tvRetryMsg = (TextView) findViewById(R.id.tvRetryMsg);
-        tvErrorMsg = (TextView) findViewById(R.id.tvErrorMsg);
+        videoProgramView = (VideoProgramView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "programView"));
+        ivBack = (ImageView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "ivBack"));
+        tvTitle = (TextView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "tvTitle"));
+        ivClose = (ImageView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "ivClose"));
+        circle1 = (ImageView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "circle1"));
+        circle2 = (ImageView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "circle2"));
+        tvRetryMsg = (TextView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "tvRetryMsg"));
+        tvErrorMsg = (TextView) findViewById(
+                VenvyResourceUtil.getId(getContext(), "tvErrorMsg"));
         ivBack.setVisibility(INVISIBLE);
         ivBack.setOnClickListener(new OnClickListener() {
             @Override
@@ -233,10 +247,12 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         // 需要判断是否是入口小程序失败，还是小程序之间内部跳转失败
         if (videoProgramView.getAllOfLuaView() > 0) {
             // 首次视联网小程序加载失败
-            showExceptionLogic(getContext().getString(R.string.miniAppCrashedTryOtherTag), false);
+            showExceptionLogic(getContext().getString(VenvyResourceUtil.getStringId(getContext(),
+                    "miniAppCrashedTryOtherTag")), false);
         } else {
             // 小程序内部跳转加载失败
-            showExceptionLogic(getContext().getString(R.string.miniAppCrashed), false);
+            showExceptionLogic(getContext().getString(VenvyResourceUtil.getStringId(getContext(),
+                    "miniAppCrashed")), false);
         }
     }
 

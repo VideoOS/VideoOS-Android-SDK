@@ -17,18 +17,22 @@ import android.widget.FrameLayout;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
  * Created by Lucas on 2019/7/31.
- * 视联网小程序容器
- * <p>
- * A类小程序   LuaView://defaultLuaView?template=xxx.lua&id=xxx
- * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
- * <p>
- * B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
  */
 public class VideoProgramTypeBView extends FrameLayout {
+
+    /**
+     *  视联网小程序容器
+     *  <p>
+     *  A类小程序   LuaView://defaultLuaView?template=xxx.lua&id=xxx
+     *  跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
+     *  <p>
+     *  B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
+     */
 
     /**
      * 会有多个B类小程序侧边栏覆盖的情况，所以需要一个Map统一管理
@@ -52,23 +56,26 @@ public class VideoProgramTypeBView extends FrameLayout {
         init();
     }
 
-    public VideoProgramTypeBView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public VideoProgramTypeBView(@NonNull Context context, @Nullable AttributeSet attrs,
+                                 int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
     @TargetApi(21)
-    public VideoProgramTypeBView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public VideoProgramTypeBView(@NonNull Context context, @Nullable AttributeSet attrs,
+                                 int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 
     private void init() {
-        inflate(getContext(), R.layout.video_program_type_b, this);
+        inflate(getContext(), VenvyResourceUtil.getLayoutId(getContext(), "video_program_type_b"), this);
         // for test
 //        setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.holo_red_light));
 //        setAlpha(0.5f);
-        programContent = (FrameLayout) findViewById(R.id.programContent);
+        programContent = (FrameLayout) findViewById(
+                VenvyResourceUtil.getId(getContext(), "programContent"));
 
         setOnClickListener(new OnClickListener() {
             @Override
@@ -89,7 +96,8 @@ public class VideoProgramTypeBView extends FrameLayout {
 
     private VideoProgramToolBarView generateVideoProgram() {
         VideoProgramToolBarView programToolBarView = new VideoProgramToolBarView(getContext());
-        programToolBarView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        programToolBarView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
         return programToolBarView;
     }
 
@@ -122,7 +130,7 @@ public class VideoProgramTypeBView extends FrameLayout {
      *
      * @param appletId
      */
-    public void close( String appletId) {
+    public void close(String appletId) {
         if (!TextUtils.isEmpty(appletId)) {
             VideoProgramToolBarView programView = programMap.get(appletId);
             if (programView != null) {
@@ -147,26 +155,27 @@ public class VideoProgramTypeBView extends FrameLayout {
 
     /**
      * 删除所有指定方向的视联网小程序
+     *
      * @param orientationType
      */
-    public void closeAllProgramByOrientation(int orientationType){
+    public void closeAllProgramByOrientation(int orientationType) {
         for (Map.Entry<String, VideoProgramToolBarView> item : programMap.entrySet()) {
-           if((int)item.getValue().getTag() == orientationType){
-               programContent.removeView(item.getValue());
-               programMap.remove(item.getKey());
-           }
+            if ((int) item.getValue().getTag() == orientationType) {
+                programContent.removeView(item.getValue());
+                programMap.remove(item.getKey());
+            }
         }
     }
 
 
     public void showExceptionLogic(String msg, boolean needRetry) {
         if (currentProgram != null) {
-            currentProgram.showExceptionLogic(msg,needRetry);
+            currentProgram.showExceptionLogic(msg, needRetry);
         }
     }
 
 
-    public void setCurrentProgramTitle(String title){
+    public void setCurrentProgramTitle(String title) {
         if (currentProgram != null) {
             currentProgram.setTitle(title);
         }
@@ -179,13 +188,15 @@ public class VideoProgramTypeBView extends FrameLayout {
 
 
     private void doEntranceAnimation(View view) {
-        ValueAnimator valueAnimator = ObjectAnimator.ofFloat(view, "translationX", VenvyUIUtil.dip2px(getContext(), 222), 0);
+        ValueAnimator valueAnimator = ObjectAnimator.ofFloat(view, "translationX",
+                VenvyUIUtil.dip2px(getContext(), 222), 0);
         valueAnimator.setDuration(300);
         valueAnimator.start();
     }
 
-    private void doExitAnimation(final View view){
-        ValueAnimator valueAnimator = ObjectAnimator.ofFloat(view, "translationX", 0, VenvyUIUtil.dip2px(getContext(), 222));
+    private void doExitAnimation(final View view) {
+        ValueAnimator valueAnimator = ObjectAnimator.ofFloat(view, "translationX", 0,
+                VenvyUIUtil.dip2px(getContext(), 222));
         valueAnimator.setDuration(300);
         valueAnimator.addListener(new AnimatorListenerAdapter() {
             @Override

@@ -23,6 +23,7 @@ import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 import cn.com.videopls.pub.exception.DownloadException;
 import cn.com.videopls.pub.view.VideoOSLuaView;
@@ -143,7 +144,8 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     } else if (resCode.equalsIgnoreCase("01")) {
                         // 小程序下架不可用
                         Bundle bundle = new Bundle();
-                        bundle.putString(CONSTANT_MSG, getContext().getString(R.string.errorDesc));
+                        bundle.putString(CONSTANT_MSG, getContext().getString(
+                                VenvyResourceUtil.getStringId(getContext(), "errorDesc")));
                         bundle.putBoolean(CONSTANT_NEED_RETRY, false);
                         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
                     } else {
