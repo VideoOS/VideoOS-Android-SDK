@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">videoOS</string>
+
+    <string name="media_controller_huyu">互娱</string>
+    <string name="home_select_platform">选择平台类型</string>
+    <string name="home_select_live_type">选择直播属性</string>
+    <string name="home_platform_live">直播</string>
+    <string name="home_platform_video">点播</string>
+    <string name="home_live_anchor">主播</string>
+    <string name="home_live_user">观众</string>
+    <string name="home_live_anchor_setting">预设置</string>
+    <string name="home_live_anchor_portrait">竖屏推流</string>
+    <string name="home_live_anchor_landscape">横屏推流</string>
+    <string name="home_setting_item_mall">电商</string>
+    <string name="home_setting_item_local">预览</string>
+    <string name="home_setting_item_live">live</string>
+    <string name="home_setting_item_os">点播</string>
+    <string name="setting_layout_uid">用户 ID</string>
+    <string name="setting_layout_room">RoomID</string>
+    <string name="setting_layout_platform">PlatformID</string>
+
+    <string name="setting_layout_videoId">videoID</string>
+    <string name="setting_layout_appKey">appKey</string>
+    <string name="setting_layout_appSecret">appSecret</string>
+    <string name="appKey_def">093c1f40-1180-4037-94c0-8a90e1d506ce</string>
+    <string name="appSecret_def">723f61f8aae44e1b</string>
+    <string name="setting_layout_creative_name">素材名称</string>
+    <string name="setting_layout_cate">分区</string>
+    <string name="setting_environ_debug">开发环境</string>
+    <string name="setting_environ_release">正式环境</string>
+    <string name="setting_environ_preview">测试环境</string>
+    <string name="setting_cancel">取消</string>
+    <string name="setting_apply">应用配置</string>
+    <string name="toast_config_error">获取失败</string>
+    <string name="setting_layout_app_id">AppId</string>
+    <string name="setting_layout_video_path">video url</string>
+    <string name="config_failed">配置未生效</string>
+    <string name="config_success">设置成功</string>
+    <string name="Home_progress_title">正在获取配置...</string>
+    <string name="current_app_key">当前AppKey：\n%1$s</string>
+    <string name="current_app_secret">当前AppSecret：\n%1$s</string>
+</resources>

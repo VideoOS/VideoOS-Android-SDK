@@ -46,7 +46,8 @@ public class UITextViewMethodMapper<U extends UDTextView> extends UIViewMethodMa
             "adjustTextSize",//13
             "adjustFontSize",//14
             "textShadow",//15
-            "textBold"//16
+            "textBold",//16
+            "strikeLines"//17
     };
 
     @Override
@@ -92,6 +93,8 @@ public class UITextViewMethodMapper<U extends UDTextView> extends UIViewMethodMa
                 return textShadow(target, varargs);
             case 16:
                 return setfontBold(target, varargs);
+            case 17:
+                return setTextDelLine(target, varargs);
         }
         return super.invoke(code, target, varargs);
     }
@@ -470,5 +473,9 @@ public class UITextViewMethodMapper<U extends UDTextView> extends UIViewMethodMa
         final Integer color = ColorUtil.parse(LuaUtil.getInt(varargs, 2));
         final Integer radius = DimenUtil.dpiToPx(varargs.arg(3));
         return view.setShadowLayer(color, radius);
+    }
+
+    public LuaValue setTextDelLine(U view, Varargs varargs) {
+        return view.setDelLine();
     }
 }

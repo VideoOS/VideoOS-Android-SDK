@@ -8,15 +8,24 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
 import cn.com.venvy.common.debug.DebugHelper;
+import cn.com.venvy.common.interf.ActionType;
+import cn.com.venvy.common.interf.EventType;
+import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
+import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
@@ -27,9 +36,15 @@ import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
+import cn.com.videopls.pub.exception.DownloadException;
+import cn.com.videopls.pub.track.ChainTrackModel;
 import cn.com.videopls.pub.view.VideoOSLuaView;
+
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
 
 /**
  * Created by yanjiangbo on 2017/5/17.
@@ -37,14 +52,19 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 public abstract class VideoPlusController implements VenvyObserver {
 
+    protected VideoProgramView mContentView;
+
+    protected Platform mPlatform;
+
+    protected HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
+
     private Context mContext;
     private VideoPlusAdapter mVideoPlusAdapter;
-    private VideoPlusView mContentView;
-    private Platform mPlatform;
     private VideoPlusLuaUpdateModel mLuaUpdateModel;
+    private VideoPlusBaseModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
 
-    public VideoPlusController(VideoPlusView videoPlusView) {
+    public VideoPlusController(VideoProgramView videoPlusView) {
         mContext = videoPlusView.getContext();
         this.mContentView = videoPlusView;
         initDebugView(videoPlusView);
@@ -93,10 +113,137 @@ public abstract class VideoPlusController implements VenvyObserver {
         });
     }
 
+    /***
+     * 开启Service
+     * @param serviceType
+     * @param params
+     * @param callback
+     */
+    public void startService(final ServiceType serviceType, final HashMap<String, String> params,
+                             final IServiceCallback callback) {
+        if (!VenvyAPIUtil.isSupport(16)) {
+            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
+            return;
+        }
+        if (mVideoPlusAdapter == null) {
+            VenvyLog.e("Video++ View 未设置adapter");
+            return;
+        }
+        if (params == null || serviceType == null) {
+            Log.e("Video++", "startService api 调用参数为空");
+            return;
+        }
+        params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
+        startQueryConnect(serviceType, params, new IStartQueryResult() {
+            @Override
+            public void successful(Object result, final ServiceQueryAdsInfo queryAdsInfo) {
+                if (queryAdsInfo == null) {
+                    if (callback != null) {
+                        callback.onFailToCompleteForService(new Exception("error query ads params" +
+                                " is null"));
+                    }
+                    return;
+                }
+                mQueryAdsArray.add(queryAdsInfo);
+                Uri.Builder builder = new Uri.Builder();
+                builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+                        .path(VenvySchemeUtil.PATH_LUA_VIEW)
+                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_TEMPLATE,
+                                queryAdsInfo.getQueryAdsTemplate())
+                        .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID,
+                                queryAdsInfo.getQueryAdsId());
+                HashMap<String, String> skipParams = new HashMap<>();
+                skipParams.put("data", result.toString());
+                navigation(builder.build(), skipParams, new IRouterCallback() {
+                    @Override
+                    public void arrived() {
+                        if (callback != null) {
+                            callback.onCompleteForService();
+                        }
+                    }
+
+                    @Override
+                    public void lost() {
+                        if (callback != null) {
+                            callback.onFailToCompleteForService(new Exception("start startService" +
+                                    " failed"));
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void failed(Throwable throwable) {
+                if (callback != null) {
+                    callback.onFailToCompleteForService(throwable);
+                }
+            }
+        });
+        serviceTypeVideoModeTrack(serviceType, String.valueOf(1));
+    }
+
+    public void reResumeService(ServiceType serviceType) {
+        if (serviceType == null) {
+            return;
+        }
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
+            return;
+        }
+        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+                    .path(VenvySchemeUtil.PATH_LUA_VIEW).appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_EVENT, eventService(serviceType, EventType.EventTypeAction, ActionType.EventTypeResume))
+                    .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID,
+                            queryAdsInfo.getQueryAdsId());
+            navigation(builder.build(), null, null);
+        }
+    }
+
+    public void pauseService(ServiceType serviceType) {
+        if (serviceType == null) {
+            return;
+        }
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
+            return;
+        }
+        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+                    .path(VenvySchemeUtil.PATH_LUA_VIEW).appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_EVENT, eventService(serviceType, EventType.EventTypeAction, ActionType.EventTypePause)).appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID, queryAdsInfo.getQueryAdsId());
+            navigation(builder.build(), null, null);
+        }
+    }
+
+    public void stopService(ServiceType serviceType) {
+        serviceTypeVideoModeTrack(serviceType, String.valueOf(0));
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = getRunningService(serviceType);
+        if (queryAdsInfoArray == null || queryAdsInfoArray.size() <= 0) {
+            return;
+        }
+        for (ServiceQueryAdsInfo queryAdsInfo : queryAdsInfoArray) {
+            View tagView = mContentView.findViewWithTag(queryAdsInfo.getQueryAdsId());
+            if (tagView != null) {
+                mContentView.removeView(tagView);
+                mQueryAdsArray.remove(queryAdsInfo);
+            }
+        }
+    }
+
     public void stop() {
         unRegisterObservable();
         if (mLuaUpdateModel != null) {
             mLuaUpdateModel.destroy();
+        }
+        if (mQueryAdsModel != null) {
+            mQueryAdsModel.destroy();
+        }
+        if (mChainTrackModel != null) {
+            mChainTrackModel.destroy();
+        }
+        if (mQueryAdsArray != null) {
+            mQueryAdsArray.clear();
         }
         if (mContentView != null) {
             mContentView.removeAllViews();
@@ -247,6 +394,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
     }
 
+
     private void initDebugView(ViewGroup viewGroup) {
         DebugHelper.addDebugLayout(viewGroup);
     }
@@ -254,32 +402,76 @@ public abstract class VideoPlusController implements VenvyObserver {
     private void startConnect(final IStartResult result) {
 
         //开始访问Lua增量更新接口
-        mLuaUpdateModel = new VideoPlusLuaUpdateModel(mPlatform, new VideoPlusLuaUpdateModel.LuaUpdateCallback() {
-            @Override
-            public void updateComplete(boolean isUpdateByNetwork) {
-                if (isUpdateByNetwork) {
-                    VenvyLog.d(VideoPlusController.class.getName(), "lua 在线更新成功");
-                    //如果是在线更新的版本，需要强制更新lua路径地址
-                    VideoOSLuaView.destroyLuaScript();
-                } else {
-                    VenvyLog.d(VideoPlusController.class.getName(), "lua 校验版本成功");
-                }
-                if (result != null) {
-                    result.successful();
-                }
-                registerObservable();
-            }
+        mLuaUpdateModel = new VideoPlusLuaUpdateModel(mPlatform,
+                new VideoPlusLuaUpdateModel.LuaUpdateCallback() {
+                    @Override
+                    public void updateComplete(boolean isUpdateByNetwork) {
+                        if (isUpdateByNetwork) {
+                            VenvyLog.d(VideoPlusController.class.getName(), "lua 在线更新成功");
+                            //如果是在线更新的版本，需要强制更新lua路径地址
+                            VideoOSLuaView.destroyLuaScript();
+                        } else {
+                            VenvyLog.d(VideoPlusController.class.getName(), "lua 校验版本成功");
+                        }
+                        if (result != null) {
+                            result.successful();
+                        }
+                        registerObservable();
+                    }
 
-            @Override
-            public void updateError(Throwable throwable) {
-//                VenvyLog.e(VideoPlusController.class.getName(), "lua 更新失败, : " + throwable.getMessage());
-                if (result != null) {
-                    result.failed();
-                }
-                registerObservable();
-            }
-        });
+                    @Override
+                    public void updateError(Throwable throwable) {
+//                VenvyLog.e(VideoPlusController.class.getName(), "lua 更新失败, : " + throwable
+//                .getMessage());
+                        if (result != null) {
+                            result.failed();
+                        }
+                        registerObservable();
+                    }
+                });
         mLuaUpdateModel.startRequest();
+    }
+
+    private void startQueryConnect(ServiceType serviceType, Map<String, String> params, final IStartQueryResult result) {
+        switch (serviceType) {
+            case ServiceTypeVideoMode:
+                mQueryAdsModel = new VideoServiceQueryChainModel(mPlatform, params, new VideoServiceQueryChainModel.ServiceQueryChainCallback() {
+                    @Override
+                    public void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
+                        if (result != null) {
+                            result.successful(queryAdsData, queryAdsInfo);
+                        }
+                    }
+
+                    @Override
+                    public void queryError(Throwable throwable) {
+                        if (result != null) {
+                            result.failed(throwable);
+                        }
+                    }
+                });
+                break;
+            default:
+                mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params,
+                        new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
+
+                            @Override
+                            public void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
+                                if (result != null) {
+                                    result.successful(queryAdsData, queryAdsInfo);
+                                }
+                            }
+
+                            @Override
+                            public void queryError(Throwable throwable) {
+                                if (result != null) {
+                                    result.failed(throwable);
+                                }
+                            }
+                        });
+                break;
+        }
+        mQueryAdsModel.startRequest();
     }
 
     protected void closeInfoView() {
@@ -298,6 +490,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
     }
 
+
     private int getViewPriority(View view) {
         try {
             if (view != null) {
@@ -314,5 +507,110 @@ public abstract class VideoPlusController implements VenvyObserver {
             //忽略此处异常
         }
         return 0;
+    }
+
+    /**
+     * 移除最上层的childView
+     */
+    protected void removeTopChild() {
+        if (mContentView == null) {
+            return;
+        }
+        int childCount = mContentView.getChildCount();
+        if (childCount > 0) {
+            mContentView.removeViewAt(childCount - 1);
+        }
+    }
+
+
+    private ArrayList<ServiceQueryAdsInfo> getRunningService(ServiceType serviceType) {
+        ArrayList<ServiceQueryAdsInfo> queryAdsInfoArray = new ArrayList<>();
+        for (ServiceQueryAdsInfo queryAdsInfo : mQueryAdsArray) {
+            if (queryAdsInfo.getQueryAdsType() == serviceType.getId()) {
+                queryAdsInfoArray.add(queryAdsInfo);
+            }
+        }
+        return queryAdsInfoArray;
+    }
+
+    private String eventService(ServiceType serviceType, EventType eventType,
+                                ActionType actionType) {
+        HashMap<String, String> eventParams = new HashMap<>();
+        eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_EVENT_TYPE,
+                String.valueOf(eventType.getId()));
+        eventParams.put(VenvySchemeUtil.QUERY_PARAMETER_ACTION_TYPE,
+                String.valueOf(actionType.getId()));
+        return new JSONObject(eventParams).toString();
+    }
+
+    private ChainTrackModel mChainTrackModel;
+
+    /***
+     *
+     * @param serviceType
+     * @param onOrOff 0:关闭 1:开启
+     */
+    private void serviceTypeVideoModeTrack(ServiceType serviceType, String onOrOff) {
+        if (serviceType != ServiceType.ServiceTypeVideoMode) {
+            return;
+        }
+        mChainTrackModel = new ChainTrackModel(mPlatform, onOrOff, null);
+        mChainTrackModel.startRequest();
+    }
+
+    public void startVisionProgram(final String appletId, final String data, final int type, final IRouterCallback callback) {
+        if (!VenvyAPIUtil.isSupport(16)) {
+            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
+            return;
+        }
+        if (mVideoPlusAdapter == null) {
+            VenvyLog.e("Video++ View 未设置adapter");
+            return;
+        }
+        if (mContentView != null) {
+            mContentView.setVisibility(View.VISIBLE);
+        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
+
+        VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, new VisionProgramConfigModel.VisionProgramConfigCallback() {
+
+            @Override
+            public void downComplete(final String entranceLua, boolean isUpdateByNet) {
+                VenvyLog.d("vision program downComplete : " + isUpdateByNet + "   - " + entranceLua);
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String luaId = entranceLua;
+                        if (entranceLua.contains(".")) {
+                            luaId = entranceLua.split("\\.")[0];
+                        }
+                        //LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
+                        Uri uri = Uri.parse("LuaView://applets?appletId=" + appletId + "&template=" + entranceLua + "&id=" + luaId);
+                        HashMap<String, String> params = new HashMap<>();
+                        params.put("data", data);
+                        mContentView.navigation(uri, params, callback);
+                    }
+                });
+
+            }
+
+            @Override
+            public void downError(Throwable t) {
+                VenvyLog.e("getMiniAppConf downError");
+                //网络不通，请求不到小程序内容 | 网络请求错误，为底层通讯错误如,404,500等
+                Bundle bundle = new Bundle();
+                if (t instanceof DownloadException) {
+                    bundle.putString(CONSTANT_MSG, getContext().getString(R.string.loadMiniAppError));
+                } else {
+                    bundle.putString(CONSTANT_MSG, getContext().getString(R.string.networkBusy));
+                }
+
+                bundle.putBoolean(CONSTANT_NEED_RETRY, true);
+
+
+                ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
+            }
+        });
+        model.startRequest();
     }
 }

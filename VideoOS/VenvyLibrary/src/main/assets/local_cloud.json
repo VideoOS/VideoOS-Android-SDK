@@ -1,1 +1,35 @@
-{"creativeId":77,"data":{"isShowAds":true,"creativeName":"卡尔","creativeIdList":[201],"miniAppId":"1918","readonly":false,"imageUrl":"https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/82b3c2c4-d0e7-45f2-a876-5e070b622e0d.jpg","linkUrl":"https://videojj.com","interactionTypeId":"551","_imageUrl":{"creativeFileId":201,"width":320,"resCode":"00","fileUrl":"https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/82b3c2c4-d0e7-45f2-a876-5e070b622e0d.jpg","resMsg":"处理成功","height":200},"isShowClose":true,"errorSchema":{}},"duration":5000,"hotspotOrder":0,"id":"74bf84b8-09e5-4e66-96e4-e72629558b41","launchPlanId":225,"sumHotspot":1,"template":"os_cloud_game_hotspot.lua","videoEndTime":10000,"videoStartTime":5000}
+{
+  "creativeId": 77,
+  "data": {
+    "isShowAds": true,
+    "creativeName": "卡尔",
+    "creativeIdList": [
+      201
+    ],
+    "miniAppId": "1918",
+    "readonly": false,
+    "imageUrl": "https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/82b3c2c4-d0e7-45f2-a876-5e070b622e0d.jpg",
+    "linkUrl": "https://videojj.com",
+    "interactionTypeId": "551",
+    "_imageUrl": {
+      "creativeFileId": 201,
+      "resCode": "00",
+      "fileUrl": "https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/82b3c2c4-d0e7-45f2-a876-5e070b622e0d.jpg",
+      "resMsg": "处理成功",
+      "width": 320,
+      "height": 200
+    },
+    "isShowClose": true,
+    "errorSchema": {},
+    "width": 320,
+    "height": 200
+  },
+  "duration": 5000,
+  "hotspotOrder": 0,
+  "id": "74bf84b8-09e5-4e66-96e4-e72629558b41",
+  "launchPlanId": 225,
+  "sumHotspot": 1,
+  "template": "os_cloud_game_hotspot.lua",
+  "videoEndTime": 10000,
+  "videoStartTime": 5000
+}

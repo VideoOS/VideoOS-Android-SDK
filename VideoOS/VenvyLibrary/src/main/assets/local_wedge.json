@@ -1,1 +1,36 @@
-{"creativeId":79,"data":{"isShowAds":true,"creativeName":"DOTA2","creativeIdList":[204],"miniAppId":"1920","priority":10,"isShowClose":true,"repeatTimes":1,"videoUrl":"https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/54985990-470c-4db7-b03f-8143159af459.mp4","readonly":false,"closeAfter":0,"linkUrl":"https://www.dota2.com.cn/index.htm","playerTimeType":1,"interactionTypeId":"552","_imageUrl":{"duration":0,"creativeFileId":204,"resCode":"00","fileUrl":"https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/54985990-470c-4db7-b03f-8143159af459.mp4","resMsg":"处理成功"},"errorSchema":{}},"duration":15000,"hotspotOrder":0,"id":"ae925fd8-26fd-4f36-86dd-56c03c942cdc","launchPlanId":227,"sumHotspot":1,"template":"os_wedge_game_hotspot.lua","videoEndTime":40000,"videoStartTime":25000}
+{
+  "creativeId": 79,
+  "data": {
+    "isShowAds": true,
+    "creativeName": "DOTA2",
+    "creativeIdList": [
+      204
+    ],
+    "miniAppId": "1920",
+    "priority": 10,
+    "isShowClose": true,
+    "repeatTimes": 1,
+    "videoUrl": "https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/54985990-470c-4db7-b03f-8143159af459.mp4",
+    "readonly": false,
+    "closeAfter": 0,
+    "linkUrl": "https://www.dota2.com.cn/index.htm",
+    "playerTimeType": 1,
+    "interactionTypeId": "552",
+    "_imageUrl": {
+      "duration": 0,
+      "creativeFileId": 204,
+      "resCode": "00",
+      "fileUrl": "https://os-saas-share.oss-cn-beijing.aliyuncs.com/pro/app_info/166/54985990-470c-4db7-b03f-8143159af459.mp4",
+      "resMsg": "处理成功"
+    },
+    "errorSchema": {}
+  },
+  "duration": 15000,
+  "hotspotOrder": 0,
+  "id": "ae925fd8-26fd-4f36-86dd-56c03c942cdc",
+  "launchPlanId": 227,
+  "sumHotspot": 1,
+  "template": "os_wedge_game_hotspot.lua",
+  "videoEndTime": 40000,
+  "videoStartTime": 25000
+}

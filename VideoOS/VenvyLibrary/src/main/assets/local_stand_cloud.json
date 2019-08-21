@@ -1,0 +1,33 @@
+{
+  "templates": [{
+    "path": "",
+    "url": "http://os-saas-share.videojj.com/dev/app_info/499/1.0.9-template/os_stand_cloud_hotspot.lua",
+    "name": "os_stand_cloud_hotspot.lua",
+    "md5": "cfe497b017a7deb49062c16f6a250927"
+  }],
+  "id": "773ad73682a94f7d864f0df068cba1a6",
+  "data": {
+    "adsList": [{
+      "adsId": 22731,
+      "adsType": 5,
+      "duration": 10,
+      "hotspotTrackLink": [
+        {
+          "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176288,c3925,i0,m101,8a2,8b3,h",
+          "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176288,c3925,i0,m202,8a2,8b3,h"
+        },
+        {
+          "clickTrackLink": "http://clickc.admaster.com.cn/c/a122445,b3176289,c3925,i0,m101,8a2,8b3,h",
+          "exposureTrackLink": "http://v.admaster.com.cn/i/a122445,b3176289,c3925,i0,m202,8a2,8b3,h"
+        }
+      ],
+      "materialType": 1,
+      "resUrl": "https://asmp-cdn.videojj.com/dev/y4pwm3fajnjuieixl9/WX20190415-213208.jpg"
+    }],
+    "isShowClose": true,
+    "isShowAds": true
+  },
+  "launchPlanId": "Asmp_2274622747",
+  "template": "os_mix_stand_hotspot.lua",
+  "duration": 30
+}
