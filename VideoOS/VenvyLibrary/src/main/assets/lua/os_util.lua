@@ -9,8 +9,7 @@ function table_leng(t)
     end
     return leng;
 end
-function toTable(data)
-    --string json 转table
+function toTable(data) --string json 转table
     local dataTable
     if (type(data) == 'string') then
         if (System.android()) then
@@ -54,6 +53,7 @@ function checkMqttHotspotToSetClose(data, callback)
 end
 
 function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, selfLink)
+
     local actionString = ""
     if (linkUrl ~= nil and string.len(linkUrl) > 0) then
         actionString = linkUrl
@@ -66,7 +66,7 @@ function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, sel
     if Native.widgetNotifyEvent then
 
         local notifyTable = {}
-
+        
         notifyTable["eventType"] = eventType
         notifyTable["adID"] = adID
         notifyTable["adName"] = adName
@@ -80,13 +80,14 @@ function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, sel
         if (deepLink ~= nil) then
             notifyTable["deepLink"] = deepLink
         end
-
+        
         if (selfLink ~= nil) then
             notifyTable["selfLink"] = selfLink
         end
-
+        
         Native:widgetNotify(notifyTable)
-    else
-        Native:widgetEvent(eventType, adID, adName, actionType, actionString)
+     else
+        Native:widgetEvent(eventType, id, typeName, actionType, actionString)
     end
 end
+
