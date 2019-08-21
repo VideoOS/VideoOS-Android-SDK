@@ -3,8 +3,11 @@ package cn.com.venvy;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
+import org.json.JSONArray;
+
 import java.io.File;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +54,7 @@ public class Platform implements Serializable {
 
     private DownloadImageTaskRunner mDownloadImageTaskRunner;
     private DownloadTaskRunner mDownloadTaskRunner;
+    private PreloadLuaUpdate mPreloadLuaUpdate;
 
     public Platform(PlatformInfo platformInfo) {
         if (platformInfo != null) {
@@ -150,6 +154,9 @@ public class Platform implements Serializable {
         if (mDownloadTaskRunner != null) {
             mDownloadTaskRunner.destroy();
         }
+        if (mPreloadLuaUpdate != null) {
+            mPreloadLuaUpdate.destroy();
+        }
     }
 
     public void preloadImage(final String[] imageUrls, final TaskListener taskListener) {
@@ -212,12 +219,44 @@ public class Platform implements Serializable {
         });
     }
 
+    public void preloadLuaList(final Platform platform, final JSONArray luas) {
+        if (luas == null || luas.length() <= 0) {
+            return;
+        }
+        mPreloadLuaUpdate = new PreloadLuaUpdate(platform, new PreloadLuaUpdate.CacheLuaUpdateCallback() {
+            @Override
+            public void updateComplete(boolean isUpdateByNetWork) {
+                if (isUpdateByNetWork) {
+                    try {
+                        //TODO 反射 强制更新Lua目录
+                        Class<?> mClass = Class.forName("cn.com.videopls.pub.view.VideoOSLuaView");
+                        Method method = mClass.getMethod("destroyLuaScript");
+                        method.setAccessible(true);
+                        method.invoke(mClass, new Object[]{});
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void updateError(Throwable t) {
+
+            }
+        });
+        mPreloadLuaUpdate.startDownloadLuaFile(luas);
+    }
+
     public DownloadTaskRunner getDownloadTaskRunner() {
         return mDownloadTaskRunner;
     }
 
     public DownloadImageTaskRunner getDownloadImageTaskRunner() {
         return mDownloadImageTaskRunner;
+    }
+
+    public PreloadLuaUpdate getDownloadLuaTaskRunner() {
+        return mPreloadLuaUpdate;
     }
 
     public void stopBackgroundThread() {
