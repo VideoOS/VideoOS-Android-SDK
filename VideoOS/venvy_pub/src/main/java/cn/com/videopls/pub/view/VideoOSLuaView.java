@@ -36,16 +36,14 @@ import cn.com.videopls.pub.VideoPlusLuaUpdateModel;
 /*
  * Created by yanjiangbo on 2018/1/18.
  */
-
-/**
- * A类小程序   L uaView://defaultLuaView?template=xxx.lua&id=xxx
- * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
- * <p>
- * B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
- */
-
 @VenvyRouter(name = VenvySchemeUtil.SCHEME_LUA_VIEW, type = RouteType.TYPE_VIEW)
 public class VideoOSLuaView extends VideoOSBaseView {
+    /**
+     * A类小程序 LuaView://defaultLuaView?template=xxx.lua&id=xxx
+     * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
+     * <p>
+     * B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
+     */
 
     private static final String INIT_SCRIPT = "Init_ScriptBundle";
     private static final String LOCAL_LUA_PATH = "lua/";
