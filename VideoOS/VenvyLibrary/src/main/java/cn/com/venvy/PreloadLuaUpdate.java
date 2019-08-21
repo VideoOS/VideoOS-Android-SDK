@@ -1,4 +1,4 @@
-package cn.com.videopls.pub;
+package cn.com.venvy;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -11,8 +11,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.com.venvy.App;
-import cn.com.venvy.Platform;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
@@ -20,22 +18,21 @@ import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyMD5Util;
-import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by videojj_pls on 2019/7/25.
  * 结构下载Lua
  */
 
-public class VideoPlusLuaUpdate {
-    private final static String TAG = VideoPlusLuaUpdate.class.getName();
+public class PreloadLuaUpdate {
+    private final static String TAG = PreloadLuaUpdate.class.getName();
     private final String PARSE_LOCAL_LUA = "parse_local_luas";
     public static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private DownloadTaskRunner mDownloadTaskRunner;
     private CacheLuaUpdateCallback mUpdateCallback;
     private Platform mPlatform;
 
-    public VideoPlusLuaUpdate(Platform platform, VideoPlusLuaUpdate.CacheLuaUpdateCallback callback) {
+    public PreloadLuaUpdate(Platform platform, PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
         this.mPlatform = platform;
         this.mUpdateCallback = callback;
     }
@@ -181,8 +178,6 @@ public class VideoPlusLuaUpdate {
                     if (failedTasks != null && failedTasks.size() > 0) {
                         callback.updateError(new Exception("update Lua error,because down urls is failed"));
                     } else {
-                        //如果是在线更新的版本，需要强制更新lua路径地址
-                        VideoOSLuaView.destroyLuaScript();
                         callback.updateComplete(true);
                     }
                 }
@@ -190,7 +185,7 @@ public class VideoPlusLuaUpdate {
         });
     }
 
-    private VideoPlusLuaUpdate.CacheLuaUpdateCallback getCacheLuaUpdateCallback() {
+    private PreloadLuaUpdate.CacheLuaUpdateCallback getCacheLuaUpdateCallback() {
         return mUpdateCallback;
     }
 

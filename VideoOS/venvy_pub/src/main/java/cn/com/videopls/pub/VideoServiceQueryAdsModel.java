@@ -13,6 +13,7 @@ import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
+import cn.com.venvy.PreloadLuaUpdate;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -21,6 +22,7 @@ import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
+import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by videojj_pls on 2019/7/22.
@@ -31,7 +33,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
     private static final String SERVICE_QUERYALL_ADS_URL = Config.HOST_VIDEO_OS
             + "/api/queryAllAds";
     private ServiceQueryAdsCallback mQueryAdsCallback;
-    private VideoPlusLuaUpdate mDownLuaUpdate;
+    private PreloadLuaUpdate mDownLuaUpdate;
     private Map<String, String> mQueryAdsParams;
 
     public VideoServiceQueryAdsModel(Platform platform, Map<String, String> params,
@@ -107,10 +109,13 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                         return;
                     }
                     if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new
-                                VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
+                        mDownLuaUpdate = new PreloadLuaUpdate(getPlatform(), new
+                                PreloadLuaUpdate.CacheLuaUpdateCallback() {
                                     @Override
                                     public void updateComplete(boolean isUpdateByNetWork) {
+                                        if (isUpdateByNetWork) {
+                                            VideoOSLuaView.destroyLuaScript();
+                                        }
                                         ServiceQueryAdsCallback callback = getQueryAdsCallback();
                                         if (callback != null) {
                                             Map<String, String> params = getQueryAdsParams();

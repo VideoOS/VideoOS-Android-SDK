@@ -14,6 +14,7 @@ import java.util.Map;
 import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
+import cn.com.venvy.PreloadLuaUpdate;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -24,6 +25,7 @@ import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 import cn.com.videopls.pub.exception.DownloadException;
+import cn.com.videopls.pub.view.VideoOSLuaView;
 
 import static cn.com.venvy.App.getContext;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
@@ -41,7 +43,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
     private static final String CONFIG = "/vision/getMiniAppConf";
 
     private VisionProgramConfigCallback callback;
-    private VideoPlusLuaUpdate mDownLuaUpdate;
+    private PreloadLuaUpdate mDownLuaUpdate;
     private String miniAppId;
 
     public VisionProgramConfigModel(@NonNull Platform platform, String miniAppId, VisionProgramConfigCallback configCallback) {
@@ -115,9 +117,13 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
                     if (resCode.equalsIgnoreCase("00")) {
                         if (mDownLuaUpdate == null) {
-                            mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
+                            mDownLuaUpdate = new PreloadLuaUpdate(getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
                                 @Override
                                 public void updateComplete(boolean isUpdateByNetWork) {
+                                    if (isUpdateByNetWork) {
+                                        VideoOSLuaView.destroyLuaScript();
+                                        return;
+                                    }
                                     VisionProgramConfigCallback callback = getCallback();
                                     if (callback != null) {
                                         callback.downComplete(template, isUpdateByNetWork);

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import cn.com.venvy.AppSecret;
 import cn.com.venvy.Platform;
+import cn.com.venvy.PreloadLuaUpdate;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -18,6 +19,7 @@ import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
+import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by videojj_pls on 2019/8/19.
@@ -28,7 +30,7 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
     private static final String PRE_LOAD_LUA_URL = "/api/preloadLuaFileInfo";
     private static final String PRE_LOAD_LUA_URL_MOCK = "http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/preloadLuaFileInfo";
     private PreloadLuaCallback mPreloadLuaCallback;
-    private VideoPlusLuaUpdate mDownLuaUpdate;
+    private PreloadLuaUpdate mDownLuaUpdate;
 
     public VideoPlusPreloadLuaFileInfo(Platform platform, PreloadLuaCallback callback) {
         super(platform);
@@ -92,9 +94,12 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
                         return;
                     }
                     if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
+                        mDownLuaUpdate = new PreloadLuaUpdate(getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
                             @Override
                             public void updateComplete(boolean isUpdateByNetWork) {
+                                if (isUpdateByNetWork) {
+                                    VideoOSLuaView.destroyLuaScript();
+                                }
                                 PreloadLuaCallback callback = getPreloadLuaCallback();
                                 if (callback != null) {
                                     callback.updateComplete(isUpdateByNetWork);
