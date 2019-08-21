@@ -35,6 +35,7 @@ import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.LuaHelper;
@@ -42,6 +43,8 @@ import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.exception.DownloadException;
 import cn.com.videopls.pub.track.ChainTrackModel;
 import cn.com.videopls.pub.view.VideoOSLuaView;
+
+import cn.com.videopls.pub.R;
 
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
@@ -600,9 +603,13 @@ public abstract class VideoPlusController implements VenvyObserver {
                 //网络不通，请求不到小程序内容 | 网络请求错误，为底层通讯错误如,404,500等
                 Bundle bundle = new Bundle();
                 if (t instanceof DownloadException) {
-                    bundle.putString(CONSTANT_MSG, getContext().getString(R.string.loadMiniAppError));
+                    bundle.putString(CONSTANT_MSG,
+                            getContext().getString(
+                                    VenvyResourceUtil.getStringId(getContext(), "loadMiniAppError")));
                 } else {
-                    bundle.putString(CONSTANT_MSG, getContext().getString(R.string.networkBusy));
+                    bundle.putString(CONSTANT_MSG,
+                            getContext().getString(
+                                    VenvyResourceUtil.getStringId(getContext(), "networkBusy")));
                 }
 
                 bundle.putBoolean(CONSTANT_NEED_RETRY, true);
