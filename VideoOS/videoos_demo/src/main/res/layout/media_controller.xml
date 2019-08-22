@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    android:layout_gravity="bottom"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#80111111">
+
+        <android.support.constraint.Group
+            app:constraint_referenced_ids="layout_media_pause, tv_media_time_current,
+            media_controller_progress, tv_media_time"
+            android:id="@+id/group_os_controller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            app:layout_goneMarginRight="53dp"
+            android:text="@string/home_setting_item_mall"
+            android:id="@+id/bt_media_mall"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/iv_media_change_screen"
+            style="@style/style_media_bt_bg"/>
+
+        <Button
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/media_controller_huyu"
+            android:id="@+id/bt_media_huyu"
+            style="@style/style_media_bt_bg"/>
+
+
+        <ImageView
+            android:id="@+id/iv_media_change_screen"
+            android:layout_marginRight="@dimen/media_play_margin_left"
+            app:layout_constraintBottom_toBottomOf="@+id/ib_media_change_screen"
+            app:layout_constraintTop_toTopOf="@+id/ib_media_change_screen"
+            app:layout_constraintRight_toLeftOf="@+id/ib_media_change_screen"
+            android:src="@drawable/venvy_screen_then_player_icon"
+            android:layout_width="@dimen/media_change_bt_size"
+            android:layout_height="@dimen/media_change_bt_size"/>
+
+
+        <ImageButton
+            android:layout_marginLeft="@dimen/media_play_margin_left"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/layout_media_pause"
+            style="@android:style/MediaButton.Pause"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+
+        <ImageButton
+            android:id="@+id/ib_media_change_screen"
+            android:layout_marginRight="@dimen/media_play_margin_left"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="@dimen/media_change_bt_size"
+            android:layout_height="@dimen/media_change_bt_size"
+            android:background="@drawable/venvy_screen_player_icon"/>
+
+        <TextView
+            android:textColor="@android:color/white"
+            android:gravity="right"
+            android:layout_marginLeft="@dimen/media_play_margin_left"
+            app:layout_constraintTop_toTopOf="@+id/layout_media_pause"
+            app:layout_constraintBottom_toBottomOf="@+id/layout_media_pause"
+            app:layout_constraintLeft_toRightOf="@+id/layout_media_pause"
+            android:id="@+id/tv_media_time_current"
+            android:layout_width="@dimen/media_current_time_width"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textSize="12sp"/>
+
+        <SeekBar
+            android:id="@+id/media_controller_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/tv_media_time_current"
+            app:layout_constraintRight_toLeftOf="@+id/tv_media_time"
+            android:layout_width="0dp"
+            android:layout_height="32dp"/>
+
+        <TextView
+            android:textColor="@android:color/white"
+            android:maxLines="1"
+            app:layout_constraintTop_toTopOf="@+id/layout_media_pause"
+            app:layout_constraintBottom_toBottomOf="@+id/layout_media_pause"
+            app:layout_constraintRight_toLeftOf="@+id/ib_media_change_screen"
+            android:id="@+id/tv_media_time"
+            android:layout_width="@dimen/media_current_time_width"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"/>
+</android.support.constraint.ConstraintLayout>

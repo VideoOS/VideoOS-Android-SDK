@@ -40,8 +40,16 @@ public class UDApplet extends BaseLuaTable {
     class AppletSize extends VarArgFunction {
         @Override
         public Varargs invoke(Varargs args) {
-            float width = 222;
-            float height = DimenUtil.pxToDpi(AndroidUtil.getScreenHeight(getContext()));
+            int screenHeight = AndroidUtil.getScreenHeight(getContext());
+            int screenWidth = AndroidUtil.getScreenWidth(getContext());
+
+
+//            float width = Math.max(screenWidth,screenHeight) * 0.332f;
+
+
+            float height = DimenUtil.pxToDpi(Math.min(screenWidth,screenHeight));
+            float width = height / 375.0f * 222;
+
             LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(width), LuaValue.valueOf(height)};
             return LuaValue.varargsOf(luaValue);
         }
