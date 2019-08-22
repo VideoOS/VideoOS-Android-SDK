@@ -392,6 +392,32 @@ protected void onDestroy() {
 
 ```
 
+## 视联网模式
+
+通过`videoOsView`的startService()启动视联网模式
+
+```
+mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String, String>(), new IServiceCallback() {
+
+                            @Override
+                            public void onCompleteForService() {
+                                // 启动成功
+                            }
+
+                            @Override
+                            public void onFailToCompleteForService(Throwable throwable) {
+                               // 启动失败
+                            }
+                        });
+                    }
+
+ mVideoPlusView.stopService(ServiceType.ServiceTypeVideoMode); // 关闭视联网模式
+
+```
+
+
+
+
 ## 其他
 
 - 广告监听中相关属性说明（WidgetInfo）
