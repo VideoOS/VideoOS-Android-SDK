@@ -58,7 +58,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // 手机竖屏
 
-        }else if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+        } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // 手机横屏
 
         }
@@ -98,8 +98,8 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     /**
      * clear所有的视联网小程序
      */
-    public void clearAllVisionProgram(){
-        if(programViewB != null){
+    public void clearAllVisionProgram() {
+        if (programViewB != null) {
             programViewB.closeAllProgram();
         }
     }
@@ -107,31 +107,40 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     /**
      * 展示视联网小程序异常情况
+     *
      * @param msg
      * @param needRetry
      */
-    public void showExceptionLogic(String msg,boolean needRetry){
-        if(programViewB != null){
-            programViewB.showExceptionLogic(msg,needRetry);
+    public void showExceptionLogic(String msg, boolean needRetry) {
+        if (programViewB != null) {
+            programViewB.showExceptionLogic(msg, needRetry);
         }
 
     }
 
-    public void setCurrentVisionProgramTitle(String title){
-        if(programViewB != null){
+    public void setCurrentVisionProgramTitle(String title) {
+        if (programViewB != null) {
             programViewB.setCurrentProgramTitle(title);
         }
     }
 
     /**
      * clear指定方向的视联网小程序
+     *
      * @param orientationType
      */
-    public void clearAllVisionProgramByOrientation(int orientationType){
-        if(programViewB != null){
+    public void clearAllVisionProgramByOrientation(int orientationType) {
+        if (programViewB != null) {
             programViewB.closeAllProgramByOrientation(orientationType);
         }
     }
+
+    public void changeVisionprogramByOrientation(boolean isHorizontal) {
+        if (programViewB != null) {
+            programViewB.setVisibility(isHorizontal ? VISIBLE : GONE);
+        }
+    }
+
 
     public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
         if (programViewA != null) {
@@ -169,7 +178,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     /**
      * 拉起一个视联网小程序
      */
-    public void launchVisionProgram(@NonNull String appletId,  String data, final int orientationType) {
+    public void launchVisionProgram(@NonNull String appletId, String data, final int orientationType) {
         if (programViewB != null) {
             programViewB.setClickable(true);
             programViewB.start(appletId, data, orientationType);
@@ -186,7 +195,6 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
             programViewB.close(appletId);
         }
     }
-
 
 
     public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
