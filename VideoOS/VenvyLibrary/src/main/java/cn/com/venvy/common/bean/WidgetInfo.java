@@ -14,6 +14,9 @@ public class WidgetInfo {
     private String mWidgetType;
     private String mWidgetName;
     private String mUrl;
+    private String mLinkUrl;
+    private String mDeepLink;
+    private String mSelfLink;
     private WidgetActionType mWidgetActionType;
     //是否需要获取焦点
     private boolean mNeedFocus;
@@ -25,9 +28,23 @@ public class WidgetInfo {
         mWidgetName = builder.mWidgetName;
         mWidgetActionType = builder.mWidgetActionType;
         mUrl = builder.mUrl;
+        mLinkUrl = builder.mLinkUrl;
+        mDeepLink = builder.mDeepLink;
+        mSelfLink = builder.mSelfLink;
         mNeedFocus = builder.mNeedFocus;
     }
 
+    public String getLinkUrl() {
+        return mLinkUrl;
+    }
+
+    public String getDeepLink() {
+        return mDeepLink;
+    }
+
+    public String getSelfLink() {
+        return mSelfLink;
+    }
 
     public String getAdId() {
         return mAdId;
@@ -63,11 +80,29 @@ public class WidgetInfo {
         private String mWidgetName;
         private WidgetActionType mWidgetActionType;
         private String mUrl;
+        private String mLinkUrl;
+        private String mDeepLink;
+        private String mSelfLink;
         private String mResourceId;
         private boolean mNeedFocus;
 
         public Builder setAdId(String adId) {
             this.mAdId = adId;
+            return this;
+        }
+
+        public Builder setLinkUrl(String linkUrl) {
+            this.mLinkUrl = linkUrl;
+            return this;
+        }
+
+        public Builder setDeepLink(String deepLink) {
+            this.mDeepLink = deepLink;
+            return this;
+        }
+
+        public Builder setSelfLink(String selfLink) {
+            this.mSelfLink = selfLink;
             return this;
         }
 
