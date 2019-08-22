@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -17,7 +18,6 @@ import android.widget.FrameLayout;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
@@ -70,12 +70,17 @@ public class VideoProgramTypeBView extends FrameLayout {
     }
 
     private void init() {
-        inflate(getContext(), VenvyResourceUtil.getLayoutId(getContext(), "video_program_type_b"), this);
-        // for test
-//        setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.holo_red_light));
-//        setAlpha(0.5f);
-        programContent = (FrameLayout) findViewById(
-                VenvyResourceUtil.getId(getContext(), "programContent"));
+        programContent = new FrameLayout(getContext());
+        int screenHeight = VenvyUIUtil.getScreenHeight(getContext());
+        int screenWidth = VenvyUIUtil.getScreenWidth(getContext());
+
+
+        LayoutParams layoutParams = new LayoutParams((int) (Math.min(screenWidth, screenHeight) / 375.0f * 222),
+                LayoutParams.MATCH_PARENT);
+        layoutParams.gravity = Gravity.END;
+        programContent.setLayoutParams(layoutParams);
+        addView(programContent);
+
 
         setOnClickListener(new OnClickListener() {
             @Override

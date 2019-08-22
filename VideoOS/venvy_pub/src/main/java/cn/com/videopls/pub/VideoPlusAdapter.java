@@ -145,7 +145,7 @@ public abstract class VideoPlusAdapter {
 
     public void notifyVideoScreenChanged(ScreenStatus status) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable("screen_changed", status);
+        bundle.putSerializable(VenvyObservableTarget.Constant.CONSTANT_SCREEN_CHANGE, status);
         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SCREEN_CHANGED, bundle);
     }
 
