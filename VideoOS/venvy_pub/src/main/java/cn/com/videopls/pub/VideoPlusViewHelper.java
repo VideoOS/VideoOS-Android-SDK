@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
@@ -80,7 +81,8 @@ public class VideoPlusViewHelper implements VenvyObserver {
             case VenvyObservableTarget.TAG_SCREEN_CHANGED: {
                 // 当目前展示的是横屏小程序，切横屏的时候销毁掉
                 if (videoPlusView != null) {
-                    videoPlusView.clearAllVisionProgramByOrientation(isHorizontal() ? VenvyObservableTarget.Constant.CONSTANT_PORTRAIT : VenvyObservableTarget.Constant.CONSTANT_LANDSCAPE);
+                    ScreenStatus screenStatus = (ScreenStatus)bundle.getSerializable(VenvyObservableTarget.Constant.CONSTANT_SCREEN_CHANGE);
+                    videoPlusView.changeVisionprogramByOrientation(screenStatus == ScreenStatus.LANDSCAPE);
                 }
 
                 return;

@@ -96,17 +96,6 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
                 "video_program_tool"), this);
         rlTitleBar = findViewById(VenvyResourceUtil.getId(getContext(), "rlTitleBar"));
         rlTitleBar.setAlpha(0.9f);
-//        // TODO :  for test
-//        rlTitleBar.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(getContext(), "error~~", Toast.LENGTH_SHORT).show();
-//                Bundle bundle = new Bundle();
-//                bundle.putString(CONSTANT_MSG, getContext().getString(R.string.networkBusy));
-//                bundle.putBoolean(CONSTANT_NEED_RETRY, false);
-//                ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
-//            }
-//        });
 
         loadingContent = findViewById(
                 VenvyResourceUtil.getId(getContext(), "loadingContent"));
