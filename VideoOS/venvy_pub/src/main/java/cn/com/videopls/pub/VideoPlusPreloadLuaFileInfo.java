@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.venvy.AppSecret;
+import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PreloadLuaUpdate;
 import cn.com.venvy.common.http.HttpRequest;
@@ -28,7 +29,6 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
     private static final String PRE_LOAD_LUA_URL = "/api/preloadLuaFileInfo";
-    private static final String PRE_LOAD_LUA_URL_MOCK = "http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/preloadLuaFileInfo";
     private PreloadLuaCallback mPreloadLuaCallback;
     private PreloadLuaUpdate mDownLuaUpdate;
 
@@ -148,8 +148,7 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
 
     @Override
     public Request createRequest() {
-//        return HttpRequest.post(Config.HOST_VIDEO_OS + PRE_LOAD_LUA_URL, createBody());
-        return HttpRequest.post(PRE_LOAD_LUA_URL_MOCK, createBody());
+        return HttpRequest.post(Config.HOST_VIDEO_OS + PRE_LOAD_LUA_URL, createBody());
     }
 
     @Override
