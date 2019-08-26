@@ -18,15 +18,6 @@ public class AsyncStatisticsRunnable implements Runnable {
 
     @Override
     public void run() {
-        Log.i("zhangjunling", "run()");
-
-        Log.i("zhangjunling", "size:" + statisticsInfoBean.fileInfoBeans.size());
-//        Log.i("zhangjunling", "data:" + statisticsInfoBean.fileInfoBeans.toString());
-
-//        if(true){
-//            return;
-//        }
-
         VideoPlusStatisticsModel videoPlusStatisticsModel = new VideoPlusStatisticsModel(platform, statisticsInfoBean, new VideoPlusStatisticsModel.VideoPlusStatisticsCallback() {
             @Override
             public void updateComplete(String result) {

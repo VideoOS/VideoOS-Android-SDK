@@ -24,7 +24,8 @@ import cn.com.venvy.common.utils.VenvyAesUtil;
  * Created by videopls on 2019/8/22.
  */
 public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
-    private static final String SERVICE_QUERYALL_ADS_URL = Config.HOST_VIDEO_OS + "/statisticFlow";
+    private static final String SERVICE_STATISTICS_URL = Config.HOST_VIDEO_OS + "/statisticFlow";
+
     private StatisticsInfoBean statisticsInfoBean;
     private VideoPlusStatisticsCallback videoPlusStatisticsCallback;
     public VideoPlusStatisticsModel(@NonNull Platform platform,StatisticsInfoBean statisticsInfoBean,VideoPlusStatisticsCallback videoPlusStatisticsCallback) {
@@ -35,7 +36,7 @@ public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
 
     @Override
     public Request createRequest() {
-        return HttpRequest.post(SERVICE_QUERYALL_ADS_URL,createHead(),createBody());
+        return HttpRequest.post(SERVICE_STATISTICS_URL,createHead(),createBody());
     }
 
     private Map<String, String> createHead() {
@@ -47,23 +48,22 @@ public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
     }
 
     private Map<String, String> createBody() {
-        Map<String, Object> paramMap = createParamMap();
+        Map<String, String> paramMap = createParamMap();
         Map<String, String> bodyMap = new HashMap<>();
-        bodyMap.put("bu_id", "videoos");
-        bodyMap.put("device_type","2");
         bodyMap.put("data", VenvyAesUtil.encrypt(getPlatform().getPlatformInfo().getAppSecret(), getPlatform().getPlatformInfo().getAppSecret(), new JSONObject(paramMap).toString()));
         return bodyMap;
     }
 
-    private Map<String,Object> createParamMap() {
+    private Map<String,String> createParamMap() {
         String commonParamJson = createCommonParamJson();
         String fileInfoJson = createFileInfoJson();
         int downLoadStage = getDownLoadStage();
 
-        Map<String, Object> paramMap = new HashMap<>();
+        Map<String, String> paramMap = new HashMap<>();
         paramMap.put("fileInfo", fileInfoJson);
         paramMap.put("commonParam", commonParamJson);
-        paramMap.put("downLoadStage", downLoadStage);
+        paramMap.put("downLoadStage", downLoadStage + "");
+
         return paramMap;
     }
 

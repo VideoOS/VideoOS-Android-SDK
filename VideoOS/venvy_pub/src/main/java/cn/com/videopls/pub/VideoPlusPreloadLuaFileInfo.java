@@ -48,7 +48,6 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
         return new IRequestHandler() {
             @Override
             public void requestFinish(Request request, IResponse response) {
-                Log.i("zhangjunling", "requestFinish()");
                 try {
                     if (!response.isSuccess()) {
                         PreloadLuaCallback callback = getPreloadLuaCallback();
@@ -66,7 +65,6 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    Log.i("zhangjunling", "encryptData:" + VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform())));
                     JSONObject needValue = new JSONObject(VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform())));
                     if (needValue == null) {
                         PreloadLuaCallback callback = getPreloadLuaCallback();
