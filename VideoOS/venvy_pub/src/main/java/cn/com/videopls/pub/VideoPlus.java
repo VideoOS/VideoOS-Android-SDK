@@ -10,6 +10,7 @@ import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.common.debug.DebugStatus;
 import cn.com.venvy.common.download.DownloadDbHelper;
 import cn.com.venvy.common.router.VenvyRouterManager;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.LuaHelper;
 
@@ -32,6 +33,7 @@ public class VideoPlus {
         if (!TextUtils.isEmpty(appKey) && !TextUtils.isEmpty(appSecret)) {
             PlatformInfo platformInfo = new PlatformInfo.Builder().setAppKey(appKey).setAppSecret(appSecret).builder();
             Platform platform = new Platform(platformInfo);
+            VenvyStatisticsManager.getInstance().init(platform);
             new VideoPlusPreloadLuaFileInfo(platform,null).startRequest();
         }
         VenvyRouterManager.getInstance().init(context, DebugStatus.isRelease() ? null : new VenvyRouterManager.RouterInitResult() {

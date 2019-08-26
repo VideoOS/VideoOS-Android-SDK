@@ -14,6 +14,7 @@ import java.util.List;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyGzipUtil;
@@ -34,8 +35,10 @@ public class PreloadZipUpdate {
     private DownloadTaskRunner mDownloadTaskRunner;
     private CacheZipUpdateCallback mUpdateCallback;
     private Platform mPlatform;
+    private int preloadType;
 
-    public PreloadZipUpdate(Platform platform, PreloadZipUpdate.CacheZipUpdateCallback callback) {
+    public PreloadZipUpdate(int preloadType,Platform platform, PreloadZipUpdate.CacheZipUpdateCallback callback) {
+        this.preloadType = preloadType;
         this.mPlatform = platform;
         this.mUpdateCallback = callback;
     }
@@ -266,6 +269,7 @@ public class PreloadZipUpdate {
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,preloadType);
                 if (failedTasks != null && failedTasks.size() > 0) {
                     CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                     if (callback != null) {

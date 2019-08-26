@@ -109,7 +109,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                         return;
                     }
                     if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new PreloadLuaUpdate(getPlatform(), new
+                        mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new
                                 PreloadLuaUpdate.CacheLuaUpdateCallback() {
                                     @Override
                                     public void updateComplete(boolean isUpdateByNetWork) {
