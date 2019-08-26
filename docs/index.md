@@ -415,7 +415,39 @@ mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String
 
 ```
 
+## 前后贴
 
+跟`视联网模式`的启动方式差不多，第一个ServiceType是个枚举。
+
+```
+  //  ServiceTypeVideoMode(1),//视联网模式
+  // ServiceTypeFrontVideo(3),//前帖广告
+  //  ServiceTypeLaterVideo(4),//后贴广告
+  //  ServiceTypePauseAd(5);//暂停广告
+
+        HashMap<String, String> params = new HashMap<>();
+        // duration 参数指定倒计时
+        params.put("duration", "60");
+        mVideoPlusView.startService(ServiceType.ServiceTypeFrontVideo, params, new IServiceCallback() {
+            @Override
+            public void onCompleteForService() {
+
+            }
+
+            @Override
+            public void onFailToCompleteForService(Throwable throwable) {
+                if (type == ServiceType.ServiceTypeFrontVideo) {
+                    VenvyUIUtil.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mVideoPlayer.startPlayLogic();
+                        }
+                    });
+                }
+            }
+        });
+
+```
 
 
 ## 其他
