@@ -26,6 +26,7 @@ import cn.com.venvy.common.interf.OnTagKeyListener;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.media.StorageUtils;
 import cn.com.venvy.common.media.file.Md5FileNameGenerator;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.track.TrackHelper;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 
@@ -51,6 +52,10 @@ public class Platform implements Serializable {
 
     private static final String PRE_LOAD_IMAGE = "pre_load_images";
     private static final String PRE_LOAD_MEDIA = "pre_load_medias";
+
+    public static final int STATISTICS_DOWNLOAD_STAGE_REAPP = 0;
+    public static final int STATISTICS_DOWNLOAD_STAGE_REVIDEO = 1;
+    public static final int STATISTICS_DOWNLOAD_STAGE_REALPLAY = 2;
 
     private DownloadImageTaskRunner mDownloadImageTaskRunner;
     private DownloadTaskRunner mDownloadTaskRunner;
@@ -171,7 +176,51 @@ public class Platform implements Serializable {
             DownloadImageTask task = new DownloadImageTask(App.getContext(), url);
             arrayList.add(task);
         }
-        mDownloadImageTaskRunner.startTasks(arrayList, taskListener);
+        mDownloadImageTaskRunner.startTasks(arrayList, new TaskListener<DownloadImageTask, Boolean>() {
+            @Override
+            public boolean isFinishing() {
+                if(taskListener != null){
+                    return taskListener.isFinishing();
+                }
+                return false;
+            }
+
+            @Override
+            public void onTaskStart(DownloadImageTask downloadImageTask) {
+                if(taskListener != null){
+                    taskListener.onTaskStart(downloadImageTask);
+                }
+            }
+
+            @Override
+            public void onTaskProgress(DownloadImageTask downloadImageTask, int progress) {
+                if(taskListener != null){
+                    taskListener.onTaskProgress(downloadImageTask, progress);
+                }
+            }
+
+            @Override
+            public void onTaskFailed(DownloadImageTask downloadImageTask, @Nullable Throwable throwable) {
+                if(taskListener != null){
+                    taskListener.onTaskFailed(downloadImageTask, throwable);
+                }
+            }
+
+            @Override
+            public void onTaskSuccess(DownloadImageTask downloadImageTask, Boolean aBoolean) {
+                if(taskListener != null){
+                    taskListener.onTaskSuccess(downloadImageTask, aBoolean);
+                }
+            }
+
+            @Override
+            public void onTasksComplete(@Nullable List<DownloadImageTask> successfulTasks, @Nullable List<DownloadImageTask> failedTasks) {
+                VenvyStatisticsManager.getInstance().submitImageStatisticsInfo(successfulTasks,Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
+                if(taskListener != null){
+                    taskListener.onTasksComplete(successfulTasks, failedTasks);
+                }
+            }
+        });
     }
 
     public void preloadMedia(final String[] mediaUrls, final TaskListener taskListener) {
@@ -186,35 +235,51 @@ public class Platform implements Serializable {
             DownloadTask task = new DownloadTask(App.getContext(), url, StorageUtils.getIndividualCacheDirectory(App.getContext()).getAbsolutePath() + File.separator + new Md5FileNameGenerator().generate(url));
             arrayList.add(task);
         }
-        mDownloadTaskRunner.startTasks(arrayList, taskListener != null ? taskListener : new TaskListener<DownloadTask, Boolean>() {
+        mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
             @Override
             public boolean isFinishing() {
+                if(taskListener != null){
+                    return taskListener.isFinishing();
+                }
                 return false;
             }
 
             @Override
             public void onTaskStart(DownloadTask downloadTask) {
-
+                if(taskListener != null){
+                    taskListener.onTaskStart(downloadTask);
+                }
             }
 
             @Override
             public void onTaskProgress(DownloadTask downloadTask, int progress) {
-
+                if(taskListener != null){
+                    taskListener.onTaskProgress(downloadTask, progress);
+                }
             }
 
             @Override
             public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
-                downloadTask.failed();
+                if(taskListener != null){
+                    taskListener.onTaskFailed(downloadTask, throwable);
+                }else {
+                    downloadTask.failed();
+                }
             }
 
             @Override
             public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
-
+                if(taskListener != null){
+                    taskListener.onTaskSuccess(downloadTask, aBoolean);
+                }
             }
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
-
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
+                if(taskListener != null){
+                    taskListener.onTasksComplete(successfulTasks, failedTasks);
+                }
             }
         });
     }
@@ -223,7 +288,7 @@ public class Platform implements Serializable {
         if (luas == null || luas.length() <= 0) {
             return;
         }
-        mPreloadLuaUpdate = new PreloadLuaUpdate(platform, new PreloadLuaUpdate.CacheLuaUpdateCallback() {
+        mPreloadLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, platform, new PreloadLuaUpdate.CacheLuaUpdateCallback() {
             @Override
             public void updateComplete(boolean isUpdateByNetWork) {
                 if (isUpdateByNetWork) {

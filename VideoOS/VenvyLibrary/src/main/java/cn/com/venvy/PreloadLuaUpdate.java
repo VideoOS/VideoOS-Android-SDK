@@ -9,11 +9,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
@@ -31,8 +34,10 @@ public class PreloadLuaUpdate {
     private DownloadTaskRunner mDownloadTaskRunner;
     private CacheLuaUpdateCallback mUpdateCallback;
     private Platform mPlatform;
+    private int preloadType;
 
-    public PreloadLuaUpdate(Platform platform, PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
+    public PreloadLuaUpdate(int preloadType, Platform platform, PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
+        this.preloadType = preloadType;
         this.mPlatform = platform;
         this.mUpdateCallback = callback;
     }
@@ -72,13 +77,13 @@ public class PreloadLuaUpdate {
      */
     private void checkUpdateLua(final JSONArray luaUrls) {
         VenvyAsyncTaskUtil.doAsyncTask(PARSE_LOCAL_LUA, new VenvyAsyncTaskUtil.IDoAsyncTask<JSONArray,
-                List<String>>() {
+                Set<String>>() {
             @Override
-            public List<String> doAsyncTask(JSONArray... urls) throws Exception {
+            public Set<String> doAsyncTask(JSONArray... urls) throws Exception {
                 if (urls == null || urls.length == 0) {
                     return null;
                 }
-                List<String> needDownUrls = new ArrayList<>();
+                Set<String> needDownUrls = new LinkedHashSet();
                 try {
                     JSONArray jsonArray = urls[0];
                     int len = luaUrls.length();
@@ -101,15 +106,16 @@ public class PreloadLuaUpdate {
                     e.printStackTrace();
                     VenvyLog.i(TAG, "VideoPlusLuaUpdate ——> checkDownLuaUrls error：" + e.getMessage());
                 }
+
                 return needDownUrls;
             }
-        }, new VenvyAsyncTaskUtil.IAsyncCallback<List<String>>() {
+        }, new VenvyAsyncTaskUtil.IAsyncCallback<Set<String>>() {
             @Override
             public void onPreExecute() {
             }
 
             @Override
-            public void onPostExecute(List<String> urls) {
+            public void onPostExecute(Set<String> urls) {
                 if (urls == null) {
                     return;
                 }
@@ -136,7 +142,7 @@ public class PreloadLuaUpdate {
 
     }
 
-    private void startDownloadLuaFile(List<String> urls) {
+    private void startDownloadLuaFile(Set<String> urls) {
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(mPlatform);
         }
@@ -173,6 +179,7 @@ public class PreloadLuaUpdate {
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,preloadType);
                 CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
                 if (callback != null) {
                     if (failedTasks != null && failedTasks.size() > 0) {

@@ -2,6 +2,7 @@ package cn.com.videopls.pub;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,6 +48,7 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
         return new IRequestHandler() {
             @Override
             public void requestFinish(Request request, IResponse response) {
+                Log.i("zhangjunling", "requestFinish()");
                 try {
                     if (!response.isSuccess()) {
                         PreloadLuaCallback callback = getPreloadLuaCallback();
@@ -64,6 +66,7 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
                         }
                         return;
                     }
+                    Log.i("zhangjunling", "encryptData:" + VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform())));
                     JSONObject needValue = new JSONObject(VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform())));
                     if (needValue == null) {
                         PreloadLuaCallback callback = getPreloadLuaCallback();
@@ -94,7 +97,7 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
                         return;
                     }
                     if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new PreloadLuaUpdate(getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
+                        mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REAPP,getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
                             @Override
                             public void updateComplete(boolean isUpdateByNetWork) {
                                 if (isUpdateByNetWork) {

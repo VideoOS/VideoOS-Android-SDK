@@ -68,6 +68,10 @@ public class DownloadTask implements QueueTaskRunner.ITask {
         return mCachePath;
     }
 
+    public DownloadDbHelper.DownloadInfo getmDownloadInfo() {
+        return mDownloadInfo;
+    }
+
     @Override
     public boolean isComplete() {
         DownloadDbHelper.DownloadInfo info = mHelper.queryDownloadInfo(mUrl);

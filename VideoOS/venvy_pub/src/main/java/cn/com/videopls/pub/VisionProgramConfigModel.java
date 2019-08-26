@@ -118,7 +118,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
                     if (resCode.equalsIgnoreCase("00")) {
                         if (mDownLuaUpdate == null) {
-                            mDownLuaUpdate = new PreloadLuaUpdate(getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
+                            mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
                                 @Override
                                 public void updateComplete(boolean isUpdateByNetWork) {
                                     if (isUpdateByNetWork) {
