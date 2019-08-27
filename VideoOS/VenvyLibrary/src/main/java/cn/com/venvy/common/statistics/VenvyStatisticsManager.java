@@ -85,6 +85,20 @@ public final class VenvyStatisticsManager {
 
     }
 
+    public void submitFileStatisticsInfo(StatisticsInfoBean.FileInfoBean fileInfoBean , int downLoadStage) {
+        if(fileInfoBean == null){
+            return;
+        }
+        StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
+        List<StatisticsInfoBean.FileInfoBean> fileInfoBeanList = new ArrayList<>();
+        fileInfoBeanList.add(fileInfoBean);
+        statisticsInfoBean.fileInfoBeans = fileInfoBeanList;
+        statisticsInfoBean.downLoadStage = downLoadStage;
+        if(statisticsInfoBean != null){
+            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,statisticsInfoBean));
+        }
+    }
+
     public void submitFileStatisticsInfo(DownloadTask downloadTask ,int downLoadStage) {
         if(downloadTask == null){
             return;

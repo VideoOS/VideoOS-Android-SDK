@@ -124,7 +124,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         return;
                     }
                     if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, getPlatform(), new
+                        mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new
                                 PreloadLuaUpdate.CacheLuaUpdateCallback() {
                                     @Override
                                     public void updateComplete(boolean isUpdateByNetWork) {
@@ -145,7 +145,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                 });
                     }
                     if (mDownZipUpdate == null) {
-                        mDownZipUpdate = new PreloadZipUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, getPlatform(), new PreloadZipUpdate.CacheZipUpdateCallback() {
+                        mDownZipUpdate = new PreloadZipUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new PreloadZipUpdate.CacheZipUpdateCallback() {
                             @Override
                             public void updateComplete(JSONArray zipJsonDataArray) {
                                 Map<String, String> params = getQueryChainParams();

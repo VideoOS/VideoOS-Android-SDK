@@ -1,6 +1,5 @@
 package cn.com.venvy.common.statistics;
 
-import android.util.Log;
 import cn.com.venvy.Platform;
 
 /**
