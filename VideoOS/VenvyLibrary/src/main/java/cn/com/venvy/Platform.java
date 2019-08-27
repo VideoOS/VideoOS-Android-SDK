@@ -215,7 +215,6 @@ public class Platform implements Serializable {
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadImageTask> successfulTasks, @Nullable List<DownloadImageTask> failedTasks) {
-                VenvyStatisticsManager.getInstance().submitImageStatisticsInfo(successfulTasks,Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
                 if(taskListener != null){
                     taskListener.onTasksComplete(successfulTasks, failedTasks);
                 }
@@ -227,6 +226,7 @@ public class Platform implements Serializable {
         if (mediaUrls == null || mediaUrls.length <= 0) {
             return;
         }
+
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(this);
         }
