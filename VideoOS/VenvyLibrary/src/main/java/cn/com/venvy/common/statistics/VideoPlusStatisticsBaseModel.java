@@ -45,7 +45,7 @@ public abstract class VideoPlusStatisticsBaseModel {
     public abstract IRequestHandler createRequestHandler();
 
     public boolean needCheckResponseValid() {
-        return true;
+        return false;
     }
 
     public void startRequest() {
