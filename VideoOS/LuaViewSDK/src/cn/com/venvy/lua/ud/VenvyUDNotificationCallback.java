@@ -10,6 +10,7 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
+import cn.com.venvy.common.bean.NotificationInfo;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObserver;
@@ -20,42 +21,49 @@ import cn.com.venvy.lua.view.VenvyLVNotificationCallback;
  */
 
 public class VenvyUDNotificationCallback extends UDView<VenvyLVNotificationCallback> implements VenvyObserver {
-    LuaValue mNotificationCallback;
-    private String mNotificationTag;
+    LuaValue registerNotificationCallback;
+    public static final String OBSERVABLE_NOTIFICATION_MESSAGE = "Observable_notification_message";
+    public static final String OBSERVABLE_NOTIFICATION_TAG = "Observable_notification_tag";
 
     public VenvyUDNotificationCallback(VenvyLVNotificationCallback view, Globals globals, LuaValue metatable, Varargs initParams) {
         super(view, globals, metatable, initParams);
     }
 
-    public VenvyUDNotificationCallback setNotificationCallback(LuaValue callbacks) {
+    public VenvyUDNotificationCallback registerNotification(LuaValue callbacks, String tag) {
         if (callbacks != null) {
-            mNotificationCallback = callbacks;
+            registerNotificationCallback = callbacks;
         }
         return this;
     }
 
-    public void startNotification(String key) {
-        if (TextUtils.isEmpty(key)) {
+    public void postNotification(String tag, NotificationInfo message) {
+        if (TextUtils.isEmpty(tag)) {
             return;
         }
-        mNotificationTag = key;
-        ObservableManager.getDefaultObserable().addObserver(mNotificationTag, this);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(OBSERVABLE_NOTIFICATION_MESSAGE, message);
+        bundle.putString(OBSERVABLE_NOTIFICATION_TAG, tag);
+        ObservableManager.getDefaultObserable().sendToTarget(tag, bundle);
     }
 
-    public void stopNotification() {
-        ObservableManager.getDefaultObserable().removeObserverByTag(mNotificationTag);
+    public void removeNotification(String tag) {
+        ObservableManager.getDefaultObserable().removeObserverByTag(tag);
     }
 
     @Override
     public void notifyChanged(VenvyObservable observable, String tag, Bundle bundle) {
-        if (bundle == null || !TextUtils.equals(tag, mNotificationTag)) {
+        if (bundle == null) {
             return;
         }
-        //TODO未定义
-        String data = bundle.getString("data");
-        if (TextUtils.isEmpty(data)) {
+        if (!TextUtils.equals(tag, bundle.getString(OBSERVABLE_NOTIFICATION_TAG))) {
             return;
         }
-        LuaUtil.callFunction(mNotificationCallback, data);
+        NotificationInfo info = (NotificationInfo) bundle.getSerializable(OBSERVABLE_NOTIFICATION_MESSAGE);
+        if (info == null || info.messageInfo == null) {
+            return;
+        }
+        if (registerNotificationCallback != null) {
+            LuaUtil.callFunction(registerNotificationCallback, LuaUtil.toTable(info.messageInfo));
+        }
     }
 }
