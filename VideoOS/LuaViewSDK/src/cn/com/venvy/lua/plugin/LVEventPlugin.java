@@ -29,7 +29,7 @@ import cn.com.venvy.lua.binder.VenvyLVLibBinder;
  * Created by Arthur on 2017/8/21.
  * <p>
  * * A类小程序   L uaView://defaultLuaView?template=xxx.lua&id=xxx
- * * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x(type: 1横屏,2竖屏)
+ * * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x&appType=x(type: 1横屏,2竖屏,appType: 1 lua,2 H5)
  * *
  * * B类小程序容器内部跳转   LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
  */
@@ -89,7 +89,13 @@ public class LVEventPlugin {
                     info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();
                 } else if (protocolHost.equalsIgnoreCase("applets")) {
                     String type = info.getBundle().getString("type");
-                    VenvyLog.d("type is "+type);
+                    String appType = info.getBundle().getString("appType");
+                    if(TextUtils.isEmpty(appType)){
+                        VenvyLog.d("appType is null");
+                        // appType为空默认指定为lua
+                        appType = String.valueOf(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_LUA);
+                    }
+                    VenvyLog.d("type is "+type+" ， appType is "+appType);
                     if(TextUtils.isEmpty(type)){
                         // B类小程序内部跳转
                         info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();
@@ -99,6 +105,7 @@ public class LVEventPlugin {
                         Bundle bundle = new Bundle();
                         bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, info.getBundle().getString("appletId"));
                         bundle.putString(VenvyObservableTarget.KEY_ORIENTATION_TYPE, type);
+                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE, appType);
                         if (table != null) {
                             bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, JsonUtil.toString(table));
                         }
