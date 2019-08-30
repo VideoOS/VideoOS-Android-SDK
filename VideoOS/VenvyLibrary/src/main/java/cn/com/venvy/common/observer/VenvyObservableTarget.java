@@ -30,6 +30,10 @@ public class VenvyObservableTarget {
     public static final String TAG_SHOW_VISION_ERROR_LOGIC = "notifyVisionProgramErrorLogic";
     // 更新视联网小程序Title
     public static final String TAG_UPDATE_VISION_TITLE = "notifyUpdateVisionProgramTitle";
+    // 拉起一个H5小程序
+    public static final String TAG_H5_VISION_PROGRAM = "notifyLaunchH5Program";
+    // 关闭一个H5小程序
+    public static final String TAG_CLOSE_H5_VISION_PROGRAM = "notifyCloseH5Program";
 
     public static class Constant {
         public static final int CONSTANT_LANDSCAPE = 1;
@@ -42,6 +46,7 @@ public class VenvyObservableTarget {
         public static final String CONSTANT_APP_TYPE = "appType";
         public static final int CONSTANT_APP_TYPE_LUA = 1;
         public static final int CONSTANT_APP_TYPE_H5 = 2;
+        public static final String CONSTANT_H5_URL = "h5Url";
     }
 
 }

@@ -1,11 +1,13 @@
 package com.taobao.luaview.userdata.kit;
 
 import android.os.Bundle;
+import android.util.Pair;
 
 import com.taobao.luaview.fun.mapper.LuaViewLib;
 import com.taobao.luaview.userdata.base.BaseLuaTable;
 import com.taobao.luaview.util.AndroidUtil;
 import com.taobao.luaview.util.DimenUtil;
+import com.taobao.luaview.util.VisionUtil;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
@@ -40,17 +42,9 @@ public class UDApplet extends BaseLuaTable {
     class AppletSize extends VarArgFunction {
         @Override
         public Varargs invoke(Varargs args) {
-            int screenHeight = AndroidUtil.getScreenHeight(getContext());
-            int screenWidth = AndroidUtil.getScreenWidth(getContext());
+            Pair<Float,Float> pair = VisionUtil.getVisionProgramSize();
 
-
-//            float width = Math.max(screenWidth,screenHeight) * 0.332f;
-
-
-            float height = DimenUtil.pxToDpi(Math.min(screenWidth,screenHeight));
-            float width = height / 375.0f * 222;
-
-            LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(width), LuaValue.valueOf(height)};
+            LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(pair.first), LuaValue.valueOf(pair.second)};
             return LuaValue.varargsOf(luaValue);
         }
     }

@@ -548,7 +548,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         mChainTrackModel.startRequest();
     }
 
-    public void startVisionProgram(final String appletId, final String data, final int type, final IRouterCallback callback) {
+    public void startVisionProgram(final String appletId, final String data, final int type,final boolean isH5Type, final IRouterCallback callback) {
         if (!VenvyAPIUtil.isSupport(16)) {
             Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
             return;
@@ -562,7 +562,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
 
-        VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, new VisionProgramConfigModel.VisionProgramConfigCallback() {
+        VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId,isH5Type, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
             @Override
             public void downComplete(final String entranceLua, boolean isUpdateByNet) {

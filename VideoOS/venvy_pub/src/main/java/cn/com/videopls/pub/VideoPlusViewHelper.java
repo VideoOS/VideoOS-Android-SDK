@@ -28,6 +28,8 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_SCREEN_CHANGED, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, this);
+        ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, this);
+        ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM, this);
     }
 
 
@@ -39,6 +41,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 if (bundle != null) {
                     String appletsId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
                     int orientationType = Integer.parseInt(bundle.getString(VenvyObservableTarget.KEY_ORIENTATION_TYPE));
+                    int appType = Integer.parseInt(bundle.getString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE));
                     String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
                     if (TextUtils.isEmpty(appletsId)) {
                         VenvyLog.e("try to launch a vision program , but appletsId is null");
@@ -59,7 +62,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                         }
 
 
-                        videoPlusView.launchVisionProgram(appletsId, data, orientationType);
+                        videoPlusView.launchVisionProgram(appletsId, data, orientationType,appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_H5);
                     }
                 }
                 return;
@@ -112,6 +115,31 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 });
                 return;
             }
+            case VenvyObservableTarget.TAG_H5_VISION_PROGRAM:{
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (videoPlusView != null) {
+                            String h5Url = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_H5_URL);
+                            String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
+                            videoPlusView.launchH5VisionProgram(h5Url);
+                        }
+                    }
+                });
+                return;
+            }
+            case VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM:{
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (videoPlusView != null) {
+                            String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
+                            videoPlusView.closeH5VisionProgram(appletId);
+                        }
+                    }
+                });
+                return;
+            }
         }
     }
 
@@ -122,6 +150,8 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_SCREEN_CHANGED, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, this);
+        ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, this);
+        ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM, this);
     }
 
     public boolean isHorizontal() {

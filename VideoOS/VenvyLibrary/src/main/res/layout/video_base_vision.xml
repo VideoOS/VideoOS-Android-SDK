@@ -35,12 +35,6 @@
     </RelativeLayout>
 
 
-    <cn.com.videopls.pub.VideoProgramView
-        android:id="@+id/programView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="44dp" />
-
 
     <RelativeLayout
         android:id="@+id/loadingContent"

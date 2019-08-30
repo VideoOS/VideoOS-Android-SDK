@@ -178,10 +178,10 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     /**
      * 拉起一个视联网小程序
      */
-    public void launchVisionProgram(@NonNull String appletId, String data, final int orientationType) {
+    public void launchVisionProgram(@NonNull String appletId, String data, final int orientationType, boolean isH5Type) {
         if (programViewB != null) {
             programViewB.setClickable(true);
-            programViewB.start(appletId, data, orientationType);
+                programViewB.start(appletId, data, orientationType, isH5Type);
         }
     }
 
@@ -193,6 +193,29 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     public void closeVisionProgram(String appletId) {
         if (programViewB != null) {
             programViewB.close(appletId);
+        }
+    }
+
+    /**
+     * 拉起一个H5小程序
+     *
+     * @param url
+     */
+    public void launchH5VisionProgram(String url) {
+        if (programViewB != null) {
+            programViewB.setClickable(true);
+            programViewB.startH5(url);
+        }
+    }
+
+    /**
+     * 根据指定ID关闭一个H5小程序
+     *
+     * @param appletId
+     */
+    public void closeH5VisionProgram(String appletId) {
+        if (programViewB != null) {
+            programViewB.closeH5(appletId);
         }
     }
 
