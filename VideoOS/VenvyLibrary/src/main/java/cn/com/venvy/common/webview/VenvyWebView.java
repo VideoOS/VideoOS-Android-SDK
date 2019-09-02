@@ -159,7 +159,7 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
     private void init(Context context) {
         if (context instanceof Activity) {
             mAgentWeb = AgentWeb.with((Activity) context)
-                    .setAgentWebParent(null, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+                    .setAgentWebParent(this, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
                     .useDefaultIndicator()
                     .setWebChromeClient(mWebChromeClient)
                     .setWebViewClient(mWebViewClient)
