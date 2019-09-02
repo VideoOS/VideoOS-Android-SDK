@@ -9,6 +9,8 @@ import android.webkit.ValueCallback;
 public interface IVenvyWebView {
     void addJavascriptInterface(Object object, String name);
 
+    void callJsFunction(String functionName, String data);
+
     void setWebViewClient(IVenvyWebViewClient webViewClient);
 
     void setWebChromeClient(IVenvyWebChromeClient webChromeClient);
