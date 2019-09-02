@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.com.venvy.AppSecret;
 import cn.com.venvy.CommonParam;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.bean.JsParamsInfo;
@@ -30,6 +31,7 @@ import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObserver;
+import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
@@ -177,6 +179,38 @@ public class JsBridge implements VenvyObserver {
             obj.put("data", mParamsInfo.appletData);
         } catch (Exception e) {
 
+        }
+        callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void networkEncrypt(String jsParams) {
+        if (mPlatform == null) {
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            JSONObject jsParamsObj = new JSONObject(jsParams);
+            obj.put("encryptData", VenvyAesUtil.encrypt(AppSecret.getAppSecret(mPlatform), AppSecret.getAppSecret(mPlatform), jsParamsObj.optJSONObject("msg").optString("data")));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void networkDecrypt(String jsParams) {
+        if (mPlatform == null) {
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            JSONObject jsParamsObj = new JSONObject(jsParams);
+            obj.put("decryptData", VenvyAesUtil.decrypt(jsParamsObj.optJSONObject("msg").optString("data"), AppSecret.getAppSecret(mPlatform), AppSecret.getAppSecret(mPlatform)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         callJsFunction(obj.toString(), jsParams);
     }
