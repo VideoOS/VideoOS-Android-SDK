@@ -125,16 +125,15 @@ public class JsBridge implements VenvyObserver {
         if (mParamsInfo == null) {
             return;
         }
-        if (TextUtils.isEmpty(mParamsInfo.errorMessage)) {
+        if (TextUtils.isEmpty(jsParams)) {
             return;
         }
-        JSONObject obj = new JSONObject();
         try {
-            obj.put("message", mParamsInfo.errorMessage);
+            JSONObject obj = new JSONObject(jsParams);
+            mVenvyWebView.showErrorPage(obj.optJSONObject("msg").toString());
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
-        callJsFunction(obj.toString(), jsParams);
     }
 
     @JavascriptInterface
@@ -142,16 +141,15 @@ public class JsBridge implements VenvyObserver {
         if (mParamsInfo == null) {
             return;
         }
-        if (TextUtils.isEmpty(mParamsInfo.naviTitleY)) {
+        if (TextUtils.isEmpty(jsParams)) {
             return;
         }
-        JSONObject obj = new JSONObject();
         try {
-            obj.put("Y", mParamsInfo.naviTitleY);
+            JSONObject obj = new JSONObject(jsParams);
+            mVenvyWebView.updateNaviTitle(obj.optJSONObject("msg").toString());
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
-        callJsFunction(obj.toString(), jsParams);
     }
 
     @JavascriptInterface
@@ -159,28 +157,15 @@ public class JsBridge implements VenvyObserver {
         if (mParamsInfo == null) {
             return;
         }
-        if (TextUtils.isEmpty(mParamsInfo.appletId)) {
+        if (TextUtils.isEmpty(jsParams)) {
             return;
         }
-        if (TextUtils.isEmpty(mParamsInfo.screenType)) {
-            return;
-        }
-        if (TextUtils.isEmpty(mParamsInfo.appType)) {
-            return;
-        }
-        if (TextUtils.isEmpty(mParamsInfo.appletData)) {
-            return;
-        }
-        JSONObject obj = new JSONObject();
         try {
-            obj.put("appletId", mParamsInfo.appletId);
-            obj.put("screenType", mParamsInfo.screenType);
-            obj.put("appType", mParamsInfo.appType);
-            obj.put("data", mParamsInfo.appletData);
+            JSONObject obj = new JSONObject(jsParams);
+            mVenvyWebView.openApplet(obj.optJSONObject("msg").toString());
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
-        callJsFunction(obj.toString(), jsParams);
     }
 
     @JavascriptInterface

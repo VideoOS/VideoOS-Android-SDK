@@ -14,6 +14,8 @@ import android.widget.FrameLayout;
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.DefaultWebClient;
 
+import cn.com.venvy.common.interf.IJsParamsCallback;
+
 
 /**
  * Created by Arthur on 2017/7/13.
@@ -21,6 +23,7 @@ import com.just.agentweb.DefaultWebClient;
 
 public class VenvyWebView extends FrameLayout implements IVenvyWebView {
     private AgentWeb mAgentWeb;
+    private IJsParamsCallback mIJsParamsCallback;
 
     public VenvyWebView(Context context) {
         super(context);
@@ -169,6 +172,35 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
                     .interceptUnkownUrl() //拦截找不到相关页面的Scheme
                     .createAgentWeb().ready().get();
         }
+    }
+
+    @Override
+    public void showErrorPage(String showErrorPage) {
+        if (mIJsParamsCallback != null) {
+            mIJsParamsCallback.showErrorPage(showErrorPage);
+        }
+    }
+
+    @Override
+    public void updateNaviTitle(String updateNaviTitle) {
+        if (mIJsParamsCallback != null) {
+            mIJsParamsCallback.updateNaviTitle(updateNaviTitle);
+        }
+    }
+
+    @Override
+    public void openApplet(String openApplet) {
+        if (mIJsParamsCallback != null) {
+            mIJsParamsCallback.openApplet(openApplet);
+        }
+    }
+
+    public void setJsParamsCallback(IJsParamsCallback callback) {
+        this.mIJsParamsCallback = callback;
+    }
+
+    public IJsParamsCallback getIJsParamsCallback() {
+        return mIJsParamsCallback;
     }
 
     private com.just.agentweb.WebViewClient mWebViewClient = new com.just.agentweb.WebViewClient() {

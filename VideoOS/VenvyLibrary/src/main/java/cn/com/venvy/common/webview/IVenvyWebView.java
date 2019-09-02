@@ -36,4 +36,10 @@ public interface IVenvyWebView {
     void setEnabled(boolean enabled);
 
     void evaluateJavascript(String script, ValueCallback<String> resultCallback);
+
+    void showErrorPage(String showErrorPage);
+
+    void updateNaviTitle(String updateNaviTitle);
+
+    void openApplet(String openApplet);
 }
