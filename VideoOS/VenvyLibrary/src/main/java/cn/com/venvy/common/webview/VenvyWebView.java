@@ -3,18 +3,27 @@ package cn.com.venvy.common.webview;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.http.SslError;
+import android.os.Build;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.DefaultWebClient;
 
+import cn.com.venvy.common.agentweb.common.CommonWebChromeClient;
 import cn.com.venvy.common.interf.IJsParamsCallback;
+import cn.com.venvy.common.interf.IWebViewClient;
 
 
 /**
@@ -24,6 +33,7 @@ import cn.com.venvy.common.interf.IJsParamsCallback;
 public class VenvyWebView extends FrameLayout implements IVenvyWebView {
     private AgentWeb mAgentWeb;
     private IJsParamsCallback mIJsParamsCallback;
+    private IWebViewClient mIwebViewClient;
 
     public VenvyWebView(Context context) {
         super(context);
@@ -164,7 +174,7 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
             mAgentWeb = AgentWeb.with((Activity) context)
                     .setAgentWebParent(this, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
                     .useDefaultIndicator()
-                    .setWebChromeClient(mWebChromeClient)
+                    .setWebChromeClient(new CommonWebChromeClient())
                     .setWebViewClient(mWebViewClient)
                     .setSecurityType(AgentWeb.SecurityType.STRICT_CHECK)
                     .setWebLayout(new VenvyWebLayout(context))
@@ -203,21 +213,111 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
         return mIJsParamsCallback;
     }
 
+    public void setWebViewClient(IWebViewClient webViewClient) {
+        this.mIwebViewClient = webViewClient;
+    }
+
+    public IWebViewClient getIWebViewClient() {
+        return mIwebViewClient;
+    }
+
     private com.just.agentweb.WebViewClient mWebViewClient = new com.just.agentweb.WebViewClient() {
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            if (mIwebViewClient != null) {
+                mIwebViewClient.onReceivedError(view, request, error);
+            } else {
+                super.onReceivedError(view, request, error);
+            }
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            if (mIwebViewClient != null) {
+                return mIwebViewClient.shouldOverrideUrlLoading(view, request);
+            }
             return super.shouldOverrideUrlLoading(view, request);
+        }
+
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            if (mIwebViewClient != null) {
+                return mIwebViewClient.shouldInterceptRequest(view, request);
+            }
+            return super.shouldInterceptRequest(view, request);
+        }
+
+        //
+        @Override
+        public boolean shouldOverrideUrlLoading(final WebView view, String url) {
+            //优酷想唤起自己应用播放该视频 ， 下面拦截地址返回 true  则会在应用内 H5 播放 ，禁止优酷唤起播放该视频， 如果返回 false ， DefaultWebClient  会根据intent 协议处理 该地址 ， 首先匹配该应用存不存在 ，如果存在 ， 唤起该应用播放 ， 如果不存在 ， 则跳到应用市场下载该应用 .
+            /*else if (isAlipay(view, mUrl))   //1.2.5开始不用调用该方法了 ，只要引入支付宝sdk即可 ， DefaultWebClient 默认会处理相应url调起支付宝
+                return true;*/
+            if (mIwebViewClient != null) {
+                return mIwebViewClient.shouldOverrideUrlLoading(view, url);
+            }
+            return super.shouldOverrideUrlLoading(view, url);
         }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            if (mIwebViewClient != null) {
+                mIwebViewClient.onPageStarted(view, url, favicon);
+            } else {
+                super.onPageStarted(view, url, favicon);
+            }
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            if (mIwebViewClient != null) {
+                mIwebViewClient.onPageFinished(view, url);
+            } else {
+                super.onPageFinished(view, url);
+            }
 
         }
-    };
-    private com.just.agentweb.WebChromeClient mWebChromeClient = new com.just.agentweb.WebChromeClient() {
+        /*错误页回调该方法 ， 如果重写了该方法， 上面传入了布局将不会显示 ， 交由开发者实现，注意参数对齐。*/
+       /* public void onMainFrameError(AbsAgentWebUIController agentWebUIController, WebView view, int errorCode, String description, String failingUrl) {
+
+            Log.i(TAG, "AgentWebFragment onMainFrameError");
+            agentWebUIController.onMainFrameError(view,errorCode,description,failingUrl);
+
+        }*/
+
         @Override
-        public void onReceivedTitle(WebView view, String title) {
-            super.onReceivedTitle(view, title);
+        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+            if (mIwebViewClient != null) {
+                mIwebViewClient.onReceivedHttpError(view, request, errorResponse);
+            } else {
+                super.onReceivedHttpError(view, request, errorResponse);
+            }
+
+//			Log.i(TAG, "onReceivedHttpError:" + 3 + "  request:" + mGson.toJson(request) + "  errorResponse:" + mGson.toJson(errorResponse));
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            if (mIwebViewClient != null) {
+                mIwebViewClient.onReceivedSslError(view, handler, error);
+            } else {
+                handler.proceed();
+                super.onReceivedSslError(view, handler, error);
+            }
+        }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            if (mIwebViewClient != null) {
+                mIwebViewClient.onReceivedError(view, errorCode, description, failingUrl);
+            } else {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+            }
+
+//			Log.i(TAG, "onReceivedError:" + errorCode + "  description:" + description + "  errorResponse:" + failingUrl);
         }
     };
 }
