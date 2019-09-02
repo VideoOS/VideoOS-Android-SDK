@@ -405,7 +405,12 @@ public class BaseRequestConnect {
                     }
                 }
             }
-            headers.put(UD_ID, VenvyDeviceUtil.getAndroidID(context));
+            UUID uuid = VenvyDeviceUtil.getDeviceUuid(context);
+            if (uuid != null) {
+                headers.put(UD_ID, uuid.toString());
+            } else {
+                headers.put(UD_ID, VenvyDeviceUtil.getAndroidID(context));
+            }
             headers.put(IDENTITY, uuIdStr != null ? uuIdStr : "");
             String ip = VenvyDeviceUtil.getLocalIPAddress();
             if (!TextUtils.isEmpty(ip)) {

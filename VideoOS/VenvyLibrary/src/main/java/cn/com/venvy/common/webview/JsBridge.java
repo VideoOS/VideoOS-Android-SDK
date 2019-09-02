@@ -20,7 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.com.venvy.AppSecret;
+import cn.com.venvy.CommonParam;
 import cn.com.venvy.Platform;
+import cn.com.venvy.common.bean.JsParamsInfo;
 import cn.com.venvy.common.bean.PlatformUserInfo;
 import cn.com.venvy.common.exception.LoginException;
 import cn.com.venvy.common.interf.ICallJsFunction;
@@ -28,6 +31,7 @@ import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObserver;
+import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
@@ -49,14 +53,13 @@ public class JsBridge implements VenvyObserver {
     public boolean payDisabled;
     protected IVenvyWebView mVenvyWebView;
     private Platform mPlatform;
+    private JsParamsInfo mParamsInfo;
 
     public JsBridge(Context context, @NonNull IVenvyWebView webView, Platform platform) {
         this.mVenvyWebView = webView;
         mContext = context;
         mPlatform = platform;
-        ObservableManager.getDefaultObserable().addObserver(TAG_JS_BRIDGE_OBSERVER, this);
     }
-
 
     public void setWebViewCloseListener(WebViewCloseListener webViewCloseListener) {
         mWebViewCloseListener = webViewCloseListener;
@@ -69,11 +72,147 @@ public class JsBridge implements VenvyObserver {
 
     public void setSsid(String ssid) {
         this.ssid = ssid;
-        VenvyLog.i("ssid=====" + ssid);
+    }
+
+    public void setParamsInfo(JsParamsInfo paramsInfo) {
+        this.mParamsInfo = paramsInfo;
     }
 
     public void setPlatformLoginInterface(IPlatformLoginInterface platformLoginInterface) {
         mPlatformLoginInterface = platformLoginInterface;
+    }
+
+    @JavascriptInterface
+    public void commonData(String jsParams) {
+        int screenHeight = VenvyUIUtil.getScreenHeight(mContext);
+        int screenWidth = VenvyUIUtil.getScreenWidth(mContext);
+        float height = VenvyUIUtil.px2dip(mContext, Math.min(screenWidth, screenHeight));
+        float width = height / 375.0f * 230;
+        JSONObject obj = new JSONObject();
+        JSONObject objSize = new JSONObject();
+        try {
+            objSize.put("width", width);
+            objSize.put("height", height);
+            obj.put("common", CommonParam.getCommonParamJson());
+            obj.put("size", objSize.toString());
+        } catch (Exception e) {
+
+        }
+        callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void getInitData(String jsParams) {
+        if (mParamsInfo == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(mParamsInfo.labelId)) {
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        JSONObject objLabelId = new JSONObject();
+        try {
+            objLabelId.put("labelId", mParamsInfo.labelId);
+            obj.put("data", objLabelId.toString());
+        } catch (Exception e) {
+
+        }
+        callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void showErrorPage(String jsParams) {
+        if (mParamsInfo == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(mParamsInfo.errorMessage)) {
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("message", mParamsInfo.errorMessage);
+        } catch (Exception e) {
+
+        }
+        callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void updateNaviTitle(String jsParams) {
+        if (mParamsInfo == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(mParamsInfo.naviTitleY)) {
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("Y", mParamsInfo.naviTitleY);
+        } catch (Exception e) {
+
+        }
+        callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void openApplet(String jsParams) {
+        if (mParamsInfo == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(mParamsInfo.appletId)) {
+            return;
+        }
+        if (TextUtils.isEmpty(mParamsInfo.screenType)) {
+            return;
+        }
+        if (TextUtils.isEmpty(mParamsInfo.appType)) {
+            return;
+        }
+        if (TextUtils.isEmpty(mParamsInfo.appletData)) {
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("appletId", mParamsInfo.appletId);
+            obj.put("screenType", mParamsInfo.screenType);
+            obj.put("appType", mParamsInfo.appType);
+            obj.put("data", mParamsInfo.appletData);
+        } catch (Exception e) {
+
+        }
+        callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void networkEncrypt(String jsParams) {
+        if (mPlatform == null) {
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            JSONObject jsParamsObj = new JSONObject(jsParams);
+            obj.put("encryptData", VenvyAesUtil.encrypt(AppSecret.getAppSecret(mPlatform), AppSecret.getAppSecret(mPlatform), jsParamsObj.optJSONObject("msg").optString("data")));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void networkDecrypt(String jsParams) {
+        if (mPlatform == null) {
+            return;
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            JSONObject jsParamsObj = new JSONObject(jsParams);
+            obj.put("decryptData", VenvyAesUtil.decrypt(jsParamsObj.optJSONObject("msg").optString("data"), AppSecret.getAppSecret(mPlatform), AppSecret.getAppSecret(mPlatform)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        callJsFunction(obj.toString(), jsParams);
     }
 
     @JavascriptInterface
@@ -258,7 +397,7 @@ public class JsBridge implements VenvyObserver {
                     @Override
                     public void run() {
                         String callback = jsonObj.optString("callback");
-                        mVenvyWebView.loadUrl("javascript:" + callback + "('" + data + "')");
+                        mVenvyWebView.callJsFunction(callback, data);
                     }
                 });
 
