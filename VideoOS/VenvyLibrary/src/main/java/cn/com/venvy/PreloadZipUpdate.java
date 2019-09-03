@@ -30,6 +30,7 @@ public class PreloadZipUpdate {
     private final static String TAG = PreloadZipUpdate.class.getName();
     private static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private static final String LUA_ZIP = "/lua/os/chain.zip";
+    private static final String LUA_ZIP_CACHE = "/lua/os/cache/demo/zip";
     private final String PARSE_LOCAL_ZIP = "parse_local_zip";
     private final String PARSE_UNZIP = "unzip";
     private DownloadTaskRunner mDownloadTaskRunner;
@@ -37,7 +38,7 @@ public class PreloadZipUpdate {
     private Platform mPlatform;
     private int preloadType;
 
-    public PreloadZipUpdate(int preloadType,Platform platform, PreloadZipUpdate.CacheZipUpdateCallback callback) {
+    public PreloadZipUpdate(int preloadType, Platform platform, PreloadZipUpdate.CacheZipUpdateCallback callback) {
         this.preloadType = preloadType;
         this.mPlatform = platform;
         this.mUpdateCallback = callback;
@@ -165,13 +166,13 @@ public class PreloadZipUpdate {
             @Override
             public List<String> doAsyncTask(File... files) throws Exception {
                 List<String> cacheUrls = new ArrayList<>();
+                VenvyFileUtil.createDir(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE);
                 for (File file : files) {
                     final String cacheUrlPath = file.getAbsolutePath();
-                    long value = VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, false);
-                    if (value > 0) {
-                        cacheUrls.add(cacheUrlPath);
-                    }
+                    VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE, false);
                 }
+                cacheUrls.add(VenvyFileUtil.getName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE));
+                VenvyFileUtil.copyDir(VenvyFileUtil.getName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE), VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
                 return cacheUrls;
 
             }
@@ -183,6 +184,7 @@ public class PreloadZipUpdate {
 
             @Override
             public void onPostExecute(List<String> cacheUrls) {
+                VenvyFileUtil.delFolder(VenvyFileUtil.getName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE));
                 final JSONArray queryArray = new JSONArray();
                 CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                 for (String cacheUrlPath : cacheUrls) {
@@ -192,12 +194,12 @@ public class PreloadZipUpdate {
                             callback.updateError(new Exception(""));
                             return;
                         }
-                        File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName.replace(".zip", ".json"));
+                        File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName);
                         if (!file.exists() || !file.isFile()) {
                             callback.updateError(new Exception(""));
                             return;
                         }
-                        String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), file.getAbsolutePath());
+                        String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + fileName);
                         if (TextUtils.isEmpty(queryChainData)) {
                             callback.updateError(new Exception(""));
                             return;
@@ -269,7 +271,7 @@ public class PreloadZipUpdate {
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
-                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,preloadType);
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks, preloadType);
                 if (failedTasks != null && failedTasks.size() > 0) {
                     CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                     if (callback != null) {
