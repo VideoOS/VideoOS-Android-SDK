@@ -21,6 +21,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 import cn.com.venvy.common.permission.PermissionCheckHelper;
 
@@ -50,6 +54,41 @@ public class VenvyFileUtil {
         }
         return url.substring(url.lastIndexOf("/") + 1, url.length());
 
+    }
+
+    public static boolean createDir(String destDirName) {// 创建目录
+        File dir = new File(destDirName);
+        if (dir.exists()) { // 判断目录是否存在
+            return false;
+        }
+        if (!destDirName.endsWith(File.separator)) { // 结尾是否以"/"结束
+            destDirName = destDirName + File.separator;
+        }
+        if (dir.mkdirs()) { // 创建目标目录
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static List<String> getFileName(String path) {
+        List<String> nameArray=new ArrayList<>();
+        File file = new File(path);
+        // 如果这个路径是文件夹
+        if (file.isDirectory()) {
+            // 获取路径下的所有文件
+            File[] files = file.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                // 如果还是文件夹 递归获取里面的文件 文件夹
+                if (files[i].isDirectory()) {
+                    continue;
+                } else {
+                    nameArray.add(file.getAbsolutePath());
+                }
+
+            }
+        }
+        return nameArray;
     }
 
     /**
@@ -355,6 +394,7 @@ public class VenvyFileUtil {
 
         return result;
     }
+
     public static void copyDir(String sourcePath, String newPath) throws IOException {
 
         File file = new File(sourcePath);
@@ -371,11 +411,11 @@ public class VenvyFileUtil {
 
             if ((new File(sourcePath + file.separator + filePath[i])).isDirectory()) {
 
-                copyDir(sourcePath  + file.separator  + filePath[i], newPath + file.separator + filePath[i]);
+                copyDir(sourcePath + file.separator + filePath[i], newPath + file.separator + filePath[i]);
 
             }
 
-            if (new File(sourcePath  + file.separator + filePath[i]).isFile()) {
+            if (new File(sourcePath + file.separator + filePath[i]).isFile()) {
 
                 copyFile(sourcePath + file.separator + filePath[i], newPath + file.separator + filePath[i]);
 
@@ -383,6 +423,7 @@ public class VenvyFileUtil {
 
         }
     }
+
     public static void copyFile(String oldPath, String newPath) throws IOException {
 
         File oldFile = new File(oldPath);
@@ -393,12 +434,13 @@ public class VenvyFileUtil {
 
         FileOutputStream out = new FileOutputStream(file);
 
-        byte[] buffer=new byte[2097152];
+        byte[] buffer = new byte[2097152];
         int readByte = 0;
-        while((readByte = in.read(buffer)) != -1){
+        while ((readByte = in.read(buffer)) != -1) {
             out.write(buffer, 0, readByte);
         }
     }
+
     /***
      *
      * @param context
@@ -424,6 +466,7 @@ public class VenvyFileUtil {
         }
         return result;
     }
+
     /**
      * crate file with given path and file name
      *
