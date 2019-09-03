@@ -42,6 +42,8 @@
         android:layout_height="match_parent"
         android:layout_marginTop="44dp"
         android:alpha="0.9"
+        android:clickable="true"
+        android:focusable="true"
         android:background="@color/color2"
         android:visibility="gone">
 
@@ -86,6 +88,8 @@
         android:layout_height="match_parent"
         android:layout_marginTop="44dp"
         android:alpha="0.9"
+        android:clickable="true"
+        android:focusable="true"
         android:background="@color/color2">
 
         <LinearLayout

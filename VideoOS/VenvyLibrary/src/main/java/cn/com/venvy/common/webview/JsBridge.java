@@ -124,6 +124,7 @@ public class JsBridge implements VenvyObserver {
             mVenvyWebView.showErrorPage(obj.optJSONObject("msg").toString());
         } catch (Exception e) {
             e.printStackTrace();
+            mVenvyWebView.showErrorPage("");
         }
     }
 
