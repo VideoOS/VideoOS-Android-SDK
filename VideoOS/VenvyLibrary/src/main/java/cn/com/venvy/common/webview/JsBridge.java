@@ -106,7 +106,6 @@ public class JsBridge implements VenvyObserver {
             return;
         }
         JSONObject obj = new JSONObject();
-        JSONObject objLabelId = new JSONObject();
         try {
             obj.put("data", mJsData);
         } catch (Exception e) {
