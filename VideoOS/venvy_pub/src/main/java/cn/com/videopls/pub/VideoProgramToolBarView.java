@@ -1,8 +1,5 @@
 package cn.com.videopls.pub;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
@@ -12,11 +9,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.HashMap;
 
@@ -114,10 +107,10 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
         });
     }
 
-    private void initVideoProgramView(){
+    private void initVideoProgramView() {
         videoProgramView = new VideoProgramView(getContext());
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT);
-        layoutParams.topMargin = VenvyUIUtil.dip2px(getContext(),44f);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        layoutParams.topMargin = VenvyUIUtil.dip2px(getContext(), 44f);
         videoProgramView.setLayoutParams(layoutParams);
         addView(videoProgramView);
     }
@@ -130,7 +123,7 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
             loadingContent.setVisibility(VISIBLE);
             errorContent.setVisibility(GONE);
             startLoadingAnimation();
-            videoProgramView.startVision(appletId, data, type, false,this);
+            videoProgramView.startVision(appletId, data, type, false, this);
         } else {
             this.currentAppletId = appletId;
             cacheData = data;
@@ -212,7 +205,6 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
                     "miniAppCrashed")), false);
         }
     }
-
 
 
 }

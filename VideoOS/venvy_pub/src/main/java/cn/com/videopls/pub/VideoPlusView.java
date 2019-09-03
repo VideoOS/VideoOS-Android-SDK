@@ -26,6 +26,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     // B 类小程序
     protected VideoProgramTypeBView programViewB;
 
+    // 桌面小程序
+    protected VideoProgramView programViewDesktop;
+
     private VideoPlusViewHelper plusViewHelper;
 
     public VideoPlusView(Context context) {
@@ -69,8 +72,10 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
         programViewA = createTypeAProgram();
         programViewB = createTypeBProgram();
+        programViewDesktop = createDesktopProgram();
         addView(programViewA);
         addView(programViewB);
+        addView(programViewDesktop);
         programViewB.setClickable(false);
     }
 
@@ -80,8 +85,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
      * @return
      */
     private VideoProgramView createTypeAProgram() {
-        VideoProgramView mainProgram = new VideoProgramView(getContext());
-        return mainProgram;
+        return new VideoProgramView(getContext());
     }
 
 
@@ -91,8 +95,11 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
      * @return
      */
     private VideoProgramTypeBView createTypeBProgram() {
-        VideoProgramTypeBView bProgram = new VideoProgramTypeBView(getContext());
-        return bProgram;
+        return new VideoProgramTypeBView(getContext());
+    }
+
+    private VideoProgramView createDesktopProgram(){
+        return new VideoProgramView(getContext());
     }
 
     /**
@@ -135,7 +142,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
     }
 
-    public void changeVisionprogramByOrientation(boolean isHorizontal) {
+    public void changeVisionProgramByOrientation(boolean isHorizontal) {
         if (programViewB != null) {
             programViewB.setVisibility(isHorizontal ? VISIBLE : GONE);
         }
@@ -160,6 +167,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
         if (programViewB != null) {
             programViewB.setVideoOSAdapter(adapter);
+        }
+        if(programViewDesktop != null){
+            programViewDesktop.setVideoOSAdapter(adapter);
         }
     }
 

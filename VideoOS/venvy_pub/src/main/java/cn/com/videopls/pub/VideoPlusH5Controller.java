@@ -98,7 +98,7 @@ public class VideoPlusH5Controller {
         new VisionProgramConfigModel(mPlatform, appletId,true, null).startRequest();
     }
 
-    
+
 
 
 }

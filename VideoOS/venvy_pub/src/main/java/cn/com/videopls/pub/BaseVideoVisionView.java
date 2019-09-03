@@ -63,7 +63,6 @@ public class BaseVideoVisionView extends FrameLayout {
         inflate(getContext(), VenvyResourceUtil.getLayoutId(getContext(),
                 "video_base_vision"), this);
         rlTitleBar = findViewById(VenvyResourceUtil.getId(getContext(), "rlTitleBar"));
-        rlTitleBar.setAlpha(0.9f);
         loadingContent = findViewById(
                 VenvyResourceUtil.getId(getContext(), "loadingContent"));
         retryContent = findViewById(

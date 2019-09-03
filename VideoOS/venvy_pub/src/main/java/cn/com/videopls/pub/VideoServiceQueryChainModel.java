@@ -95,6 +95,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         }
                         return;
                     }
+                    final String desktopTemplate = obj.optString("desktopTemplate");
                     final String template = obj.optString("template");
                     final JSONArray dataJsonArray = obj.optJSONArray("jsonList");
                     final JSONArray luaJsonArray = obj.optJSONArray("luaList");

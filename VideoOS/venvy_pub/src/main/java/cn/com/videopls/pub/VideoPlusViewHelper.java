@@ -91,7 +91,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 // 当目前展示的是横屏小程序，切横屏的时候销毁掉
                 if (videoPlusView != null) {
                     ScreenStatus screenStatus = (ScreenStatus)bundle.getSerializable(VenvyObservableTarget.Constant.CONSTANT_SCREEN_CHANGE);
-                    videoPlusView.changeVisionprogramByOrientation(screenStatus == ScreenStatus.LANDSCAPE);
+                    videoPlusView.changeVisionProgramByOrientation(screenStatus == ScreenStatus.LANDSCAPE);
                 }
 
                 return;
