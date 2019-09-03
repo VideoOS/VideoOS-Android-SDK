@@ -1,11 +1,22 @@
 package cn.com.videopls.pub;
 
 import android.content.Context;
+import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.ViewGroup;
+
+import java.util.HashMap;
+import java.util.Set;
 
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
+import cn.com.venvy.common.router.IRouterCallback;
+import cn.com.venvy.common.router.PostInfo;
+import cn.com.venvy.common.router.VenvyRouterManager;
+import cn.com.venvy.common.utils.VenvyAPIUtil;
+import cn.com.venvy.common.utils.VenvyLog;
 
 /**
  * Created by Lucas on 2019/8/30.
@@ -78,4 +89,57 @@ public class VideoPlusH5Controller {
         this.mPlatform = initPlatform(mVideoPlusAdapter);
         new VisionProgramConfigModel(mPlatform, appletId,true, null).startRequest();
     }
+
+
+
+    protected void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
+        if (!VenvyAPIUtil.isSupport(14)) {
+            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
+            return;
+        }
+        if (mContentView == null) {
+            VenvyLog.e("VideoOS", "Video++ View 不能为null");
+            return;
+        }
+        if (mVideoPlusAdapter == null) {
+            VenvyLog.e("VideoOS", "Video++ View 未设置adapter");
+            return;
+        }
+
+        if (mPlatform == null) {
+            mPlatform = initPlatform(mVideoPlusAdapter);
+        }
+
+        PostInfo postInfo = VenvyRouterManager.getInstance().setUri(uri)
+                .withTargetPlatform("platform", mPlatform)
+                .withTargetViewParent(mContentView);
+        Set<String> uriQueryParameterNames = uri.getQueryParameterNames();
+        HashMap<String, String> targetDataMap = null;
+        if (uriQueryParameterNames != null && uriQueryParameterNames.size() > 0) {
+            for (String key : uriQueryParameterNames) {
+                String value = uri.getQueryParameter(key);
+                if (!TextUtils.isEmpty(value)) {
+                    if (targetDataMap == null) {
+                        targetDataMap = new HashMap<>();
+                    }
+                    targetDataMap.put(key, value);
+                }
+            }
+        }
+        if (params != null) {
+            String value = params.get("data");
+            if (!TextUtils.isEmpty(value)) {
+                if (targetDataMap == null) {
+                    targetDataMap = new HashMap<>();
+                }
+                targetDataMap.put("data", value);
+            }
+        }
+        if (targetDataMap != null) {
+            postInfo.withSerializable("data", targetDataMap);
+        }
+        postInfo.navigation(mContentView.getContext(), callback);
+    }
+
+
 }

@@ -181,7 +181,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     public void launchVisionProgram(@NonNull String appletId, String data, final int orientationType, boolean isH5Type) {
         if (programViewB != null) {
             programViewB.setClickable(true);
-                programViewB.start(appletId, data, orientationType, isH5Type);
+            programViewB.start(appletId, data, orientationType, isH5Type);
         }
     }
 

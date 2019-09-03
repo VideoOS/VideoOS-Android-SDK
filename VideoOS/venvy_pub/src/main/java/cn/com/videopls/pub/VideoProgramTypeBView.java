@@ -148,7 +148,7 @@ public class VideoProgramTypeBView extends FrameLayout {
             doEntranceAnimation(currentH5Program);
             h5ProgramMap.put(appletId, currentH5Program);
 
-            currentH5Program.fetchTargetUrl(appletId);
+            currentH5Program.fetchTargetUrl(appletId,data);
         } else {
             this.currentProgramId = appletId;
             currentProgram = createProgram(orientationType);
