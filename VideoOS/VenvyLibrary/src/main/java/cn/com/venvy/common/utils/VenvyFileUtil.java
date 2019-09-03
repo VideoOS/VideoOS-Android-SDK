@@ -83,7 +83,7 @@ public class VenvyFileUtil {
                 if (files[i].isDirectory()) {
                     continue;
                 } else {
-                    nameArray.add(file.getAbsolutePath());
+                    nameArray.add(files[i].getAbsolutePath());
                 }
 
             }

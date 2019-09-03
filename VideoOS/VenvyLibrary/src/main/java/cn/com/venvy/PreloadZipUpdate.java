@@ -171,8 +171,8 @@ public class PreloadZipUpdate {
                     final String cacheUrlPath = file.getAbsolutePath();
                     VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE, false);
                 }
-                cacheUrls.add(VenvyFileUtil.getName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE));
-                VenvyFileUtil.copyDir(VenvyFileUtil.getName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE), VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
+                cacheUrls.addAll(VenvyFileUtil.getFileName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE));
+                VenvyFileUtil.copyDir(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
                 return cacheUrls;
 
             }

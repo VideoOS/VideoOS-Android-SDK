@@ -131,6 +131,8 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         if (isUpdateByNetWork) {
                                             VideoOSLuaView.destroyLuaScript();
                                         }
+                                        // todo ： load don't need data lua
+
                                         mDownZipUpdate.startDownloadZipFile(dataJsonArray);
                                     }
 
