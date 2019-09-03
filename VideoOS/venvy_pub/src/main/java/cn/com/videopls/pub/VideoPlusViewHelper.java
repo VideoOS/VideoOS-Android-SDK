@@ -37,34 +37,40 @@ public class VideoPlusViewHelper implements VenvyObserver {
     public void notifyChanged(VenvyObservable observable, String tag, final Bundle bundle) {
         switch (tag) {
             case VenvyObservableTarget.TAG_LAUNCH_VISION_PROGRAM: {
-                // 创建一个视联网小程序
-                if (bundle != null) {
-                    String appletsId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
-                    int orientationType = Integer.parseInt(bundle.getString(VenvyObservableTarget.KEY_ORIENTATION_TYPE));
-                    int appType = Integer.parseInt(bundle.getString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE));
-                    String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
-                    if (TextUtils.isEmpty(appletsId)) {
-                        VenvyLog.e("try to launch a vision program , but appletsId is null");
-                        return;
-                    }
 
-                    if (videoPlusView != null) {
-                        if (VenvyObservableTarget.Constant.CONSTANT_LANDSCAPE == orientationType && !isHorizontal()) {
-                            // 请求一个横屏视联网小程序，如果是竖屏需要强转
-                            videoPlusView.clearAllVisionProgram();
-                            ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 创建一个视联网小程序
+                        if (bundle != null) {
+                            String appletsId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
+                            int orientationType = Integer.parseInt(bundle.getString(VenvyObservableTarget.KEY_ORIENTATION_TYPE));
+                            int appType = Integer.parseInt(bundle.getString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE));
+                            String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
+                            if (TextUtils.isEmpty(appletsId)) {
+                                VenvyLog.e("try to launch a vision program , but appletsId is null");
+                                return;
+                            }
+
+                            if (videoPlusView != null) {
+                                if (VenvyObservableTarget.Constant.CONSTANT_LANDSCAPE == orientationType && !isHorizontal()) {
+                                    // 请求一个横屏视联网小程序，如果是竖屏需要强转
+                                    videoPlusView.clearAllVisionProgram();
+                                    ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                                }
+
+                                if (VenvyObservableTarget.Constant.CONSTANT_PORTRAIT == orientationType && isHorizontal()) {
+                                    // 请求一个竖屏屏视联网小程序，如果是横屏需要强转
+                                    videoPlusView.clearAllVisionProgram();
+                                    ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                                }
+
+
+                                videoPlusView.launchVisionProgram(appletsId, data, orientationType,appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_H5);
+                            }
                         }
-
-                        if (VenvyObservableTarget.Constant.CONSTANT_PORTRAIT == orientationType && isHorizontal()) {
-                            // 请求一个竖屏屏视联网小程序，如果是横屏需要强转
-                            videoPlusView.clearAllVisionProgram();
-                            ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                        }
-
-
-                        videoPlusView.launchVisionProgram(appletsId, data, orientationType,appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_H5);
                     }
-                }
+                });
                 return;
             }
             case VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM: {

@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
@@ -140,6 +141,12 @@ public class VideoProgramTypeBView extends FrameLayout {
      */
     public void start(@NonNull String appletId, String data, int orientationType, boolean isH5Type) {
         if (isH5Type) {
+            // 有重复appletId则不处理
+            if(h5ProgramMap.containsKey(appletId)){
+                VenvyLog.e("appletId is exists");
+                return;
+            }
+
             this.currentH5ProgramId = appletId;
             currentH5Program = createH5Program();
             if (mAdapter != null) {
@@ -150,6 +157,11 @@ public class VideoProgramTypeBView extends FrameLayout {
 
             currentH5Program.fetchTargetUrl(appletId,data);
         } else {
+            // 有重复appletId则不处理
+            if(programMap.containsKey(appletId)){
+                VenvyLog.e("appletId is exists");
+                return;
+            }
             this.currentProgramId = appletId;
             currentProgram = createProgram(orientationType);
             if (mAdapter != null) {
