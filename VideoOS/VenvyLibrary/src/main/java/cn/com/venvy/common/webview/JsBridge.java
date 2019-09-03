@@ -23,7 +23,6 @@ import java.util.UUID;
 import cn.com.venvy.AppSecret;
 import cn.com.venvy.CommonParam;
 import cn.com.venvy.Platform;
-import cn.com.venvy.common.bean.JsParamsInfo;
 import cn.com.venvy.common.bean.PlatformUserInfo;
 import cn.com.venvy.common.exception.LoginException;
 import cn.com.venvy.common.interf.ICallJsFunction;
@@ -53,7 +52,8 @@ public class JsBridge implements VenvyObserver {
     public boolean payDisabled;
     protected IVenvyWebView mVenvyWebView;
     private Platform mPlatform;
-    private JsParamsInfo mParamsInfo;
+    //    private JsParamsInfo mParamsInfo;
+    public String mJsData;
 
     public JsBridge(Context context, @NonNull IVenvyWebView webView, Platform platform) {
         this.mVenvyWebView = webView;
@@ -65,6 +65,9 @@ public class JsBridge implements VenvyObserver {
         mWebViewCloseListener = webViewCloseListener;
     }
 
+    public void setJsData(String jsData) {
+        this.mJsData = jsData;
+    }
 
     public void setCallJsFunction(ICallJsFunction jsFunction) {
         mCallJsFunction = jsFunction;
@@ -72,10 +75,6 @@ public class JsBridge implements VenvyObserver {
 
     public void setSsid(String ssid) {
         this.ssid = ssid;
-    }
-
-    public void setParamsInfo(JsParamsInfo paramsInfo) {
-        this.mParamsInfo = paramsInfo;
     }
 
     public void setPlatformLoginInterface(IPlatformLoginInterface platformLoginInterface) {
@@ -103,17 +102,13 @@ public class JsBridge implements VenvyObserver {
 
     @JavascriptInterface
     public void getInitData(String jsParams) {
-        if (mParamsInfo == null) {
-            return;
-        }
-        if (TextUtils.isEmpty(mParamsInfo.labelId)) {
+        if (TextUtils.isEmpty(mJsData)) {
             return;
         }
         JSONObject obj = new JSONObject();
         JSONObject objLabelId = new JSONObject();
         try {
-            objLabelId.put("labelId", mParamsInfo.labelId);
-            obj.put("data", objLabelId.toString());
+            obj.put("data", mJsData);
         } catch (Exception e) {
 
         }
@@ -122,9 +117,6 @@ public class JsBridge implements VenvyObserver {
 
     @JavascriptInterface
     public void showErrorPage(String jsParams) {
-        if (mParamsInfo == null) {
-            return;
-        }
         if (TextUtils.isEmpty(jsParams)) {
             return;
         }
@@ -138,9 +130,6 @@ public class JsBridge implements VenvyObserver {
 
     @JavascriptInterface
     public void updateNaviTitle(String jsParams) {
-        if (mParamsInfo == null) {
-            return;
-        }
         if (TextUtils.isEmpty(jsParams)) {
             return;
         }
@@ -154,9 +143,6 @@ public class JsBridge implements VenvyObserver {
 
     @JavascriptInterface
     public void openApplet(String jsParams) {
-        if (mParamsInfo == null) {
-            return;
-        }
         if (TextUtils.isEmpty(jsParams)) {
             return;
         }
