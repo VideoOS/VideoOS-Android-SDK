@@ -247,6 +247,10 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         cancelLoadingAnimation();
     }
 
+    public void reload(){
+        webView.reload();
+    }
+
 
     @Override
     protected void onDetachedFromWindow() {

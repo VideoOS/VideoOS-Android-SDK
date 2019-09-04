@@ -20,7 +20,7 @@ public class CommonParam {
     private static final String USER_AGENT = "USER_AGENT";//代理
     private static final String OS_VERSION = "OS_VERSION";//系统版本号
     private static final String UD_ID = "UD_ID";//uuid
-    //    private static final String APP_KEY="";//app的key
+        private static final String APP_KEY="APP_KEY";//app的key
     private static final String IP = "IP";//ip地址
     private static final String NETWORK = "NETWORK";//网络
     //    private static final String PLATFORM_ID="";//平台id
@@ -32,7 +32,7 @@ public class CommonParam {
     private static final String PHONE_MODEL = "PHONE_MODEL";//手机型号
     private static final String PHONE_PROVIDER = "PHONE_PROVIDER";//手机提供商
 
-    public static String getCommonParamJson() {
+    public static JSONObject getCommonParamJson(String appKey) {
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put(VERSION, VenvyAPKVersionCodeUtils.getVersionName(App.getContext()));
         paramMap.put(SDK_VERSION, Config.SDK_VERSION);
@@ -45,8 +45,9 @@ public class CommonParam {
         }
         paramMap.put(NETWORK, VenvyDeviceUtil.getNetWorkName(App.getContext()));
         paramMap.put(LANGUAGE, VenvyDeviceUtil.getLanguage(App.getContext()));
+        paramMap.put(APP_KEY,appKey);
         paramMap.put(PHONE_MODEL, android.os.Build.MODEL);
         paramMap.put(PHONE_PROVIDER, android.os.Build.BRAND);
-        return new JSONObject(paramMap).toString();
+        return new JSONObject(paramMap);
     }
 }

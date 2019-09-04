@@ -30,6 +30,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM, this);
+        ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, this);
     }
 
 
@@ -66,7 +67,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                                 }
 
 
-                                videoPlusView.launchVisionProgram(appletsId, data, orientationType,appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_H5);
+                                videoPlusView.launchVisionProgram(appletsId, data, orientationType, appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_H5);
                             }
                         }
                     }
@@ -90,7 +91,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
             case VenvyObservableTarget.TAG_SCREEN_CHANGED: {
                 // 当目前展示的是横屏小程序，切横屏的时候销毁掉
                 if (videoPlusView != null) {
-                    ScreenStatus screenStatus = (ScreenStatus)bundle.getSerializable(VenvyObservableTarget.Constant.CONSTANT_SCREEN_CHANGE);
+                    ScreenStatus screenStatus = (ScreenStatus) bundle.getSerializable(VenvyObservableTarget.Constant.CONSTANT_SCREEN_CHANGE);
                     videoPlusView.changeVisionProgramByOrientation(screenStatus == ScreenStatus.LANDSCAPE);
                 }
 
@@ -102,14 +103,15 @@ public class VideoPlusViewHelper implements VenvyObserver {
                     public void run() {
                         String msg = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_MSG);
                         boolean needRetry = bundle.getBoolean(VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY);
+                        String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
                         if (videoPlusView != null) {
-                            videoPlusView.showExceptionLogic(msg,needRetry);
+                            videoPlusView.showExceptionLogic(msg, needRetry,data);
                         }
                     }
                 });
                 return;
             }
-            case VenvyObservableTarget.TAG_UPDATE_VISION_TITLE:{
+            case VenvyObservableTarget.TAG_UPDATE_VISION_TITLE: {
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
@@ -121,7 +123,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 });
                 return;
             }
-            case VenvyObservableTarget.TAG_H5_VISION_PROGRAM:{
+            case VenvyObservableTarget.TAG_H5_VISION_PROGRAM: {
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
@@ -134,13 +136,25 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 });
                 return;
             }
-            case VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM:{
+            case VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM: {
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
                         if (videoPlusView != null) {
                             String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
                             videoPlusView.closeH5VisionProgram(appletId);
+                        }
+                    }
+                });
+                return;
+            }
+            case VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM: {
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (videoPlusView != null) {
+                            String luaName = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_LUA_NAME);
+                            videoPlusView.launchDesktopProgram(luaName);
                         }
                     }
                 });
@@ -158,6 +172,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM, this);
+        ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, this);
     }
 
     public boolean isHorizontal() {

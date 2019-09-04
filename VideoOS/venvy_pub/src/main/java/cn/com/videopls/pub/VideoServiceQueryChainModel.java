@@ -1,5 +1,6 @@
 package cn.com.videopls.pub;
 
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -19,6 +20,8 @@ import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.observer.ObservableManager;
+import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyLog;
@@ -27,6 +30,8 @@ import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 import cn.com.videopls.pub.view.VideoOSLuaView;
+
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_H5_URL;
 
 /**
  * Created by videojj_pls on 2019/7/22.
@@ -132,7 +137,8 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         if (isUpdateByNetWork) {
                                             VideoOSLuaView.destroyLuaScript();
                                         }
-                                        // todo ： load don't need data lua
+                                        //  load desktop lua
+                                        loadDesktopProgram(desktopTemplate);
 
                                         mDownZipUpdate.startDownloadZipFile(dataJsonArray);
                                     }
@@ -241,6 +247,14 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                 AppSecret.getAppSecret(getPlatform()), new JSONObject(bodyParams).toString()));
         return dataParams;
     }
+
+
+    private void loadDesktopProgram(String luaName){
+        Bundle bundle = new Bundle();
+        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_LUA_NAME, luaName);
+        ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, bundle);
+    }
+
 
     public interface ServiceQueryChainCallback {
         void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo);

@@ -15,7 +15,6 @@ import android.widget.RelativeLayout;
 import com.taobao.luaview.fun.base.BaseMethodMapper;
 import com.taobao.luaview.fun.mapper.LuaViewApi;
 import com.taobao.luaview.fun.mapper.LuaViewLib;
-import com.taobao.luaview.global.SdkVersion;
 import com.taobao.luaview.global.VmVersion;
 import com.taobao.luaview.userdata.ui.UDView;
 import com.taobao.luaview.util.ColorUtil;
@@ -23,7 +22,6 @@ import com.taobao.luaview.util.DimenUtil;
 import com.taobao.luaview.util.LuaUtil;
 
 import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 

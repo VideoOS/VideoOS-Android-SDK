@@ -99,6 +99,12 @@ public class LVEventPlugin {
                     if(TextUtils.isEmpty(type)){
                         // B类小程序内部跳转
                         info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();
+
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, info.getBundle().getString("appletId"));
+//                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_TEMPLATE, info.getBundle().getString("template"));
+//                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_ID, info.getBundle().getString("id"));
+//                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, JsonUtil.toString(table));
                         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_VISION_PROGRAM, null);
                     }else{
                         // 发起一个视联网小程序

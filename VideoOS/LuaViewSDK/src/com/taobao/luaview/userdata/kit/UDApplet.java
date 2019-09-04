@@ -5,8 +5,6 @@ import android.util.Pair;
 
 import com.taobao.luaview.fun.mapper.LuaViewLib;
 import com.taobao.luaview.userdata.base.BaseLuaTable;
-import com.taobao.luaview.util.AndroidUtil;
-import com.taobao.luaview.util.DimenUtil;
 import com.taobao.luaview.util.VisionUtil;
 
 import org.luaj.vm2.Globals;
@@ -16,11 +14,9 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
-import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
-import cn.com.videopls.pub.R;
 
-import static cn.com.venvy.App.getContext;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_DATA;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
 import static cn.com.venvy.lua.binder.VenvyLVLibBinder.luaValueToString;
@@ -42,7 +38,7 @@ public class UDApplet extends BaseLuaTable {
     class AppletSize extends VarArgFunction {
         @Override
         public Varargs invoke(Varargs args) {
-            Pair<Float,Float> pair = VisionUtil.getVisionProgramSize();
+            Pair<Float, Float> pair = VisionUtil.getVisionProgramSize();
 
             LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(pair.first), LuaValue.valueOf(pair.second)};
             return LuaValue.varargsOf(luaValue);
@@ -54,11 +50,13 @@ public class UDApplet extends BaseLuaTable {
         public Varargs invoke(Varargs args) {
             int fixIndex = VenvyLVLibBinder.fixIndex(args);
             LuaValue target = args.arg(fixIndex + 2);  //key
+            LuaValue data = args.arg(fixIndex + 3);  //data
             String msg = luaValueToString(target);
 
             Bundle bundle = new Bundle();
             bundle.putString(CONSTANT_MSG, msg);
             bundle.putBoolean(CONSTANT_NEED_RETRY, true);
+            bundle.putString(CONSTANT_DATA, luaValueToString(data));
             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
 
 

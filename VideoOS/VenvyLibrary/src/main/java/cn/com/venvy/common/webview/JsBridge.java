@@ -31,6 +31,7 @@ import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.utils.VenvyAesUtil;
+import cn.com.venvy.common.utils.VenvyBase64;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
@@ -92,8 +93,9 @@ public class JsBridge implements VenvyObserver {
         try {
             objSize.put("width", width);
             objSize.put("height", height);
-            obj.put("common", CommonParam.getCommonParamJson());
-            obj.put("size", objSize.toString());
+            obj.put("common", CommonParam.getCommonParamJson(mPlatform.getPlatformInfo().getAppKey()));
+            obj.put("size", objSize);
+            obj.put("secret",mPlatform.getPlatformInfo().getAppSecret());
         } catch (Exception e) {
 
         }
@@ -178,7 +180,7 @@ public class JsBridge implements VenvyObserver {
         JSONObject obj = new JSONObject();
         try {
             JSONObject jsParamsObj = new JSONObject(jsParams);
-            obj.put("decryptData", VenvyAesUtil.decrypt(jsParamsObj.optJSONObject("msg").optString("data"), AppSecret.getAppSecret(mPlatform), AppSecret.getAppSecret(mPlatform)));
+            obj.put("decryptData", VenvyBase64.encode(VenvyAesUtil.decrypt(jsParamsObj.optJSONObject("msg").optString("data"), AppSecret.getAppSecret(mPlatform), AppSecret.getAppSecret(mPlatform)).getBytes()));
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -33,7 +33,6 @@ import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTA
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_TITLE;
-import static cn.com.venvy.common.observer.VenvyObservableTarget.KEY_APPLETS_ID;
 
 /**
  * Created by Lucas on 2019/8/1.

@@ -34,6 +34,8 @@ public class VenvyObservableTarget {
     public static final String TAG_H5_VISION_PROGRAM = "notifyLaunchH5Program";
     // 关闭一个H5小程序
     public static final String TAG_CLOSE_H5_VISION_PROGRAM = "notifyCloseH5Program";
+    // 启动桌面小程序
+    public static final String TAG_LAUNCH_DESKTOP_PROGRAM = "notifyLaunchDesktopProgram";
 
     public static class Constant {
         public static final int CONSTANT_LANDSCAPE = 1;
@@ -47,6 +49,9 @@ public class VenvyObservableTarget {
         public static final int CONSTANT_APP_TYPE_LUA = 1;
         public static final int CONSTANT_APP_TYPE_H5 = 2;
         public static final String CONSTANT_H5_URL = "h5Url";
+        public static final String CONSTANT_LUA_NAME = "luaName";
+        public static final String CONSTANT_TEMPLATE = "template";
+        public static final String CONSTANT_ID  = "id";
     }
 
 }

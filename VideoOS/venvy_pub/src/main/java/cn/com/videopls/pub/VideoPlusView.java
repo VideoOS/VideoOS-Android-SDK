@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
@@ -118,9 +119,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
      * @param msg
      * @param needRetry
      */
-    public void showExceptionLogic(String msg, boolean needRetry) {
+    public void showExceptionLogic(String msg, boolean needRetry,String data) {
         if (programViewB != null) {
-            programViewB.showExceptionLogic(msg, needRetry);
+            programViewB.showExceptionLogic(msg, needRetry,data);
         }
 
     }
@@ -216,6 +217,15 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
             programViewB.setClickable(true);
             programViewB.startH5(url);
         }
+    }
+
+
+    public void launchDesktopProgram(String targetName){
+        if(programViewDesktop != null && !TextUtils.isEmpty(targetName)) {
+            Uri uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
+            programViewDesktop.navigation(uri, new HashMap<String, String>(), null);
+        }
+
     }
 
     /**
