@@ -10,6 +10,8 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
+import java.io.Serializable;
+
 import cn.com.venvy.common.bean.NotificationInfo;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
@@ -58,12 +60,20 @@ public class VenvyUDNotificationCallback extends UDView<VenvyLVNotificationCallb
         if (!TextUtils.equals(tag, bundle.getString(OBSERVABLE_NOTIFICATION_TAG))) {
             return;
         }
-        NotificationInfo info = (NotificationInfo) bundle.getSerializable(OBSERVABLE_NOTIFICATION_MESSAGE);
-        if (info == null || info.messageInfo == null) {
+        Serializable serializable = bundle.getSerializable(OBSERVABLE_NOTIFICATION_MESSAGE);
+        if (serializable == null) {
+            if (registerNotificationCallback != null) {
+                if (serializable != null && serializable instanceof NotificationInfo) {
+                    LuaUtil.callFunction(registerNotificationCallback, LuaValue.NIL);
+                }
+            }
             return;
         }
+        NotificationInfo info = (NotificationInfo) serializable;
         if (registerNotificationCallback != null) {
-            LuaUtil.callFunction(registerNotificationCallback, LuaUtil.toTable(info.messageInfo));
+            if (serializable != null && serializable instanceof NotificationInfo) {
+                LuaUtil.callFunction(registerNotificationCallback, LuaUtil.toTable(info.messageInfo));
+            }
         }
     }
 }

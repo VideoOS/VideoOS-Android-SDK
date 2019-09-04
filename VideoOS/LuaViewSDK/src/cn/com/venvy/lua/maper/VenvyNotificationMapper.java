@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import cn.com.venvy.common.bean.NotificationInfo;
-import cn.com.venvy.common.bean.SocketUserInfo;
-import cn.com.venvy.common.utils.VenvyLog;
-import cn.com.venvy.lua.ud.VenvyUDMqttCallback;
 import cn.com.venvy.lua.ud.VenvyUDNotificationCallback;
 
 /**
@@ -73,11 +70,9 @@ public class VenvyNotificationMapper<U extends VenvyUDNotificationCallback> exte
             }
             LuaTable table = LuaUtil.getTable(args, 3);
             Map<String, String> messageMap = LuaUtil.toMap(table);
-            if (messageMap != null) {
-                NotificationInfo info = new NotificationInfo();
-                info.messageInfo = messageMap;
-                target.postNotification(tag, info);
-            }
+            NotificationInfo info = new NotificationInfo();
+            info.messageInfo = messageMap;
+            target.postNotification(tag, info);
         }
         return LuaValue.NIL;
     }
