@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.util.HashMap;
 
 import cn.com.venvy.Platform;
+import cn.com.venvy.PreloadLuaUpdate;
 import cn.com.venvy.common.interf.ActionType;
 import cn.com.venvy.common.router.RouteType;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
@@ -31,7 +32,6 @@ import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.venvy.processor.annotation.VenvyAutoRun;
 import cn.com.venvy.processor.annotation.VenvyRouter;
-import cn.com.videopls.pub.VideoPlusLuaUpdateModel;
 
 /*
  * Created by yanjiangbo on 2018/1/18.
@@ -201,7 +201,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
                     new VenvyAsyncTaskUtil.IDoAsyncTask<Object, ScriptBundle>() {
                         @Override
                         public ScriptBundle doAsyncTask(Object... objects) throws Exception {
-                            return initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + VideoPlusLuaUpdateModel.LUA_CACHE_PATH);
+                            return initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
                         }
                     }, new VenvyAsyncTaskUtil.CommonAsyncCallback<ScriptBundle>() {
                         @Override

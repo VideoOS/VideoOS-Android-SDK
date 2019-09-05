@@ -17,11 +17,15 @@ import android.view.ViewParent;
 import java.io.File;
 
 import cn.com.venvy.App;
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.media.CacheListener;
 import cn.com.venvy.common.media.HttpProxyCacheServer;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.receiver.VolumeChangerObserver;
+import cn.com.venvy.common.statistics.StatisticsInfoBean;
+import cn.com.venvy.common.statistics.ThreadManager;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyLog;
 
 
@@ -496,9 +500,29 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
         return super.onTouchEvent(event);
     }
 
+    private volatile boolean isStatistic = true;
     @Override
     public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
+        if(isStatistic && cacheFile != null && cacheFile.exists() && cacheFile.getAbsolutePath().endsWith(".download")){
+            isStatistic = false;
+            statisticVideoFileSize();
+        }
+    }
 
+    private void statisticVideoFileSize() {
+        if(TextUtils.isEmpty(mCurrentUrl)){
+            return;
+        }
+        ThreadManager.getInstance().createShortPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                StatisticsInfoBean.FileInfoBean fileInfoBean = new StatisticsInfoBean.FileInfoBean();
+                fileInfoBean.fileName = mCurrentUrl.substring(mCurrentUrl.lastIndexOf("/") + 1);
+                fileInfoBean.filePath = mCurrentUrl;
+                fileInfoBean.fileSize = 0;
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(fileInfoBean, Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY);
+            }
+        });
     }
 
     @Override

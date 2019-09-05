@@ -1,4 +1,4 @@
-package cn.com.videopls.pub;
+package cn.com.venvy;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -9,33 +9,35 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
-import cn.com.venvy.App;
-import cn.com.venvy.Platform;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyMD5Util;
-import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by videojj_pls on 2019/7/25.
  * 结构下载Lua
  */
 
-public class VideoPlusLuaUpdate {
-    private final static String TAG = VideoPlusLuaUpdate.class.getName();
+public class PreloadLuaUpdate {
+    private final static String TAG = PreloadLuaUpdate.class.getName();
     private final String PARSE_LOCAL_LUA = "parse_local_luas";
     public static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private DownloadTaskRunner mDownloadTaskRunner;
     private CacheLuaUpdateCallback mUpdateCallback;
     private Platform mPlatform;
+    private int preloadType;
 
-    public VideoPlusLuaUpdate(Platform platform, VideoPlusLuaUpdate.CacheLuaUpdateCallback callback) {
+    public PreloadLuaUpdate(int preloadType, Platform platform, PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
+        this.preloadType = preloadType;
         this.mPlatform = platform;
         this.mUpdateCallback = callback;
     }
@@ -75,13 +77,13 @@ public class VideoPlusLuaUpdate {
      */
     private void checkUpdateLua(final JSONArray luaUrls) {
         VenvyAsyncTaskUtil.doAsyncTask(PARSE_LOCAL_LUA, new VenvyAsyncTaskUtil.IDoAsyncTask<JSONArray,
-                List<String>>() {
+                Set<String>>() {
             @Override
-            public List<String> doAsyncTask(JSONArray... urls) throws Exception {
+            public Set<String> doAsyncTask(JSONArray... urls) throws Exception {
                 if (urls == null || urls.length == 0) {
                     return null;
                 }
-                List<String> needDownUrls = new ArrayList<>();
+                Set<String> needDownUrls = new LinkedHashSet();
                 try {
                     JSONArray jsonArray = urls[0];
                     int len = luaUrls.length();
@@ -104,15 +106,16 @@ public class VideoPlusLuaUpdate {
                     e.printStackTrace();
                     VenvyLog.i(TAG, "VideoPlusLuaUpdate ——> checkDownLuaUrls error：" + e.getMessage());
                 }
+
                 return needDownUrls;
             }
-        }, new VenvyAsyncTaskUtil.IAsyncCallback<List<String>>() {
+        }, new VenvyAsyncTaskUtil.IAsyncCallback<Set<String>>() {
             @Override
             public void onPreExecute() {
             }
 
             @Override
-            public void onPostExecute(List<String> urls) {
+            public void onPostExecute(Set<String> urls) {
                 if (urls == null) {
                     return;
                 }
@@ -139,7 +142,7 @@ public class VideoPlusLuaUpdate {
 
     }
 
-    private void startDownloadLuaFile(List<String> urls) {
+    private void startDownloadLuaFile(Set<String> urls) {
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(mPlatform);
         }
@@ -176,13 +179,12 @@ public class VideoPlusLuaUpdate {
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,preloadType);
                 CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
                 if (callback != null) {
                     if (failedTasks != null && failedTasks.size() > 0) {
                         callback.updateError(new Exception("update Lua error,because down urls is failed"));
                     } else {
-                        //如果是在线更新的版本，需要强制更新lua路径地址
-                        VideoOSLuaView.destroyLuaScript();
                         callback.updateComplete(true);
                     }
                 }
@@ -190,7 +192,7 @@ public class VideoPlusLuaUpdate {
         });
     }
 
-    private VideoPlusLuaUpdate.CacheLuaUpdateCallback getCacheLuaUpdateCallback() {
+    private PreloadLuaUpdate.CacheLuaUpdateCallback getCacheLuaUpdateCallback() {
         return mUpdateCallback;
     }
 

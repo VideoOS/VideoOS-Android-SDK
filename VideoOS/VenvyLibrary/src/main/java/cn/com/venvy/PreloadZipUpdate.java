@@ -1,4 +1,4 @@
-package cn.com.videopls.pub;
+package cn.com.venvy;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -11,11 +11,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.com.venvy.App;
-import cn.com.venvy.Platform;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyGzipUtil;
@@ -27,17 +26,20 @@ import cn.com.venvy.common.utils.VenvyMD5Util;
  * 结构下载Zip 以及解压
  */
 
-public class VideoPlusZipUpdate {
-    private final static String TAG = VideoPlusZipUpdate.class.getName();
+public class PreloadZipUpdate {
+    private final static String TAG = PreloadZipUpdate.class.getName();
     private static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private static final String LUA_ZIP = "/lua/os/chain.zip";
+    private static final String LUA_ZIP_CACHE = "/lua/os/cache/demo/zip";
     private final String PARSE_LOCAL_ZIP = "parse_local_zip";
     private final String PARSE_UNZIP = "unzip";
     private DownloadTaskRunner mDownloadTaskRunner;
     private CacheZipUpdateCallback mUpdateCallback;
     private Platform mPlatform;
+    private int preloadType;
 
-    public VideoPlusZipUpdate(Platform platform, VideoPlusZipUpdate.CacheZipUpdateCallback callback) {
+    public PreloadZipUpdate(int preloadType, Platform platform, PreloadZipUpdate.CacheZipUpdateCallback callback) {
+        this.preloadType = preloadType;
         this.mPlatform = platform;
         this.mUpdateCallback = callback;
     }
@@ -164,13 +166,13 @@ public class VideoPlusZipUpdate {
             @Override
             public List<String> doAsyncTask(File... files) throws Exception {
                 List<String> cacheUrls = new ArrayList<>();
+                VenvyFileUtil.createDir(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE);
                 for (File file : files) {
                     final String cacheUrlPath = file.getAbsolutePath();
-                    long value = VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, false);
-                    if (value > 0) {
-                        cacheUrls.add(cacheUrlPath);
-                    }
+                    VenvyGzipUtil.unzipFile(cacheUrlPath, VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE, false);
                 }
+                cacheUrls.addAll(VenvyFileUtil.getFileName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE));
+                VenvyFileUtil.copyDir(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH);
                 return cacheUrls;
 
             }
@@ -182,6 +184,7 @@ public class VideoPlusZipUpdate {
 
             @Override
             public void onPostExecute(List<String> cacheUrls) {
+                VenvyFileUtil.delFolder(VenvyFileUtil.getName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE));
                 final JSONArray queryArray = new JSONArray();
                 CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                 for (String cacheUrlPath : cacheUrls) {
@@ -191,12 +194,12 @@ public class VideoPlusZipUpdate {
                             callback.updateError(new Exception(""));
                             return;
                         }
-                        File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName.replace(".zip", ".json"));
+                        File file = new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH, fileName);
                         if (!file.exists() || !file.isFile()) {
                             callback.updateError(new Exception(""));
                             return;
                         }
-                        String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), file.getAbsolutePath());
+                        String queryChainData = VenvyFileUtil.readFormFile(App.getContext(), VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + fileName);
                         if (TextUtils.isEmpty(queryChainData)) {
                             callback.updateError(new Exception(""));
                             return;
@@ -268,6 +271,7 @@ public class VideoPlusZipUpdate {
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks, preloadType);
                 if (failedTasks != null && failedTasks.size() > 0) {
                     CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                     if (callback != null) {
@@ -316,7 +320,7 @@ public class VideoPlusZipUpdate {
      * 获取回调
      * @return
      */
-    private VideoPlusZipUpdate.CacheZipUpdateCallback getCacheLuaUpdateCallback() {
+    private PreloadZipUpdate.CacheZipUpdateCallback getCacheLuaUpdateCallback() {
         return mUpdateCallback;
     }
 

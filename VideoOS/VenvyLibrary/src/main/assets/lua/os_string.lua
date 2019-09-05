@@ -5,7 +5,7 @@ OS_HTTP_HOST = Native:videoOShost()
 -- OS_HTTP_HOST = "http://dev-videopublicapi.videojj.com/videoos-api/"
 
 OS_HTTP_GET_CONFIG = OS_HTTP_HOST .. "/api/config"
-OS_HTTP_GET_TAG_LIST = OS_HTTP_HOST .. "/api/queryLaunchInfo"
+OS_HTTP_GET_TAG_LIST = OS_HTTP_HOST .. "/api/v2/queryLaunchInfo"
 OS_HTTP_GET_RESOURCE_LIST = OS_HTTP_HOST .. "/api/preloadLaunchInfo"
 OS_HTTP_GET_MOBILE_QUERY = OS_HTTP_HOST .. "/api/mobileQuery"
 OS_HTTP_POST_MOBILE_QUERY = OS_HTTP_HOST .. "/api/mobileModify"
