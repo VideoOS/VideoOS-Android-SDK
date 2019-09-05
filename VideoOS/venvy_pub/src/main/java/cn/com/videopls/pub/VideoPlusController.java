@@ -20,6 +20,7 @@ import java.util.Set;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
+import cn.com.venvy.VideoCopyLuaAssetsHelper;
 import cn.com.venvy.common.debug.DebugHelper;
 import cn.com.venvy.common.interf.ActionType;
 import cn.com.venvy.common.interf.EventType;
@@ -63,7 +64,6 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     private Context mContext;
     private VideoPlusAdapter mVideoPlusAdapter;
-    private VideoPlusLuaUpdateModel mLuaUpdateModel;
     private VideoPlusBaseModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
 
@@ -236,9 +236,6 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     public void stop() {
         unRegisterObservable();
-        if (mLuaUpdateModel != null) {
-            mLuaUpdateModel.destroy();
-        }
         if (mQueryAdsModel != null) {
             mQueryAdsModel.destroy();
         }
@@ -403,36 +400,26 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     private void startConnect(final IStartResult result) {
+        //Copy本地Lua逻辑处理
+        VideoCopyLuaAssetsHelper.getInstance().start(new VideoCopyLuaAssetsHelper.LuaCopyCallback() {
+            @Override
+            public void copyComplete() {
+                if (result != null) {
+                    result.successful();
+                }
+                registerObservable();
+            }
 
-        //开始访问Lua增量更新接口
-        mLuaUpdateModel = new VideoPlusLuaUpdateModel(mPlatform,
-                new VideoPlusLuaUpdateModel.LuaUpdateCallback() {
-                    @Override
-                    public void updateComplete(boolean isUpdateByNetwork) {
-                        if (isUpdateByNetwork) {
-                            VenvyLog.d(VideoPlusController.class.getName(), "lua 在线更新成功");
-                            //如果是在线更新的版本，需要强制更新lua路径地址
-                            VideoOSLuaView.destroyLuaScript();
-                        } else {
-                            VenvyLog.d(VideoPlusController.class.getName(), "lua 校验版本成功");
-                        }
-                        if (result != null) {
-                            result.successful();
-                        }
-                        registerObservable();
-                    }
-
-                    @Override
-                    public void updateError(Throwable throwable) {
-//                VenvyLog.e(VideoPlusController.class.getName(), "lua 更新失败, : " + throwable
-//                .getMessage());
-                        if (result != null) {
-                            result.failed();
-                        }
-                        registerObservable();
-                    }
-                });
-        mLuaUpdateModel.startRequest();
+            @Override
+            public void copyError(Throwable throwable) {
+                VenvyLog.e(VideoPlusController.class.getName(), "copy lua 失败, : " + throwable
+                        .getMessage());
+                if (result != null) {
+                    result.failed();
+                }
+                registerObservable();
+            }
+        });
     }
 
     private void startQueryConnect(ServiceType serviceType, Map<String, String> params, final IStartQueryResult result) {

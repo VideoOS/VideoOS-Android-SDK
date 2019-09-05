@@ -13,6 +13,8 @@ import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
+import cn.com.venvy.PreloadLuaUpdate;
+import cn.com.venvy.PreloadZipUpdate;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -24,6 +26,7 @@ import cn.com.venvy.common.utils.VenvyMD5Util;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
+import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by videojj_pls on 2019/7/22.
@@ -35,8 +38,8 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
             + "/vision/getLabelConf";
     private static final String LUA_ZIP = "/lua/os/chain.zip";
     private ServiceQueryChainCallback mQueryChainCallback;
-    private VideoPlusLuaUpdate mDownLuaUpdate;
-    private VideoPlusZipUpdate mDownZipUpdate;
+    private PreloadLuaUpdate mDownLuaUpdate;
+    private PreloadZipUpdate mDownZipUpdate;
     private Map<String, String> mQueryAdsParams;
 
     public VideoServiceQueryChainModel(Platform platform, Map<String, String> params,
@@ -121,10 +124,15 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         return;
                     }
                     if (mDownLuaUpdate == null) {
-                        mDownLuaUpdate = new VideoPlusLuaUpdate(getPlatform(), new
-                                VideoPlusLuaUpdate.CacheLuaUpdateCallback() {
+                        mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new
+                                PreloadLuaUpdate.CacheLuaUpdateCallback() {
                                     @Override
                                     public void updateComplete(boolean isUpdateByNetWork) {
+                                        if (isUpdateByNetWork) {
+                                            VideoOSLuaView.destroyLuaScript();
+                                        }
+                                        // todo ： load don't need data lua
+
                                         mDownZipUpdate.startDownloadZipFile(dataJsonArray);
                                     }
 
@@ -139,7 +147,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                 });
                     }
                     if (mDownZipUpdate == null) {
-                        mDownZipUpdate = new VideoPlusZipUpdate(getPlatform(), new VideoPlusZipUpdate.CacheZipUpdateCallback() {
+                        mDownZipUpdate = new PreloadZipUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new PreloadZipUpdate.CacheZipUpdateCallback() {
                             @Override
                             public void updateComplete(JSONArray zipJsonDataArray) {
                                 Map<String, String> params = getQueryChainParams();

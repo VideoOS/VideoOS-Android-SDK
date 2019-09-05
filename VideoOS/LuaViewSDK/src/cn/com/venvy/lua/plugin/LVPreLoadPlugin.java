@@ -2,11 +2,14 @@ package cn.com.venvy.lua.plugin;
 
 import com.taobao.luaview.util.LuaUtil;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.venvy.Platform;
@@ -25,6 +28,7 @@ public class LVPreLoadPlugin {
     public static void install(VenvyLVLibBinder venvyLVLibBinder, Platform platform) {
         venvyLVLibBinder.set("preloadImage", new PreLoadImageData(platform));
         venvyLVLibBinder.set("preloadVideo", new PreLoadVideoCacheData(platform));
+        venvyLVLibBinder.set("preloadLuaList", new PreLoadLuaCacheData(platform));
         venvyLVLibBinder.set("isCacheVideo", sISVideoCachedData == null ? sISVideoCachedData = new ISVideoCachedData() : sISVideoCachedData);
     }
 
@@ -77,6 +81,37 @@ public class LVPreLoadPlugin {
                     preLoadUrls[Integer.valueOf(entry.getKey()) - 1] = entry.getValue();
                 }
                 mPlatform.preloadMedia(preLoadUrls, null);
+            }
+            return LuaValue.NIL;
+        }
+    }
+
+    private static class PreLoadLuaCacheData extends VarArgFunction {
+        private Platform mPlatform;
+
+        PreLoadLuaCacheData(Platform platform) {
+            super();
+            this.mPlatform = platform;
+        }
+
+        @Override
+        public LuaValue invoke(Varargs args) {
+            int fixIndex = VenvyLVLibBinder.fixIndex(args);
+            if (args.narg() > fixIndex) {
+                LuaTable table = LuaUtil.getTable(args, fixIndex + 1);
+                try {
+                    HashMap<String, String> paramsMap = LuaUtil.toMap(table);
+                    if (paramsMap == null || paramsMap.size() <= 0) {
+                        return LuaValue.NIL;
+                    }
+                    JSONArray proLoadArray=new JSONArray();
+                    for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
+                        proLoadArray.put(new JSONObject(entry.getValue().toString()));
+                    }
+                    mPlatform.preloadLuaList(mPlatform, proLoadArray);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             return LuaValue.NIL;
         }
