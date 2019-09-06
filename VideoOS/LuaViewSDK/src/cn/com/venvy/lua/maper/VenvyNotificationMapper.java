@@ -51,7 +51,7 @@ public class VenvyNotificationMapper<U extends VenvyUDNotificationCallback> exte
     public LuaValue registerNotification(U target, Varargs args) {
         if (args.narg() > 0) {
             final String tag = LuaUtil.getString(args, 2);
-            final LuaFunction callback = args.optfunction(2, null);
+            final LuaFunction callback = args.optfunction(3, null);
             if (TextUtils.isEmpty(tag)) {
                 return LuaValue.NIL;
             }

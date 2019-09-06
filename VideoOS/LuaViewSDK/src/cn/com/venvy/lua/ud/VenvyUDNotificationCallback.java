@@ -34,6 +34,7 @@ public class VenvyUDNotificationCallback extends UDView<VenvyLVNotificationCallb
     public VenvyUDNotificationCallback registerNotification(LuaValue callbacks, String tag) {
         if (callbacks != null) {
             registerNotificationCallback = callbacks;
+            ObservableManager.getDefaultObserable().addObserver(tag, this);
         }
         return this;
     }
