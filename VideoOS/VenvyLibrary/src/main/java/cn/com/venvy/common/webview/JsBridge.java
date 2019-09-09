@@ -24,6 +24,7 @@ import cn.com.venvy.AppSecret;
 import cn.com.venvy.CommonParam;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.bean.PlatformUserInfo;
+import cn.com.venvy.common.bean.WidgetInfo;
 import cn.com.venvy.common.exception.LoginException;
 import cn.com.venvy.common.interf.ICallJsFunction;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
@@ -34,6 +35,7 @@ import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyBase64;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyMD5Util;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
 import static cn.com.venvy.common.observer.VenvyObservableTarget.TAG_JS_BRIDGE_OBSERVER;
@@ -55,6 +57,7 @@ public class JsBridge implements VenvyObserver {
     private Platform mPlatform;
     //    private JsParamsInfo mParamsInfo;
     public String mJsData;
+    public String mJsTitle;
 
     public JsBridge(Context context, @NonNull IVenvyWebView webView, Platform platform) {
         this.mVenvyWebView = webView;
@@ -68,6 +71,11 @@ public class JsBridge implements VenvyObserver {
 
     public void setJsData(String jsData) {
         this.mJsData = jsData;
+    }
+
+    public void setJsData(String jsData, String jsTitle) {
+        this.mJsData = jsData;
+        this.mJsTitle = jsTitle;
     }
 
     public void setCallJsFunction(ICallJsFunction jsFunction) {
@@ -95,11 +103,59 @@ public class JsBridge implements VenvyObserver {
             objSize.put("height", height);
             obj.put("common", CommonParam.getCommonParamJson(mPlatform.getPlatformInfo().getAppKey()));
             obj.put("size", objSize);
-            obj.put("secret",mPlatform.getPlatformInfo().getAppSecret());
+            obj.put("secret", mPlatform.getPlatformInfo().getAppSecret());
         } catch (Exception e) {
 
         }
         callJsFunction(obj.toString(), jsParams);
+    }
+
+    @JavascriptInterface
+    public void openUrl(String jsParams) {
+        try {
+            JSONObject obj = new JSONObject(jsParams);
+            JSONObject msgObj = obj.optJSONObject("msg");
+            String linkUrl = msgObj.optString("linkUrl");
+            String deepLink = msgObj.optString("deepLink");
+            String selfLink = msgObj.optString("selfLink");
+            String actionString = "";
+            if (!TextUtils.isEmpty(linkUrl)) {
+                actionString = linkUrl;
+            } else if (TextUtils.isEmpty(deepLink)) {
+                actionString = deepLink;
+            } else if (TextUtils.isEmpty(selfLink)) {
+                actionString = selfLink;
+            }
+            String adID = VenvyMD5Util.MD5(actionString);
+            WidgetInfo.WidgetActionType widgetActionType = WidgetInfo.WidgetActionType.findTypeById(1);
+            WidgetInfo widgetInfo = new WidgetInfo.Builder()
+                    .setAdId(adID)
+                    .setWidgetActionType(widgetActionType)
+                    .setUrl(actionString)
+                    .setWidgetName(TextUtils.isEmpty(mJsTitle) ? "" : mJsTitle)
+                    .setDeepLink(deepLink)
+                    .setLinkUrl(linkUrl)
+                    .setSelfLink(selfLink)
+                    .build();
+            if (mPlatform.getWidgetClickListener() != null && adID != null) {
+                mPlatform.getWidgetClickListener().onClick(widgetInfo);
+            }
+            boolean canOpen = isPayInstall(Uri.parse(deepLink));
+            JSONObject jsonObject = new JSONObject();
+            if (TextUtils.isEmpty(deepLink)) {
+                jsonObject.put("canOpen", 0);
+            } else {
+                if (canOpen) {
+                    jsonObject.put("canOpen", 1);
+                } else {
+                    jsonObject.put("canOpen", 2);
+                }
+            }
+            callJsFunction(jsonObject.toString(), jsParams);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @JavascriptInterface
