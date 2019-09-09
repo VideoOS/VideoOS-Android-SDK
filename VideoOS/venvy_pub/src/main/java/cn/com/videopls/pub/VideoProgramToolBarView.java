@@ -152,8 +152,8 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
 
     }
 
-    public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
-        videoProgramView.navigation(uri, params, callback);
+    public void refreshHistory(String appletId){
+        videoProgramView.refreshRecentHistory(appletId);
     }
 
     public void setVideoOSAdapter(@NonNull VideoPlusAdapter adapter) {

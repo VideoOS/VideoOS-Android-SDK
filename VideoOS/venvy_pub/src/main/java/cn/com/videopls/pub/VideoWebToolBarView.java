@@ -233,10 +233,16 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         webView.setVisibility(GONE);
         startLoadingAnimation();
         controller.startH5Program(appletId);
+        freshProgram(appletId);
 
         JsBridge jsBridge = new JsBridge(getContext(), webView, controller.getPlatform());
         jsBridge.setJsData(data);
         webView.setJsBridge(jsBridge);
+    }
+
+
+    public void freshProgram(String appletId){
+        controller.refreshRecentHistory(appletId);
     }
 
     public void openLink(final String url) {
@@ -247,8 +253,9 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         cancelLoadingAnimation();
     }
 
-    public void reload(){
+    public void reload(String appletId){
         webView.reload();
+        freshProgram(appletId);
     }
 
 

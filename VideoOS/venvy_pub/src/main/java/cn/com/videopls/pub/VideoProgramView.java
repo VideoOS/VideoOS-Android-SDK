@@ -125,7 +125,12 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
     public void startVision(String appletId, String data, int type,boolean isH5Type,final IRouterCallback callback) {
         if (controller != null) {
             controller.startVisionProgram(appletId, data, type,isH5Type,callback);
+            refreshRecentHistory(appletId);
         }
+    }
+
+    public void refreshRecentHistory(String appletId){
+        controller.refreshRecentHistory(appletId);
     }
 
     /**

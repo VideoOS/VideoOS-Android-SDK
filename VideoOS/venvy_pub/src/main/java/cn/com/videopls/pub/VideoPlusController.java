@@ -606,4 +606,21 @@ public abstract class VideoPlusController implements VenvyObserver {
         });
         model.startRequest();
     }
+
+    /**
+     * 更新最近使用记录
+     * @param appId
+     */
+    public void refreshRecentHistory(String appId){
+        if (!VenvyAPIUtil.isSupport(16)) {
+            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
+            return;
+        }
+        if (mVideoPlusAdapter == null) {
+            VenvyLog.e("Video++ View 未设置adapter");
+            return;
+        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
+        new VideoRecentlyModel(mPlatform,appId).startRequest();
+    }
 }

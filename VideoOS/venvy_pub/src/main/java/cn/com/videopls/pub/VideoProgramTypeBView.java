@@ -19,13 +19,11 @@ import android.widget.FrameLayout;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
-import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by Lucas on 2019/7/31.
@@ -152,7 +150,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
             if (h5ProgramMap.containsKey(appletId)) {
                 VenvyLog.d("h5 appletId is exists");
                 VideoWebToolBarView h5View = h5ProgramMap.get(appletId);
-                h5View.reload();
+                h5View.reload(appletId);
                 currentH5Program = h5View;
                 return;
             }
@@ -173,6 +171,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
                 //notify lua script refresh
                 existView.bringToFront();
                 existView.notifyLua(data);
+                existView.refreshHistory(appletId);
                 currentProgram = existView;
                 return;
             }
@@ -271,9 +270,9 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     }
 
 
-    public void showExceptionLogic(String msg, boolean needRetry,String data) {
+    public void showExceptionLogic(String msg, boolean needRetry, String data) {
         if (currentProgram != null) {
-            currentProgram.showExceptionLogic(msg,needRetry,data);
+            currentProgram.showExceptionLogic(msg, needRetry, data);
         }
     }
 
@@ -313,6 +312,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
 
     /**
      * 暂时没有注册
+     *
      * @param observable
      * @param tag
      * @param bundle
