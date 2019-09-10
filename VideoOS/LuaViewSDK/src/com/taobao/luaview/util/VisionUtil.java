@@ -15,12 +15,13 @@ public class VisionUtil {
      */
     public static Pair<Float, Float> getVisionProgramSize() {
         int screenHeight = AndroidUtil.getScreenHeight(getContext());
-        int screenWidth = AndroidUtil.getScreenWidth(getContext()) - DimenUtil.dpiToPx(44f);
-
-        float height = DimenUtil.pxToDpi(Math.min(screenWidth,screenHeight));
-        float width = height / 375.0f * 230;
+        int screenWidth = AndroidUtil.getScreenWidth(getContext());
 
 
-        return new Pair<>(width,height);
+        float height = Math.min(screenWidth,screenHeight) - DimenUtil.dpiToPx(44f);
+        float width = Math.min(screenWidth,screenHeight) / 375.0f * 230;
+
+
+        return new Pair<>(DimenUtil.pxToDpi(width),DimenUtil.pxToDpi(height));
     }
 }

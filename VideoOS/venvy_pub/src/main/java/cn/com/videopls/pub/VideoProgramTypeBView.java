@@ -149,6 +149,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
             if (h5ProgramMap.containsKey(appletId)) {
                 VenvyLog.d("h5 appletId is exists");
                 VideoWebToolBarView h5View = h5ProgramMap.get(appletId);
+                h5View.bringToFront();
                 h5View.reload(appletId);
                 currentH5Program = h5View;
                 currentProgram = null;
