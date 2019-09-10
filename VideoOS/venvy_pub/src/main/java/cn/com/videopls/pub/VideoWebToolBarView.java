@@ -42,6 +42,8 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
 
     private VideoPlusH5Controller controller;
 
+    private JsBridge jsBridge;
+
     public VideoWebToolBarView(Context context) {
         super(context);
         init();
@@ -110,12 +112,12 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
                     public void run() {
                         errorContent.setVisibility(VISIBLE);
                         String message = "";
-                        if(TextUtils.isEmpty(showErrorPage)){
+                        if (TextUtils.isEmpty(showErrorPage)) {
                             message = getContext().getString(
                                     VenvyResourceUtil.getStringId(getContext(), "errorDesc"));
-                        }else{
+                        } else {
                             try {
-                                message =  new JSONObject(showErrorPage).getString("message");
+                                message = new JSONObject(showErrorPage).getString("message");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -226,6 +228,12 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         addView(webView);
     }
 
+    public void setTitle(final String title) {
+        tvTitle.setText(title);
+        if (jsBridge != null) {
+            jsBridge.setJsTitle(title);
+        }
+    }
 
     public void fetchTargetUrl(String appletId, String data) {
         this.appletId = appletId;
@@ -235,13 +243,15 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         controller.startH5Program(appletId);
         freshProgram(appletId);
 
-        JsBridge jsBridge = new JsBridge(getContext(), webView, controller.getPlatform());
+        if (jsBridge == null) {
+            jsBridge = new JsBridge(getContext(), webView, controller.getPlatform());
+        }
         jsBridge.setJsData(data);
         webView.setJsBridge(jsBridge);
     }
 
 
-    public void freshProgram(String appletId){
+    public void freshProgram(String appletId) {
         controller.refreshRecentHistory(appletId);
     }
 
@@ -253,7 +263,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         cancelLoadingAnimation();
     }
 
-    public void reload(String appletId){
+    public void reload(String appletId) {
         webView.reload();
         freshProgram(appletId);
     }

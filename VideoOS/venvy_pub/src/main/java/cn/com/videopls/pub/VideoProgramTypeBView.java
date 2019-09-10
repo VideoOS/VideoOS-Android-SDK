@@ -50,8 +50,8 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
      */
     private HashMap<String, VideoWebToolBarView> h5ProgramMap = new HashMap<>();
 
+    // 当前最近启动的容器。为互斥关系，当一方有实例的时候，另一方为null
     private VideoProgramToolBarView currentProgram;
-
     private VideoWebToolBarView currentH5Program;
 
     private FrameLayout programContent;
@@ -60,7 +60,6 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     private VideoPlusAdapter mAdapter;
 
     private String currentProgramId;
-
     private String currentH5ProgramId;
 
     public VideoProgramTypeBView(@NonNull Context context) {
@@ -152,9 +151,11 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
                 VideoWebToolBarView h5View = h5ProgramMap.get(appletId);
                 h5View.reload(appletId);
                 currentH5Program = h5View;
+                currentProgram = null;
                 return;
             }
             currentH5Program = createH5Program();
+            currentProgram = null;
             if (mAdapter != null) {
                 currentH5Program.setAdapter(mAdapter);
             }
@@ -173,10 +174,12 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
                 existView.notifyLua(data);
                 existView.refreshHistory(appletId);
                 currentProgram = existView;
+                currentH5Program = null;
                 return;
             }
 
             currentProgram = createProgram(orientationType);
+            currentH5Program = null;
             if (mAdapter != null) {
                 currentProgram.setVideoOSAdapter(mAdapter);
             }
@@ -280,6 +283,10 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     public void setCurrentProgramTitle(String title) {
         if (currentProgram != null) {
             currentProgram.setTitle(title);
+        }
+
+        if(currentH5Program != null){
+            currentH5Program.setTitle(title);
         }
     }
 

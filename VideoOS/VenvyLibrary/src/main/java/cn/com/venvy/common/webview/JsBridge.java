@@ -73,8 +73,7 @@ public class JsBridge implements VenvyObserver {
         this.mJsData = jsData;
     }
 
-    public void setJsData(String jsData, String jsTitle) {
-        this.mJsData = jsData;
+    public void setJsTitle(String jsTitle){
         this.mJsTitle = jsTitle;
     }
 
