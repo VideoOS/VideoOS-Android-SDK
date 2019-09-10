@@ -136,14 +136,14 @@ public class JsBridge implements VenvyObserver {
                     .setLinkUrl(linkUrl)
                     .setSelfLink(selfLink)
                     .build();
-            if (mPlatform.getWidgetClickListener() != null && adID != null) {
+            if (mPlatform.getWidgetClickListener() != null) {
                 mPlatform.getWidgetClickListener().onClick(widgetInfo);
             }
-            boolean canOpen = isPayInstall(Uri.parse(deepLink));
             JSONObject jsonObject = new JSONObject();
             if (TextUtils.isEmpty(deepLink)) {
                 jsonObject.put("canOpen", 0);
             } else {
+                boolean canOpen = isPayInstall(Uri.parse(deepLink));
                 if (canOpen) {
                     jsonObject.put("canOpen", 1);
                 } else {
