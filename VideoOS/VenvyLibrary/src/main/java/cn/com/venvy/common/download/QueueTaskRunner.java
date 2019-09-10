@@ -83,9 +83,9 @@ public abstract class QueueTaskRunner<Task extends QueueTaskRunner.ITask, Result
                         public void run() {
                             startTasks(tasks, listener);
                         }
-                    }, 3000);
+                    }, 0);
                 } else {
-                    Thread.sleep(3000);
+                    Thread.sleep(0);
                     startTasks(tasks, listener);
                 }
                 return false;
