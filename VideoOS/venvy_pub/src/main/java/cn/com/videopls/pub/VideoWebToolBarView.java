@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -260,11 +261,16 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         webView.setVisibility(VISIBLE);
         loadingContent.setVisibility(GONE);
         webView.loadUrl(url);
+        webView.setTag(url);
         cancelLoadingAnimation();
     }
 
-    public void reload(String appletId) {
-        webView.reload();
+    public void reload(String data) {
+        if(jsBridge != null){
+            jsBridge.setJsData(data);
+        }
+        webView.setJsBridge(jsBridge);
+        webView.loadUrl(String.valueOf(webView.getTag()));
         freshProgram(appletId);
     }
 
