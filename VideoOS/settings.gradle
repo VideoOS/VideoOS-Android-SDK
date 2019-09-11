@@ -1,7 +1,7 @@
 include ':app'
 include ':VenvyLibrary'
 include ':venvy_pub'
-//include ':venvy_ai'
+include ':venvy_svga'
 include ':LuaViewSDK'
 include ':videoos_demo'
 include ':svga'

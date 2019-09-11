@@ -53,7 +53,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided project(path: ':VenvyLibrary')
-    compile project(path: ':svga')
+    compile project(path: ':venvy_svga')
     provided 'com.android.support:support-v4:25.3.1'
     provided 'com.android.support:recyclerview-v7:25.3.1'
     provided 'com.android.support:appcompat-v7:25.3.1'
