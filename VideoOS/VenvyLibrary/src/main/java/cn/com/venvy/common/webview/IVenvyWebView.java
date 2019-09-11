@@ -9,6 +9,8 @@ import android.webkit.ValueCallback;
 public interface IVenvyWebView {
     void addJavascriptInterface(Object object, String name);
 
+    void callJsFunction(String functionName, String data);
+
     void setWebViewClient(IVenvyWebViewClient webViewClient);
 
     void setWebChromeClient(IVenvyWebChromeClient webChromeClient);
@@ -34,4 +36,10 @@ public interface IVenvyWebView {
     void setEnabled(boolean enabled);
 
     void evaluateJavascript(String script, ValueCallback<String> resultCallback);
+
+    void showErrorPage(String showErrorPage);
+
+    void updateNaviTitle(String updateNaviTitle);
+
+    void openApplet(String openApplet);
 }

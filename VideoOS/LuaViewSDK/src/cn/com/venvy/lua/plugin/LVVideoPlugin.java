@@ -11,6 +11,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
+import cn.com.venvy.common.bean.VideoFrameSize;
 import cn.com.venvy.common.bean.VideoPlayerSize;
 import cn.com.venvy.common.debug.DebugStatus;
 import cn.com.venvy.common.interf.ScreenStatus;
@@ -29,6 +30,7 @@ public class LVVideoPlugin {
         venvyLVLibBinder.set("isDebug", sIsDebug == null ? sIsDebug = new IsDebug() : sIsDebug);
         venvyLVLibBinder.set("setDebug", sChangeEnvironment == null ? sChangeEnvironment = new ChangeEnvironment() : sChangeEnvironment);
         venvyLVLibBinder.set("getVideoSize", new VideoSize(platform));
+        venvyLVLibBinder.set("getVideoFrame", new VideoFrame(platform));
         venvyLVLibBinder.set("currentDirection", new CurrentScreenDirection(platform));
         venvyLVLibBinder.set("isFullScreen", new IsFullScreen(platform));
         venvyLVLibBinder.set("appKey", new AppKey(platform));
@@ -250,6 +252,35 @@ public class LVVideoPlugin {
             } else {
                 return LuaValue.NIL;
             }
+
+        }
+    }
+
+    private static class VideoFrame extends VarArgFunction {
+        private Platform mPlatform;
+
+        VideoFrame(Platform platform) {
+            this.mPlatform = platform;
+        }
+
+        @Override
+        public Varargs invoke(Varargs args) {
+
+            if (mPlatform == null || mPlatform.getMediaControlListener() == null) {
+                LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(0), LuaValue.valueOf(0), LuaValue.valueOf(0), LuaValue.valueOf(0)};
+                return LuaValue.varargsOf(luaValue);
+            }
+            VideoFrameSize videoFrameSize = mPlatform.getMediaControlListener().getVideoFrameSize();
+            if (videoFrameSize == null) {
+                LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(0), LuaValue.valueOf(0), LuaValue.valueOf(0), LuaValue.valueOf(0)};
+                return LuaValue.varargsOf(luaValue);
+            }
+            float videoWidth = DimenUtil.pxToDpi(videoFrameSize.mVideoFrameWidth);
+            float videoHeight = DimenUtil.pxToDpi(videoFrameSize.mVideoFrameHeight);
+            float x = DimenUtil.pxToDpi(videoFrameSize.mVideoFrameX);
+            float y = DimenUtil.pxToDpi(videoFrameSize.mVideoFrameY);
+            LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(x), LuaValue.valueOf(y), LuaValue.valueOf(videoWidth), LuaValue.valueOf(videoHeight)};
+            return LuaValue.varargsOf(luaValue);
 
         }
     }

@@ -148,7 +148,7 @@ public class PreloadLuaUpdate {
         }
         ArrayList<DownloadTask> arrayList = new ArrayList<>();
         for (String string : urls) {
-            DownloadTask task = new DownloadTask(App.getContext(), string, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(string).getLastPathSegment());
+            DownloadTask task = new DownloadTask(App.getContext(), string, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(string).getLastPathSegment(),true);
             arrayList.add(task);
         }
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {

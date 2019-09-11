@@ -37,7 +37,7 @@
         android:layout_height="match_parent"
         />
 
-    <com.opensource.svgaplayer.SVGAImageView
+    <cn.com.venvy.svga.library.SVGAImageView
         android:id="@+id/imgSvga"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

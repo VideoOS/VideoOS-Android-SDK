@@ -125,6 +125,25 @@ public class VideoOSLuaView extends VideoOSBaseView {
         }
     }
 
+    public void callLuaFunction(String functionName,HashMap<String,String> map){
+        if(mLuaView != null){
+            LuaValue dataTable = null;
+            String key = "data";
+            Object dataValue = map.get(key);
+            if (dataValue != null && dataValue instanceof String) {
+                dataTable = JsonUtil.toLuaTable((String) dataValue);
+                if (dataTable != null && dataTable.istable()) {
+                    map.remove(key);
+                }
+            }
+            LuaValue  table = LuaUtil.toTable(map);
+            if (dataTable != null && table != null && table.istable()) {
+                table.set(key, dataTable);
+            }
+            mLuaView.callLuaFunction(functionName, table);
+        }
+    }
+
     @VenvyAutoRun
     private void reResumeService() {
         if (mLuaView == null) {

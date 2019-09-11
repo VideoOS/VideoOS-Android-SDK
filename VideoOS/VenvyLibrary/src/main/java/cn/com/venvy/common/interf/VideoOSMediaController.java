@@ -1,5 +1,6 @@
 package cn.com.venvy.common.interf;
 
+import cn.com.venvy.common.bean.VideoFrameSize;
 import cn.com.venvy.common.bean.VideoPlayerSize;
 
 /**
@@ -65,6 +66,11 @@ public abstract class VideoOSMediaController implements IMediaControlListener {
 
     //优先级高于Provided的设置
     public VideoPlayerSize getVideoSize() {
+        return null;
+    }
+
+    @Override
+    public VideoFrameSize getVideoFrameSize() {
         return null;
     }
 }
