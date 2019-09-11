@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Executors;
 
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
@@ -83,9 +84,9 @@ public abstract class QueueTaskRunner<Task extends QueueTaskRunner.ITask, Result
                         public void run() {
                             startTasks(tasks, listener);
                         }
-                    }, 3000);
+                    }, 0);
                 } else {
-                    Thread.sleep(3000);
+                    Thread.sleep(0);
                     startTasks(tasks, listener);
                 }
                 return false;
@@ -128,7 +129,8 @@ public abstract class QueueTaskRunner<Task extends QueueTaskRunner.ITask, Result
                     mIsWorking = false;
                 }
             };
-            mAsyncTask.execute();
+//            mAsyncTask.execute();
+            mAsyncTask.executeOnExecutor(Executors.newCachedThreadPool());
         } else {
             execNextTask();
             mAsyncTask = null;

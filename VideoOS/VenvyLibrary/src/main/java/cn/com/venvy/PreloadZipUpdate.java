@@ -240,7 +240,7 @@ public class PreloadZipUpdate {
         }
         final ArrayList<DownloadTask> arrayList = new ArrayList<>();
         for (String string : needDownZipUrls) {
-            DownloadTask task = new DownloadTask(App.getContext(), string, VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP + File.separator + Uri.parse(string).getLastPathSegment());
+            DownloadTask task = new DownloadTask(App.getContext(), string, VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP + File.separator + Uri.parse(string).getLastPathSegment(),true);
             arrayList.add(task);
         }
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {

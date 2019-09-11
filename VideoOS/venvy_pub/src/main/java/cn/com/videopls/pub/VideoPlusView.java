@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
@@ -25,6 +26,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     // B 类小程序
     protected VideoProgramTypeBView programViewB;
+
+    // 桌面小程序
+    protected VideoProgramView programViewDesktop;
 
     private VideoPlusViewHelper plusViewHelper;
 
@@ -69,8 +73,10 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
         programViewA = createTypeAProgram();
         programViewB = createTypeBProgram();
+        programViewDesktop = createDesktopProgram();
         addView(programViewA);
         addView(programViewB);
+        addView(programViewDesktop);
         programViewB.setClickable(false);
     }
 
@@ -80,8 +86,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
      * @return
      */
     private VideoProgramView createTypeAProgram() {
-        VideoProgramView mainProgram = new VideoProgramView(getContext());
-        return mainProgram;
+        return new VideoProgramView(getContext());
     }
 
 
@@ -91,8 +96,11 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
      * @return
      */
     private VideoProgramTypeBView createTypeBProgram() {
-        VideoProgramTypeBView bProgram = new VideoProgramTypeBView(getContext());
-        return bProgram;
+        return new VideoProgramTypeBView(getContext());
+    }
+
+    private VideoProgramView createDesktopProgram(){
+        return new VideoProgramView(getContext());
     }
 
     /**
@@ -111,9 +119,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
      * @param msg
      * @param needRetry
      */
-    public void showExceptionLogic(String msg, boolean needRetry) {
+    public void showExceptionLogic(String msg, boolean needRetry,String data) {
         if (programViewB != null) {
-            programViewB.showExceptionLogic(msg, needRetry);
+            programViewB.showExceptionLogic(msg, needRetry,data);
         }
 
     }
@@ -135,7 +143,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
     }
 
-    public void changeVisionprogramByOrientation(boolean isHorizontal) {
+    public void changeVisionProgramByOrientation(boolean isHorizontal) {
         if (programViewB != null) {
             programViewB.setVisibility(isHorizontal ? VISIBLE : GONE);
         }
@@ -161,6 +169,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (programViewB != null) {
             programViewB.setVideoOSAdapter(adapter);
         }
+        if(programViewDesktop != null){
+            programViewDesktop.setVideoOSAdapter(adapter);
+        }
     }
 
     public void start() {
@@ -178,10 +189,10 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     /**
      * 拉起一个视联网小程序
      */
-    public void launchVisionProgram(@NonNull String appletId, String data, final int orientationType) {
+    public void launchVisionProgram(@NonNull String appletId, String data, final int orientationType, boolean isH5Type) {
         if (programViewB != null) {
             programViewB.setClickable(true);
-            programViewB.start(appletId, data, orientationType);
+            programViewB.start(appletId, data, orientationType, isH5Type);
         }
     }
 
@@ -193,6 +204,39 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     public void closeVisionProgram(String appletId) {
         if (programViewB != null) {
             programViewB.close(appletId);
+        }
+    }
+
+    /**
+     * 拉起一个H5小程序
+     *
+     * @param url
+     */
+    public void launchH5VisionProgram(String url) {
+        if (programViewB != null) {
+            programViewB.setClickable(true);
+            programViewB.startH5(url);
+        }
+    }
+
+
+    public void launchDesktopProgram(String targetName){
+        if(programViewDesktop != null && !TextUtils.isEmpty(targetName)) {
+            programViewDesktop.setVisibility(VISIBLE);
+            Uri uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
+            programViewDesktop.navigation(uri, new HashMap<String, String>(), null);
+        }
+
+    }
+
+    /**
+     * 根据指定ID关闭一个H5小程序
+     *
+     * @param appletId
+     */
+    public void closeH5VisionProgram(String appletId) {
+        if (programViewB != null) {
+            programViewB.closeH5(appletId);
         }
     }
 
@@ -219,6 +263,13 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     public void stopService(ServiceType serviceType) {
         if (programViewA != null) {
             programViewA.stopService(serviceType);
+        }
+
+        if(serviceType == ServiceType.ServiceTypeVideoMode){
+            // 如果是关闭视联网模式，则隐藏视联网桌面
+            if(programViewDesktop != null){
+                programViewDesktop.setVisibility(GONE);
+            }
         }
     }
 }

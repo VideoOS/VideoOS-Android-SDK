@@ -8,6 +8,9 @@
 
 package com.taobao.luaview.fun.mapper.ui;
 
+import android.view.MotionEvent;
+import android.view.View;
+
 import com.taobao.luaview.fun.mapper.LuaViewApi;
 import com.taobao.luaview.fun.mapper.LuaViewLib;
 import com.taobao.luaview.userdata.ui.UDScrollView;
@@ -18,6 +21,8 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
 import java.util.List;
+
+import cn.com.venvy.common.utils.VenvyLog;
 
 /**
  * ScrollView的方法映射
@@ -36,8 +41,9 @@ public class UIScrollViewMethodMapper<U extends UDScrollView> extends UIViewGrou
             "pageScroll",//6
             "fullScroll",//7
             "contentSize",//8
-            "showScrollIndicator",
-            "orientation"
+            "showScrollIndicator", // 9
+            "orientation",//10
+            "scrollEnabled" // 11
     };
 
     @Override
@@ -71,6 +77,8 @@ public class UIScrollViewMethodMapper<U extends UDScrollView> extends UIViewGrou
                 return showScrollIndicator(target, varargs);
             case 10:
                 return setOrientation(target, varargs);
+            case 11:
+                return scrollEnable(target, varargs);
         }
         return super.invoke(code, target, varargs);
     }
@@ -271,4 +279,18 @@ public class UIScrollViewMethodMapper<U extends UDScrollView> extends UIViewGrou
         return view;
     }
 
+
+    public LuaValue scrollEnable(U view, Varargs varargs) {
+        final boolean enable = varargs.optboolean(2, true);
+        view.getView().setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                VenvyLog.d("onTouch : "+ enable);
+                // return true 禁止滑动
+                // return false 允许滑动
+                return !enable;
+            }
+        });
+        return LuaValue.valueOf(!enable);
+    }
 }

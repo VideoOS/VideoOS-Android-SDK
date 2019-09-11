@@ -15,6 +15,7 @@ import both.video.venvy.com.appdemo.MyApp;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.FullScreenWebViewDialog;
 import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
+import cn.com.venvy.common.bean.VideoFrameSize;
 import cn.com.venvy.common.bean.VideoPlayerSize;
 import cn.com.venvy.common.bean.WidgetInfo;
 import cn.com.venvy.common.http.base.IRequestConnect;
@@ -248,6 +249,12 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             @Override
             public VideoPlayerSize getVideoSize() {
                 return videoPlayerSize;
+            }
+
+            @Override
+            public VideoFrameSize getVideoFrameSize() {
+                return new VideoFrameSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()),
+                        VenvyUIUtil.getScreenHeight(MyApp.getInstance()),0,0);
             }
         };
     }

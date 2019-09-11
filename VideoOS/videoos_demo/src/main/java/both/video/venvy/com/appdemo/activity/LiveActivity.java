@@ -38,8 +38,6 @@ public class LiveActivity extends BasePlayerActivity implements View.OnClickList
         if (R.id.bt_os_setting_mall == ID) {
             if (mVideoPlusView == null)
                 return;
-
-
             mVideoPlusView.stop();
             Uri uri = Uri.parse("LuaView://defaultLuaView?template=os_cloud_hotspot.lua&id=os_cloud_hotspot");
             HashMap<String, String> params = new HashMap<>();

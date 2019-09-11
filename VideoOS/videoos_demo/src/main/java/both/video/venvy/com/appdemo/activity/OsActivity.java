@@ -25,13 +25,7 @@ public class OsActivity extends BasePlayerActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
 
         View settingView = getSettingView();
-
-
-
         mRootView.addView(settingView);
-
-
-
 
     }
 

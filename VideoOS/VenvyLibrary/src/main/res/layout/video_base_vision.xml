@@ -2,7 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#3C4049"
+    >
 
 
     <RelativeLayout
@@ -35,20 +37,15 @@
     </RelativeLayout>
 
 
-    <cn.com.videopls.pub.VideoProgramView
-        android:id="@+id/programView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="44dp" />
-
 
     <RelativeLayout
         android:id="@+id/loadingContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="44dp"
-        android:alpha="0.9"
-        android:background="@color/color2"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@color/color5"
         android:visibility="gone">
 
         <FrameLayout
@@ -91,8 +88,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="44dp"
-        android:alpha="0.9"
-        android:background="@color/color2">
+        android:background="@color/color5"
+        android:clickable="true"
+        android:focusable="true">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -130,8 +128,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="44dp"
-        android:alpha="0.9"
-        android:background="@color/color2"
+        android:background="@color/color5"
         android:visibility="gone">
 
         <LinearLayout

@@ -1,22 +1,22 @@
 package cn.com.videopls.pub;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.ArraySet;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.FrameLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
@@ -26,35 +26,25 @@ import cn.com.venvy.common.router.IRouterCallback;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
+import cn.com.venvy.common.utils.VenvyUIUtil;
+import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by Lucas on 2019/7/31.
  */
-public class VideoProgramToolBarView extends LinearLayout implements VenvyObserver, IRouterCallback {
+@TargetApi(Build.VERSION_CODES.M)
+public class VideoProgramToolBarView extends BaseVideoVisionView implements VenvyObserver, IRouterCallback {
 
 
     protected VideoProgramView videoProgramView;
 
-    private View retryContent;
-    private View loadingContent;
-    private View errorContent;
-    private TextView tvRetry;
-    private View rlTitleBar;
-    private ImageView ivBack;
-    private TextView tvTitle;
-    private ImageView ivClose;
-    private TextView tvRetryMsg;
-    private TextView tvErrorMsg;
-
-    private ImageView circle1, circle2;
+    private Set<String> templateIds = new ArraySet<>();
 
     private String currentAppletId;
-
     private String cacheData;
     private int cacheType;
 
-
-    private AnimatorSet circle1Set, circle2Set;
+    private String retryData;
 
     public VideoProgramToolBarView(@NonNull Context context) {
         super(context);
@@ -92,51 +82,31 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
 
     private void init() {
-        inflate(getContext(), VenvyResourceUtil.getLayoutId(getContext(),
-                "video_program_tool"), this);
-        rlTitleBar = findViewById(VenvyResourceUtil.getId(getContext(), "rlTitleBar"));
-        rlTitleBar.setAlpha(0.9f);
-
-        loadingContent = findViewById(
-                VenvyResourceUtil.getId(getContext(), "loadingContent"));
-        retryContent = findViewById(
-                VenvyResourceUtil.getId(getContext(), "disConnectWifiContent"));
-        errorContent = findViewById(
-                VenvyResourceUtil.getId(getContext(), "errorContent"));
         retryContent.setClickable(true);
         errorContent.setClickable(true);
-        tvRetry = (TextView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "tvRetry"));
         tvRetry.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (VenvyDeviceUtil.isNetworkAvailable(getContext())) {
-                    start(currentAppletId, cacheData, cacheType);
-                    cacheData = "";
-                    cacheType = 0;
+                    VideoOSLuaView osLuaView = getCurrentLuaView();
+                    HashMap<String,String> map = new HashMap<>();
+                    map.put("eventType","2");
+                    map.put("appletActionType","1");
+                    map.put("data",retryData);
+                    osLuaView.callLuaFunction("event",map);
                 }
             }
         });
-        videoProgramView = (VideoProgramView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "programView"));
-        ivBack = (ImageView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "ivBack"));
-        tvTitle = (TextView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "tvTitle"));
-        ivClose = (ImageView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "ivClose"));
-        circle1 = (ImageView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "circle1"));
-        circle2 = (ImageView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "circle2"));
-        tvRetryMsg = (TextView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "tvRetryMsg"));
-        tvErrorMsg = (TextView) findViewById(
-                VenvyResourceUtil.getId(getContext(), "tvErrorMsg"));
+
+        initVideoProgramView();
+
         ivBack.setVisibility(INVISIBLE);
         ivBack.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                errorContent.setVisibility(GONE);
+                retryContent.setVisibility(GONE);
+                videoProgramView.setVisibility(VISIBLE);
                 videoProgramView.removeTopView();
                 checkBackDisplayLogic();
             }
@@ -154,6 +124,14 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         });
     }
 
+    private void initVideoProgramView() {
+        videoProgramView = new VideoProgramView(getContext());
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        layoutParams.topMargin = VenvyUIUtil.dip2px(getContext(), 44f);
+        videoProgramView.setLayoutParams(layoutParams);
+        addView(videoProgramView);
+    }
+
 
     public void start(String appletId, String data, int type) {
         if (VenvyDeviceUtil.isNetworkAvailable(getContext())) {
@@ -162,7 +140,7 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
             loadingContent.setVisibility(VISIBLE);
             errorContent.setVisibility(GONE);
             startLoadingAnimation();
-            videoProgramView.startVision(appletId, data, type, this);
+            videoProgramView.startVision(appletId, data, type, false, this);
         } else {
             this.currentAppletId = appletId;
             cacheData = data;
@@ -174,8 +152,8 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
 
     }
 
-    public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
-        videoProgramView.navigation(uri, params, callback);
+    public void refreshHistory(String appletId){
+        videoProgramView.refreshRecentHistory(appletId);
     }
 
     public void setVideoOSAdapter(@NonNull VideoPlusAdapter adapter) {
@@ -183,13 +161,20 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
     }
 
 
-    public void showExceptionLogic(String msg, boolean needRetry) {
+    public boolean isIncludeId(String id){
+        return templateIds.contains(id);
+    }
+
+    public void showExceptionLogic(String msg, boolean needRetry,String data) {
         VenvyLog.d("showExceptionLogic : " + msg + "  " + needRetry);
+        videoProgramView.setVisibility(INVISIBLE);
         if (needRetry) {
             retryContent.setVisibility(VISIBLE);
             loadingContent.setVisibility(GONE);
             errorContent.setVisibility(GONE);
             tvRetryMsg.setText(msg);
+
+            retryData = data;
         } else {
             retryContent.setVisibility(GONE);
             loadingContent.setVisibility(GONE);
@@ -197,6 +182,12 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
             tvErrorMsg.setText(msg);
         }
         checkBackDisplayLogic();
+    }
+
+
+
+    public void showExceptionLogic(String msg, boolean needRetry) {
+        showExceptionLogic(msg,needRetry,"");
     }
 
     public void setTitle(final String title) {
@@ -245,42 +236,45 @@ public class VideoProgramToolBarView extends LinearLayout implements VenvyObserv
         }
     }
 
+    public void notifyLua(String data){
+        errorContent.setVisibility(GONE);
+        retryContent.setVisibility(GONE);
+        loadingContent.setVisibility(GONE);
+        videoProgramView.setVisibility(VISIBLE);
 
-    private void startLoadingAnimation() {
+        VenvyLog.d("call event function");
 
-        if (circle1Set == null) {
-            circle1Set = new AnimatorSet();
-        }
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(circle1, "ScaleX", 1f, 0.5f, 1f);
-        scaleX.setRepeatCount(ValueAnimator.INFINITE);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(circle1, "ScaleY", 1f, 0.5f, 1f);
-        scaleY.setRepeatCount(ValueAnimator.INFINITE);
-        ObjectAnimator[] items = new ObjectAnimator[]{scaleX, scaleY};
-        circle1Set.playTogether(items);
-        circle1Set.setDuration(1000).start();
-
-
-        if (circle2Set == null) {
-            circle2Set = new AnimatorSet();
-        }
-        ObjectAnimator scaleX2 = ObjectAnimator.ofFloat(circle2, "ScaleX", 0.5f, 1f, 0.5f);
-        scaleX2.setRepeatCount(ValueAnimator.INFINITE);
-        ObjectAnimator scaleY2 = ObjectAnimator.ofFloat(circle2, "ScaleY", 0.5f, 1f, 0.5f);
-        scaleY2.setRepeatCount(ValueAnimator.INFINITE);
-        ObjectAnimator[] items2 = new ObjectAnimator[]{scaleX2, scaleY2};
-        circle2Set.playTogether(items2);
-        circle2Set.setDuration(1000).start();
+        // 通知正在展示的lua refresh
+        VideoOSLuaView osLuaView = getCurrentLuaView();
+        HashMap<String,String> map = new HashMap<>();
+        map.put("eventType","2");
+        map.put("appletActionType","2");
+        map.put("data",data);
+        osLuaView.callLuaFunction("event",map);
 
     }
 
-    private void cancelLoadingAnimation() {
-        if (circle1Set != null) {
-            circle1Set.cancel();
-            circle1Set = null;
-        }
-        if (circle2Set != null) {
-            circle2Set.cancel();
-            circle2Set = null;
-        }
+    public VideoOSLuaView getCurrentLuaView(){
+        return (VideoOSLuaView)videoProgramView.getChildAt(videoProgramView.getChildCount() -1);
     }
+
+    public void launchLuaScript(String template, final String id, String data){
+        Uri uri = Uri.parse("LuaView://defaultLuaView?template="+template+"&id="+id);
+//            Uri uri = Uri.parse("LuaView://applets?appletId=123&template=test.lua&id=test");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("data", data);
+        videoProgramView.navigation(uri, params, new IRouterCallback() {
+            @Override
+            public void arrived() {
+                templateIds.add(id);
+            }
+
+            @Override
+            public void lost() {
+
+            }
+        });
+    }
+
+
 }
