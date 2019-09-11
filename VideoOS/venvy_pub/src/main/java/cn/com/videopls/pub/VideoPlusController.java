@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.taobao.luaview.cache.AppCache;
+
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -251,6 +253,7 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     void destroy() {
         stop();
+        AppCache.clear();
         LuaHelper.destroy();
         if (mPlatform != null) {
             mPlatform.onDestroy();
