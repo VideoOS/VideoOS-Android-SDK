@@ -13,17 +13,10 @@ import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.opensource.svgaplayer.SVGACallback;
-import com.opensource.svgaplayer.SVGAImageView;
-import com.opensource.svgaplayer.SVGAParser;
-import com.opensource.svgaplayer.SVGAVideoEntity;
 import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
-import com.taobao.luaview.util.ToastUtil;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -33,12 +26,16 @@ import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.widget.StandardVideoOSPlayer;
 import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.interf.IServiceCallback;
+import cn.com.venvy.common.interf.SVGACallback;
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
+import cn.com.venvy.svga.library.SVGAImageView;
+import cn.com.venvy.svga.library.SVGAParser;
+import cn.com.venvy.svga.library.SVGAVideoEntity;
 import cn.com.videopls.pub.os.VideoOsView;
 
 /**
@@ -64,7 +61,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
     private SVGAParser svgaParser;
     private int statusBarHeight;
-    private ServiceType mCurrentServiceType;
     private int hideStatusBarHeight = -1;// 状态栏隐藏时的高度
     private int existStatusBarHeight = -1;// 有状态栏时的高度
 
@@ -95,7 +91,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         mAdapter.setIOnWebViewDialogDismissCallback(new VideoOsAdapter.IOnWebViewDialogDismissCallback() {
             @Override
             public void onDismiss() {
-                mVideoPlusView.reResumeService(mCurrentServiceType);
+                mVideoPlusView.reResumeService(ServiceType.ServiceTypeFrontVideo);
             }
         });
         mVideoPlusView.setVideoOSAdapter(mAdapter);
@@ -173,7 +169,6 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
      * 开启前贴, 前贴结束后会开始播放正片
      */
     private void startMixStandAd(final ServiceType type) {
-        mCurrentServiceType = type;
         HashMap<String, String> params = new HashMap<>();
         params.put(VenvySchemeUtil.QUERY_PARAMETER_DURATION, "60");
         mVideoPlusView.startService(type, params, new IServiceCallback() {
@@ -227,7 +222,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailToCompleteForService(Throwable throwable) {
-                                VenvyLog.d("onFailToCompleteForService");
+                                VenvyLog.d("onFailToCompleteForService : " + throwable.getMessage());
                             }
                         });
                     }
@@ -529,7 +524,7 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
         imgSvga.clearAnimation();
         svgaParser.parse(assetName, new SVGAParser.ParseCompletion() {
             @Override
-            public void onComplete(@NotNull SVGAVideoEntity svgaVideoEntity) {
+            public void onComplete( SVGAVideoEntity svgaVideoEntity) {
                 imgSvga.setVideoItem(svgaVideoEntity);
                 imgSvga.setLoops(1); // 动画只执行一次
                 imgSvga.startAnimation();

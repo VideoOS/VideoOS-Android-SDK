@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.taobao.luaview.cache.AppCache;
+
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -43,10 +45,8 @@ import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.exception.DownloadException;
 import cn.com.videopls.pub.track.ChainTrackModel;
-import cn.com.videopls.pub.view.VideoOSLuaView;
 
-import cn.com.videopls.pub.R;
-
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_DATA;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
 
@@ -253,6 +253,7 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     void destroy() {
         stop();
+        AppCache.clear();
         LuaHelper.destroy();
         if (mPlatform != null) {
             mPlatform.onDestroy();
@@ -548,7 +549,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         mChainTrackModel.startRequest();
     }
 
-    public void startVisionProgram(final String appletId, final String data, final int type, final IRouterCallback callback) {
+    public void startVisionProgram(final String appletId, final String data, final int type, final boolean isH5Type, final IRouterCallback callback) {
         if (!VenvyAPIUtil.isSupport(16)) {
             Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
             return;
@@ -562,7 +563,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
 
-        VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, new VisionProgramConfigModel.VisionProgramConfigCallback() {
+        VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, isH5Type, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
             @Override
             public void downComplete(final String entranceLua, boolean isUpdateByNet) {
@@ -600,11 +601,29 @@ public abstract class VideoPlusController implements VenvyObserver {
                 }
 
                 bundle.putBoolean(CONSTANT_NEED_RETRY, true);
+                bundle.putString(CONSTANT_DATA, data);
 
 
                 ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
             }
         });
         model.startRequest();
+    }
+
+    /**
+     * 更新最近使用记录
+     * @param appId
+     */
+    public void refreshRecentHistory(String appId){
+        if (!VenvyAPIUtil.isSupport(16)) {
+            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
+            return;
+        }
+        if (mVideoPlusAdapter == null) {
+            VenvyLog.e("Video++ View 未设置adapter");
+            return;
+        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
+        new VideoRecentlyModel(mPlatform,appId).startRequest();
     }
 }

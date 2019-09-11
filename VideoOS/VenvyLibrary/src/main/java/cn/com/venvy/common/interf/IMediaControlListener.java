@@ -1,5 +1,6 @@
 package cn.com.venvy.common.interf;
 
+import cn.com.venvy.common.bean.VideoFrameSize;
 import cn.com.venvy.common.bean.VideoPlayerSize;
 
 /**
@@ -31,6 +32,8 @@ public interface IMediaControlListener {
 
     //优先级高于Provided的设置
     VideoPlayerSize getVideoSize();
+
+    VideoFrameSize getVideoFrameSize();
 
     long getDuration();
 }

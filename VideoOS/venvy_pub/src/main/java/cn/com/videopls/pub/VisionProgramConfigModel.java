@@ -29,6 +29,7 @@ import cn.com.videopls.pub.exception.DownloadException;
 import cn.com.videopls.pub.view.VideoOSLuaView;
 
 import static cn.com.venvy.App.getContext;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_H5_URL;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_TITLE;
@@ -46,11 +47,13 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
     private VisionProgramConfigCallback callback;
     private PreloadLuaUpdate mDownLuaUpdate;
     private String miniAppId;
+    private boolean isH5Type;
 
-    public VisionProgramConfigModel(@NonNull Platform platform, String miniAppId, VisionProgramConfigCallback configCallback) {
+    public VisionProgramConfigModel(@NonNull Platform platform, String miniAppId, boolean isH5Type, VisionProgramConfigCallback configCallback) {
         super(platform);
         this.callback = configCallback;
         this.miniAppId = miniAppId;
+        this.isH5Type = isH5Type;
     }
 
 
@@ -104,6 +107,19 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     }
                     final JSONObject decryptData = new JSONObject(VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform())));
 
+                    if (isH5Type) {
+                        final String h5Url = decryptData.optString("h5Url");
+                        if (TextUtils.isEmpty(h5Url)) {
+                            VenvyLog.e("appType is H5,but url is null");
+                        } else {
+                            // 拉起一个H5容器
+                            Bundle bundle = new Bundle();
+                            bundle.putString(CONSTANT_H5_URL, h5Url);
+                            ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, bundle);
+                        }
+
+                        return;
+                    }
 
                     JSONArray fileListArray = decryptData.optJSONArray("luaList");// lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
                     final String template = decryptData.optString("template"); //  入口lua文件名称
@@ -123,7 +139,6 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                 public void updateComplete(boolean isUpdateByNetWork) {
                                     if (isUpdateByNetWork) {
                                         VideoOSLuaView.destroyLuaScript();
-                                        return;
                                     }
                                     VisionProgramConfigCallback callback = getCallback();
                                     if (callback != null) {

@@ -93,11 +93,11 @@ public class JsonUtil {
                                     obj.put(key, value.optboolean(false));
                                 } else if (value.isint()) {
                                     obj.put(key, value.optint(0));
+                                }else if (value.isstring()) {
+                                    obj.put(key, value.optstring(null));
                                 } else if (value.islong()) {
                                     obj.put(key, value.optlong(0L));
-                                } else if (value.isstring()) {
-                                    obj.put(key, value.optstring(null));
-                                } else {
+                                }  else {
                                     obj.put(key, value);
                                 }
                             }

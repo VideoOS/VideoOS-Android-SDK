@@ -48,6 +48,7 @@ dependencies {
     provided "com.facebook.fresco:animated-webp:1.8.0"
     provided "com.facebook.fresco:webpsupport:1.8.0"
     provided "com.github.bumptech.glide:glide:3.7.0"
+    provided "com.just.agentweb:agentweb:4.1.2"
 //  provided "com.github.bumptech.glide:glide:4.3.1"
 //  compile 'com.videoli:venvy_processor_annotation:1.0.0'
 //  annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
