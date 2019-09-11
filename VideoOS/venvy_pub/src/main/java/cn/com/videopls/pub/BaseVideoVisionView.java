@@ -16,7 +16,7 @@ import cn.com.venvy.common.utils.VenvyResourceUtil;
 
 /**
  * Created by Lucas on 2019/8/30.
- * 视联网小程序容器 & H5容器 基类
+ * 视联网小程序容器  H5容器 基类
  */
 public class BaseVideoVisionView extends FrameLayout {
 
