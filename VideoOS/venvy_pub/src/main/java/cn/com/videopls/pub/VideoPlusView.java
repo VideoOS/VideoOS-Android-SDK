@@ -32,6 +32,8 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     private VideoPlusViewHelper plusViewHelper;
 
+    private VideoPlusAdapter adapter;
+
     public VideoPlusView(Context context) {
         super(context);
         init();
@@ -73,10 +75,8 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
         programViewA = createTypeAProgram();
         programViewB = createTypeBProgram();
-        programViewDesktop = createDesktopProgram();
         addView(programViewA);
         addView(programViewB);
-        addView(programViewDesktop);
         programViewB.setClickable(false);
     }
 
@@ -99,8 +99,8 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         return new VideoProgramTypeBView(getContext());
     }
 
-    private VideoProgramView createDesktopProgram(){
-        return new VideoProgramView(getContext());
+    private VideoProgramView createDesktopProgram() {
+            return new VideoProgramView(getContext());
     }
 
     /**
@@ -119,9 +119,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
      * @param msg
      * @param needRetry
      */
-    public void showExceptionLogic(String msg, boolean needRetry,String data) {
+    public void showExceptionLogic(String msg, boolean needRetry, String data) {
         if (programViewB != null) {
-            programViewB.showExceptionLogic(msg, needRetry,data);
+            programViewB.showExceptionLogic(msg, needRetry, data);
         }
 
     }
@@ -169,9 +169,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (programViewB != null) {
             programViewB.setVideoOSAdapter(adapter);
         }
-        if(programViewDesktop != null){
-            programViewDesktop.setVideoOSAdapter(adapter);
-        }
+        this.adapter = adapter;
     }
 
     public void start() {
@@ -220,8 +218,16 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
 
-    public void launchDesktopProgram(String targetName){
-        if(programViewDesktop != null && !TextUtils.isEmpty(targetName)) {
+    public void launchDesktopProgram(String targetName) {
+        // 桌面存在则不需要重复加载桌面
+        if(programViewDesktop != null) return;
+
+        programViewDesktop = createDesktopProgram();
+        if(adapter != null){
+            programViewDesktop.setVideoOSAdapter(adapter);
+        }
+        addView(programViewDesktop);
+        if (!TextUtils.isEmpty(targetName)) {
             programViewDesktop.setVisibility(VISIBLE);
             Uri uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
             programViewDesktop.navigation(uri, new HashMap<String, String>(), null);
@@ -265,10 +271,12 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
             programViewA.stopService(serviceType);
         }
 
-        if(serviceType == ServiceType.ServiceTypeVideoMode){
-            // 如果是关闭视联网模式，则隐藏视联网桌面
-            if(programViewDesktop != null){
+        if (serviceType == ServiceType.ServiceTypeVideoMode) {
+            // 如果是关闭视联网模式，则移除视联网桌面
+            if (programViewDesktop != null) {
                 programViewDesktop.setVisibility(GONE);
+                removeView(programViewDesktop);
+                programViewDesktop = null;
             }
         }
     }
