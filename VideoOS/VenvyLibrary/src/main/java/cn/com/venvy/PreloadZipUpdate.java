@@ -161,6 +161,7 @@ public class PreloadZipUpdate {
             }
             return;
         }
+        VenvyFileUtil.delFolder(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE);
         VenvyAsyncTaskUtil.doAsyncTask(PARSE_UNZIP, new VenvyAsyncTaskUtil.IDoAsyncTask<File, List<String>>() {
 
             @Override
@@ -184,7 +185,6 @@ public class PreloadZipUpdate {
 
             @Override
             public void onPostExecute(List<String> cacheUrls) {
-                VenvyFileUtil.delFolder(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE);
                 final JSONArray queryArray = new JSONArray();
                 CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                 for (String cacheUrlPath : cacheUrls) {
