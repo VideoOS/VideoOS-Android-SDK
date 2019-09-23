@@ -184,7 +184,7 @@ public class PreloadZipUpdate {
 
             @Override
             public void onPostExecute(List<String> cacheUrls) {
-                VenvyFileUtil.delFolder(VenvyFileUtil.getName(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE));
+                VenvyFileUtil.delFolder(VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP_CACHE);
                 final JSONArray queryArray = new JSONArray();
                 CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                 for (String cacheUrlPath : cacheUrls) {
@@ -240,7 +240,7 @@ public class PreloadZipUpdate {
         }
         final ArrayList<DownloadTask> arrayList = new ArrayList<>();
         for (String string : needDownZipUrls) {
-            DownloadTask task = new DownloadTask(App.getContext(), string, VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP + File.separator + Uri.parse(string).getLastPathSegment(),true);
+            DownloadTask task = new DownloadTask(App.getContext(), string, VenvyFileUtil.getCachePath(App.getContext()) + LUA_ZIP + File.separator + Uri.parse(string).getLastPathSegment(), true);
             arrayList.add(task);
         }
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
