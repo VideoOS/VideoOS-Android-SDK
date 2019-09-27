@@ -39,6 +39,8 @@ public class LVCommonParamPlugin {
 //    private static final String PLATFORM_TOKEN="";//平台token
     private static final String PHONE_MODEL = "PHONE_MODEL";//手机型号
     private static final String PHONE_PROVIDER = "PHONE_PROVIDER";//手机提供商
+    private static final String ANDROID_ID = "ANDROID_ID";
+    private static final String IMEI = "IMEI";
     private static LVCommonParamPlugin.GetCommonParamData mCommonParamData;
 
     public static void install(VenvyLVLibBinder venvyLVLibBinder) {
@@ -80,6 +82,8 @@ public class LVCommonParamPlugin {
             table.set(LuaValue.valueOf(LANGUAGE), LuaValue.valueOf(VenvyDeviceUtil.getLanguage(context)));
             table.set(LuaValue.valueOf(PHONE_MODEL), LuaValue.valueOf(android.os.Build.MODEL));
             table.set(LuaValue.valueOf(PHONE_PROVIDER), LuaValue.valueOf(android.os.Build.BRAND));
+            table.set(LuaValue.valueOf(ANDROID_ID), LuaValue.valueOf(VenvyDeviceUtil.getAndroidID(App.getContext())));
+            table.set(LuaValue.valueOf(IMEI), LuaValue.valueOf(VenvyDeviceUtil.getIMEI(App.getContext())));
             return table;
         }
     }
