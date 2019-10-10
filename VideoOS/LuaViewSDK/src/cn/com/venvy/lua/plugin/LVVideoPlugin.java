@@ -9,6 +9,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import cn.com.venvy.App;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.bean.VideoFrameSize;
@@ -16,6 +17,7 @@ import cn.com.venvy.common.bean.VideoPlayerSize;
 import cn.com.venvy.common.debug.DebugStatus;
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.interf.VideoType;
+import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
@@ -40,6 +42,7 @@ public class LVVideoPlugin {
         venvyLVLibBinder.set("getVideoCategory", new GetCategory(platform));
         venvyLVLibBinder.set("getConfigExtendJSONString", new GetExtendJSONString(platform));
         venvyLVLibBinder.set("osType", new OsType(platform));
+        venvyLVLibBinder.set("isPhone", new IsPhone());
 
     }
 
@@ -308,4 +311,20 @@ public class LVVideoPlugin {
             return LuaValue.valueOf(value);
         }
     }
+
+
+    /**
+     * 判断是否是手机设备
+     *
+     * 支持sim card 且 屏幕尺寸小于20则认为是手机设备
+     */
+    private static class IsPhone extends VarArgFunction {
+        @Override
+        public LuaValue invoke(Varargs args) {
+            boolean isPhone = VenvyDeviceUtil.isSupportSimCard(App.getContext()) && VenvyDeviceUtil.getScreenDimension(App.getContext()) < 20.0;
+
+            return LuaValue.valueOf(isPhone);
+        }
+    }
+
 }
