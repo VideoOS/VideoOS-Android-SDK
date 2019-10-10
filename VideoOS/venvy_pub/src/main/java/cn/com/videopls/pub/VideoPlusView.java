@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 
 import java.util.HashMap;
 
+import cn.com.venvy.App;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
@@ -279,5 +280,13 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
                 programViewDesktop = null;
             }
         }
+    }
+
+    /**
+     * 开发者模式开关
+     * @param isDevMode
+     */
+    public void setDevMode(boolean isDevMode){
+        App.setIsDevMode(isDevMode);
     }
 }
