@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.utils.VenvyAesUtil;
+import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
@@ -30,6 +32,7 @@ import cn.com.videopls.pub.exception.DownloadException;
 import cn.com.videopls.pub.view.VideoOSLuaView;
 
 import static cn.com.venvy.App.getContext;
+import static cn.com.venvy.PreloadLuaUpdate.LUA_CACHE_PATH;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_H5_URL;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
@@ -110,7 +113,15 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     String jsonStr = "";
                     if (App.isIsDevMode()) {
                         VenvyLog.d("devMode is open");
-//                        jsonStr = VenvyAssetsUtil.readFileAssets("dev_config.json",App.getContext());
+                        String jsonFilePath = VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + "dev_config.json";
+                        File file = new File(jsonFilePath);
+                        if (file.exists()) {
+                            jsonStr = VenvyFileUtil.readFile(App.getContext(), jsonFilePath, null);
+                        } else {
+                            VenvyLog.e("The dev mode is open,but json file not found");
+                            return;
+                        }
+
                     } else {
                         VenvyLog.d("devMode is close");
                         jsonStr = VenvyAesUtil.decrypt(encryptData, AppSecret.getAppSecret(getPlatform()), AppSecret.getAppSecret(getPlatform()));
@@ -135,7 +146,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     // 开发者模式下 则是：[{url:本地filePath}, {url:本地filePath} , ...]
                     JSONArray fileListArray = decryptData.optJSONArray("luaList");
                     final String template = decryptData.optString("template"); //  入口lua文件名称
-                    String resCode =  App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
+                    String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
                     JSONObject displayObj = decryptData.optJSONObject("display");
 
                     if (displayObj != null) {
@@ -175,10 +186,13 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                 VenvyResourceUtil.getStringId(getContext(), "errorDesc")));
                         bundle.putBoolean(CONSTANT_NEED_RETRY, false);
                         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_SHOW_VISION_ERROR_LOGIC, bundle);
-                    } else if(resCode.equalsIgnoreCase("-1")){
+                    } else if (resCode.equalsIgnoreCase("-1")) {
                         // 开发者模式
-
-                    }else {
+                        VisionProgramConfigCallback callback = getCallback();
+                        if (callback != null) {
+                            callback.downComplete(template, false);
+                        }
+                    } else {
                         VenvyLog.e(decryptData.optString("resMsg")); //  应答信息
                     }
 
