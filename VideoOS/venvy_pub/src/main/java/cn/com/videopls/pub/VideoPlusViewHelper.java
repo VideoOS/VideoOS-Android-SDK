@@ -56,13 +56,13 @@ public class VideoPlusViewHelper implements VenvyObserver {
                             if (videoPlusView != null) {
                                 if (VenvyObservableTarget.Constant.CONSTANT_LANDSCAPE == orientationType && !isHorizontal()) {
                                     // 请求一个横屏视联网小程序，如果是竖屏需要强转
-                                    videoPlusView.clearAllVisionProgram();
+//                                    videoPlusView.clearAllVisionProgram();
                                     ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                                 }
 
                                 if (VenvyObservableTarget.Constant.CONSTANT_PORTRAIT == orientationType && isHorizontal()) {
                                     // 请求一个竖屏屏视联网小程序，如果是横屏需要强转
-                                    videoPlusView.clearAllVisionProgram();
+//                                    videoPlusView.clearAllVisionProgram();
                                     ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                                 }
 

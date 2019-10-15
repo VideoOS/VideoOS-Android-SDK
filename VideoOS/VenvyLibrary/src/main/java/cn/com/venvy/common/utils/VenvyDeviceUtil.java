@@ -10,6 +10,9 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.WindowManager;
 
 import org.json.JSONObject;
 
@@ -23,6 +26,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.Enumeration;
 import java.util.UUID;
 
@@ -364,4 +368,35 @@ public class VenvyDeviceUtil {
         }
         return MEDIA_MOUNTED.equals(externalStorageState);
     }
+
+    /**
+     * 是否支持sim卡
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isSupportSimCard(Context context) {
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        return telephonyManager.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE;
+    }
+
+
+    /**
+     * 获取屏幕物理尺寸
+     *
+     * @return
+     */
+    public static double getScreenDimension(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        display.getMetrics(dm);
+
+        double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
+        double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        return Double.parseDouble(df.format(Math.sqrt(x + y)));
+    }
+
 }

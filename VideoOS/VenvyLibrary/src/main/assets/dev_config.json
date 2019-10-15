@@ -1,0 +1,16 @@
+{
+  "miniAppId":"1231231",
+  "display":{
+    "navTitle":"视频桌面"
+  },
+  "h5Url":"",
+  "luaList":[
+    {
+      "url":"os_desktop_hotspot.lua"
+    },
+    {
+      "url":"wwwwww.lua"
+    }
+  ],
+  "template":"os_desktop_hotspot.lua"
+}
