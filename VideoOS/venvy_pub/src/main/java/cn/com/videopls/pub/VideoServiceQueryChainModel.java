@@ -113,14 +113,14 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    if (dataJsonArray == null || dataJsonArray.length() <= 0) {
-                        ServiceQueryChainCallback callback = getQueryChainCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query chain data with jsonList is " +
-                                    "null"));
-                        }
-                        return;
-                    }
+//                    if (dataJsonArray == null || dataJsonArray.length() <= 0) {
+//                        ServiceQueryChainCallback callback = getQueryChainCallback();
+//                        if (callback != null) {
+//                            callback.queryError(new Exception("query chain data with jsonList is " +
+//                                    "null"));
+//                        }
+//                        return;
+//                    }
                     if (luaJsonArray == null || luaJsonArray.length() <= 0) {
                         ServiceQueryChainCallback callback = getQueryChainCallback();
                         if (callback != null) {
@@ -171,7 +171,9 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                 if (callback != null) {
                                     try {
                                         JSONObject jsonObject = new JSONObject();
-                                        jsonObject.put("data", zipJsonDataArray);
+                                        if (zipJsonDataArray != null && zipJsonDataArray.length() > 0) {
+                                            jsonObject.put("data", zipJsonDataArray);
+                                        }
                                         callback.queryComplete(jsonObject,
                                                 queryAdsInfo);
                                     } catch (Exception e) {
@@ -249,7 +251,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
     }
 
 
-    private void loadDesktopProgram(String luaName){
+    private void loadDesktopProgram(String luaName) {
         Bundle bundle = new Bundle();
         bundle.putString(VenvyObservableTarget.Constant.CONSTANT_LUA_NAME, luaName);
         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, bundle);
