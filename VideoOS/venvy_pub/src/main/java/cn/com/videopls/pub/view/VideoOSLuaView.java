@@ -216,34 +216,41 @@ public class VideoOSLuaView extends VideoOSBaseView {
             return;
         }
         if (sScriptBundle == null) {
-            VenvyAsyncTaskUtil.doAsyncTask(INIT_SCRIPT,
-                    new VenvyAsyncTaskUtil.IDoAsyncTask<Object, ScriptBundle>() {
-                        @Override
-                        public ScriptBundle doAsyncTask(Object... objects) throws Exception {
-                            return initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
-                        }
-                    }, new VenvyAsyncTaskUtil.CommonAsyncCallback<ScriptBundle>() {
-                        @Override
-                        public void onPostExecute(ScriptBundle scriptBundle) {
-                            if (scriptBundle != null) {
-                                VenvyLog.d("Router", "LuaView begin run and template is " + luaName + ", " +
-                                        "time is " + System.currentTimeMillis());
-                                luaView.loadScriptBundle(scriptBundle, luaName,
-                                        new LuaCallbackImpl(valueData));
-                                sScriptBundle = scriptBundle;
-                            } else {
-                                runLua(luaView, luaName, valueData);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled() {
-                        }
-
-                        @Override
-                        public void onException(Exception ie) {
-                        }
-                    });
+            sScriptBundle=initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
+            if(sScriptBundle!=null){
+                luaView.loadScriptBundle(sScriptBundle, luaName,
+                        new LuaCallbackImpl(valueData));
+            }else {
+                runLua(luaView, luaName, valueData);
+            }
+//            VenvyAsyncTaskUtil.doAsyncTask(INIT_SCRIPT,
+//                    new VenvyAsyncTaskUtil.IDoAsyncTask<Object, ScriptBundle>() {
+//                        @Override
+//                        public ScriptBundle doAsyncTask(Object... objects) throws Exception {
+//                            return initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
+//                        }
+//                    }, new VenvyAsyncTaskUtil.CommonAsyncCallback<ScriptBundle>() {
+//                        @Override
+//                        public void onPostExecute(ScriptBundle scriptBundle) {
+//                            if (scriptBundle != null) {
+//                                VenvyLog.d("Router", "LuaView begin run and template is " + luaName + ", " +
+//                                        "time is " + System.currentTimeMillis());
+//                                luaView.loadScriptBundle(scriptBundle, luaName,
+//                                        new LuaCallbackImpl(valueData));
+//                                sScriptBundle = scriptBundle;
+//                            } else {
+//                                runLua(luaView, luaName, valueData);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled() {
+//                        }
+//
+//                        @Override
+//                        public void onException(Exception ie) {
+//                        }
+//                    });
         } else {
             luaView.loadScriptBundle(sScriptBundle, luaName, new LuaCallbackImpl(valueData));
         }
