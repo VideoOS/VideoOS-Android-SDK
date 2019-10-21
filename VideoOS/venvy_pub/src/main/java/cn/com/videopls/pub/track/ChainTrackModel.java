@@ -27,7 +27,7 @@ import cn.com.videopls.pub.VideoPlusBaseModel;
 
 public class ChainTrackModel extends VideoPlusBaseModel {
     private static final String CHAIN_TRACK_URL = Config.HOST_VIDEO_OS
-            + "statistic/collectVisionSwitchTimes/v2";
+            + "/statistic/collectVisionSwitchTimes/v2";
     private ChainTrackCallback mChainTrackCallback;
     private String mOnOff = "-1";
     private static final String ON_OR_OFF = "onOrOff";
