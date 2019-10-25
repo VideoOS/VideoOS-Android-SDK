@@ -33,7 +33,7 @@ public final class VenvyStatisticsManager {
     }
 
     public void submitFileStatisticsInfo(List<DownloadTask> downloadTaskList ,int downLoadStage) {
-        if(downloadTaskList == null || downloadTaskList.size() <= 0){
+        if(downloadTaskList == null || downloadTaskList.size() <= 0 || platform == null){
             return;
         }
         StatisticsInfoBean statisticsInfoBean = convertDownloadTaskList2StatisticsInfoBean(downloadTaskList, downLoadStage);
@@ -43,7 +43,7 @@ public final class VenvyStatisticsManager {
     }
 
     public void submitImageStatisticsInfo(List<DownloadImageTask> downloadTaskList , int downLoadStage) {
-        if(downloadTaskList == null || downloadTaskList.size() <= 0){
+        if(downloadTaskList == null || downloadTaskList.size() <= 0 || platform == null){
             return;
         }
         StatisticsInfoBean statisticsInfoBean = convertDownloadImageTaskList2StatisticsInfoBean(downloadTaskList, downLoadStage);
@@ -86,7 +86,7 @@ public final class VenvyStatisticsManager {
     }
 
     public void submitFileStatisticsInfo(StatisticsInfoBean.FileInfoBean fileInfoBean , int downLoadStage) {
-        if(fileInfoBean == null){
+        if(fileInfoBean == null || platform == null){
             return;
         }
         StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
@@ -100,7 +100,7 @@ public final class VenvyStatisticsManager {
     }
 
     public void submitFileStatisticsInfo(DownloadTask downloadTask ,int downLoadStage) {
-        if(downloadTask == null){
+        if(downloadTask == null || platform == null){
             return;
         }
         List<DownloadTask> downloadTaskList = new ArrayList<>();

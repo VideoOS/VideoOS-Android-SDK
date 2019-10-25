@@ -20,6 +20,47 @@ local collectStatusCollecting = 1 --未收集到所有卡牌
 local collectStatusSuccess = 2 --收集到所有卡牌，但未领取
 local collectStatusGet = 3 --收集领取成功
 card.requestIds = {}
+
+--widgetEvent版本兼容
+local function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, selfLink)
+
+    local actionString = ""
+    if (linkUrl ~= nil and string.len(linkUrl) > 0) then
+        actionString = linkUrl
+    elseif (deepLink ~= nil and string.len(deepLink) > 0) then
+        actionString = deepLink
+    elseif (selfLink ~= nil and string.len(selfLink) > 0) then
+        actionString = selfLink
+    end
+
+    if Native.widgetNotify then
+
+        local notifyTable = {}
+
+        notifyTable["eventType"] = eventType
+        notifyTable["adID"] = adID
+        notifyTable["adName"] = adName
+        notifyTable["actionType"] = actionType
+        notifyTable["actionString"] = actionString
+
+        if (linkUrl ~= nil) then
+            notifyTable["linkUrl"] = linkUrl
+        end
+
+        if (deepLink ~= nil) then
+            notifyTable["deepLink"] = deepLink
+        end
+
+        if (selfLink ~= nil) then
+            notifyTable["selfLink"] = selfLink
+        end
+
+        Native:widgetNotify(notifyTable)
+    else
+        Native:widgetEvent(eventType, adID, adName, actionType, actionString)
+    end
+end
+
 local function translationAnim(x, y)
     local anim = Animation():translation(x, y):duration(0.3)
     return anim
@@ -73,7 +114,7 @@ local function closeView()
         end
     end
     if Native:getCacheData(card.id) == tostring(eventTypeShow) then
-        Native:widgetEvent(eventTypeClose, card.id, adTypeName, actionTypeNone, "")
+        widgetEvent(eventTypeClose, card.id, adTypeName, actionTypeNone, "")
         Native:deleteBatchCacheData({ card.id })
     end
     Native:destroyView()
@@ -401,13 +442,17 @@ local function configSize(data)
     if (dataTable == nil) then
         return
     end
-    local isShowClose = dataTable.isShowClose
+    local hotEditInfor = dataTable.hotEditInfor
+    if(hotEditInfor == nil) then
+        return
+    end
+    local isShowClose = hotEditInfor.isShowClose
     if (isShowClose ~= nil) then
         card.isShowClose = isShowClose
     else
         card.isShowClose = false
     end
-    local isShowAds = dataTable.isShowAds
+    local isShowAds = hotEditInfor.isShowAds
     if (isShowAds ~= nil) then
         card.isShowAds = isShowAds
     else
@@ -497,7 +542,7 @@ local function onCreate(data)
     end)
 
     card.cardImageLayout:onClick(function()
-        Native:widgetEvent(eventTypeClick, card.id, adTypeName, actionTypeNone, "")
+        widgetEvent(eventTypeClick, card.id, adTypeName, actionTypeNone, "")
         closeView()
         local clickLinkUrl = getHotspotClickTrackLink(data, card.hotspotOrder)
         if (clickLinkUrl ~= nil) then
@@ -509,7 +554,7 @@ local function onCreate(data)
         Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_card_window.lua" .. "&id=" .. "os_card_window" .. tostring(card.id) .. tostring(card.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
     card.cardFlexView:onClick(function()
-        Native:widgetEvent(eventTypeClick, card.id, adTypeName, actionTypeNone, "")
+        widgetEvent(eventTypeClick, card.id, adTypeName, actionTypeNone, "")
         closeView()
         local clickLinkUrl = getHotspotClickTrackLink(data, card.hotspotOrder)
         if (clickLinkUrl ~= nil) then
@@ -533,7 +578,11 @@ local function onCreate(data)
     if (dataTable == nil) then
         return
     end
-    local hotspotArrayTable = dataTable.hotspotArray
+    local hotEditInforTable = dataTable.hotEditInfor
+    if(hotEditInforTable == nil) then
+        return
+    end
+    local hotspotArrayTable = hotEditInforTable.hotspotArray
     if (hotspotArrayTable == nil) then
         return
     end
@@ -568,7 +617,7 @@ local function onCreate(data)
         card.cardFlexLabel:text(newTitle)
     end
 
-    Native:widgetEvent(eventTypeShow, card.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeShow, card.id, adTypeName, actionTypeNone, "")
     Native:saveCacheData(card.id, tostring(eventTypeShow))
     checkMqttHotspotToSetClose(data, function()
         closeView()

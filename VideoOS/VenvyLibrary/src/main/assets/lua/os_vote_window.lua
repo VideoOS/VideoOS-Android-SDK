@@ -17,6 +17,46 @@ local OS_ICON_WEDGE_CLOSE = "iVBORw0KGgoAAAANSUhEUgAAAE8AAABPCAYAAACqNJiGAAAABHN
 local OS_ICON_PRELOAD = "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"
 local OS_NO_LOGIN_INFO = "您还未登录,请先登录"
 
+--widgetEvent版本兼容
+local function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, selfLink)
+
+    local actionString = ""
+    if (linkUrl ~= nil and string.len(linkUrl) > 0) then
+        actionString = linkUrl
+    elseif (deepLink ~= nil and string.len(deepLink) > 0) then
+        actionString = deepLink
+    elseif (selfLink ~= nil and string.len(selfLink) > 0) then
+        actionString = selfLink
+    end
+
+    if Native.widgetNotify then
+
+        local notifyTable = {}
+
+        notifyTable["eventType"] = eventType
+        notifyTable["adID"] = adID
+        notifyTable["adName"] = adName
+        notifyTable["actionType"] = actionType
+        notifyTable["actionString"] = actionString
+
+        if (linkUrl ~= nil) then
+            notifyTable["linkUrl"] = linkUrl
+        end
+
+        if (deepLink ~= nil) then
+            notifyTable["deepLink"] = deepLink
+        end
+
+        if (selfLink ~= nil) then
+            notifyTable["selfLink"] = selfLink
+        end
+
+        Native:widgetNotify(notifyTable)
+    else
+        Native:widgetEvent(eventType, adID, adName, actionType, actionString)
+    end
+end
+
 local function getHotspotExposureTrackLink(data, index)
     if (data == nil or index == nil) then
         return nil
@@ -48,7 +88,7 @@ local function getHotspotClickTrackLink(data, index)
 end
 
 local function closeView()
-    Native:widgetEvent(eventTypeClose, voteWindow.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeClose, voteWindow.id, adTypeName, actionTypeNone, "")
     Native:destroyView()
 end
 
@@ -435,6 +475,11 @@ end
 
 --屏幕旋转--
 local function rotationScreen(isPortrait)
+    local screenWidth, screenHeight = Native:getVideoSize(2)
+    local videoWidth, videoHight, marginTop = Native:getVideoSize(0)
+    voteWindow.portraitWidth = math.min(screenWidth, screenHeight) --宽
+    voteWindow.portraitHeight = math.max(screenWidth, screenHeight) - videoHight - marginTop --高
+
     setLuaViewSize(voteWindow.luaview, isPortrait)
     setVoteViewSize(voteWindow.data, voteWindow.voteWindowView, voteWindow.voteWindowContentView, isPortrait)
     setVoteIconViewSize(voteWindow.data, voteWindow.voteWindowIcon, isPortrait)
@@ -1117,7 +1162,7 @@ local function onCreate(data)
     if (voteIcon ~= nil) then
         voteWindow.voteWindowIcon:image(voteIcon)
     end
-    Native:widgetEvent(eventTypeShow, voteWindow.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeShow, voteWindow.id, adTypeName, actionTypeNone, "")
 end
 
 local function setConfig(data)

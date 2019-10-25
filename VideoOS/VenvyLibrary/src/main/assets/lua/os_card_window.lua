@@ -26,6 +26,46 @@ cardWindow.userCardInfo = {}
 cardWindow.requestIds = {}
 local alphaTime = 1.0
 
+--widgetEvent版本兼容
+local function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, selfLink)
+
+    local actionString = ""
+    if (linkUrl ~= nil and string.len(linkUrl) > 0) then
+        actionString = linkUrl
+    elseif (deepLink ~= nil and string.len(deepLink) > 0) then
+        actionString = deepLink
+    elseif (selfLink ~= nil and string.len(selfLink) > 0) then
+        actionString = selfLink
+    end
+
+    if Native.widgetNotify then
+
+        local notifyTable = {}
+
+        notifyTable["eventType"] = eventType
+        notifyTable["adID"] = adID
+        notifyTable["adName"] = adName
+        notifyTable["actionType"] = actionType
+        notifyTable["actionString"] = actionString
+
+        if (linkUrl ~= nil) then
+            notifyTable["linkUrl"] = linkUrl
+        end
+
+        if (deepLink ~= nil) then
+            notifyTable["deepLink"] = deepLink
+        end
+
+        if (selfLink ~= nil) then
+            notifyTable["selfLink"] = selfLink
+        end
+
+        Native:widgetNotify(notifyTable)
+    else
+        Native:widgetEvent(eventType, adID, adName, actionType, actionString)
+    end
+end
+
 local function translationAnim(x, y)
     local anim = Animation():translation(x, y):duration(0.3)
     return anim
@@ -88,7 +128,7 @@ local function closeView()
             Native:abort(value)
         end
     end
-    Native:widgetEvent(eventTypeClose, cardWindow.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeClose, cardWindow.id, adTypeName, actionTypeNone, "")
     Native:destroyView()
 end
 
@@ -474,6 +514,11 @@ end
 
 --屏幕旋转--
 local function rotationScreen(isPortrait)
+    local screenWidth, screenHeight = Native:getVideoSize(2)
+    local videoWidth, videoHight, marginTop = Native:getVideoSize(0)
+    cardWindow.portraitWidth = math.min(screenWidth, screenHeight) --宽
+    cardWindow.portraitHeight = math.max(screenWidth, screenHeight) - videoHight - marginTop --高
+
     setLuaViewSize(cardWindow.luaView, isPortrait)
     setCardViewSize(cardWindow.data, cardWindow.cardWindowView, isPortrait)
     setCardTopContentViewSize(cardWindow.data, cardWindow.cardWindowTopContentView, isPortrait)
@@ -672,7 +717,11 @@ local function notCollectState(data)
     else
         cardWindow.cardTitleLabel:text("")
     end
-    local hotspotArrayTable = dataTable.hotspotArray
+    local hotEditInforTable = dataTable.hotEditInfor
+    if(hotEditInforTable == nil) then
+        return
+    end
+    local hotspotArrayTable = hotEditInforTable.hotspotArray
     if (hotspotArrayTable == nil) then
         return
     end
@@ -765,7 +814,11 @@ local function collectState(data)
     if (imageUrl ~= nil) then
         cardWindow.cardContentImageView:image(imageUrl)
     end
-    local hotspotArrayTable = dataTable.hotspotArray
+    local hotEditInforTable = dataTable.hotEditInfor
+    if(hotEditInforTable == nil) then
+        return
+    end
+    local hotspotArrayTable = hotEditInforTable.hotspotArray
     if (hotspotArrayTable == nil) then
         return
     end
@@ -841,45 +894,11 @@ local function collectState(data)
         if (cardWindow.launchPlanId ~= nil) then
             osTrack(cardWindow.launchPlanId, 3, 1)
         end
-        if collectTable.linkType == 2 then
-            Native:widgetEvent(eventTypeClick, cardWindow.id, adTypeName, actionTypeOpenUrl, collectTable.linkUrl)
-            performWithDelay(function()
-                closeView()
-            end, 500)
-            return
-        end
-
-        cardWindow.cardFlexLabel:text("确定")
-        cardWindow.cardWindowTopContentView:removeAllViews()
-        local isPortrait = Native:isPortraitScreen()
-        setCardBlurViewViewSize(cardWindow.data, cardWindow.cardBlurImageView, isPortrait)
-        setCardCloseImageView(cardWindow.data, cardWindow.cardCloseLayout, cardWindow.cardCloseImageView, isPortrait)
-        setCardTitleViewSize(cardWindow.data, cardWindow.cardTitleLabel, isPortrait)
-        setCardContentImageView(cardWindow.data, cardWindow.cardContentImageView, cardWindow.cardContentImageShadowView, isPortrait)
-        cardWindow.cardWindowTopContentView:addView(cardWindow.cardBlurImageView)
-        cardWindow.cardWindowTopContentView:addView(cardWindow.cardCloseImageView)
-        cardWindow.cardWindowTopContentView:addView(cardWindow.cardTitleLabel)
-        cardWindow.cardWindowTopContentView:addView(cardWindow.cardContentImageView)
-
-        local successTable = dataTable.success
-        if (successTable == nil) then
-            return
-        end
-
-        cardWindow.cardBottomView:onClick(function()
-            Native:widgetEvent(eventTypeClick, cardWindow.id, adTypeName, actionTypeGetItem, successTable.itemId)
+        local linkData = collectTable.linkData
+        widgetEvent(eventTypeClick, cardWindow.id, adTypeName, actionTypeOpenUrl, linkData.linkUrl,linkData.deepLink,linkData.selfLink)
+        performWithDelay(function()
             closeView()
-        end)
-
-        local title = successTable.title
-        if (title ~= nil) then
-            cardWindow.cardTitleLabel:text(title)
-        end
-
-        local imageUrl = successTable.imageUrl
-        if (imageUrl ~= nil) then
-            cardWindow.cardContentImageView:image(imageUrl)
-        end
+        end, 500)
     end)
 end
 
@@ -915,7 +934,11 @@ local function successState(data)
     if (successImageUrl ~= nil) then
         cardWindow.cardContentImageView:image(successImageUrl)
     end
-    local hotspotArrayTable = dataTable.hotspotArray
+    local hotEditInforTable = dataTable.hotEditInfor
+    if(hotEditInforTable == nil) then
+        return
+    end
+    local hotspotArrayTable = hotEditInforTable.hotspotArray
     if (hotspotArrayTable == nil or cardWindow.hotspotOrder == nil) then
         return
     end
@@ -1056,7 +1079,7 @@ local function onCreate(data)
     else
         successState(data)
     end
-    Native:widgetEvent(eventTypeShow, cardWindow.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeShow, cardWindow.id, adTypeName, actionTypeNone, "")
 end
 
 local function setConfig(data)

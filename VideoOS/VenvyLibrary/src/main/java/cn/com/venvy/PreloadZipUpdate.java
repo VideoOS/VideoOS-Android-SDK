@@ -67,7 +67,7 @@ public class PreloadZipUpdate {
         if (luaUrls == null || luaUrls.length() <= 0) {
             CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
             if (callback != null) {
-                callback.updateError(new Exception("update zip data error,because down urls is null"));
+                callback.updateComplete(new JSONArray());
             }
             return;
         }

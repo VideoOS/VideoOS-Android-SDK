@@ -55,7 +55,6 @@ function checkMqttHotspotToSetClose(data, callback)
     end
 end
 
-
 --widgetEvent版本兼容
 function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, selfLink)
 
@@ -95,4 +94,3 @@ function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, sel
         Native:widgetEvent(eventType, adID, adName, actionType, actionString)
     end
 end
-

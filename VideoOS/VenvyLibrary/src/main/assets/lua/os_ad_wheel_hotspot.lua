@@ -16,6 +16,45 @@ local adTypeName = "adWheel"
 local scale = getScale()
 local OS_ICON_WEDGE_CLOSE = "iVBORw0KGgoAAAANSUhEUgAAAC0AAAAtCAYAAAA6GuKaAAAAAXNSR0IArs4c6QAAAAlwSFlzAAAhOAAAITgBRZYxYAAAABxpRE9UAAAAAgAAAAAAAAAXAAAAKAAAABcAAAAWAAABJuDZqwUAAADySURBVGgFxNYxDsIwDAXQDiwwcR1uwB1ghpUj5Oh8S3yE2rTYju1GsiIlqf3Swe009ccFyw/Esb+dsnpA1hvi6sku4PaJJ+YKOMGsa4L/gpkgGz4Hs64K3gMzQRZ8Dcy6m/AtMBNEw/+BWbcL14CZIAquBbPuAi5dgpuaeRQu4Lux5gvnT4jvkO4gkGYIL9z6hsUk4DNiMSrgoWDeIBOeAs6Ep4Iz4CXgSHgpOAK+C3gU7unD3bZGiHX2dJWGItpY7cNW6Px8FjwNzAtEw9PB0fAycBS8HDwK3w0scOnD1rbW8Iz37xCPjg3Ph6OhJGMY/gYAAP//68uhBAAAANxJREFU7dZNDoIwEAVgEl2gK4/lCdh4ALceoUf3DfEloIjTdt6sbDIpJHTeF34ahqFuHHH5DVU66471J5R8RIELpFZyeDRYDleBZfAW8OP16InyzGGvSiv4ArR9ZAbxgHlNN7wHDOs8UuER4FR4JDgFrgBL4UqwBJ4BDofX/kvYPmzbWuto3VXGZeAVJ8VZvWDm1sInLDxwMWcPPArMTC98E8wme/BoMDN/wXfBbLIFV4GZ+Q3uArPJEq4GM/MdXgVmE4NngZlJeBOYTc48SJxHZH3sEon5/6jVHXgCCd+jGkmWfYoAAAAASUVORK5CYII="
 local OS_ICON_WEDGE_LANDSCAPE_CLOSE = "iVBORw0KGgoAAAANSUhEUgAAAFgAAABYBAMAAACDuy0HAAAAMFBMVEUAAAAAAACRkZHBwcEAAAAAAAAAAAAAAAAAAABHR0cAAAAAAAAAAAAAAAAAAAAAAACPWxS5AAAAEHRSTlMAgLLNQHprVAaUdWA6KhIMLcJxvwAAAPtJREFUSMdjGAWjYBSMAiqAN9WpYdvPEaWU300QDFI+EFbL4SoIBSENBBXfEoSDtYTUsggiAQcCjihEViyO3yHsgiigAK9iR1TFIvjU8gqigQt4FHehK16B3xVEu4M/EF2x6AcCgSwJUTeRQFCzgeUnK4JIIUswJwGn4odgeSEjEKmsCObI4VR8ECgLVgfWAQYyOBUXCkKNhhssKI5T8UZBmNEwgwWlcSpOFIQZDTNYUAynYngwKxvBA5p8xYSdQbkHCQcd4UihPLoJJyTCSZSixE84W1GeYTGLAooKGcLFF+UFI2aRS3lhTriaoLwCQlRto2AUjIJRQDkAAK7+UH2EAaaMAAAAAElFTkSuQmCC"
+--widgetEvent版本兼容
+local function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, selfLink)
+
+    local actionString = ""
+    if (linkUrl ~= nil and string.len(linkUrl) > 0) then
+        actionString = linkUrl
+    elseif (deepLink ~= nil and string.len(deepLink) > 0) then
+        actionString = deepLink
+    elseif (selfLink ~= nil and string.len(selfLink) > 0) then
+        actionString = selfLink
+    end
+
+    if Native.widgetNotify then
+
+        local notifyTable = {}
+
+        notifyTable["eventType"] = eventType
+        notifyTable["adID"] = adID
+        notifyTable["adName"] = adName
+        notifyTable["actionType"] = actionType
+        notifyTable["actionString"] = actionString
+
+        if (linkUrl ~= nil) then
+            notifyTable["linkUrl"] = linkUrl
+        end
+
+        if (deepLink ~= nil) then
+            notifyTable["deepLink"] = deepLink
+        end
+
+        if (selfLink ~= nil) then
+            notifyTable["selfLink"] = selfLink
+        end
+
+        Native:widgetNotify(notifyTable)
+    else
+        Native:widgetEvent(eventType, adID, adName, actionType, actionString)
+    end
+end
 local function getHotspotExposureTrackLink(data, index)
     if (data == nil or index == nil) then
         return nil
@@ -124,7 +163,21 @@ local function getAdLinkUrl(data, index)
     if (curIndexTable == nil) then
         return nil
     end
-    return curIndexTable.linkUrl
+    local linkData = curIndexTable.linkData
+    if(linkData == nil) then
+        return nil
+    end
+    local linkUrl = linkData.linkUrl
+    local deepLink = linkData.deepLink
+    local selfLink = linkData.selfLink
+    if (linkUrl ~= nil and string.len(linkUrl) > 0) then
+        return linkUrl
+    elseif (deepLink ~= nil and string.len(deepLink) > 0) then
+        return deepLink
+    elseif (selfLink ~= nil and string.len(selfLink) > 0) then
+        return selfLink
+    end
+    return nil
 end
 
 --轮播按钮获取--
@@ -201,7 +254,7 @@ end
 
 local function closeView()
     if Native:getCacheData(adWheel.id) == tostring(eventTypeShow) then
-        Native:widgetEvent(eventTypeClose, adWheel.id, adTypeName, actionTypePlayVideo, "")
+        widgetEvent(eventTypeClose, adWheel.id, adTypeName, actionTypePlayVideo, "")
         Native:deleteBatchCacheData({ adWheel.id })
     end
     Native:destroyView()
@@ -807,7 +860,7 @@ local function onCreate(data)
 
     adWheel.luaview:addView(adWheel.shutDownView)
 
-    Native:widgetEvent(eventTypeShow, adWheel.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeShow, adWheel.id, adTypeName, actionTypeNone, "")
 
     adWheel.shutDownView:onClick(function()
         closeView()
@@ -827,7 +880,8 @@ local function onCreate(data)
         end
         local linkUrl = getAdLinkUrl(data, adWheel.hotspotOrder)
         if (linkUrl ~= nil) then
-            Native:widgetEvent(eventTypeClick, adWheel.id, adTypeName, actionTypeOpenUrl, linkUrl)
+            local linkData = data.data.hotEdit.adArray[adWheel.hotspotOrder].linkData
+            widgetEvent(eventTypeClick, adWheel.id, adTypeName, actionTypeOpenUrl, linkData.linkUrl,linkData.deepLink,linkData.selfLink)
         end
     end)
     changeAdWheel(adWheel.hotspotOrder, data)
@@ -858,6 +912,6 @@ function show(args)
 
     setConfig(args.data)
     onCreate(args.data)
-    Native:widgetEvent(eventTypeShow, adWheel.id, adTypeName, actionTypePauseVideo, "")
+    widgetEvent(eventTypeShow, adWheel.id, adTypeName, actionTypePauseVideo, "")
     Native:saveCacheData(adWheel.id, tostring(eventTypeShow))
 end
