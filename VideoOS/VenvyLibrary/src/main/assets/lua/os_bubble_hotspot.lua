@@ -42,6 +42,45 @@ messageType 1 文本
 messageType 2 图片
 messageType 3 选择
 ]] --
+--widgetEvent版本兼容
+local function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, selfLink)
+
+    local actionString = ""
+    if (linkUrl ~= nil and string.len(linkUrl) > 0) then
+        actionString = linkUrl
+    elseif (deepLink ~= nil and string.len(deepLink) > 0) then
+        actionString = deepLink
+    elseif (selfLink ~= nil and string.len(selfLink) > 0) then
+        actionString = selfLink
+    end
+
+    if Native.widgetNotify then
+
+        local notifyTable = {}
+
+        notifyTable["eventType"] = eventType
+        notifyTable["adID"] = adID
+        notifyTable["adName"] = adName
+        notifyTable["actionType"] = actionType
+        notifyTable["actionString"] = actionString
+
+        if (linkUrl ~= nil) then
+            notifyTable["linkUrl"] = linkUrl
+        end
+
+        if (deepLink ~= nil) then
+            notifyTable["deepLink"] = deepLink
+        end
+
+        if (selfLink ~= nil) then
+            notifyTable["selfLink"] = selfLink
+        end
+
+        Native:widgetNotify(notifyTable)
+    else
+        Native:widgetEvent(eventType, adID, adName, actionType, actionString)
+    end
+end
 
 local function getHotspotExposureTrackLink(data, index)
     if (data == nil or index == nil) then
@@ -77,24 +116,35 @@ local function linkUrl(data) --获取linkUrl
     if (data == nil) then
         return nil
     end
-    local link = data.link
-    if (link ~= nil and string.len(link) > 0) then
-        return link
-    else
+    local linkData = data.linkData
+    if(linkData == nil) then
         return nil
     end
+    local linkUrl = linkData.linkUrl
+    local deepLink = linkData.deepLink
+    local selfLink = linkData.selfLink
+    if (linkUrl ~= nil and string.len(linkUrl) > 0) then
+        return linkUrl
+    elseif (deepLink ~= nil and string.len(deepLink) > 0) then
+        return deepLink
+    elseif (selfLink ~= nil and string.len(selfLink) > 0) then
+        return selfLink
+    end
+    return nil
 end
 
 local function closeView()
     if Native:getCacheData(bubble.id) == tostring(eventTypeShow) then
-        Native:widgetEvent(eventTypeClose, bubble.id, adTypeName, actionTypeNone, "")
+        widgetEvent(eventTypeClose, bubble.id, adTypeName, actionTypeNone, "")
         Native:deleteBatchCacheData({ bubble.id })
     end
     Native:destroyView()
 end
 
-local function clickView(url, ise)
-    Native:widgetEvent(eventTypeClick, bubble.id, adTypeName, actionTypeOpenUrl, url)
+local function clickView(urlTable, ise)
+
+    widgetEvent(eventTypeClick, bubble.id, adTypeName, actionTypeOpenUrl,urlTable.linkUrl,urlTable.deepLink,urlTable.selfLink)
+
     local clickLinkUrl = getHotspotClickTrackLink(bubble.data, 1)
     if (clickLinkUrl ~= nil) then
         Native:get(clickLinkUrl)
@@ -437,13 +487,14 @@ local function createUserTypeLeftWithMessageImage(data, index) --左边用户云
     local promptTop = message:y() + message:height() - 17 * bubble.scale
     prompt:xy(message:x() + message:width() - 17 * bubble.scale, promptTop)
 
-    if (data.link ~= nil and string.len(data.link) > 0)  then
+    local linkUrl = linkUrl(data)
+    if (linkUrl ~= nil and string.len(linkUrl) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, -prompt:width() * 0.3, -prompt:height() * 0.3, nil)
         end, promptShowTime)
         message:onClick(function()
-            clickView(data.link, data.id)
+            clickView(data.linkData, data.id)
             prompt:hide()
         end)
     end
@@ -543,13 +594,14 @@ local function createUserTypeLeftWithMessageImageIOS(data, index) --左边用户
     prompt:xy(message:x() + message:width() - 17 * bubble.scale, promptTop)
     userParent:frame(0, 0, bubble.width, prompt:y() + prompt:height())
 
-    if (data.link ~= nil and string.len(data.link) > 0)  then
+    local linkUrl = linkUrl(data)
+    if (linkUrl ~= nil and string.len(linkUrl) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, -prompt:width() * 0.3, -prompt:height() * 0.3, nil)
         end, promptShowTime)
         message:onClick(function()
-            clickView(data.link, data.id)
+            clickView(data.linkData, data.id)
             prompt:hide()
         end)
     end
@@ -738,13 +790,15 @@ local function createUserTypeRightWithMessageImage(data, index) --左边用户�
     prompt:margin(70 * bubble.scale, promptTop, 0, 0)
     message:size(messageWidth, messageHeight)
     message:margin(86 * bubble.scale, 19 * bubble.scale, 0, 0)
-    if (data.link ~= nil and string.len(data.link) > 0)  then
+
+    local linkUrl = linkUrl(data)
+    if (linkUrl ~= nil and string.len(linkUrl) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, prompt:width() * 0.3, -prompt:height() * 0.3, nil)
         end, promptShowTime)
         message:onClick(function()
-            clickView(data.link, data.id)
+            clickView(data.linkData, data.id)
             prompt:hide()
         end)
     end
@@ -828,13 +882,14 @@ local function createUserTypeRightWithMessageImageIOS(data, index) --左边用�
 
     userParent:height(prompt:y() + prompt:height())
 
-    if (data.link ~= nil and string.len(data.link) > 0)  then
+    local linkUrl = linkUrl(data)
+    if (linkUrl ~= nil and string.len(linkUrl) > 0)  then
         performWithDelay(function()
             prompt:show()
             startViewMoveAnim(prompt, prompt:width() * 0.3, -prompt:height() * 0.3, nil)
         end, promptShowTime)
         message:onClick(function()
-            clickView(data.link, data.id)
+            clickView(data.linkData, data.id)
             prompt:hide()
         end)
     end
@@ -1199,7 +1254,7 @@ function createUserMessageSelect(data, index) --左边用户云泡 显示问题
         --TODO是否需要合并在一起，如果同时有数据怎么处理
         local linkUrl = linkUrl(data.messageButtons[1])
         if (linkUrl ~= nil) then
-            clickView(linkUrl, data.id)
+            clickView(data.messageButtons[1].linkData, data.id)
         end
     end
     bubble.leftBtnClickFunction = leftBtnClickFunction
@@ -1208,7 +1263,7 @@ function createUserMessageSelect(data, index) --左边用户云泡 显示问题
     local rightBtnClickFunction = function()
         local linkUrl = linkUrl(data.messageButtons[2])
         if (linkUrl ~= nil) then
-            clickView(linkUrl, data.id)
+            clickView(data.messageButtons[2].linkData, data.id)
         end
     end
     bubble.rightBtnClickFunction = rightBtnClickFunction
@@ -1392,7 +1447,7 @@ function show(args)
     bubble.id = dataTable.id
 
     setBubbleTime(dataTable)
-    Native:widgetEvent(eventTypeShow, bubble.id, bubble.id, adTypeBubble, "") --todo 修改参数为table
+    widgetEvent(eventTypeShow, bubble.id, bubble.id, adTypeBubble, "") --todo 修改参数为table
     Native:saveCacheData(bubble.id, tostring(eventTypeShow))
     bubble.data = dataTable
     bubble.media = registerMedia()

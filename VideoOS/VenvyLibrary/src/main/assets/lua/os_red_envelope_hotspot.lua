@@ -18,6 +18,47 @@ local OS_ICON_WEDGE_CLOSE = "iVBORw0KGgoAAAANSUhEUgAAAE8AAABPCAYAAACqNJiGAAAABHN
 local OS_ICON_CARD_IMAGE_BG = "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"
 
 redEnvelope.requestIds = {}
+
+--widgetEvent版本兼容
+local function widgetEvent(eventType, adID, adName, actionType, linkUrl, deepLink, selfLink)
+
+    local actionString = ""
+    if (linkUrl ~= nil and string.len(linkUrl) > 0) then
+        actionString = linkUrl
+    elseif (deepLink ~= nil and string.len(deepLink) > 0) then
+        actionString = deepLink
+    elseif (selfLink ~= nil and string.len(selfLink) > 0) then
+        actionString = selfLink
+    end
+
+    if Native.widgetNotify then
+
+        local notifyTable = {}
+
+        notifyTable["eventType"] = eventType
+        notifyTable["adID"] = adID
+        notifyTable["adName"] = adName
+        notifyTable["actionType"] = actionType
+        notifyTable["actionString"] = actionString
+
+        if (linkUrl ~= nil) then
+            notifyTable["linkUrl"] = linkUrl
+        end
+
+        if (deepLink ~= nil) then
+            notifyTable["deepLink"] = deepLink
+        end
+
+        if (selfLink ~= nil) then
+            notifyTable["selfLink"] = selfLink
+        end
+
+        Native:widgetNotify(notifyTable)
+    else
+        Native:widgetEvent(eventType, adID, adName, actionType, actionString)
+    end
+end
+
 local function translationAnim(x, y)
     local anim = Animation():translation(x, y):duration(0.3)
     return anim
@@ -71,7 +112,7 @@ local function closeView()
         end
     end
     if Native:getCacheData(redEnvelope.id) == tostring(eventTypeShow) then
-        Native:widgetEvent(eventTypeClose, redEnvelope.id, adTypeName, actionTypeNone, "")
+        widgetEvent(eventTypeClose, redEnvelope.id, adTypeName, actionTypeNone, "")
         Native:deleteBatchCacheData({ redEnvelope.id })
     end
     Native:destroyView()
@@ -518,7 +559,7 @@ local function onCreate(data)
     end)
 
     redEnvelope.redEnvelopeImageLayout:onClick(function()
-        Native:widgetEvent(eventTypeClick, redEnvelope.id, adTypeName, actionTypeNone, "")
+        widgetEvent(eventTypeClick, redEnvelope.id, adTypeName, actionTypeNone, "")
         closeView()
         local clickLinkUrl = getHotspotClickTrackLink(redEnvelope.data, 1)
         if (clickLinkUrl ~= nil) then
@@ -530,7 +571,7 @@ local function onCreate(data)
         Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_red_envelope_window.lua" .. "&id=" .. "os_red_envelope_window" .. tostring(redEnvelope.id) .. tostring(redEnvelope.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
     redEnvelope.redEnvelopeFlexView:onClick(function()
-        Native:widgetEvent(eventTypeClick, redEnvelope.id, adTypeName, actionTypeNone, "")
+        widgetEvent(eventTypeClick, redEnvelope.id, adTypeName, actionTypeNone, "")
         closeView()
         local clickLinkUrl = getHotspotClickTrackLink(redEnvelope.data, 1)
         if (clickLinkUrl ~= nil) then
@@ -542,7 +583,7 @@ local function onCreate(data)
         Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_red_envelope_window.lua" .. "&id=" .. "os_red_envelope_window" .. tostring(redEnvelope.id) .. tostring(redEnvelope.hotspotOrder) .. "&priority=" .. tostring(osInfoViewPriority)), data)
     end)
     fillData(data)
-    Native:widgetEvent(eventTypeShow, redEnvelope.id, adTypeName, actionTypeNone, "")
+    widgetEvent(eventTypeShow, redEnvelope.id, adTypeName, actionTypeNone, "")
     Native:saveCacheData(redEnvelope.id, tostring(eventTypeShow))
     checkMqttHotspotToSetClose(data, function()
         closeView()
