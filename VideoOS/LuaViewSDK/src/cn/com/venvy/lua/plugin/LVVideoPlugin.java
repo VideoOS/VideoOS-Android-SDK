@@ -29,7 +29,7 @@ public class LVVideoPlugin {
 
     public static void install(VenvyLVLibBinder venvyLVLibBinder, Platform platform) {
         venvyLVLibBinder.set("sdkVersion", sSdkVersion == null ? sSdkVersion = new SdkVersion() : sSdkVersion);
-        venvyLVLibBinder.set("isDebug", sIsDebug == null ? sIsDebug = new IsDebug() : sIsDebug);
+        venvyLVLibBinder.set("isDev", sIsDebug == null ? sIsDebug = new IsDebug() : sIsDebug);
         venvyLVLibBinder.set("setDebug", sChangeEnvironment == null ? sChangeEnvironment = new ChangeEnvironment() : sChangeEnvironment);
         venvyLVLibBinder.set("getVideoSize", new VideoSize(platform));
         venvyLVLibBinder.set("getVideoFrame", new VideoFrame(platform));

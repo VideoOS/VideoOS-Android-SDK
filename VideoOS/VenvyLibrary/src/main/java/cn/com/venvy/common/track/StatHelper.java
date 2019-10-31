@@ -134,7 +134,7 @@ public class StatHelper {
             instance.mVersion = version;
             instance.mBrand = brand;
             instance.mChannel = channel;
-            if (DebugStatus.isDebug()) {
+            if (DebugStatus.isDev()) {
                 instance.mStatUrl = StatHelper.LIVE_URL_STAT_HEADER;
             } else {
                 instance.mStatUrl = StatHelper.TEST_LIVE_URL_STAT_HEADER;
