@@ -1,6 +1,13 @@
 # VideoOS Android SDK
 VideoOS Android SDK 开源地址：[https://github.com/VideoOS/VideoOS-Android-SDK](https://github.com/VideoOS/VideoOS-Android-SDK)
+## SDK基本能力及对接要求
 
+| 功能 |  对接要求  |
+| ----- | --------- | 
+| 前期准备 | 必须对接 | 
+| 基础接口  |  必须对接  |
+| 前后帖广告  |  可选对接  | 
+具体对接方法请参考下面详细集成流程。
 ## SDK集成
 
 ### 使用Gradle集成
@@ -80,9 +87,6 @@ dependencies {
 ```java
 //appKey, appSecret 请去控制台查看
 VideoPlus.appCreateSAAS(this, appKey, appSecret); 
-
-//参数不带appkey&appSecret的方法为开源版本，如无特殊需求，建议调用appCreateSAAS()进行初始化
-//VideoPlus.appCreate(this);
 ```
 
 ### 核心功能对接 ( Step1-5 ) 
@@ -392,7 +396,7 @@ protected void onDestroy() {
 
 ```
 
-## 视联网模式
+## 基础接口(视联网模式)
 
 通过`videoOsView`的startService()启动视联网模式
 
@@ -536,4 +540,9 @@ adapter.notifyMediaStatusChanged(MediaStatus.PLAYING);
     public IWidgetCloseListener buildWidgetCloseListener() {}
 
 ```
+##技术支持
 
+* [androidlgf](https://github.com/androidlgf) - 防防 <guofang@videopls.com>
+* [vainfeng](https://github.com/vainfeng) - 疯子 <liangzifeng@videopls.com>
+* [phoche](https://github.com/phoche) - 老秦 <qinpengcheng@videopls.com>
+* [hzzhujf](https://github.com/hzzhujf) - 飞猪 <flyingpig@videopls.com>
