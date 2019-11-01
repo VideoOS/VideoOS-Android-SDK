@@ -36,6 +36,8 @@ public class VenvyObservableTarget {
     public static final String TAG_CLOSE_H5_VISION_PROGRAM = "notifyCloseH5Program";
     // 启动桌面小程序
     public static final String TAG_LAUNCH_DESKTOP_PROGRAM = "notifyLaunchDesktopProgram";
+    // 在顶层添加一个lua脚本
+    public static final String TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL = "notifyAddLuaScriptToTopLevel";
 
     public static class Constant {
         public static final int CONSTANT_LANDSCAPE = 1;

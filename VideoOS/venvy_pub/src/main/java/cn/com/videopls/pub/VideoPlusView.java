@@ -8,12 +8,17 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import com.taobao.luaview.util.ToastUtil;
+
 import java.util.HashMap;
 
 import cn.com.venvy.App;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
+
+import static cn.com.venvy.common.interf.ServiceType.*;
+import static cn.com.venvy.common.interf.ServiceType.ServiceTypeLaterVideo;
 
 /**
  * Created by yanjiangbo on 2017/5/17.
@@ -22,6 +27,8 @@ import cn.com.venvy.common.router.IRouterCallback;
 public abstract class VideoPlusView<T extends VideoPlusController> extends FrameLayout {
 
 
+    // 顶层小程序容器
+    protected VideoProgramView programTopLevel;
     // A 类小程序
     protected VideoProgramView programViewA;
 
@@ -73,11 +80,12 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     private void init() {
         plusViewHelper = new VideoPlusViewHelper(this);
-
+        programTopLevel = new VideoProgramView(getContext());
         programViewA = createTypeAProgram();
         programViewB = createTypeBProgram();
         addView(programViewA);
         addView(programViewB);
+        addView(programTopLevel);
         programViewB.setClickable(false);
     }
 
@@ -101,7 +109,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
     private VideoProgramView createDesktopProgram() {
-            return new VideoProgramView(getContext());
+        return new VideoProgramView(getContext());
     }
 
     /**
@@ -164,6 +172,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
     public void setVideoOSAdapter(VideoPlusAdapter adapter) {
+        if (programTopLevel != null) {
+            programTopLevel.setVideoOSAdapter(adapter);
+        }
         if (programViewA != null) {
             programViewA.setVideoOSAdapter(adapter);
         }
@@ -196,6 +207,25 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
     /**
+     * 顶层加载一个lua程序
+     *
+     * @param luaName
+     * @param id
+     */
+    public void launchProgramToTopLevel(String luaName, String id, HashMap<String, String> data) {
+        Uri uri = Uri.parse("LuaView://topLuaView?template=" + luaName + "&id=" + id);
+        programTopLevel.navigation(uri, data, new IRouterCallback() {
+            @Override
+            public void arrived() {
+            }
+
+            @Override
+            public void lost() {
+            }
+        });
+    }
+
+    /**
      * 根据指定ID关闭一个视联网小程序
      *
      * @param appletId
@@ -221,13 +251,13 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     public void launchDesktopProgram(String targetName) {
         // 桌面存在则不需要重复加载桌面
-        if(programViewDesktop != null) return;
+        if (programViewDesktop != null) return;
 
         programViewDesktop = createDesktopProgram();
-        if(adapter != null){
+        if (adapter != null) {
             programViewDesktop.setVideoOSAdapter(adapter);
         }
-        addView(programViewDesktop);
+        addView(programViewDesktop, getChildCount() - 1);// 上层还有
         if (!TextUtils.isEmpty(targetName)) {
             programViewDesktop.setVisibility(VISIBLE);
             Uri uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
@@ -249,9 +279,21 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
 
     public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
-        if (programViewA != null) {
-            programViewA.startService(serviceType, params, callback);
+        switch (serviceType) {
+            case ServiceTypeFrontVideo:
+            case ServiceTypeLaterVideo:
+                if (programTopLevel != null) {
+                    programTopLevel.startService(serviceType, params, callback);
+                }
+                break;
+            default:
+                if (programViewA != null) {
+                    programViewA.startService(serviceType, params, callback);
+                }
+                break;
         }
+
+
     }
 
     public void reResumeService(ServiceType serviceType) {
@@ -272,7 +314,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
             programViewA.stopService(serviceType);
         }
 
-        if (serviceType == ServiceType.ServiceTypeVideoMode) {
+        if (serviceType == ServiceTypeVideoMode) {
             // 如果是关闭视联网模式，则移除视联网桌面
             if (programViewDesktop != null) {
                 programViewDesktop.setVisibility(GONE);
@@ -284,9 +326,10 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     /**
      * 开发者模式开关
+     *
      * @param isDevMode
      */
-    public void setDevMode(boolean isDevMode){
+    public void setDevMode(boolean isDevMode) {
         App.setIsDevMode(isDevMode);
     }
 }

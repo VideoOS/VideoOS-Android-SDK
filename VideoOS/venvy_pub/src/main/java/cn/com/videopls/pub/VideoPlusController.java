@@ -443,6 +443,9 @@ public abstract class VideoPlusController implements VenvyObserver {
                 });
                 break;
             default:
+                if(mPlatform == null){
+                    mPlatform = initPlatform(mVideoPlusAdapter);
+                }
                 mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params,
                         new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
 

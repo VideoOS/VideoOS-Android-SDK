@@ -28,6 +28,9 @@ import cn.com.venvy.lua.binder.VenvyLVLibBinder;
  * lua路由插件
  * Created by Arthur on 2017/8/21.
  * <p>
+ * <p>
+ * LuaView://topLuaView?template=xxx.lua&id=xxx&priority=xxx
+ * <p>
  * * A类小程序   L uaView://defaultLuaView?template=xxx.lua&id=xxx
  * * 跳转B类小程序     LuaView://applets?appletId=xxxx&type=x&appType=x(type: 1横屏,2竖屏,appType: 1 lua,2 H5)
  * *
@@ -87,26 +90,29 @@ public class LVEventPlugin {
                 if (protocolHost.equalsIgnoreCase("defaultLuaView")) {
                     // A类容器内部跳转
                     info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();
+
+                } else if (protocolHost.equalsIgnoreCase("topLuaView")) {
+                    // 标签小程序 - [top level]
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(VenvyObservableTarget.Constant.CONSTANT_LUA_NAME, info.getBundle().getString("template"));
+//                    bundle.putString(VenvyObservableTarget.Constant.CONSTANT_ID, info.getBundle().getString("id"));
+                    ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL, info.getBundle());
+
                 } else if (protocolHost.equalsIgnoreCase("applets")) {
                     String type = info.getBundle().getString("type");
                     String appType = info.getBundle().getString("appType");
-                    if(TextUtils.isEmpty(appType)){
+                    if (TextUtils.isEmpty(appType)) {
                         VenvyLog.d("appType is null");
                         // appType为空默认指定为lua
                         appType = String.valueOf(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_LUA);
                     }
-                    VenvyLog.d("type is "+type+" ， appType is "+appType);
-                    if(TextUtils.isEmpty(type)){
+                    VenvyLog.d("type is " + type + " ， appType is " + appType);
+                    if (TextUtils.isEmpty(type)) {
                         // B类小程序内部跳转
                         info.withTargetViewParent(mPlatform.getContentViewGroup()).withTargetPlatform("platform", mPlatform).navigation();
-
-//                        Bundle bundle = new Bundle();
-//                        bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, info.getBundle().getString("appletId"));
-//                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_TEMPLATE, info.getBundle().getString("template"));
-//                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_ID, info.getBundle().getString("id"));
-//                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, JsonUtil.toString(table));
                         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_VISION_PROGRAM, null);
-                    }else{
+
+                    } else {
                         // 发起一个视联网小程序
                         Bundle bundle = new Bundle();
                         bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, info.getBundle().getString("appletId"));

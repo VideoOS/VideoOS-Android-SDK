@@ -6,6 +6,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import java.util.HashMap;
+
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
@@ -31,6 +33,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, this);
+        ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL, this);
     }
 
 
@@ -160,6 +163,20 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 });
                 return;
             }
+            case VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL:{
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (videoPlusView != null) {
+                            String luaName = bundle.getString("template");
+                            String id = bundle.getString("id");
+                            HashMap<String, String> data = (HashMap<String, String>) bundle.getSerializable("data");
+                            videoPlusView.launchProgramToTopLevel(luaName,id,data);
+                        }
+                    }
+                });
+                return;
+            }
         }
     }
 
@@ -173,6 +190,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, this);
+        ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL, this);
     }
 
     public boolean isHorizontal() {

@@ -284,31 +284,11 @@ public class Platform implements Serializable {
         });
     }
 
-    public void preloadLuaList(final Platform platform, final JSONArray luas) {
+    public void preloadLuaList(final Platform platform, final JSONArray luas,final PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
         if (luas == null || luas.length() <= 0) {
             return;
         }
-        mPreloadLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, platform, new PreloadLuaUpdate.CacheLuaUpdateCallback() {
-            @Override
-            public void updateComplete(boolean isUpdateByNetWork) {
-                if (isUpdateByNetWork) {
-                    try {
-                        //TODO 反射 强制更新Lua目录
-                        Class<?> mClass = Class.forName("cn.com.videopls.pub.view.VideoOSLuaView");
-                        Method method = mClass.getMethod("destroyLuaScript");
-                        method.setAccessible(true);
-                        method.invoke(mClass, new Object[]{});
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void updateError(Throwable t) {
-
-            }
-        });
+        mPreloadLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, platform, callback);
         mPreloadLuaUpdate.startDownloadLuaFile(luas);
     }
 
