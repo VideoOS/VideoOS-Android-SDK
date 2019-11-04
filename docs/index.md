@@ -210,6 +210,15 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             public VideoPlayerSize getVideoSize() {
                 return  return new VideoPlayerSize(osContentWidth,osContentHeight,videoVerticalWidth,videoVerticalHeight,0);;
             }
+	    /**
+	    * 视频真实宽高以及X，Y偏移量
+	    * 针对实际视频比例与设备物理尺寸的情况
+	    /
+	    @Override
+            public VideoFrameSize getVideoFrameSize() {
+                return new VideoFrameSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()),
+                        VenvyUIUtil.getScreenHeight(MyApp.getInstance()), 0, 0);
+            }
         };
     }
 }
@@ -238,6 +247,12 @@ public Class<? extends IRequestConnect> buildConnectProvider() {
 public Class<? extends ISocketConnect> buildSocketConnect() {
     return VenvyMqtt.class;
 }
+
+// SVGA 动画插件
+@Override
+    public Class<? extends ISvgaImageView> buildSvgaImageView() {
+        return VenvySvgaImageView.class;
+    }
 
 ```
 
@@ -396,7 +411,7 @@ protected void onDestroy() {
 
 ```
 
-## 基础接口(视联网模式)
+## 视联网模式
 
 通过`videoOsView`的startService()启动视联网模式
 
@@ -430,24 +445,17 @@ mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String
   //  ServiceTypePauseAd(5);//暂停广告
 
         HashMap<String, String> params = new HashMap<>();
-        // duration 参数指定倒计时
+        // duration 参数指定播放倒计时
         params.put("duration", "60");
         mVideoPlusView.startService(ServiceType.ServiceTypeFrontVideo, params, new IServiceCallback() {
             @Override
             public void onCompleteForService() {
-
+ 		 
             }
 
             @Override
             public void onFailToCompleteForService(Throwable throwable) {
-                if (type == ServiceType.ServiceTypeFrontVideo) {
-                    VenvyUIUtil.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mVideoPlayer.startPlayLogic();
-                        }
-                    });
-                }
+               
             }
         });
 
@@ -468,7 +476,7 @@ mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String
 
 - 中插视频广告暂停唤醒，可调用
 
-```java
+``` java
 adapter.notifyMediaStatusChanged(MediaStatus.PLAYING);
 
 ```
