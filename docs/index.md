@@ -413,6 +413,21 @@ protected void onDestroy() {
 
 ## 视联网模式
 
+额外引用
+
+```
+// 需在对应module 的gradle中额外引用
+provided "com.just.agentweb:agentweb:4.1.2"
+
+// 在VideoOsAdapter中实现对应插件
+    // webView插件
+    @Override
+    public Class<? extends IVenvyWebView> buildWebView() {
+        return VenvyWebView.class;
+    }
+```
+
+
 通过`videoOsView`的startService()启动视联网模式
 
 ```
