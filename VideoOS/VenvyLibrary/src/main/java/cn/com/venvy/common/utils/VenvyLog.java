@@ -13,7 +13,7 @@ import cn.com.venvy.common.debug.DebugStatus;
  */
 public class VenvyLog {
 
-    public static boolean isDebug = DebugStatus.isDebug() || DebugStatus.isPreView();
+    public static boolean isDebug = DebugStatus.isDev() || DebugStatus.isTest();
     public static boolean needLog = true;
     private static volatile String venvyLogTag = "VenvyLog";
     private static int LOG_MAXLENGTH = 2000;

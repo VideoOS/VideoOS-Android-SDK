@@ -127,7 +127,7 @@ class DebugDialogView extends FrameLayout {
 
     void updateCheckBoxTxt(DebugStatus.EnvironmentStatus environmentStatus) {
         switch (environmentStatus) {
-            case DEBUG:
+            case DEV:
                 mDebugCheckBox.setText(closeDebugTxt);
                 mLogCheckBox.setVisibility(View.GONE);
                 mPreCheckoutBox.setText(openPreTxt);
@@ -152,7 +152,7 @@ class DebugDialogView extends FrameLayout {
             if (mDebugCheckBox.isChecked()) {
                 String currentDebugTxt = (String) mDebugCheckBox.getText();
                 if (currentDebugTxt.contains("打开")) {
-                    status = DebugStatus.EnvironmentStatus.DEBUG;
+                    status = DebugStatus.EnvironmentStatus.DEV;
                 }
             } else if (mPreCheckoutBox.isChecked()) {
                 String currentPreTxt = (String) mPreCheckoutBox.getText();

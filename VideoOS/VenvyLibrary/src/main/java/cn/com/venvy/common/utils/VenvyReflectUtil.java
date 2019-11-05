@@ -204,7 +204,7 @@ public class VenvyReflectUtil {
             }
         }
 
-        if (DebugStatus.isDebug()) { // Search instant run support only debuggable
+        if (DebugStatus.isDev()) { // Search instant run support only debuggable
             sourcePaths.addAll(tryLoadInstantRunDexFile(applicationInfo));
         }
         return sourcePaths;
