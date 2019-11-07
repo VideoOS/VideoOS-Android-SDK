@@ -28,6 +28,8 @@ import org.luaj.vm2.Varargs;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import cn.com.venvy.lua.view.VenvyLVWebView;
+
 /**
  * LuaView相关的一些工具类
  *
@@ -145,7 +147,7 @@ public class LuaViewUtil {
      */
     public static void addView(ViewGroup parent, View target, int pos, Varargs varargs) {
         if (parent != null && target != null && parent != target) {//不能自己加自己
-            parent.addView(LuaViewUtil.removeFromParent(target), pos, LuaViewUtil.getOrCreateLayoutParams(target));
+            parent.addView(target instanceof VenvyLVWebView ? target : LuaViewUtil.removeFromParent(target), pos, LuaViewUtil.getOrCreateLayoutParams(target));
         }
     }
 
