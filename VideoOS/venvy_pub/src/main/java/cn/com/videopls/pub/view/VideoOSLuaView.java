@@ -125,8 +125,8 @@ public class VideoOSLuaView extends VideoOSBaseView {
         }
     }
 
-    public void callLuaFunction(String functionName,HashMap<String,String> map){
-        if(mLuaView != null){
+    public void callLuaFunction(String functionName, HashMap<String, String> map) {
+        if (mLuaView != null) {
             LuaValue dataTable = null;
             String key = "data";
             Object dataValue = map.get(key);
@@ -136,7 +136,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
                     map.remove(key);
                 }
             }
-            LuaValue  table = LuaUtil.toTable(map);
+            LuaValue table = LuaUtil.toTable(map);
             if (dataTable != null && table != null && table.istable()) {
                 table.set(key, dataTable);
             }
@@ -216,11 +216,11 @@ public class VideoOSLuaView extends VideoOSBaseView {
             return;
         }
         if (sScriptBundle == null) {
-            sScriptBundle=initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
-            if(sScriptBundle!=null){
+            sScriptBundle = initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
+            if (sScriptBundle != null) {
                 luaView.loadScriptBundle(sScriptBundle, luaName,
                         new LuaCallbackImpl(valueData));
-            }else {
+            } else {
                 runLua(luaView, luaName, valueData);
             }
 //            VenvyAsyncTaskUtil.doAsyncTask(INIT_SCRIPT,
@@ -323,6 +323,16 @@ public class VideoOSLuaView extends VideoOSBaseView {
                         luaFilePackage.getAbsolutePath(), file.getName(), data);
                 scriptBundle.addScript(scriptFile);
                 VenvyLog.i("fileName = " + file.getName() + "  " + file.length());
+            }
+            if (file.exists() && file.isDirectory()) {
+                for (File childFile : file.listFiles()) {
+                    if (TextUtils.equals("lua", VenvyFileUtil.getExtension(childFile.getName()))) {
+                        byte[] data = getBytes(childFile.getPath());
+                        ScriptFile scriptFile = new ScriptFile(null,
+                                file.getAbsolutePath(), childFile.getName(), data);
+                        scriptBundle.addScript(scriptFile);
+                    }
+                }
             }
         }
         return scriptBundle;
