@@ -108,7 +108,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                         boolean needRetry = bundle.getBoolean(VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY);
                         String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
                         if (videoPlusView != null) {
-                            videoPlusView.showExceptionLogic(msg, needRetry,data);
+                            videoPlusView.showExceptionLogic(msg, needRetry, data);
                         }
                     }
                 });
@@ -163,7 +163,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 });
                 return;
             }
-            case VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL:{
+            case VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL: {
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
@@ -171,7 +171,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                             String luaName = bundle.getString("template");
                             String id = bundle.getString("id");
                             HashMap<String, String> data = (HashMap<String, String>) bundle.getSerializable("data");
-                            videoPlusView.launchProgramToTopLevel(luaName,id,data);
+                            videoPlusView.launchProgramToTopLevel(luaName, id, data);
                         }
                     }
                 });

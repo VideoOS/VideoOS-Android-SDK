@@ -8,8 +8,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import com.taobao.luaview.util.ToastUtil;
-
 import java.util.HashMap;
 
 import cn.com.venvy.App;
@@ -17,8 +15,7 @@ import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
 
-import static cn.com.venvy.common.interf.ServiceType.*;
-import static cn.com.venvy.common.interf.ServiceType.ServiceTypeLaterVideo;
+import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode;
 
 /**
  * Created by yanjiangbo on 2017/5/17.
