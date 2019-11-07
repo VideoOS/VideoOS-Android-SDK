@@ -68,14 +68,30 @@ public class PreloadLuaUpdate {
             }
             return;
         }
-        checkUpdateLua(luaUrls);
+        checkUpdateLua(luaUrls, null);
+    }
+
+    /***
+     *
+     * @param luaUrls
+     * @param miniAppId
+     */
+    public void startDownloadLuaFile(JSONArray luaUrls, String miniAppId) {
+        if (luaUrls == null || luaUrls.length() <= 0) {
+            CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
+            if (callback != null) {
+                callback.updateError(new Exception("update Lua error,because down urls is null"));
+            }
+            return;
+        }
+        checkUpdateLua(luaUrls, miniAppId);
     }
 
     /***
      * 检测列表需要下载的Lua文件
      * @param luaUrls
      */
-    private void checkUpdateLua(final JSONArray luaUrls) {
+    private void checkUpdateLua(final JSONArray luaUrls, final String miniAppId) {
         VenvyAsyncTaskUtil.doAsyncTask(PARSE_LOCAL_LUA, new VenvyAsyncTaskUtil.IDoAsyncTask<JSONArray,
                 Set<String>>() {
             @Override
@@ -97,7 +113,7 @@ public class PreloadLuaUpdate {
                         if (TextUtils.isEmpty(url)) {
                             continue;
                         }
-                        String cacheMd5 = getFileLuaEncoderByMd5(Uri.parse(url).getLastPathSegment());
+                        String cacheMd5 = getFileLuaEncoderByMd5(Uri.parse(url).getLastPathSegment(), miniAppId);
                         if (!TextUtils.equals(md5, cacheMd5)) {
                             needDownUrls.add(url);
                         }
@@ -127,7 +143,7 @@ public class PreloadLuaUpdate {
                     }
                     return;
                 }
-                startDownloadLuaFile(urls);
+                startDownloadLuaFile(urls, miniAppId);
             }
 
             @Override
@@ -142,13 +158,14 @@ public class PreloadLuaUpdate {
 
     }
 
-    private void startDownloadLuaFile(Set<String> urls) {
+    private void startDownloadLuaFile(Set<String> urls, String miniAppId) {
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(mPlatform);
         }
         ArrayList<DownloadTask> arrayList = new ArrayList<>();
         for (String string : urls) {
-            DownloadTask task = new DownloadTask(App.getContext(), string, VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(string).getLastPathSegment(),true);
+            String downPath = TextUtils.isEmpty(miniAppId) ? VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(string).getLastPathSegment() : VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + miniAppId + File.separator + Uri.parse(string).getLastPathSegment();
+            DownloadTask task = new DownloadTask(App.getContext(), string, downPath, true);
             arrayList.add(task);
         }
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
@@ -179,7 +196,7 @@ public class PreloadLuaUpdate {
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
-                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,preloadType);
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks, preloadType);
                 CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
                 if (callback != null) {
                     if (failedTasks != null && failedTasks.size() > 0) {
@@ -201,7 +218,10 @@ public class PreloadLuaUpdate {
      * @param fileName
      * @return
      */
-    private String getFileLuaEncoderByMd5(String fileName) {
+    private String getFileLuaEncoderByMd5(String fileName, String miniAppId) {
+        if (!TextUtils.isEmpty(miniAppId)) {
+            return VenvyMD5Util.EncoderByMd5(new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + miniAppId + File.separator + fileName));
+        }
         return VenvyMD5Util.EncoderByMd5(new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + fileName));
     }
 }
