@@ -61,6 +61,15 @@ public class UDImageView<T extends BaseImageView> extends UDView<T> {
         super(view, globals, metatable, initParams);
     }
 
+    @Override
+    public UDView setCornerRadii(float[] radii) {
+        final T view = getView();
+        if (view != null) {
+            view.setCornerRadii(radii);
+        }
+        return this;
+    }
+
     @LuaViewApi(since = VmVersion.V_540, revisions = {"之前写在View无效果，5.4.0开始，Image支持该方法"})
     @Override
     public UDView setCornerRadius(float radius) {
