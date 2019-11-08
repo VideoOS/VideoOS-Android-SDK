@@ -27,7 +27,7 @@ public class LuaFileInfo{
         this.luaList = luaList;
     }
 
-    public class LuaListBean {
+    public static class LuaListBean {
 
         private String luaFileName;
         private String luaFileMd5;

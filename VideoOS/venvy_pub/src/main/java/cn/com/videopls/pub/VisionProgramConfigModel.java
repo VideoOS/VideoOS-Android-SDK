@@ -9,7 +9,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.com.venvy.App;
@@ -17,6 +19,7 @@ import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PreloadLuaUpdate;
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -156,6 +159,37 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
 
                     if (resCode.equalsIgnoreCase("00")) {
+                        //LuaArray --> JavaBean
+                        List<LuaFileInfo> luaFileInfoList = new ArrayList<>();
+                        LuaFileInfo luaFileInfo = new LuaFileInfo();
+                        luaFileInfo.setMiniAppId(miniAppId);
+                        List<LuaFileInfo.LuaListBean> luaList = new ArrayList<>();
+                        for (int i = 0; i < fileListArray.length(); i++) {
+                            JSONObject luaFileObj = fileListArray.optJSONObject(i);
+                            if (luaFileObj == null) {
+                                continue;
+                            }
+                            String luaMD5 = luaFileObj.optString("md5");
+                            String luaUrl = luaFileObj.optString("url");
+
+                            if(TextUtils.isEmpty(luaMD5) || TextUtils.isEmpty(luaUrl)){
+                                continue;
+                            }
+                            LuaFileInfo.LuaListBean luaListBean = new LuaFileInfo.LuaListBean();
+                            luaListBean.setLuaFileMd5(luaMD5);
+                            luaListBean.setLuaFileUrl(luaUrl);
+                            luaList.add(luaListBean);
+                        }
+                        if(luaList.size() <= 0){
+                            VisionProgramConfigModel.VisionProgramConfigCallback callback = getCallback();
+                            if (callback != null) {
+                                callback.downError(new NullPointerException("response lua script is null"));
+                            }
+                            return;
+                        }
+                        luaFileInfo.setLuaList(luaList);
+                        luaFileInfoList.add(luaFileInfo);
+
                         if (mDownLuaUpdate == null) {
                             mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
                                 @Override
@@ -178,7 +212,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                 }
                             });
                         }
-                        mDownLuaUpdate.startDownloadLuaFile(fileListArray);
+                        mDownLuaUpdate.startDownloadLuaFile(luaFileInfoList);
                     } else if (resCode.equalsIgnoreCase("01")) {
                         // 小程序下架不可用
                         Bundle bundle = new Bundle();

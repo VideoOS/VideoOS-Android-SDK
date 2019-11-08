@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.download.DownloadImageTask;
 import cn.com.venvy.common.download.DownloadImageTaskRunner;
 import cn.com.venvy.common.download.DownloadTask;
@@ -284,13 +285,16 @@ public class Platform implements Serializable {
         });
     }
 
-    public void preloadLuaList(final Platform platform, final JSONArray luas) {
-        if (luas == null || luas.length() <= 0) {
+    public void preloadMiniAppLua(final Platform platform, final List<LuaFileInfo> listOfLuaInfo, final PreloadLuaUpdate.CacheLuaUpdateCallback cacheLuaUpdateCallback) {
+        if (listOfLuaInfo == null || listOfLuaInfo.size() <= 0) {
             return;
         }
         mPreloadLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, platform, new PreloadLuaUpdate.CacheLuaUpdateCallback() {
             @Override
             public void updateComplete(boolean isUpdateByNetWork) {
+                if (cacheLuaUpdateCallback != null) {
+                    cacheLuaUpdateCallback.updateComplete(isUpdateByNetWork);
+                }
                 if (isUpdateByNetWork) {
                     try {
                         //TODO 反射 强制更新Lua目录
@@ -306,10 +310,12 @@ public class Platform implements Serializable {
 
             @Override
             public void updateError(Throwable t) {
-
+                if (cacheLuaUpdateCallback != null) {
+                    cacheLuaUpdateCallback.updateError(t);
+                }
             }
         });
-        mPreloadLuaUpdate.startDownloadLuaFile(luas);
+        mPreloadLuaUpdate.startDownloadLuaFile(listOfLuaInfo);
     }
 
     public DownloadTaskRunner getDownloadTaskRunner() {

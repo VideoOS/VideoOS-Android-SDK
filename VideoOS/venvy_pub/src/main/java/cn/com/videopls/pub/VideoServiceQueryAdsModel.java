@@ -6,7 +6,9 @@ import android.text.TextUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.com.venvy.AppSecret;
@@ -14,6 +16,7 @@ import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.PreloadLuaUpdate;
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -31,7 +34,7 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
     private static final String SERVICE_QUERYALL_ADS_URL = Config.HOST_VIDEO_OS
-            + "/api/queryAllAds";
+            + "/api/v2/queryAllAds";
     private ServiceQueryAdsCallback mQueryAdsCallback;
     private PreloadLuaUpdate mDownLuaUpdate;
     private Map<String, String> mQueryAdsParams;
@@ -56,6 +59,13 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
         return false;
     }
 
+    private void callbackException(String message) {
+        ServiceQueryAdsCallback callback = getQueryAdsCallback();
+        if (callback != null) {
+            callback.queryError(new Exception(message));
+        }
+    }
+
     @Override
     public IRequestHandler createRequestHandler() {
         return new IRequestHandler() {
@@ -63,51 +73,67 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
             public void requestFinish(Request request, IResponse response) {
                 try {
                     if (!response.isSuccess()) {
-                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query ads data error"));
-                        }
+                        callbackException("query ads data error");
                         return;
                     }
                     JSONObject value = new JSONObject(response.getResult());
                     String encryptData = value.optString("encryptData");
                     if (TextUtils.isEmpty(encryptData)) {
-                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query ads encryptData is null"));
-                        }
+                        callbackException("query ads encryptData is null");
                         return;
                     }
                     final JSONObject decryptObj = new JSONObject(VenvyAesUtil.decrypt(encryptData,
                             AppSecret.getAppSecret(getPlatform()),
                             AppSecret.getAppSecret(getPlatform())));
-                    final JSONObject encrypt = decryptObj.optJSONObject("launchInfo");
-                    if (encrypt == null) {
-                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query ads launchInfo is null,未查询到有投放数据"));
-                        }
+                    if (decryptObj == null) {
+                        callbackException("query ads encryptData is null");
                         return;
                     }
-                    final String queryAdsId = encrypt.optString("id");
-                    final String queryAdsTemplate = encrypt.optString("template");
-                    if (TextUtils.isEmpty(queryAdsTemplate)) {
-                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query ads data with template is " +
-                                    "null"));
-                        }
+                    final String resCode = decryptObj.optString("resCode");
+                    if (!TextUtils.equals(resCode, "00")) {
+                        callbackException(decryptObj.optString("resMsg"));
                         return;
                     }
-                    JSONArray fileListArray = encrypt.optJSONArray("templates");
-                    if (fileListArray == null || fileListArray.length() <= 0) {
-                        ServiceQueryAdsCallback callback = getQueryAdsCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query ads data with fileList is " +
-                                    "null"));
-                        }
+                    final JSONObject launchInfoObj = decryptObj.optJSONObject("launchInfo");
+                    if (launchInfoObj == null) {
+                        callbackException("query ads launchInfo is null,未查询到有投放数据");
                         return;
                     }
+
+                    final String id = launchInfoObj.optString("id");
+                    JSONObject miniAppInfoObj = launchInfoObj.optJSONObject("miniAppInfo");
+                    if (TextUtils.isEmpty(id) || miniAppInfoObj == null) {
+                        callbackException("id or miniAppInfo is null");
+                        return;
+                    }
+                    final String miniAppId = miniAppInfoObj.optString("miniAppId");
+                    final String template = miniAppInfoObj.optString("template");
+                    if (TextUtils.isEmpty(miniAppId) || TextUtils.isEmpty(template)) {
+                        callbackException("miniAppId or template is null");
+                        return;
+                    }
+                    JSONArray luaListArray = miniAppInfoObj.optJSONArray("luaList");
+                    if (luaListArray == null || luaListArray.length() <= 0) {
+                        callbackException("luaListArray is null");
+                        return;
+                    }
+
+                    List<LuaFileInfo> luaFileInfoList = new ArrayList<>();
+
+                    LuaFileInfo luaFileInfo = new LuaFileInfo();
+                    luaFileInfo.setMiniAppId(miniAppId);
+                    List<LuaFileInfo.LuaListBean> luaList = luaArray2LuaList(luaListArray);
+
+                    if(luaList != null && luaList.size() > 0){
+                        luaFileInfo.setLuaList(luaList);
+                        luaFileInfoList.add(luaFileInfo);
+                    }
+
+                    if (luaFileInfoList.size() <= 0) {
+                        callbackException("query ads launchInfo is null");
+                        return;
+                    }
+
                     if (mDownLuaUpdate == null) {
                         mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new
                                 PreloadLuaUpdate.CacheLuaUpdateCallback() {
@@ -124,11 +150,11 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                                             ServiceQueryAdsInfo queryAdsInfo =
                                                     new ServiceQueryAdsInfo
                                                             .Builder()
-                                                            .setQueryAdsTemplate(queryAdsTemplate)
-                                                            .setQueryAdsId(queryAdsId)
+                                                            .setQueryAdsTemplate(template)
+                                                            .setQueryAdsId(id)
                                                             .setQueryAdsType(!TextUtils.isEmpty(adsType) ?
                                                                     Integer.valueOf(adsType) : 0).build();
-                                            callback.queryComplete(encrypt.toString(),
+                                            callback.queryComplete(launchInfoObj.toString(),
                                                     queryAdsInfo);
                                         }
                                     }
@@ -143,7 +169,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                                     }
                                 });
                     }
-                    mDownLuaUpdate.startDownloadLuaFile(fileListArray);
+                    mDownLuaUpdate.startDownloadLuaFile(luaFileInfoList);
                 } catch (Exception e) {
                     VenvyLog.e(VideoServiceQueryAdsModel.class.getName(), e);
                     ServiceQueryAdsCallback callback = getQueryAdsCallback();

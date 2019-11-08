@@ -60,11 +60,8 @@ public class PreloadLuaUpdate {
 
     /***
      * 开启下载Lua文件
-     * @param luaUrls Lua文件列表
+     * @param listOfLuaInfo Lua文件列表
      */
-    public void startDownloadLuaFile(JSONArray luaUrls) {
-    }
-
     public void startDownloadLuaFile(List<LuaFileInfo> listOfLuaInfo) {
         if (listOfLuaInfo == null || listOfLuaInfo.size() <= 0) {
             CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();

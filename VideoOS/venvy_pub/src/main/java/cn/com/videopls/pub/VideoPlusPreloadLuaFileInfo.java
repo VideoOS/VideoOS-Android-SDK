@@ -2,18 +2,20 @@ package cn.com.videopls.pub;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PreloadLuaUpdate;
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -29,7 +31,7 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
  */
 
 public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
-    private static final String PRE_LOAD_LUA_URL = "/api/preloadLuaFileInfo";
+    private static final String PRE_LOAD_LUA_URL = "/api/v2/preloadLuaFileInfo";
     private PreloadLuaCallback mPreloadLuaCallback;
     private PreloadLuaUpdate mDownLuaUpdate;
 
@@ -86,14 +88,46 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    JSONArray preloadLuaArray = needValue.optJSONArray("luaList");
-                    if (preloadLuaArray == null || preloadLuaArray.length() <= 0) {
+                    JSONArray miniAppInfoArray = needValue.optJSONArray("miniAppInfoList");
+                    if (miniAppInfoArray == null || miniAppInfoArray.length() <= 0) {
                         PreloadLuaCallback callback = getPreloadLuaCallback();
                         if (callback != null) {
                             callback.updateError(new NullPointerException());
                         }
                         return;
                     }
+                    List<LuaFileInfo> luaFileInfoList = new ArrayList<>();
+                    for (int i = 0; i < miniAppInfoArray.length(); i++) {
+                        JSONObject obj = miniAppInfoArray.optJSONObject(i);
+                        if (obj == null) {
+                            continue;
+                        }
+                        String miniAppId = obj.optString("miniAppId");
+                        if (TextUtils.isEmpty(miniAppId)) {
+                            continue;
+                        }
+                        JSONArray luaListArray = obj.optJSONArray("luaList");
+                        if (luaListArray == null || luaListArray.length() <= 0) {
+                            continue;
+                        }
+                        LuaFileInfo luaFileInfo = new LuaFileInfo();
+                        luaFileInfo.setMiniAppId(miniAppId);
+                        List<LuaFileInfo.LuaListBean> luaList = luaArray2LuaList(luaListArray);
+
+                        if(luaList != null && luaList.size() > 0){
+                            luaFileInfo.setLuaList(luaList);
+                            luaFileInfoList.add(luaFileInfo);
+                        }
+                    }
+
+                    if (luaFileInfoList.size() <= 0) {
+                        PreloadLuaCallback callback = getPreloadLuaCallback();
+                        if (callback != null) {
+                            callback.updateError(new NullPointerException());
+                        }
+                        return;
+                    }
+
                     if (mDownLuaUpdate == null) {
                         mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REAPP,getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
                             @Override
@@ -116,7 +150,7 @@ public class VideoPlusPreloadLuaFileInfo extends VideoPlusBaseModel {
                             }
                         });
                     }
-                    mDownLuaUpdate.startDownloadLuaFile(preloadLuaArray);
+                    mDownLuaUpdate.startDownloadLuaFile(luaFileInfoList);
                 } catch (Exception e) {
                     VenvyLog.e(VideoPlusPreloadLuaFileInfo.class.getName(), e);
                     PreloadLuaCallback callback = getPreloadLuaCallback();
