@@ -88,7 +88,14 @@ public class PreloadLuaUpdate {
         checkUpdateLua(luaUrls, miniAppId);
     }
 
-    public void startDownloadLuaFile(LuaFileInfo luaFileInfo) {
+    public void startDownloadLuaFile(List<LuaFileInfo> listOfInfos) {
+        if (listOfInfos == null || listOfInfos.size() <= 0) {
+            CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
+            if (callback != null) {
+                callback.updateError(new Exception("update Lua error,because down urls is null"));
+            }
+            return;
+        }
 
     }
 
