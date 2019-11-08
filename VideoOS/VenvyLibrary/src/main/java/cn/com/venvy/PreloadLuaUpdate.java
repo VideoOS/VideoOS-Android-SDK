@@ -5,12 +5,13 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import cn.com.venvy.common.bean.LuaFileInfo;
@@ -30,12 +31,12 @@ import cn.com.venvy.common.utils.VenvyMD5Util;
 
 public class PreloadLuaUpdate {
     private final static String TAG = PreloadLuaUpdate.class.getName();
-    private final String PARSE_LOCAL_LUA = "parse_local_luas";
     public static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
     private DownloadTaskRunner mDownloadTaskRunner;
     private CacheLuaUpdateCallback mUpdateCallback;
     private Platform mPlatform;
     private int preloadType;
+    private String taskTag = "";
 
     public PreloadLuaUpdate(int preloadType, Platform platform, PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
         this.preloadType = preloadType;
@@ -53,7 +54,7 @@ public class PreloadLuaUpdate {
         if (mDownloadTaskRunner != null) {
             mDownloadTaskRunner.destroy();
         }
-        VenvyAsyncTaskUtil.cancel(PARSE_LOCAL_LUA);
+        VenvyAsyncTaskUtil.cancel(getTaskTag());
         mUpdateCallback = null;
     }
 
@@ -62,92 +63,71 @@ public class PreloadLuaUpdate {
      * @param luaUrls Lua文件列表
      */
     public void startDownloadLuaFile(JSONArray luaUrls) {
-        if (luaUrls == null || luaUrls.length() <= 0) {
-            CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
-            if (callback != null) {
-                callback.updateError(new Exception("update Lua error,because down urls is null"));
-            }
-            return;
-        }
-        checkUpdateLua(luaUrls, null);
     }
 
-    /***
-     *
-     * @param luaUrls
-     * @param miniAppId
-     */
-    public void startDownloadLuaFile(JSONArray luaUrls, String miniAppId) {
-        if (luaUrls == null || luaUrls.length() <= 0) {
+    public void startDownloadLuaFile(List<LuaFileInfo> listOfLuaInfo) {
+        if (listOfLuaInfo == null || listOfLuaInfo.size() <= 0) {
             CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
             if (callback != null) {
                 callback.updateError(new Exception("update Lua error,because down urls is null"));
             }
             return;
         }
-        checkUpdateLua(luaUrls, miniAppId);
-    }
-
-    public void startDownloadLuaFile(List<LuaFileInfo> listOfInfos) {
-        if (listOfInfos == null || listOfInfos.size() <= 0) {
-            CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
-            if (callback != null) {
-                callback.updateError(new Exception("update Lua error,because down urls is null"));
-            }
-            return;
+        StringBuilder builder = new StringBuilder();
+        for (LuaFileInfo info : listOfLuaInfo) {
+            builder.append(info.getMiniAppId());
         }
-
+        setTaskTag(builder.toString());
+        checkUpdateLuaInfos(listOfLuaInfo,getTaskTag());
     }
 
     /***
      * 检测列表需要下载的Lua文件
-     * @param luaUrls
+     * @param taskTag
      */
-    private void checkUpdateLua(final JSONArray luaUrls, final String miniAppId) {
-        VenvyAsyncTaskUtil.doAsyncTask(PARSE_LOCAL_LUA, new VenvyAsyncTaskUtil.IDoAsyncTask<JSONArray,
-                Set<String>>() {
+    private void checkUpdateLuaInfos(final List<LuaFileInfo> listOfLuaInfo, String taskTag) {
+        VenvyAsyncTaskUtil.doAsyncTask(taskTag, new VenvyAsyncTaskUtil.IDoAsyncTask<List<LuaFileInfo>,
+                Map<String, Set<LuaFileInfo.LuaListBean>>>() {
             @Override
-            public Set<String> doAsyncTask(JSONArray... urls) throws Exception {
-                if (urls == null || urls.length == 0) {
+            public Map<String, Set<LuaFileInfo.LuaListBean>> doAsyncTask(List<LuaFileInfo>... listOfInfo) throws Exception {
+                if (listOfInfo == null || listOfInfo.length == 0) {
                     return null;
                 }
-                Set<String> needDownUrls = new LinkedHashSet();
-                try {
-                    JSONArray jsonArray = urls[0];
-                    int len = luaUrls.length();
-                    for (int i = 0; i < len; i++) {
-                        JSONObject obj = jsonArray.optJSONObject(i);
-                        if (obj == null) {
-                            break;
-                        }
-                        String url = obj.optString("url");
-                        String md5 = obj.optString("md5");
-                        if (TextUtils.isEmpty(url)) {
+                List<LuaFileInfo> listOfLuaFileInfo = listOfInfo[0];
+                Map<String, Set<LuaFileInfo.LuaListBean>> needDownMap = new HashMap<>();
+                for (LuaFileInfo fileInfo : listOfLuaFileInfo) {
+                    List<LuaFileInfo.LuaListBean> listOfLuaBean = fileInfo.getLuaList();
+                    Set<LuaFileInfo.LuaListBean> listOfNeedDownLua = new LinkedHashSet();
+                    for (LuaFileInfo.LuaListBean luaBean : listOfLuaBean) {
+                        String fileUrl = luaBean.getLuaFileUrl();
+                        String fileMd5 = luaBean.getLuaFileMd5();
+                        if (TextUtils.isEmpty(fileUrl)) {
                             continue;
                         }
-                        String cacheMd5 = getFileLuaEncoderByMd5(Uri.parse(url).getLastPathSegment(), miniAppId);
-                        if (!TextUtils.equals(md5, cacheMd5)) {
-                            needDownUrls.add(url);
+                        String cacheMd5 = getFileLuaEncoderByMd5(Uri.parse(fileUrl).getLastPathSegment(), fileInfo.getMiniAppId());
+                        if (!TextUtils.equals(fileMd5, cacheMd5)) {
+                            listOfNeedDownLua.add(luaBean);
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    VenvyLog.i(TAG, "VideoPlusLuaUpdate ——> checkDownLuaUrls error：" + e.getMessage());
+                    needDownMap.put(fileInfo.getMiniAppId(), listOfNeedDownLua);
                 }
-
-                return needDownUrls;
+                return needDownMap;
             }
-        }, new VenvyAsyncTaskUtil.IAsyncCallback<Set<String>>() {
+        }, new VenvyAsyncTaskUtil.IAsyncCallback<Map<String, Set<LuaFileInfo.LuaListBean>>>() {
             @Override
             public void onPreExecute() {
             }
 
             @Override
-            public void onPostExecute(Set<String> urls) {
-                if (urls == null) {
+            public void onPostExecute(Map<String, Set<LuaFileInfo.LuaListBean>> mapOfLuaBean) {
+                if (mapOfLuaBean == null) {
                     return;
                 }
-                if (urls.size() == 0) {
+                Set<LuaFileInfo.LuaListBean> needDownLuaCount = new LinkedHashSet<>();
+                for (Set<LuaFileInfo.LuaListBean> value : mapOfLuaBean.values()) {
+                    needDownLuaCount.addAll(value);
+                }
+                if (needDownLuaCount.size() == 0) {
                     //本地存在 无需下载直接返回成功回调
                     CacheLuaUpdateCallback callback = getCacheLuaUpdateCallback();
                     if (callback != null) {
@@ -155,7 +135,7 @@ public class PreloadLuaUpdate {
                     }
                     return;
                 }
-                startDownloadLuaFile(urls, miniAppId);
+                startDownloadLuaFile(mapOfLuaBean);
             }
 
             @Override
@@ -166,19 +146,28 @@ public class PreloadLuaUpdate {
             @Override
             public void onException(Exception ie) {
             }
-        }, luaUrls);
+        }, listOfLuaInfo);
 
     }
 
-    private void startDownloadLuaFile(Set<String> urls, String miniAppId) {
+    private void startDownloadLuaFile(Map<String, Set<LuaFileInfo.LuaListBean>> mapInfo) {
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(mPlatform);
         }
+        Iterator<Map.Entry<String, Set<LuaFileInfo.LuaListBean>>> entries = mapInfo.entrySet().iterator();
+
         ArrayList<DownloadTask> arrayList = new ArrayList<>();
-        for (String string : urls) {
-            String downPath = TextUtils.isEmpty(miniAppId) ? VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(string).getLastPathSegment() : VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + miniAppId + File.separator + Uri.parse(string).getLastPathSegment();
-            DownloadTask task = new DownloadTask(App.getContext(), string, downPath, true);
-            arrayList.add(task);
+
+        while(entries.hasNext()){
+            Map.Entry<String, Set<LuaFileInfo.LuaListBean>> entry = entries.next();
+            String key = entry.getKey();
+            Set<LuaFileInfo.LuaListBean> value = entry.getValue();
+            for (LuaFileInfo.LuaListBean luaBean:value){
+                String downUrl=luaBean.getLuaFileUrl();
+                String downPath = TextUtils.isEmpty(key) ? VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(downUrl).getLastPathSegment() : VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + key + File.separator + Uri.parse(downUrl).getLastPathSegment();
+                DownloadTask task = new DownloadTask(App.getContext(), downUrl, downPath, true);
+                arrayList.add(task);
+            }
         }
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
             @Override
@@ -223,6 +212,14 @@ public class PreloadLuaUpdate {
 
     private PreloadLuaUpdate.CacheLuaUpdateCallback getCacheLuaUpdateCallback() {
         return mUpdateCallback;
+    }
+
+    private String getTaskTag() {
+        return taskTag;
+    }
+
+    private void setTaskTag(String taskTag) {
+        this.taskTag = taskTag;
     }
 
     /***
