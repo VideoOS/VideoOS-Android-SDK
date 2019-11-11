@@ -292,9 +292,6 @@ public class Platform implements Serializable {
         mPreloadLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, platform, new PreloadLuaUpdate.CacheLuaUpdateCallback() {
             @Override
             public void updateComplete(boolean isUpdateByNetWork) {
-                if (cacheLuaUpdateCallback != null) {
-                    cacheLuaUpdateCallback.updateComplete(isUpdateByNetWork);
-                }
                 if (isUpdateByNetWork) {
                     try {
                         //TODO 反射 强制更新Lua目录
@@ -305,6 +302,9 @@ public class Platform implements Serializable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+                if (cacheLuaUpdateCallback != null) {
+                    cacheLuaUpdateCallback.updateComplete(isUpdateByNetWork);
                 }
             }
 

@@ -17,8 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.com.venvy.Platform;
 import cn.com.venvy.App;
+import cn.com.venvy.Platform;
 import cn.com.venvy.PreloadLuaUpdate;
 import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.download.DownloadDbHelper;
@@ -113,12 +113,7 @@ public class LVPreLoadPlugin {
                         return LuaValue.NIL;
                     }
 
-                    JSONArray proLoadArray = new JSONArray();
-                    for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
-                        proLoadArray.put(new JSONObject(entry.getValue().toString()));
-                    }
-
-                    JSONObject miniAppInfoObj = proLoadArray.optJSONObject(0);
+                    JSONObject miniAppInfoObj = new JSONObject(paramsMap.toString());
                     if(miniAppInfoObj == null){
                         return LuaValue.NIL;
                     }
