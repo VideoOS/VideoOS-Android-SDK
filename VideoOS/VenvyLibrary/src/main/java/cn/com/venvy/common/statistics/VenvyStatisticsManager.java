@@ -2,6 +2,9 @@ package cn.com.venvy.common.statistics;
 
 import android.text.TextUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +18,12 @@ import cn.com.venvy.common.download.DownloadTask;
  */
 
 public final class VenvyStatisticsManager {
+    public static final int AB_APPLET_TRACK = 1;
+    public static final int USER_ACTION = 2;
+    public static final int VISUAL_SWITCH_COUNT = 3;
+    public static final int PLAY_CONFIRM = 4;
+    public static final int PRELOAD_FLOW = 5;
+
     private Platform platform;
     private VenvyStatisticsManager() {
 
@@ -32,14 +41,67 @@ public final class VenvyStatisticsManager {
         this.platform = platform;
     }
 
+    public void submitCommonTrack(int type, String dataJson) {
+        if(TextUtils.isEmpty(dataJson)){
+            return;
+        }
+        if (VenvyStatisticsManager.AB_APPLET_TRACK == type) {
+            submitABAppletTrackStatisticsInfo(dataJson);
+        } else if (VenvyStatisticsManager.USER_ACTION == type) {
+
+        }else if (VenvyStatisticsManager.VISUAL_SWITCH_COUNT == type) {
+
+        }else if (VenvyStatisticsManager.PLAY_CONFIRM == type) {
+
+        }else if (VenvyStatisticsManager.PRELOAD_FLOW == type) {
+
+        }
+    }
+
+    private void submitABAppletTrackStatisticsInfo(String dataJson) {
+        try {
+            JSONObject dataObj = new JSONObject(dataJson);
+            if(dataObj == null){
+                return;
+            }
+            String originMiniAppId = dataObj.optString("originMiniAppId");
+            String miniAppId = dataObj.optString("miniAppId");
+            if(TextUtils.isEmpty(originMiniAppId) || TextUtils.isEmpty(miniAppId)){
+                return;
+            }
+            StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
+            statisticsInfoBean.type = VenvyStatisticsManager.AB_APPLET_TRACK;
+            statisticsInfoBean.originMiniAppId = originMiniAppId;
+            statisticsInfoBean.miniAppId = miniAppId;
+            executeThread(statisticsInfoBean);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void executeThread(StatisticsInfoBean statisticsInfoBean) {
+        if(statisticsInfoBean != null && platform != null){
+            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,statisticsInfoBean));
+        }
+    }
+
+    public void submitVisualSwitchStatisticsInfo(String onOrOff) {
+        if(TextUtils.isEmpty(onOrOff) || platform == null){
+            return;
+        }
+        StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
+        statisticsInfoBean.type = VenvyStatisticsManager.VISUAL_SWITCH_COUNT;
+        statisticsInfoBean.onOrOff = onOrOff;
+
+        executeThread(statisticsInfoBean);
+    }
+
     public void submitFileStatisticsInfo(List<DownloadTask> downloadTaskList ,int downLoadStage) {
         if(downloadTaskList == null || downloadTaskList.size() <= 0 || platform == null){
             return;
         }
         StatisticsInfoBean statisticsInfoBean = convertDownloadTaskList2StatisticsInfoBean(downloadTaskList, downLoadStage);
-        if(statisticsInfoBean != null){
-            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,statisticsInfoBean));
-        }
+        executeThread(statisticsInfoBean);
     }
 
     public void submitImageStatisticsInfo(List<DownloadImageTask> downloadTaskList , int downLoadStage) {
@@ -47,9 +109,7 @@ public final class VenvyStatisticsManager {
             return;
         }
         StatisticsInfoBean statisticsInfoBean = convertDownloadImageTaskList2StatisticsInfoBean(downloadTaskList, downLoadStage);
-        if(statisticsInfoBean != null){
-            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,statisticsInfoBean));
-        }
+        executeThread(statisticsInfoBean);
     }
 
     private StatisticsInfoBean convertDownloadImageTaskList2StatisticsInfoBean(List<DownloadImageTask> downloadImageTaskList, int downLoadStage) {
@@ -81,8 +141,8 @@ public final class VenvyStatisticsManager {
         }
         statisticsInfoBean.downLoadStage = downLoadStage;
         statisticsInfoBean.fileInfoBeans = fileInfoBeans;
+        statisticsInfoBean.type = VenvyStatisticsManager.PRELOAD_FLOW;
         return statisticsInfoBean;
-
     }
 
     public void submitFileStatisticsInfo(StatisticsInfoBean.FileInfoBean fileInfoBean , int downLoadStage) {
@@ -94,9 +154,8 @@ public final class VenvyStatisticsManager {
         fileInfoBeanList.add(fileInfoBean);
         statisticsInfoBean.fileInfoBeans = fileInfoBeanList;
         statisticsInfoBean.downLoadStage = downLoadStage;
-        if(statisticsInfoBean != null){
-            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,statisticsInfoBean));
-        }
+        statisticsInfoBean.type = VenvyStatisticsManager.PRELOAD_FLOW;
+        executeThread(statisticsInfoBean);
     }
 
     public void submitFileStatisticsInfo(DownloadTask downloadTask ,int downLoadStage) {
@@ -106,9 +165,7 @@ public final class VenvyStatisticsManager {
         List<DownloadTask> downloadTaskList = new ArrayList<>();
         downloadTaskList.add(downloadTask);
         StatisticsInfoBean statisticsInfoBean = convertDownloadTaskList2StatisticsInfoBean(downloadTaskList, downLoadStage);
-        if(statisticsInfoBean != null){
-            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,statisticsInfoBean));
-        }
+        executeThread(statisticsInfoBean);
     }
 
     private StatisticsInfoBean convertDownloadTaskList2StatisticsInfoBean(List<DownloadTask> downloadTaskList, int downLoadStage) {
@@ -141,6 +198,7 @@ public final class VenvyStatisticsManager {
         }
         statisticsInfoBean.downLoadStage = downLoadStage;
         statisticsInfoBean.fileInfoBeans = fileInfoBeans;
+        statisticsInfoBean.type = VenvyStatisticsManager.PRELOAD_FLOW;
         return statisticsInfoBean;
     }
 }

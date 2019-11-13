@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
@@ -23,8 +24,7 @@ import cn.com.venvy.common.utils.VenvyAesUtil;
  * Created by videopls on 2019/8/22.
  */
 public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
-    private static final String SERVICE_STATISTICS_URL = Config.HOST_VIDEO_OS + "/statisticFlow";
-
+    private static final String SERVICE_STATISTICS_URL = Config.HOST_VIDEO_OS + "/commonStats";
     private StatisticsInfoBean statisticsInfoBean;
     private VideoPlusStatisticsCallback videoPlusStatisticsCallback;
     public VideoPlusStatisticsModel(@NonNull Platform platform,StatisticsInfoBean statisticsInfoBean,VideoPlusStatisticsCallback videoPlusStatisticsCallback) {
@@ -47,26 +47,88 @@ public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
     }
 
     private Map<String, String> createBody() {
-        Map<String, String> paramMap = createParamMap();
         Map<String, String> bodyMap = new HashMap<>();
-        bodyMap.put("data", VenvyAesUtil.encrypt(getPlatform().getPlatformInfo().getAppSecret(), getPlatform().getPlatformInfo().getAppSecret(), new JSONObject(paramMap).toString()));
+        try{
+            JSONObject encryptDataObj = new JSONObject();
+            encryptDataObj.put("type", getType());
+            encryptDataObj.put("data", createParamDataJsonObj());
+            encryptDataObj.put("commonParam", createCommonParamJsonObj());
+
+            bodyMap.put("data", VenvyAesUtil.encrypt(getPlatform().getPlatformInfo().getAppSecret(), getPlatform().getPlatformInfo().getAppSecret(), encryptDataObj.toString()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return bodyMap;
     }
 
-    private Map<String,String> createParamMap() {
-        String commonParamJson = createCommonParamJson();
-        String fileInfoJson = createFileInfoJson();
-        int downLoadStage = getDownLoadStage();
+    private JSONObject createParamDataJsonObj() throws JSONException {
+        JSONObject paramData = null;
+        switch (getType()) {
+            case VenvyStatisticsManager.AB_APPLET_TRACK:
+                paramData = abAppletTrackStatistics();
+                break;
+            case VenvyStatisticsManager.USER_ACTION:
 
-        Map<String, String> paramMap = new HashMap<>();
-        paramMap.put("fileInfo", fileInfoJson);
-        paramMap.put("commonParam", commonParamJson);
-        paramMap.put("downLoadStage", downLoadStage + "");
+                break;
+            case VenvyStatisticsManager.VISUAL_SWITCH_COUNT:
+                paramData = visualSwitchCountStatistic();
+                break;
+            case VenvyStatisticsManager.PLAY_CONFIRM:
 
-        return paramMap;
+                break;
+            case VenvyStatisticsManager.PRELOAD_FLOW:
+                paramData = preLoadFlowStatistic();
+                break;
+        }
+        return paramData;
     }
 
-    public int getDownLoadStage() {
+    private JSONObject abAppletTrackStatistics() throws JSONException {
+        JSONObject dataObj = new JSONObject();
+        dataObj.put("originMiniAppId", statisticsInfoBean.originMiniAppId);
+        dataObj.put("miniAppId", statisticsInfoBean.miniAppId);
+        return dataObj;
+    }
+
+    private JSONObject visualSwitchCountStatistic() throws JSONException {
+        JSONObject dataObj = new JSONObject();
+        dataObj.put("onOrOff", getOnOrOff());
+        return dataObj;
+    }
+
+    private JSONObject preLoadFlowStatistic() throws JSONException {
+        JSONObject dataObj = new JSONObject();
+        dataObj.put("downLoadStage", getDownLoadStage());
+        dataObj.put("videoId", getVideoId());
+        dataObj.put("fileInfo", getFileInfoJson());
+        return dataObj;
+    }
+
+    private String getOnOrOff() {
+        String onOrOff = "0";
+        if(statisticsInfoBean != null){
+            onOrOff = statisticsInfoBean.onOrOff;
+        }
+        return onOrOff;
+    }
+
+    private String getVideoId() {
+        String videoId = "";
+        if(statisticsInfoBean != null){
+            videoId = statisticsInfoBean.videoId;
+        }
+        return videoId;
+    }
+
+    private int getType() {
+        int type = 0;
+        if(statisticsInfoBean != null){
+            type = statisticsInfoBean.type;
+        }
+        return type;
+    }
+
+    private int getDownLoadStage() {
         int downLoadStage = 0;
         if(statisticsInfoBean != null){
             downLoadStage = statisticsInfoBean.downLoadStage;
@@ -74,27 +136,23 @@ public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
         return downLoadStage;
     }
 
-    private String createFileInfoJson() {
+    private JSONArray getFileInfoJson() throws JSONException {
         JSONArray jsonArray = new JSONArray();
         JSONObject tmpObj = null;
-        try {
-            if(statisticsInfoBean != null && statisticsInfoBean.fileInfoBeans.size() > 0){
-                for(int i = 0; i < statisticsInfoBean.fileInfoBeans.size(); i++){
-                    tmpObj = new JSONObject();
-                    tmpObj.put("fileName" , statisticsInfoBean.fileInfoBeans.get(i).fileName);
-                    tmpObj.put("filePath", statisticsInfoBean.fileInfoBeans.get(i).filePath);
-                    tmpObj.put("fileSize", statisticsInfoBean.fileInfoBeans.get(i).fileSize);
-                    jsonArray.put(tmpObj);
-                    tmpObj = null;
-                }
+        if(statisticsInfoBean != null && statisticsInfoBean.fileInfoBeans.size() > 0){
+            for(int i = 0; i < statisticsInfoBean.fileInfoBeans.size(); i++){
+                tmpObj = new JSONObject();
+                tmpObj.put("fileName" , statisticsInfoBean.fileInfoBeans.get(i).fileName);
+                tmpObj.put("filePath", statisticsInfoBean.fileInfoBeans.get(i).filePath);
+                tmpObj.put("fileSize", statisticsInfoBean.fileInfoBeans.get(i).fileSize);
+                jsonArray.put(tmpObj);
+                tmpObj = null;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return jsonArray.toString();
+        return jsonArray;
     }
 
-    private String createCommonParamJson() {
+    private JSONObject createCommonParamJsonObj() throws JSONException {
         String commonParamJson = "";
         try {
             Class<?> clazz = Class.forName("cn.com.venvy.lua.plugin.LVCommonParamPlugin");
@@ -103,7 +161,7 @@ public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return commonParamJson;
+        return new JSONObject(commonParamJson);
     }
 
     @Override

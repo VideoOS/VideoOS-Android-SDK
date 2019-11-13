@@ -34,7 +34,7 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
     private static final String SERVICE_QUERYALL_ADS_URL = Config.HOST_VIDEO_OS
-            + "/api/v2/queryAllAds";
+            + "/api/queryAllAds";
     private ServiceQueryAdsCallback mQueryAdsCallback;
     private PreloadLuaUpdate mDownLuaUpdate;
     private Map<String, String> mQueryAdsParams;
