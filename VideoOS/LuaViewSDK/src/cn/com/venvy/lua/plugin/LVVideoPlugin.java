@@ -345,10 +345,10 @@ public class LVVideoPlugin {
 
         @Override
         public LuaValue invoke(Varargs args) {
-            if (platform.getMediaControlListener() != null) {
+            if (platform.getMediaControlListener() != null && !TextUtils.isEmpty(platform.getMediaControlListener().getVideoEpisode())) {
                 return LuaValue.valueOf(platform.getMediaControlListener().getVideoEpisode());
             }
-            return LuaValue.NIL;
+            return LuaValue.valueOf("");
         }
     }
 
@@ -364,10 +364,10 @@ public class LVVideoPlugin {
 
         @Override
         public LuaValue invoke(Varargs args) {
-            if (platform.getMediaControlListener() != null) {
+            if (platform.getMediaControlListener() != null && !TextUtils.isEmpty(platform.getMediaControlListener().getVideoTitle())) {
                 return LuaValue.valueOf(platform.getMediaControlListener().getVideoTitle());
             }
-            return LuaValue.NIL;
+            return LuaValue.valueOf("");
         }
     }
 
