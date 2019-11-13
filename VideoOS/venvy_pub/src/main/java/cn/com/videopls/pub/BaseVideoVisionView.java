@@ -20,7 +20,7 @@ import cn.com.venvy.common.utils.VenvyResourceUtil;
  */
 public class BaseVideoVisionView extends FrameLayout {
 
-
+    protected View root;
     protected View retryContent;
     protected View loadingContent;
     protected View errorContent;
@@ -63,6 +63,9 @@ public class BaseVideoVisionView extends FrameLayout {
         inflate(getContext(), VenvyResourceUtil.getLayoutId(getContext(),
                 "video_base_vision"), this);
         rlTitleBar = findViewById(VenvyResourceUtil.getId(getContext(), "rlTitleBar"));
+
+        root = findViewById(
+                VenvyResourceUtil.getId(getContext(), "root"));
         loadingContent = findViewById(
                 VenvyResourceUtil.getId(getContext(), "loadingContent"));
         retryContent = findViewById(

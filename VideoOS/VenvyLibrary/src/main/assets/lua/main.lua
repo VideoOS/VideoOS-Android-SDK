@@ -61,14 +61,34 @@ local function hotspotPriority(data)
     return tonumber(dataTable.priority)
 end
 
+local function hotspotLevel(data)
+    if (data == nil) then
+        return nil
+    end
+    local dataTable = data.data
+    if (dataTable == nil) then
+        return nil
+    end
+    if (dataTable.level == nil) then
+        return nil
+    end
+    return tonumber(dataTable.level)
+end
+
 local function sendActionWedge(data) --跳转中插处理
     if (data == nil) then
         return
     end
     local repeatTimes = wedgeRepeatTimes(data)
     local priority = hotspotPriority(data)
+    local level = hotspotLevel(data)
+    print("levellevellevel",level)
     if (repeatTimes == -1) then
-        Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. data.template .. "&id=" .. data.id .. "&priority=" .. tostring(priority)), data)
+        if (level == osTopLevel) then
+            Native:sendAction(Native:base64Encode("LuaView://topLuaView?template=" .. data.template .. "&id=" .. data.id .. "&priority=" .. tostring(priority)), data)
+        else
+            Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. data.template .. "&id=" .. data.id .. "&priority=" .. tostring(priority)), data)
+        end
         print("=response==跳转=" .. tostring(data.template) .. "==id==" .. tostring(data.id) .. "==key=" .. tostring(key))
         return
     end
@@ -87,7 +107,13 @@ local function sendActionWedge(data) --跳转中插处理
     end
     playWedgeCount = playWedgeCount + 1
     dataTable.playWedgeCount = playWedgeCount
-    Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. data.template .. "&id=" .. data.id .. "&priority=" .. tostring(priority)), data)
+
+    if (level == osTopLevel) then
+        Native:sendAction(Native:base64Encode("LuaView://topLuaView?template=" .. data.template .. "&id=" .. data.id .. "&priority=" .. tostring(priority)), data)
+    else
+        Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. data.template .. "&id=" .. data.id .. "&priority=" .. tostring(priority)), data)
+    end
+    
     print("=response==跳转=" .. tostring(data.template) .. "==id==" .. tostring(data.id) .. "==key=" .. tostring(key))
 end
 

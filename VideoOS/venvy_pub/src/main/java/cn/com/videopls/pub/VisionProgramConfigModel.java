@@ -36,6 +36,7 @@ import static cn.com.venvy.PreloadLuaUpdate.LUA_CACHE_PATH;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_H5_URL;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NVG_SHOW;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_TITLE;
 
 /**
@@ -151,7 +152,8 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
                     if (displayObj != null) {
                         final String nativeTitle = displayObj.optString("navTitle");
-                        updateVisionTitle(nativeTitle);
+                        final boolean nvgShow = displayObj.optBoolean("navShow",true);
+                        updateVisionTitle(nativeTitle,nvgShow);
                     }
 
 
@@ -226,10 +228,11 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
         };
     }
 
-    private void updateVisionTitle(String title) {
+    private void updateVisionTitle(String title,boolean nvgShow) {
         if (TextUtils.isEmpty(title)) return;
         Bundle bundle = new Bundle();
         bundle.putString(CONSTANT_TITLE, title);
+        bundle.putBoolean(CONSTANT_NVG_SHOW, nvgShow);
         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, bundle);
     }
 

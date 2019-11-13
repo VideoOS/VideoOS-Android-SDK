@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#3C4049"
     >
 
@@ -42,7 +44,6 @@
         android:id="@+id/loadingContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="44dp"
         android:clickable="true"
         android:focusable="true"
         android:background="@color/color5"
@@ -87,7 +88,6 @@
         android:id="@+id/errorContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="44dp"
         android:background="@color/color5"
         android:clickable="true"
         android:focusable="true">
@@ -127,7 +127,6 @@
         android:id="@+id/disConnectWifiContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="44dp"
         android:background="@color/color5"
         android:visibility="gone">
 
@@ -163,4 +162,4 @@
                 android:textColor="@color/color3" />
         </LinearLayout>
     </RelativeLayout>
-</FrameLayout>
+</LinearLayout>

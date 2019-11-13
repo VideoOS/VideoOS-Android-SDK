@@ -119,8 +119,9 @@ public class VideoPlusViewHelper implements VenvyObserver {
                     @Override
                     public void run() {
                         String title = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TITLE);
+                        boolean nvgShow = bundle.getBoolean(VenvyObservableTarget.Constant.CONSTANT_NVG_SHOW);
                         if (videoPlusView != null) {
-                            videoPlusView.setCurrentVisionProgramTitle(title);
+                            videoPlusView.setCurrentVisionProgramTitle(title,nvgShow);
                         }
                     }
                 });

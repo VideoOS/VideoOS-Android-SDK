@@ -24,15 +24,15 @@ import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode;
 public abstract class VideoPlusView<T extends VideoPlusController> extends FrameLayout {
 
 
-    // 顶层小程序容器
+    // 顶层小程序容器 4
     protected VideoProgramView programTopLevel;
-    // A 类小程序
+    // A 类小程序 0，1
     protected VideoProgramView programViewA;
 
-    // B 类小程序
+    // B 类小程序 2
     protected VideoProgramTypeBView programViewB;
 
-    // 桌面小程序
+    // 桌面小程序 3
     protected VideoProgramView programViewDesktop;
 
     private VideoPlusViewHelper plusViewHelper;
@@ -132,9 +132,9 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     }
 
-    public void setCurrentVisionProgramTitle(String title) {
+    public void setCurrentVisionProgramTitle(String title, boolean nvgShow) {
         if (programViewB != null) {
-            programViewB.setCurrentProgramTitle(title);
+            programViewB.setCurrentProgramTitle(title, nvgShow);
         }
     }
 
@@ -250,7 +250,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         // 桌面存在则不需要重复加载桌面
         if (programViewDesktop != null) return;
 
-        programViewDesktop = createDesktopProgram();
+        programViewDesktop = createDesktopProgram(); // 3
         if (adapter != null) {
             programViewDesktop.setVideoOSAdapter(adapter);
         }
@@ -279,6 +279,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         switch (serviceType) {
             case ServiceTypeFrontVideo:
             case ServiceTypeLaterVideo:
+            case ServiceTypePauseAd:// 前后贴，暂停贴处于顶层视图
                 if (programTopLevel != null) {
                     programTopLevel.startService(serviceType, params, callback);
                 }
@@ -307,8 +308,20 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
     public void stopService(ServiceType serviceType) {
-        if (programViewA != null) {
-            programViewA.stopService(serviceType);
+
+        switch (serviceType) {
+            case ServiceTypeFrontVideo:
+            case ServiceTypeLaterVideo:
+            case ServiceTypePauseAd:// 前后贴，暂停贴处于顶层视图
+                if (programTopLevel != null) {
+                    programTopLevel.stopService(serviceType);
+                }
+                break;
+            default:
+                if (programViewA != null) {
+                    programViewA.stopService(serviceType);
+                }
+                break;
         }
 
         if (serviceType == ServiceTypeVideoMode) {

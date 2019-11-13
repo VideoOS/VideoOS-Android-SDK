@@ -26,6 +26,7 @@ import cn.com.venvy.VideoCopyLuaAssetsHelper;
 import cn.com.venvy.common.debug.DebugHelper;
 import cn.com.venvy.common.interf.ActionType;
 import cn.com.venvy.common.interf.EventType;
+import cn.com.venvy.common.interf.IAppletListener;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.interf.ServiceType;
@@ -60,6 +61,8 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     protected Platform mPlatform;
 
+    protected IAppletListener mAppletListener;
+
     protected HashSet<ServiceQueryAdsInfo> mQueryAdsArray = new HashSet<>();
 
     private Context mContext;
@@ -82,6 +85,10 @@ public abstract class VideoPlusController implements VenvyObserver {
         VenvyRegisterLibsManager.registerImageViewLib(videoOSAdapter.buildImageView());
         VenvyRegisterLibsManager.registerSvgaImageView(videoOSAdapter.buildSvgaImageView());
         VenvyRegisterLibsManager.registerSocketConnect(videoOSAdapter.buildSocketConnect());
+    }
+
+    public void setAppletListener(IAppletListener appletListener) {
+        this.mAppletListener = appletListener;
     }
 
     public void start() {
@@ -305,6 +312,9 @@ public abstract class VideoPlusController implements VenvyObserver {
         platform.setPlatformLoginInterface(videoOSAdapter.buildLoginInterface());
         platform.setTagKeyListener(videoOSAdapter.buildOttKeyListener());
         platform.setWedgeListener(videoOSAdapter.buildWedgeListener());
+        if (mAppletListener != null) {
+            platform.setAppletListener(mAppletListener);
+        }
         platform.setWidgetPrepareShowListener(videoOSAdapter.buildWidgetPrepareShowListener());
         platform.setContentViewGroup(mContentView);
         return platform;
@@ -443,7 +453,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                 });
                 break;
             default:
-                if(mPlatform == null){
+                if (mPlatform == null) {
                     mPlatform = initPlatform(mVideoPlusAdapter);
                 }
                 mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params,
@@ -615,9 +625,10 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     /**
      * 更新最近使用记录
+     *
      * @param appId
      */
-    public void refreshRecentHistory(String appId){
+    public void refreshRecentHistory(String appId) {
         if (!VenvyAPIUtil.isSupport(16)) {
             Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
             return;
@@ -627,6 +638,6 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-        new VideoRecentlyModel(mPlatform,appId).startRequest();
+        new VideoRecentlyModel(mPlatform, appId).startRequest();
     }
 }

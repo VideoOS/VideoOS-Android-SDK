@@ -281,13 +281,13 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     }
 
 
-    public void setCurrentProgramTitle(String title) {
+    public void setCurrentProgramTitle(String title,boolean nvgShow) {
         if (currentProgram != null) {
-            currentProgram.setTitle(title);
+            currentProgram.setTitle(title,nvgShow);
         }
 
         if(currentH5Program != null){
-            currentH5Program.setTitle(title);
+            currentH5Program.setTitle(title,nvgShow);
         }
     }
 

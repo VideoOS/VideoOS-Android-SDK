@@ -47,6 +47,7 @@ public class VenvyObservableTarget {
         public static final String CONSTANT_MSG = "msg";
         public static final String CONSTANT_NEED_RETRY = "needRetry";
         public static final String CONSTANT_TITLE = "title";
+        public static final String CONSTANT_NVG_SHOW = "navIsShow";
         public static final String CONSTANT_APP_TYPE = "appType";
         public static final int CONSTANT_APP_TYPE_LUA = 1;
         public static final int CONSTANT_APP_TYPE_H5 = 2;

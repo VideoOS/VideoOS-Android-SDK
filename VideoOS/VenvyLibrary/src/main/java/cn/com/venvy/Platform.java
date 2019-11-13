@@ -7,7 +7,6 @@ import org.json.JSONArray;
 
 import java.io.File;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import cn.com.venvy.common.download.DownloadImageTaskRunner;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.interf.IAppletListener;
 import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.interf.IWidgetClickListener;
@@ -49,6 +49,7 @@ public class Platform implements Serializable {
     private IWidgetPrepareShowListener mPrepareShowListener;
     private OnTagKeyListener mTagKeyListener;
     private ViewGroup mContentViewGroup;
+    private IAppletListener mAppletListener;
 
     private static final String PRE_LOAD_IMAGE = "pre_load_images";
     private static final String PRE_LOAD_MEDIA = "pre_load_medias";
@@ -108,6 +109,14 @@ public class Platform implements Serializable {
         this.mTagKeyListener = mTagKeyListener;
     }
 
+
+    public void setAppletListener(IAppletListener AppletListener) {
+        this.mAppletListener = mAppletListener;
+    }
+
+    public IAppletListener getAppletListener() {
+        return mAppletListener;
+    }
 
     public OnTagKeyListener getTagKeyListener() {
         return mTagKeyListener;
@@ -179,7 +188,7 @@ public class Platform implements Serializable {
         mDownloadImageTaskRunner.startTasks(arrayList, new TaskListener<DownloadImageTask, Boolean>() {
             @Override
             public boolean isFinishing() {
-                if(taskListener != null){
+                if (taskListener != null) {
                     return taskListener.isFinishing();
                 }
                 return false;
@@ -187,35 +196,35 @@ public class Platform implements Serializable {
 
             @Override
             public void onTaskStart(DownloadImageTask downloadImageTask) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskStart(downloadImageTask);
                 }
             }
 
             @Override
             public void onTaskProgress(DownloadImageTask downloadImageTask, int progress) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskProgress(downloadImageTask, progress);
                 }
             }
 
             @Override
             public void onTaskFailed(DownloadImageTask downloadImageTask, @Nullable Throwable throwable) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskFailed(downloadImageTask, throwable);
                 }
             }
 
             @Override
             public void onTaskSuccess(DownloadImageTask downloadImageTask, Boolean aBoolean) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskSuccess(downloadImageTask, aBoolean);
                 }
             }
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadImageTask> successfulTasks, @Nullable List<DownloadImageTask> failedTasks) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTasksComplete(successfulTasks, failedTasks);
                 }
             }
@@ -238,7 +247,7 @@ public class Platform implements Serializable {
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
             @Override
             public boolean isFinishing() {
-                if(taskListener != null){
+                if (taskListener != null) {
                     return taskListener.isFinishing();
                 }
                 return false;
@@ -246,45 +255,45 @@ public class Platform implements Serializable {
 
             @Override
             public void onTaskStart(DownloadTask downloadTask) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskStart(downloadTask);
                 }
             }
 
             @Override
             public void onTaskProgress(DownloadTask downloadTask, int progress) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskProgress(downloadTask, progress);
                 }
             }
 
             @Override
             public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskFailed(downloadTask, throwable);
-                }else {
+                } else {
                     downloadTask.failed();
                 }
             }
 
             @Override
             public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskSuccess(downloadTask, aBoolean);
                 }
             }
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
-                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
-                if(taskListener != null){
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks, Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
+                if (taskListener != null) {
                     taskListener.onTasksComplete(successfulTasks, failedTasks);
                 }
             }
         });
     }
 
-    public void preloadLuaList(final Platform platform, final JSONArray luas,final PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
+    public void preloadLuaList(final Platform platform, final JSONArray luas, final PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
         if (luas == null || luas.length() <= 0) {
             return;
         }

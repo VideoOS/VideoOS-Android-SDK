@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.taobao.luaview.util.DimenUtil;
 import com.taobao.luaview.util.LuaUtil;
 
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
@@ -12,9 +13,11 @@ import org.luaj.vm2.lib.VarArgFunction;
 import cn.com.venvy.App;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
+import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.common.bean.VideoFrameSize;
 import cn.com.venvy.common.bean.VideoPlayerSize;
 import cn.com.venvy.common.debug.DebugStatus;
+import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
@@ -43,6 +46,9 @@ public class LVVideoPlugin {
         venvyLVLibBinder.set("getConfigExtendJSONString", new GetExtendJSONString(platform));
         venvyLVLibBinder.set("osType", new OsType(platform));
         venvyLVLibBinder.set("isPhone", new IsPhone());
+        venvyLVLibBinder.set("getVideoEpisode", new GetVideoEpisode(platform)); // 获取剧集名称
+        venvyLVLibBinder.set("getVideoTitle", new GetVideoTitle(platform)); // 获取视频标题
+        venvyLVLibBinder.set("getVideoInfo", new GetVideoInfo(platform)); // 获取剧集名称
 
     }
 
@@ -315,7 +321,7 @@ public class LVVideoPlugin {
 
     /**
      * 判断是否是手机设备
-     *
+     * <p>
      * 支持sim card 且 屏幕尺寸小于20则认为是手机设备
      */
     private static class IsPhone extends VarArgFunction {
@@ -324,6 +330,83 @@ public class LVVideoPlugin {
             boolean isPhone = VenvyDeviceUtil.isSupportSimCard(App.getContext()) && VenvyDeviceUtil.getScreenDimension(App.getContext()) < 20.0;
 
             return LuaValue.valueOf(isPhone);
+        }
+    }
+
+    /**
+     * 获取剧集名称
+     */
+    private static class GetVideoEpisode extends VarArgFunction {
+        private Platform platform;
+
+        public GetVideoEpisode(Platform platform) {
+            this.platform = platform;
+        }
+
+        @Override
+        public LuaValue invoke(Varargs args) {
+            if (platform.getMediaControlListener() != null) {
+                return LuaValue.valueOf(platform.getMediaControlListener().getVideoEpisode());
+            }
+            return LuaValue.NIL;
+        }
+    }
+
+    /**
+     * 获取视频标题
+     */
+    private static class GetVideoTitle extends VarArgFunction {
+        private Platform platform;
+
+        public GetVideoTitle(Platform platform) {
+            this.platform = platform;
+        }
+
+        @Override
+        public LuaValue invoke(Varargs args) {
+            if (platform.getMediaControlListener() != null) {
+                return LuaValue.valueOf(platform.getMediaControlListener().getVideoTitle());
+            }
+            return LuaValue.NIL;
+        }
+    }
+
+    /**
+     * 获取视频信息
+     */
+    private static class GetVideoInfo extends VarArgFunction {
+        private Platform platform;
+
+        public GetVideoInfo(Platform platform) {
+            this.platform = platform;
+        }
+
+        @Override
+        public Varargs invoke(Varargs args) {
+            LuaTable table = LuaValue.tableOf();
+            PlatformInfo platformInfo = platform.getPlatformInfo();
+            if (!TextUtils.isEmpty(platformInfo.getVideoId())) {
+                table.set("videoId", platformInfo.getVideoId());
+            }
+            IMediaControlListener mediaControlListener = platform.getMediaControlListener();
+            if (mediaControlListener != null) {
+                if (!TextUtils.isEmpty(mediaControlListener.getVideoEpisode())) {
+                    table.set("episode", mediaControlListener.getVideoEpisode());
+                }
+                if (!TextUtils.isEmpty(mediaControlListener.getVideoTitle())) {
+                    table.set("title", mediaControlListener.getVideoTitle());
+                }
+            }
+            if (!TextUtils.isEmpty(platformInfo.getThirdPlatformId())) {
+                table.set("platformId", platformInfo.getThirdPlatformId());
+            }
+            if (!TextUtils.isEmpty(platformInfo.getVideoCategory())) {
+                table.set("category", platformInfo.getVideoCategory());
+            }
+            if (!TextUtils.isEmpty(platformInfo.getExtendJSONString())) {
+                table.set("extendJSONString", platformInfo.getExtendJSONString());
+            }
+            return table;
         }
     }
 

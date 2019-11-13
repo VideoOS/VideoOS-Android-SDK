@@ -229,7 +229,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         addView(webView);
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(final String title,boolean nvgShow) {
         tvTitle.setText(title);
         if (jsBridge != null) {
             jsBridge.setJsTitle(title);

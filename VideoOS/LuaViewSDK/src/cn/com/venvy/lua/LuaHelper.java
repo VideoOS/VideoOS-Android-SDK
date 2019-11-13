@@ -11,6 +11,7 @@ import com.taobao.luaview.global.LuaViewConfig;
 import cn.com.venvy.Platform;
 import cn.com.venvy.lua.binder.UIGradientViewBinder;
 import cn.com.venvy.lua.binder.VenvyActivityLifeCycleBinder;
+import cn.com.venvy.lua.binder.VenvyAppletBinder;
 import cn.com.venvy.lua.binder.VenvyHttpRequestBinder;
 import cn.com.venvy.lua.binder.VenvyKeyboardBinder;
 import cn.com.venvy.lua.binder.VenvyMediaLifeCycleBinder;
@@ -37,6 +38,7 @@ public class LuaHelper {
     private static VenvyActivityLifeCycleBinder venvyActivityLifeCycleBinder;
     private static VenvyKeyboardBinder venvyKeyboardBinder;
     private static VenvyNativeBinder venvyNativeBinder;
+    private static VenvyAppletBinder venvyAppletBinder;
     private static VenvySvgaBinder venvySvgaBinder;
     private static LVHttpBridge lvHttpBridge;
     private static VenvyMediaViewBinder mediaViewBinder;
@@ -74,6 +76,7 @@ public class LuaHelper {
         luaView.registerLibs(getUiGradientViewBinder(),
                 getMediaLifeCycleBinder(platform),
                 getMqttBinder(),
+                getAppletBinder(platform),
                 getSvgaBinder(),
                 getWebViewBinder(),
                 getActivityLifeCycleBinder(),
@@ -120,6 +123,12 @@ public class LuaHelper {
         return venvyMqttBinder == null ? venvyMqttBinder = new VenvyMqttBinder() : venvyMqttBinder;
     }
 
+    private static VenvyAppletBinder getAppletBinder(Platform platform) {
+        VenvyAppletBinder appletBinder = venvyAppletBinder == null ? venvyAppletBinder = new VenvyAppletBinder() : venvyAppletBinder;
+        appletBinder.setPlatform(platform);
+        return appletBinder;
+    }
+
     private static VenvyNativeBinder getNativeBinder(Platform platform, ViewGroup viewGroup) {
         VenvyNativeBinder target = venvyNativeBinder == null ? venvyNativeBinder = new VenvyNativeBinder() : venvyNativeBinder;
         target.setPlatform(platform);
@@ -145,6 +154,7 @@ public class LuaHelper {
         venvyWebViewBinder = null;
         venvyMediaLifeCycleBinder = null;
         venvyMqttBinder = null;
+        venvyAppletBinder = null;
         venvyActivityLifeCycleBinder = null;
         venvyKeyboardBinder = null;
         venvyNativeBinder = null;
