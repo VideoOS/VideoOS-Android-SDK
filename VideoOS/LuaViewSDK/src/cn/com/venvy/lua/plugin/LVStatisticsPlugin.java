@@ -39,7 +39,7 @@ public class LVStatisticsPlugin {
             }
             JSONObject dataObj = new JSONObject(miniAppMap);
             if(dataObj != null){
-                VenvyStatisticsManager.getInstance().submitCommonTrack(type,dataObj.toString());
+                VenvyStatisticsManager.getInstance().submitCommonTrack(type,dataObj);
             }
             return LuaValue.NIL;
         }

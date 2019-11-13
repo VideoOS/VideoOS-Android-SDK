@@ -7,15 +7,6 @@ import java.util.List;
  */
 
 public class StatisticsInfoBean {
-    public int type;
-
-    //AB小程序跟踪统计
-    public String originMiniAppId;
-    public String miniAppId;
-
-    //视联网开关次数统计
-    public String onOrOff;
-
     //预加载流量统计
     public String videoId;
     public int downLoadStage;

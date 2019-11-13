@@ -2,6 +2,7 @@ package cn.com.venvy.common.statistics;
 
 import android.text.TextUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +19,7 @@ import cn.com.venvy.common.download.DownloadTask;
  */
 
 public final class VenvyStatisticsManager {
+
     public static final int AB_APPLET_TRACK = 1;
     public static final int USER_ACTION = 2;
     public static final int VISUAL_SWITCH_COUNT = 3;
@@ -41,47 +43,62 @@ public final class VenvyStatisticsManager {
         this.platform = platform;
     }
 
-    public void submitCommonTrack(int type, String dataJson) {
-        if(TextUtils.isEmpty(dataJson)){
+    public void submitCommonTrack(int type, JSONObject jsonObj) {
+        if(jsonObj == null){
             return;
         }
         if (VenvyStatisticsManager.AB_APPLET_TRACK == type) {
-            submitABAppletTrackStatisticsInfo(dataJson);
+            submitABAppletTrackStatisticsInfo(jsonObj);
         } else if (VenvyStatisticsManager.USER_ACTION == type) {
-
+            submitUserActionStatisticsInfo(jsonObj);
         }else if (VenvyStatisticsManager.VISUAL_SWITCH_COUNT == type) {
-
+            submitVisualSwitchStatisticsInfo(jsonObj);
         }else if (VenvyStatisticsManager.PLAY_CONFIRM == type) {
-
+            submitPlayConfirmStatisticsInfo(jsonObj);
         }else if (VenvyStatisticsManager.PRELOAD_FLOW == type) {
-
+            //TODO ...
         }
     }
 
-    private void submitABAppletTrackStatisticsInfo(String dataJson) {
+    private void submitPlayConfirmStatisticsInfo(JSONObject jsonObj){
         try {
-            JSONObject dataObj = new JSONObject(dataJson);
-            if(dataObj == null){
-                return;
-            }
-            String originMiniAppId = dataObj.optString("originMiniAppId");
-            String miniAppId = dataObj.optString("miniAppId");
-            if(TextUtils.isEmpty(originMiniAppId) || TextUtils.isEmpty(miniAppId)){
-                return;
-            }
-            StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
-            statisticsInfoBean.type = VenvyStatisticsManager.AB_APPLET_TRACK;
-            statisticsInfoBean.originMiniAppId = originMiniAppId;
-            statisticsInfoBean.miniAppId = miniAppId;
-            executeThread(statisticsInfoBean);
+            String dataJson = StatisticDCUtils.obtainPlayConfirmStatisticsJson(VenvyStatisticsManager.VISUAL_SWITCH_COUNT, jsonObj);
+            executeThread(dataJson);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private void executeThread(StatisticsInfoBean statisticsInfoBean) {
-        if(statisticsInfoBean != null && platform != null){
-            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,statisticsInfoBean));
+    private void submitVisualSwitchStatisticsInfo(JSONObject jsonObj){
+        try {
+            String dataJson = StatisticDCUtils.obtainVisualSwitchStatisticsJson(VenvyStatisticsManager.VISUAL_SWITCH_COUNT, jsonObj);
+            executeThread(dataJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void submitUserActionStatisticsInfo(JSONObject jsonObj) {
+        try {
+            String dataJson = StatisticDCUtils.obtainUserActionStatisticsJson(VenvyStatisticsManager.USER_ACTION, jsonObj);
+            executeThread(dataJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void submitABAppletTrackStatisticsInfo(JSONObject jsonObj) {
+        try {
+            String dataJson = StatisticDCUtils.obtainABAppletTrackStatisticsJson(VenvyStatisticsManager.AB_APPLET_TRACK, jsonObj);
+            executeThread(dataJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void executeThread(String dataJson) {
+        if(!TextUtils.isEmpty(dataJson) && platform != null){
+            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,dataJson));
         }
     }
 
@@ -89,116 +106,35 @@ public final class VenvyStatisticsManager {
         if(TextUtils.isEmpty(onOrOff) || platform == null){
             return;
         }
-        StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
-        statisticsInfoBean.type = VenvyStatisticsManager.VISUAL_SWITCH_COUNT;
-        statisticsInfoBean.onOrOff = onOrOff;
-
-        executeThread(statisticsInfoBean);
+        try {
+            String dataJson = StatisticDCUtils.obtainVisualSwitchStatisticsJson(VenvyStatisticsManager.VISUAL_SWITCH_COUNT, onOrOff);
+            executeThread(dataJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void submitFileStatisticsInfo(List<DownloadTask> downloadTaskList ,int downLoadStage) {
         if(downloadTaskList == null || downloadTaskList.size() <= 0 || platform == null){
             return;
         }
-        StatisticsInfoBean statisticsInfoBean = convertDownloadTaskList2StatisticsInfoBean(downloadTaskList, downLoadStage);
-        executeThread(statisticsInfoBean);
-    }
-
-    public void submitImageStatisticsInfo(List<DownloadImageTask> downloadTaskList , int downLoadStage) {
-        if(downloadTaskList == null || downloadTaskList.size() <= 0 || platform == null){
-            return;
+        try {
+            String  dataJson = StatisticDCUtils.obtainFlowStatisticJson(VenvyStatisticsManager.PRELOAD_FLOW,downloadTaskList,downLoadStage);
+            executeThread(dataJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        StatisticsInfoBean statisticsInfoBean = convertDownloadImageTaskList2StatisticsInfoBean(downloadTaskList, downLoadStage);
-        executeThread(statisticsInfoBean);
-    }
-
-    private StatisticsInfoBean convertDownloadImageTaskList2StatisticsInfoBean(List<DownloadImageTask> downloadImageTaskList, int downLoadStage) {
-        if(downloadImageTaskList == null || downloadImageTaskList.size() <= 0){
-            return null;
-        }
-        StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
-        List<StatisticsInfoBean.FileInfoBean> fileInfoBeans = new ArrayList<>();
-        StatisticsInfoBean.FileInfoBean fileInfoBean = null;
-
-        for (DownloadImageTask task : downloadImageTaskList){
-            String imageUrl = task.getImageUrl();
-            if(imageUrl == null){
-                continue;
-            }
-            fileInfoBean = new StatisticsInfoBean.FileInfoBean();
-
-            String url = imageUrl;
-            String fileName = "";
-            if(!TextUtils.isEmpty(url.trim())){
-                fileName = url.substring(url.lastIndexOf("/")+1);
-            }
-            long downloadSize = 0;
-
-            fileInfoBean.fileName = fileName;
-            fileInfoBean.filePath = url;
-            fileInfoBean.fileSize = downloadSize;
-            fileInfoBeans.add(fileInfoBean);
-        }
-        statisticsInfoBean.downLoadStage = downLoadStage;
-        statisticsInfoBean.fileInfoBeans = fileInfoBeans;
-        statisticsInfoBean.type = VenvyStatisticsManager.PRELOAD_FLOW;
-        return statisticsInfoBean;
     }
 
     public void submitFileStatisticsInfo(StatisticsInfoBean.FileInfoBean fileInfoBean , int downLoadStage) {
         if(fileInfoBean == null || platform == null){
             return;
         }
-        StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
-        List<StatisticsInfoBean.FileInfoBean> fileInfoBeanList = new ArrayList<>();
-        fileInfoBeanList.add(fileInfoBean);
-        statisticsInfoBean.fileInfoBeans = fileInfoBeanList;
-        statisticsInfoBean.downLoadStage = downLoadStage;
-        statisticsInfoBean.type = VenvyStatisticsManager.PRELOAD_FLOW;
-        executeThread(statisticsInfoBean);
-    }
-
-    public void submitFileStatisticsInfo(DownloadTask downloadTask ,int downLoadStage) {
-        if(downloadTask == null || platform == null){
-            return;
+        try {
+            String dataJson = StatisticDCUtils.obtainFlowStatisticJson(VenvyStatisticsManager.PRELOAD_FLOW, fileInfoBean, downLoadStage);
+            executeThread(dataJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        List<DownloadTask> downloadTaskList = new ArrayList<>();
-        downloadTaskList.add(downloadTask);
-        StatisticsInfoBean statisticsInfoBean = convertDownloadTaskList2StatisticsInfoBean(downloadTaskList, downLoadStage);
-        executeThread(statisticsInfoBean);
-    }
-
-    private StatisticsInfoBean convertDownloadTaskList2StatisticsInfoBean(List<DownloadTask> downloadTaskList, int downLoadStage) {
-        if(downloadTaskList == null || downloadTaskList.size() <= 0){
-            return null;
-        }
-
-        StatisticsInfoBean statisticsInfoBean = new StatisticsInfoBean();
-        List<StatisticsInfoBean.FileInfoBean> fileInfoBeans = new ArrayList<>();
-        StatisticsInfoBean.FileInfoBean fileInfoBean = null;
-
-        for (DownloadTask task : downloadTaskList){
-            DownloadDbHelper.DownloadInfo downloadInfo = task.getmDownloadInfo();
-            if(downloadInfo == null){
-                continue;
-            }
-            fileInfoBean = new StatisticsInfoBean.FileInfoBean();
-
-            String url = downloadInfo.url;
-            String fileName = "";
-            if(!TextUtils.isEmpty(url.trim())){
-                fileName = url.substring(url.lastIndexOf("/")+1);
-            }
-            long downloadSize = downloadInfo.downloadSize;
-
-            fileInfoBean.fileName = fileName;
-            fileInfoBean.filePath = url;
-            fileInfoBean.fileSize = downloadSize;
-            fileInfoBeans.add(fileInfoBean);
-        }
-        statisticsInfoBean.downLoadStage = downLoadStage;
-        statisticsInfoBean.fileInfoBeans = fileInfoBeans;
-        statisticsInfoBean.type = VenvyStatisticsManager.PRELOAD_FLOW;
-        return statisticsInfoBean;
     }
 }
