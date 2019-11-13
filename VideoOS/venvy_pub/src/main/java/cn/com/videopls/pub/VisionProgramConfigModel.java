@@ -53,6 +53,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
     private PreloadLuaUpdate mDownLuaUpdate;
     private String miniAppId;
     private boolean isH5Type;
+    private boolean nvgShow = true;
 
     public VisionProgramConfigModel(@NonNull Platform platform, String miniAppId, boolean isH5Type, VisionProgramConfigCallback configCallback) {
         super(platform);
@@ -149,11 +150,10 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     final String template = decryptData.optString("template"); //  入口lua文件名称
                     String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
                     JSONObject displayObj = decryptData.optJSONObject("display");
-
                     if (displayObj != null) {
                         final String nativeTitle = displayObj.optString("navTitle");
-                        final boolean nvgShow = displayObj.optBoolean("navShow",true);
-                        updateVisionTitle(nativeTitle,nvgShow);
+                        nvgShow = displayObj.optBoolean("navShow", true);
+                        updateVisionTitle(nativeTitle, nvgShow);
                     }
 
 
@@ -167,7 +167,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                     }
                                     VisionProgramConfigCallback callback = getCallback();
                                     if (callback != null) {
-                                        callback.downComplete(template, isUpdateByNetWork);
+                                        callback.downComplete(template, isUpdateByNetWork, nvgShow);
                                     }
                                 }
 
@@ -192,7 +192,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                         // 开发者模式
                         VisionProgramConfigCallback callback = getCallback();
                         if (callback != null) {
-                            callback.downComplete(template, false);
+                            callback.downComplete(template, false, nvgShow);
                         }
                     } else {
                         VenvyLog.e(decryptData.optString("resMsg")); //  应答信息
@@ -228,7 +228,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
         };
     }
 
-    private void updateVisionTitle(String title,boolean nvgShow) {
+    private void updateVisionTitle(String title, boolean nvgShow) {
         if (TextUtils.isEmpty(title)) return;
         Bundle bundle = new Bundle();
         bundle.putString(CONSTANT_TITLE, title);
@@ -238,7 +238,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
 
     public interface VisionProgramConfigCallback {
-        void downComplete(String entranceLua, boolean isUpdateByNet);
+        void downComplete(String entranceLua, boolean isUpdateByNet, boolean nvgShow);
 
         void downError(Throwable t);
     }

@@ -575,12 +575,12 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.setVisibility(View.VISIBLE);
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-
         VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, isH5Type, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
             @Override
-            public void downComplete(final String entranceLua, boolean isUpdateByNet) {
+            public void downComplete(final String entranceLua, boolean isUpdateByNet, boolean nvgShow) {
                 VenvyLog.d("vision program downComplete : " + isUpdateByNet + "   - " + entranceLua);
+                mPlatform.setNvgShow(false);
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {

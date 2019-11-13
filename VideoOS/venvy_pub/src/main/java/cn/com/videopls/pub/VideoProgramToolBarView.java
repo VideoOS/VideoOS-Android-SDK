@@ -25,7 +25,6 @@ import cn.com.venvy.common.router.IRouterCallback;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
-import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
@@ -114,12 +113,9 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
 
     private void initVideoProgramView() {
         videoProgramView = new VideoProgramView(getContext());
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        layoutParams.topMargin = VenvyUIUtil.dip2px(getContext(), 44f);
-        videoProgramView.setLayoutParams(layoutParams);
-
+        videoProgramView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         videoProgramView.setAppletListener(this);
-        addView(videoProgramView);
+        root.addView(videoProgramView);
     }
 
 
@@ -154,7 +150,6 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
     }
 
     public void showExceptionLogic(String msg, boolean needRetry, String data) {
-        VenvyLog.d("showExceptionLogic : " + msg + "  " + needRetry);
         videoProgramView.setVisibility(INVISIBLE);
         if (needRetry) {
             retryContent.setVisibility(VISIBLE);
@@ -179,9 +174,7 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
 
     public void setTitle(final String title, boolean nvgShow) {
         tvTitle.setText(title);
-        if (!nvgShow) {
-
-        }
+        rlTitleBar.setVisibility(nvgShow ? VISIBLE : GONE);
     }
 
 

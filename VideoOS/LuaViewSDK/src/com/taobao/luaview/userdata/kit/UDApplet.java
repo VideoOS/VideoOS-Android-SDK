@@ -31,7 +31,7 @@ public class UDApplet extends BaseLuaTable {
 
     public UDApplet(Globals globals, LuaValue metatable, Platform platform) {
         super(globals, metatable);
-        set("appletSize", new AppletSize());// 返回视联网小程序容器size
+        set("appletSize", new AppletSize(platform));// 返回视联网小程序容器size
         set("showRetryPage", new RetryPage());// 显示重试页面
         set("showErrorPage", new ErrorPage());// 显示错误页面
         set("canGoBack", new CanGoBack(platform));// 是否能够返回上一页
@@ -40,9 +40,15 @@ public class UDApplet extends BaseLuaTable {
     }
 
     class AppletSize extends VarArgFunction {
+        private Platform platform;
+
+        public AppletSize(Platform platform) {
+            this.platform = platform;
+        }
+
         @Override
         public Varargs invoke(Varargs args) {
-            Pair<Float, Float> pair = VisionUtil.getVisionProgramSize();
+            Pair<Float, Float> pair = VisionUtil.getVisionProgramSize(platform.isNvgShow());
 
             LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(pair.first), LuaValue.valueOf(pair.second)};
             return LuaValue.varargsOf(luaValue);

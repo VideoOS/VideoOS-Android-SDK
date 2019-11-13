@@ -39,6 +39,7 @@ public class Platform implements Serializable {
     private static final long serialVersionUID = 259734984506L;
 
     private PlatformInfo mPlatformInfo;
+    private boolean nvgShow = true; // 视联网小程序是否显示导航栏
     //手动上报逻辑
     private IPlatformLoginInterface mPlatformLoginInterface;
     private IMediaControlListener mMediaControlListener;
@@ -316,5 +317,13 @@ public class Platform implements Serializable {
     public void stopBackgroundThread() {
         VenvyAsyncTaskUtil.cancel(PRE_LOAD_MEDIA);
         VenvyAsyncTaskUtil.cancel(PRE_LOAD_IMAGE);
+    }
+
+    public boolean isNvgShow() {
+        return nvgShow;
+    }
+
+    public void setNvgShow(boolean nvgShow) {
+        this.nvgShow = nvgShow;
     }
 }

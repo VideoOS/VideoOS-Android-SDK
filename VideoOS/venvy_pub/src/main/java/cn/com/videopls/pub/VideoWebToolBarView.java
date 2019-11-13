@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -102,9 +101,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
 
     private void initWebView() {
         webView = new VenvyWebView(getContext());
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        layoutParams.topMargin = VenvyUIUtil.dip2px(getContext(), 44f);
-        webView.setLayoutParams(layoutParams);
+        webView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         webView.setJsParamsCallback(new IJsParamsCallback() {
             @Override
             public void showErrorPage(final String showErrorPage) {
@@ -226,14 +223,15 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
             }
         });
 
-        addView(webView);
+        root.addView(webView);
     }
 
-    public void setTitle(final String title,boolean nvgShow) {
+    public void setTitle(final String title, boolean nvgShow) {
         tvTitle.setText(title);
         if (jsBridge != null) {
             jsBridge.setJsTitle(title);
         }
+        rlTitleBar.setVisibility(nvgShow ? VISIBLE : GONE);
     }
 
     public void fetchTargetUrl(String appletId, String data) {
@@ -266,7 +264,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
     }
 
     public void reload(String data) {
-        if(jsBridge != null){
+        if (jsBridge != null) {
             jsBridge.setJsData(data);
         }
         webView.setJsBridge(jsBridge);
