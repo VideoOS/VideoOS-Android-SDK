@@ -118,8 +118,13 @@ public class LVPreLoadPlugin {
                         return LuaValue.NIL;
                     }
                     String miniAppId = miniAppInfoObj.optString("miniAppId");
-                    JSONArray luaListArray = new JSONArray(miniAppInfoObj.optString("luaList"));
-                    if(TextUtils.isEmpty(miniAppId) || luaListArray == null || luaListArray.length() <= 0){
+                    String luaListStr = miniAppInfoObj.optString("luaList");
+                    if(TextUtils.isEmpty(miniAppId) || TextUtils.isEmpty(luaListStr)){
+                        return LuaValue.NIL;
+                    }
+
+                    JSONArray luaListArray = new JSONArray(luaListStr);
+                    if(luaListArray == null || luaListArray.length() <= 0){
                         return LuaValue.NIL;
                     }
                     List<LuaFileInfo> luaFileInfoList = new ArrayList<>();
