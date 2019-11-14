@@ -2,16 +2,12 @@ package cn.com.venvy.common.statistics;
 
 import android.text.TextUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.venvy.Platform;
-import cn.com.venvy.common.download.DownloadDbHelper;
-import cn.com.venvy.common.download.DownloadImageTask;
 import cn.com.venvy.common.download.DownloadTask;
 
 /**
@@ -56,7 +52,16 @@ public final class VenvyStatisticsManager {
         }else if (VenvyStatisticsManager.PLAY_CONFIRM == type) {
             submitPlayConfirmStatisticsInfo(jsonObj);
         }else if (VenvyStatisticsManager.PRELOAD_FLOW == type) {
-            //TODO ...
+            submitPreLoadFlowStatisticsInfo(jsonObj);
+        }
+    }
+
+    private void submitPreLoadFlowStatisticsInfo(JSONObject jsonObj){
+        try {
+            String dataJson = StatisticDCUtils.obtainPreLoadFlowStatisticsJson(VenvyStatisticsManager.PRELOAD_FLOW, jsonObj);
+            executeThread(dataJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

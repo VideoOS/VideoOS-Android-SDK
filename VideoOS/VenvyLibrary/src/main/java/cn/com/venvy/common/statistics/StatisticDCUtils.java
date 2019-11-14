@@ -17,6 +17,19 @@ import cn.com.venvy.common.download.DownloadTask;
  */
 
 public class StatisticDCUtils {
+    /**
+     * 创建 PreLoadFlow Statistic Json
+     * @param type
+     * @param jsonObj
+     * @return
+     * @throws JSONException
+     */
+    public static String obtainPreLoadFlowStatisticsJson(int type, JSONObject jsonObj) throws JSONException {
+        String videoId = jsonObj.optString("videoId");
+        String fileInfo = jsonObj.optString("fileInfo");
+        String downLoadStage = jsonObj.optString("downLoadStage");
+        return createCommonObj(type,createDataObj(Integer.valueOf(downLoadStage),videoId,new JSONArray(fileInfo))).toString();
+    }
 
     /**
      * 创建 PlayConfirm Statistic Json
