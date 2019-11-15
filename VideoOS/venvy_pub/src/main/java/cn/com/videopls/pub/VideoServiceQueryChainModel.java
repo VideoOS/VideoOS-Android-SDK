@@ -113,13 +113,6 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         return;
                     }
                     final JSONArray dataJsonArray = obj.optJSONArray("jsonList");
-                    if(dataJsonArray == null || dataJsonArray.length() <= 0 ){
-                        ServiceQueryChainCallback callback = getQueryChainCallback();
-                        if (callback != null) {
-                            callback.queryError(new Exception("query jsonList is error."));
-                        }
-                        return;
-                    }
 
                     final String videoModeMiniAppId = videoModeMiniAppInfoObj.optString("miniAppId");
                     final String videoModeTemplate = videoModeMiniAppInfoObj.optString("template");
@@ -180,7 +173,9 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         //  load desktop lua
                                         loadDesktopProgram(desktopTemplate);
 
-                                        mDownZipUpdate.startDownloadZipFile(dataJsonArray);
+                                        if(dataJsonArray != null && dataJsonArray.length() > 0){
+                                            mDownZipUpdate.startDownloadZipFile(dataJsonArray);
+                                        }
                                     }
 
                                     @Override
