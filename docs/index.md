@@ -163,7 +163,7 @@ if (isFirstPlayVideo) {
 
 自定义`VideoOsAdapter`集成自SDK`VideoPlusAdapter`
 
-构造函数中可传入平台播放器，基础功能需要实现`createProvider `和`buildMediaController`：
+构造函数中可传入平台播放器，基础功能需要实现`createProvider `、`buildMediaController`和一些必要的回调：
 
 
 ```java
@@ -186,7 +186,26 @@ public class VideoOsAdapter extends VideoPlusAdapter {
                 .build();    
                 }
                 
-                
+     /**
+     * 横竖屏切换时的回调
+     * @return
+     */
+    @Override
+    public IWidgetRotationListener buildWidgetRotationListener() {
+        return new IWidgetRotationListener() {
+            @Override
+            public void onRotate(RotateStatus status) {
+                if(status == RotateStatus.TO_VERTICAL){
+                    // 横屏转竖屏
+                    notifyVideoScreenChanged(ScreenStatus.SMALL_VERTICAL);
+                }else if(status == RotateStatus.TO_LANDSCAPE){
+                    // 竖屏转横屏
+                    notifyVideoScreenChanged(ScreenStatus.LANDSCAPE);
+                }
+            }
+        };
+    }
+    
      /**
      * 平台方播放器相关业务状态
      */
@@ -218,6 +237,16 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             public VideoFrameSize getVideoFrameSize() {
                 return new VideoFrameSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()),
                         VenvyUIUtil.getScreenHeight(MyApp.getInstance()), 0, 0);
+            }
+	    
+	    @Override
+            public String getVideoEpisode() {
+                return "当前的剧集名称";
+            }
+
+            @Override
+            public String getVideoTitle() {
+                return "当前的视频标题";
             }
         };
     }
@@ -416,10 +445,10 @@ protected void onDestroy() {
 额外引用
 
 ```
-// 需在对应module 的gradle中额外引用
-provided "com.just.agentweb:agentweb:4.1.2"
+    // 需在对应module 的gradle中额外引用
+    provided "com.just.agentweb:agentweb:4.1.2"
 
-// 在VideoOsAdapter中实现对应插件
+    // 在VideoOsAdapter中实现对应插件
     // webView插件
     @Override
     public Class<? extends IVenvyWebView> buildWebView() {
@@ -431,7 +460,10 @@ provided "com.just.agentweb:agentweb:4.1.2"
 通过`videoOsView`的startService()启动视联网模式
 
 ```
-mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String, String>(), new IServiceCallback() {
+// 视联网启动分气泡模式（ServiceTypeVideoMode_POP）和标签模式（ServiceTypeVideoMode_TAG）
+// 气泡模式仅出现视联网气泡识别结果，标签模式除了气泡识别结果还会识别展示内容对象的对应tag.
+
+mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode_TAG, new HashMap<String, String>(), new IServiceCallback() {
 
                             @Override
                             public void onCompleteForService() {
