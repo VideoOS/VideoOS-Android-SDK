@@ -195,9 +195,6 @@ public class VideoOSLuaView extends VideoOSBaseView {
             Object dataValue = map.get(key);
             if (dataValue != null && dataValue instanceof String) {
                 dataTable = JsonUtil.toLuaTable((String) dataValue);
-                if (dataTable != null && dataTable.istable()) {
-                    map.remove(key);
-                }
             }
             table = LuaUtil.toTable(map);
             if (dataTable != null && table != null && table.istable()) {
@@ -223,34 +220,6 @@ public class VideoOSLuaView extends VideoOSBaseView {
             } else {
                 runLua(luaView, luaName, valueData);
             }
-//            VenvyAsyncTaskUtil.doAsyncTask(INIT_SCRIPT,
-//                    new VenvyAsyncTaskUtil.IDoAsyncTask<Object, ScriptBundle>() {
-//                        @Override
-//                        public ScriptBundle doAsyncTask(Object... objects) throws Exception {
-//                            return initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
-//                        }
-//                    }, new VenvyAsyncTaskUtil.CommonAsyncCallback<ScriptBundle>() {
-//                        @Override
-//                        public void onPostExecute(ScriptBundle scriptBundle) {
-//                            if (scriptBundle != null) {
-//                                VenvyLog.d("Router", "LuaView begin run and template is " + luaName + ", " +
-//                                        "time is " + System.currentTimeMillis());
-//                                luaView.loadScriptBundle(scriptBundle, luaName,
-//                                        new LuaCallbackImpl(valueData));
-//                                sScriptBundle = scriptBundle;
-//                            } else {
-//                                runLua(luaView, luaName, valueData);
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onCancelled() {
-//                        }
-//
-//                        @Override
-//                        public void onException(Exception ie) {
-//                        }
-//                    });
         } else {
             luaView.loadScriptBundle(sScriptBundle, luaName, new LuaCallbackImpl(valueData));
         }
@@ -260,7 +229,6 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
-
         LuaValue table = null;
         LuaValue dataTable = null;
         String key = "data";
@@ -269,9 +237,6 @@ public class VideoOSLuaView extends VideoOSBaseView {
             Object dataValue = map.get(key);
             if (dataValue != null && dataValue instanceof String) {
                 dataTable = JsonUtil.toLuaTable((String) dataValue);
-                if (dataTable != null && dataTable.istable()) {
-                    map.remove(key);
-                }
             }
             table = LuaUtil.toTable(map);
             if (dataTable != null && table != null && table.istable()) {
