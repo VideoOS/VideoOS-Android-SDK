@@ -36,6 +36,7 @@ import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.router.IRouterCallback;
 import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
@@ -44,7 +45,6 @@ import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.exception.DownloadException;
-import cn.com.videopls.pub.track.ChainTrackModel;
 
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_DATA;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
@@ -238,9 +238,6 @@ public abstract class VideoPlusController implements VenvyObserver {
         unRegisterObservable();
         if (mQueryAdsModel != null) {
             mQueryAdsModel.destroy();
-        }
-        if (mChainTrackModel != null) {
-            mChainTrackModel.destroy();
         }
         if (mQueryAdsArray != null) {
             mQueryAdsArray.clear();
@@ -534,8 +531,6 @@ public abstract class VideoPlusController implements VenvyObserver {
         return new JSONObject(eventParams).toString();
     }
 
-    private ChainTrackModel mChainTrackModel;
-
     /***
      *
      * @param serviceType
@@ -545,8 +540,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (serviceType != ServiceType.ServiceTypeVideoMode) {
             return;
         }
-        mChainTrackModel = new ChainTrackModel(mPlatform, onOrOff, null);
-        mChainTrackModel.startRequest();
+        VenvyStatisticsManager.getInstance().submitVisualSwitchStatisticsInfo(onOrOff);
     }
 
     public void startVisionProgram(final String appletId, final String data, final int type, final boolean isH5Type, final IRouterCallback callback) {

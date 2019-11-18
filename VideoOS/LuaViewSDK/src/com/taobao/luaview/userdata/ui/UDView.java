@@ -1099,8 +1099,8 @@ public class UDView<T extends View> extends BaseUserdata {
      *
      * @return
      */
-    public LuaValue callOnClick() {
-        return LuaUtil.callFunction(this.mOnClick);
+    public void callOnClick(Object... params) {
+        LuaUtil.callFunction(this.mOnClick, params);
     }
 
     public boolean callOnLongClick() {
@@ -1115,15 +1115,10 @@ public class UDView<T extends View> extends BaseUserdata {
      * 点击
      */
     void setOnClickListener() {
-        T view = getView();
+        final T view = getView();
         if (view != null) {
             if (LuaUtil.isValid(this.mOnClick)) {
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        callOnClick();
-                    }
-                });
+                view.setOnTouchListener(mCommontOnTouchListener);
             }//TODO mOnClick 为nil的时候（非null）的时候如何清空onClick，且不影响事件传递
         }
     }
@@ -1135,12 +1130,7 @@ public class UDView<T extends View> extends BaseUserdata {
         T view = getView();
         if (view != null) {
             if (LuaUtil.isValid(this.mOnLongClick)) {
-                view.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        return callOnLongClick();
-                    }
-                });
+                view.setOnTouchListener(mCommontOnTouchListener);
             }//TODO mOnClick 为nil的时候（非null）的时候如何清空onClick，且不影响事件传递
         }
     }
@@ -1153,28 +1143,73 @@ public class UDView<T extends View> extends BaseUserdata {
         T view = getView();
         if (view != null) {
             if (LuaUtil.isValid(this.mOnTouch)) {
-                view.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (mOnTouchEventData == null) {
-                            mOnTouchEventData = new LuaTable();
-                        }
-                        if (event != null) {
-                            mOnTouchEventData.set("action", event.getActionMasked());//0按下，1起来，2
-                            // 移动，3取消，4外部
-                            mOnTouchEventData.set("pointer",
-                                    event.getPointerId(event.getActionIndex()));
-                            mOnTouchEventData.set("x", DimenUtil.pxToDpi(event.getX()));
-                            mOnTouchEventData.set("y", DimenUtil.pxToDpi(event.getY()));
-                            mOnTouchEventData.set("gx", DimenUtil.pxToDpi(event.getRawX()));
-                            mOnTouchEventData.set("gy", DimenUtil.pxToDpi(event.getRawY()));
-                        }
-                        return callOnTouch(mOnTouchEventData);
-                    }
-                });
+                view.setOnTouchListener(mCommontOnTouchListener);
             }//TODO mOnClick 为nil的时候（非null）的时候如何清空onClick，且不影响事件传递
         }
     }
+
+    private long mActionDownTime = 0;
+    private boolean mCallOnLongClick = false;
+    private boolean onLongClickCallback = false;
+    private View.OnTouchListener mCommontOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            T view = getView();
+            if (view != null) {
+                //onTouch
+                if (LuaUtil.isValid(UDView.this.mOnTouch)) {
+                    if (mOnTouchEventData == null) {
+                        mOnTouchEventData = new LuaTable();
+                    }
+                    if (event != null) {
+                        mOnTouchEventData.set("action", event.getActionMasked());//0按下，1起来，2移动，3取消，4外部
+                        mOnTouchEventData.set("pointer", event.getPointerId(event.getActionIndex()));
+                        mOnTouchEventData.set("x", DimenUtil.pxToDpi(event.getX()));
+                        mOnTouchEventData.set("y", DimenUtil.pxToDpi(event.getY()));
+                        mOnTouchEventData.set("gx", DimenUtil.pxToDpi(event.getRawX()));
+                        mOnTouchEventData.set("gy", DimenUtil.pxToDpi(event.getRawY()));
+                    }
+                    if (callOnTouch(mOnTouchEventData)) {
+                        return true;
+                    }
+                }
+
+                if(!LuaUtil.isValid(UDView.this.mOnClick) && !LuaUtil.isValid(UDView.this.mOnLongClick)){
+                    return false;
+                }
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    mActionDownTime = System.currentTimeMillis();
+                    return true;
+                }
+
+                //onLongClick
+                if (!mCallOnLongClick && LuaUtil.isValid(UDView.this.mOnLongClick) && (System.currentTimeMillis() - mActionDownTime) >= 500) {
+                    mCallOnLongClick = true;
+                    if (callOnLongClick()) {
+                        onLongClickCallback = true;
+                        return true;
+                    }
+                }
+
+                //onClick
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    mCallOnLongClick = false;
+                    if (LuaUtil.isValid(UDView.this.mOnClick) && !onLongClickCallback) {
+                        double x = 0, y = 0, mx = 0, my = 0;
+                        if (event != null) {
+                            x = DimenUtil.pxToDpi(event.getX());
+                            y = DimenUtil.pxToDpi(event.getY());
+                            mx = DimenUtil.pxToDpi(event.getRawX());
+                            my = DimenUtil.pxToDpi(event.getRawY());
+                        }
+                        callOnClick(LuaValue.valueOf(x), LuaValue.valueOf(y), LuaValue.valueOf(mx), LuaValue.valueOf(my));
+                    }
+                }
+            }
+            return false;
+        }
+    };
 
     /**
      * get callback
