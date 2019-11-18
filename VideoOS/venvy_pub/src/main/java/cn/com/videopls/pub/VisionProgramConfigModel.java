@@ -49,7 +49,7 @@ import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTA
 public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
 
-    private static final String CONFIG = "/vision/getMiniAppConf";
+    private static final String CONFIG = "/vision/v2/getMiniAppConf";
 
     private VisionProgramConfigCallback callback;
     private PreloadLuaUpdate mDownLuaUpdate;
@@ -131,7 +131,6 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     }
 
                     final JSONObject decryptData = new JSONObject(jsonStr);
-
                     if (isH5Type) {
                         final String h5Url = decryptData.optString("h5Url");
                         if (TextUtils.isEmpty(h5Url)) {
@@ -142,21 +141,21 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                             bundle.putString(CONSTANT_H5_URL, h5Url);
                             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, bundle);
                         }
-
                         return;
                     }
                     // lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
                     // 开发者模式下 则是：[{url:本地filePath}, {url:本地filePath} , ...]
-                    JSONArray fileListArray = decryptData.optJSONArray("luaList");
-                    final String template = decryptData.optString("template"); //  入口lua文件名称
+                    JSONObject miniAppInfoObj = decryptData.optJSONObject("miniAppInfo");
+                    final String template = miniAppInfoObj.optString("template");
+                    final String miniAppId = miniAppInfoObj.optString("miniAppId");
+                    JSONArray fileListArray = miniAppInfoObj.optJSONArray("luaList");
+
                     String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
                     JSONObject displayObj = decryptData.optJSONObject("display");
-
                     if (displayObj != null) {
                         final String nativeTitle = displayObj.optString("navTitle");
                         updateVisionTitle(nativeTitle);
                     }
-
 
                     if (resCode.equalsIgnoreCase("00")) {
                         //LuaArray --> JavaBean
