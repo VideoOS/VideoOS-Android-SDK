@@ -78,7 +78,7 @@ public class LuaHelper {
                 getMqttBinder(),
                 getAppletBinder(platform),
                 getSvgaBinder(),
-                getWebViewBinder(),
+                getWebViewBinder(platform),
                 getActivityLifeCycleBinder(),
                 getKeyboardBinder(),
                 getMediaViewBinder(),
@@ -137,8 +137,10 @@ public class LuaHelper {
         return target;
     }
 
-    private static VenvyWebViewBinder getWebViewBinder() {
-        return venvyWebViewBinder == null ? venvyWebViewBinder = new VenvyWebViewBinder() : venvyWebViewBinder;
+    private static VenvyWebViewBinder getWebViewBinder(Platform platform) {
+        VenvyWebViewBinder target = venvyWebViewBinder == null ? venvyWebViewBinder = new VenvyWebViewBinder() : venvyWebViewBinder;
+        target.setPlatform(platform);
+        return target;
     }
 
     private static VenvySvgaBinder getSvgaBinder() {

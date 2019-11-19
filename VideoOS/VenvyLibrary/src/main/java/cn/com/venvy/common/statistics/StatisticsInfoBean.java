@@ -7,6 +7,8 @@ import java.util.List;
  */
 
 public class StatisticsInfoBean {
+    //预加载流量统计
+    public String videoId;
     public int downLoadStage;
     public List<FileInfoBean> fileInfoBeans;
 

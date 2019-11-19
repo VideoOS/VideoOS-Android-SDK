@@ -4,10 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,13 +19,12 @@ import cn.com.venvy.common.utils.VenvyAesUtil;
  * Created by videopls on 2019/8/22.
  */
 public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
-    private static final String SERVICE_STATISTICS_URL = Config.HOST_VIDEO_OS + "/statisticFlow";
-
-    private StatisticsInfoBean statisticsInfoBean;
+    private static final String SERVICE_STATISTICS_URL = Config.HOST_VIDEO_OS + "/commonStats";
+    private String dataJson;
     private VideoPlusStatisticsCallback videoPlusStatisticsCallback;
-    public VideoPlusStatisticsModel(@NonNull Platform platform,StatisticsInfoBean statisticsInfoBean,VideoPlusStatisticsCallback videoPlusStatisticsCallback) {
+    public VideoPlusStatisticsModel(@NonNull Platform platform,String dataJson,VideoPlusStatisticsCallback videoPlusStatisticsCallback) {
         super(platform);
-        this.statisticsInfoBean = statisticsInfoBean;
+        this.dataJson = dataJson;
         this.videoPlusStatisticsCallback = videoPlusStatisticsCallback;
     }
 
@@ -47,63 +42,9 @@ public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
     }
 
     private Map<String, String> createBody() {
-        Map<String, String> paramMap = createParamMap();
         Map<String, String> bodyMap = new HashMap<>();
-        bodyMap.put("data", VenvyAesUtil.encrypt(getPlatform().getPlatformInfo().getAppSecret(), getPlatform().getPlatformInfo().getAppSecret(), new JSONObject(paramMap).toString()));
+        bodyMap.put("data", VenvyAesUtil.encrypt(getPlatform().getPlatformInfo().getAppSecret(), getPlatform().getPlatformInfo().getAppSecret(), dataJson));
         return bodyMap;
-    }
-
-    private Map<String,String> createParamMap() {
-        String commonParamJson = createCommonParamJson();
-        String fileInfoJson = createFileInfoJson();
-        int downLoadStage = getDownLoadStage();
-
-        Map<String, String> paramMap = new HashMap<>();
-        paramMap.put("fileInfo", fileInfoJson);
-        paramMap.put("commonParam", commonParamJson);
-        paramMap.put("downLoadStage", downLoadStage + "");
-
-        return paramMap;
-    }
-
-    public int getDownLoadStage() {
-        int downLoadStage = 0;
-        if(statisticsInfoBean != null){
-            downLoadStage = statisticsInfoBean.downLoadStage;
-        }
-        return downLoadStage;
-    }
-
-    private String createFileInfoJson() {
-        JSONArray jsonArray = new JSONArray();
-        JSONObject tmpObj = null;
-        try {
-            if(statisticsInfoBean != null && statisticsInfoBean.fileInfoBeans.size() > 0){
-                for(int i = 0; i < statisticsInfoBean.fileInfoBeans.size(); i++){
-                    tmpObj = new JSONObject();
-                    tmpObj.put("fileName" , statisticsInfoBean.fileInfoBeans.get(i).fileName);
-                    tmpObj.put("filePath", statisticsInfoBean.fileInfoBeans.get(i).filePath);
-                    tmpObj.put("fileSize", statisticsInfoBean.fileInfoBeans.get(i).fileSize);
-                    jsonArray.put(tmpObj);
-                    tmpObj = null;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return jsonArray.toString();
-    }
-
-    private String createCommonParamJson() {
-        String commonParamJson = "";
-        try {
-            Class<?> clazz = Class.forName("cn.com.venvy.lua.plugin.LVCommonParamPlugin");
-            Method method = clazz.getMethod("getCommonParamJson");
-            commonParamJson = (String)method.invoke(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return commonParamJson;
     }
 
     @Override
@@ -159,7 +100,6 @@ public class VideoPlusStatisticsModel extends VideoPlusStatisticsBaseModel {
     public void destroy() {
         super.destroy();
         videoPlusStatisticsCallback = null;
-        statisticsInfoBean = null;
     }
 
     private VideoPlusStatisticsCallback getAppConfigCallback() {

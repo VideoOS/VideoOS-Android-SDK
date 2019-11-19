@@ -13,7 +13,9 @@ import java.util.HashMap;
 import cn.com.venvy.App;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
+import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.router.IRouterCallback;
+import cn.com.venvy.common.utils.VenvyVibrateUtil;
 
 import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode_POP;
 import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode_TAG;
@@ -182,6 +184,10 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         this.adapter = adapter;
     }
 
+    public VideoPlusAdapter getAdapter() {
+        return adapter;
+    }
+
     public void start() {
         if (programViewA != null) {
             programViewA.start();
@@ -201,6 +207,18 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (programViewB != null) {
             programViewB.setClickable(true);
             programViewB.start(appletId, data, orientationType, isH5Type);
+        }
+    }
+
+    /**
+     * 拉起一个视联网小工具
+     */
+    public void launchVisionToolsProgram(String miniAppId,String data) {
+        if (programViewA != null) {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("miniAppId", miniAppId);
+            params.put("data", data);
+            programViewA.startService(ServiceType.ServiceTypeVideoTools, params, null);
         }
     }
 
@@ -239,15 +257,15 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
      *
      * @param url
      */
-    public void launchH5VisionProgram(String url) {
+    public void launchH5VisionProgram(String url, String developerUserId) {
         if (programViewB != null) {
             programViewB.setClickable(true);
-            programViewB.startH5(url);
+            programViewB.startH5(url, developerUserId);
         }
     }
 
 
-    public void launchDesktopProgram(String targetName) {
+    public void launchDesktopProgram(String targetName, String miniAppInfo, String videoModeType) {
         // 桌面存在则不需要重复加载桌面
         if (programViewDesktop != null) return;
 
@@ -259,7 +277,10 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (!TextUtils.isEmpty(targetName)) {
             programViewDesktop.setVisibility(VISIBLE);
             Uri uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
-            programViewDesktop.navigation(uri, new HashMap<String, String>(), null);
+            HashMap<String, String> params = new HashMap<>();
+            params.put(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfo); //  miniAppInfo
+            params.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, videoModeType); //  videoModeType
+            programViewDesktop.navigation(uri, params, null);
         }
 
     }
@@ -286,6 +307,8 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
                 }
                 break;
             default:
+                // 震动一下
+                VenvyVibrateUtil.vibrate(getContext(), 500);
                 if (programViewA != null) {
                     programViewA.startService(serviceType, params, callback);
                 }

@@ -10,7 +10,8 @@ public enum ServiceType {
     ServiceTypeFrontVideo(3),//前帖广告
     ServiceTypeLaterVideo(4),//后贴广告
     ServiceTypePauseAd(5),//暂停广告
-    ServiceTypeVideoMode_TAG(6);//视联网模式 - 标签模式 - 0
+    ServiceTypeVideoMode_TAG(6),//视联网模式 - 标签模式 - 0
+    ServiceTypeVideoTools(7); // 视联网小工具
 
 
     int id;

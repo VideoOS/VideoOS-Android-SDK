@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.taobao.luaview.cache.AppCache;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -37,20 +38,22 @@ import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.router.IRouterCallback;
 import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
-import cn.com.venvy.common.utils.VenvyVibrateUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.exception.DownloadException;
-import cn.com.videopls.pub.track.ChainTrackModel;
 
+import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode_TAG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_DATA;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE;
 
 /**
  * Created by yanjiangbo on 2017/5/17.
@@ -147,7 +150,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
         startQueryConnect(serviceType, params, new IStartQueryResult() {
             @Override
-            public void successful(Object result, final ServiceQueryAdsInfo queryAdsInfo) {
+            public void successful(Object result, String miniAppInfo, final ServiceQueryAdsInfo queryAdsInfo) {
                 if (queryAdsInfo == null) {
                     if (callback != null) {
                         callback.onFailToCompleteForService(new Exception("error query ads params" +
@@ -164,21 +167,22 @@ public abstract class VideoPlusController implements VenvyObserver {
                         .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID,
                                 queryAdsInfo.getQueryAdsId());
 
-                // 视联网模式 启动模式（气泡、标签）. changed on 11-18
-                if (serviceType == ServiceType.ServiceTypeVideoMode_POP) {
-                    builder.appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_VIDEO_MODE_TYPE, "1");
-                } else if (serviceType == ServiceType.ServiceTypeVideoMode_TAG) {
-                    builder.appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_VIDEO_MODE_TYPE, "0");
-                }
-
-                // 震动一下
-                VenvyVibrateUtil.vibrate(getContext(),500);
-
-                // TODO :  需要添加从 getLabelConf接口返回的miniAppInfo 数据到lua
-
 
                 HashMap<String, String> skipParams = new HashMap<>();
-                skipParams.put("data", result.toString());
+                // json data
+                skipParams.put(CONSTANT_DATA, result.toString());
+
+                // 视联网模式 启动模式（气泡、标签）.
+                if (serviceType == ServiceType.ServiceTypeVideoMode_POP) {
+                    skipParams.put(CONSTANT_VIDEO_MODE_TYPE, "1");
+                } else if (serviceType == ServiceType.ServiceTypeVideoMode_TAG) {
+                    skipParams.put(CONSTANT_VIDEO_MODE_TYPE, "0");
+                }
+                // miniAppInfo
+                if (!TextUtils.isEmpty(miniAppInfo)) {
+                    skipParams.put(CONSTANT_MINI_APP_INFO, miniAppInfo);
+                }
+
                 navigation(builder.build(), skipParams, new IRouterCallback() {
                     @Override
                     public void arrived() {
@@ -260,9 +264,6 @@ public abstract class VideoPlusController implements VenvyObserver {
         unRegisterObservable();
         if (mQueryAdsModel != null) {
             mQueryAdsModel.destroy();
-        }
-        if (mChainTrackModel != null) {
-            mChainTrackModel.destroy();
         }
         if (mQueryAdsArray != null) {
             mQueryAdsArray.clear();
@@ -448,15 +449,16 @@ public abstract class VideoPlusController implements VenvyObserver {
         });
     }
 
-    private void startQueryConnect(ServiceType serviceType, Map<String, String> params, final IStartQueryResult result) {
+    private void startQueryConnect(ServiceType serviceType, final Map<String, String> params, final IStartQueryResult result) {
         switch (serviceType) {
             case ServiceTypeVideoMode_TAG:
             case ServiceTypeVideoMode_POP:
-                mQueryAdsModel = new VideoServiceQueryChainModel(mPlatform, params, new VideoServiceQueryChainModel.ServiceQueryChainCallback() {
+                // 视联网模式
+                mQueryAdsModel = new VideoServiceQueryChainModel(mPlatform, params, serviceType == ServiceTypeVideoMode_TAG, new VideoServiceQueryChainModel.ServiceQueryChainCallback() {
                     @Override
-                    public void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
+                    public void queryComplete(Object queryAdsData, String miniAppInfo, ServiceQueryAdsInfo queryAdsInfo) {
                         if (result != null) {
-                            result.successful(queryAdsData, queryAdsInfo);
+                            result.successful(queryAdsData, miniAppInfo, queryAdsInfo);
                         }
                     }
 
@@ -468,7 +470,55 @@ public abstract class VideoPlusController implements VenvyObserver {
                     }
                 });
                 break;
+            case ServiceTypeVideoTools:
+
+                // 视联网小工具
+                mQueryAdsModel = new VideoServiceToolsModel(mPlatform, params, new VideoServiceToolsModel.VisionProgramToolsCallback() {
+                    @Override
+                    public void downComplete(String entranceLua, String miniAppInfo) {
+                        Uri.Builder builder = new Uri.Builder();
+                        builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
+                                .path(VenvySchemeUtil.PATH_LUA_VIEW)
+                                .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_TEMPLATE,
+                                        entranceLua);
+
+
+                        JSONObject paramsJson = new JSONObject();
+
+                        try {
+                            paramsJson.put("data", params.get("data"));
+                            paramsJson.put("miniAppInfo", miniAppInfo);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        HashMap<String, String> finalParams = new HashMap<>();
+                        finalParams.put("data", paramsJson.toString());
+                        navigation(builder.build(), finalParams, new IRouterCallback() {
+                            @Override
+                            public void arrived() {
+//                                if (callback != null) {
+//                                    callback.onCompleteForService();
+//                                }
+                            }
+
+                            @Override
+                            public void lost() {
+                                VenvyLog.e("视联网小工具启动失败");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void downError(Throwable t) {
+                        if (result != null) {
+                            result.failed(t);
+                        }
+                    }
+                });
+                break;
             default:
+                // 前后暂停贴广告
                 if (mPlatform == null) {
                     mPlatform = initPlatform(mVideoPlusAdapter);
                 }
@@ -478,7 +528,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                             @Override
                             public void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
                                 if (result != null) {
-                                    result.successful(queryAdsData, queryAdsInfo);
+                                    result.successful(queryAdsData, "", queryAdsInfo);
                                 }
                             }
 
@@ -563,19 +613,16 @@ public abstract class VideoPlusController implements VenvyObserver {
         return new JSONObject(eventParams).toString();
     }
 
-    private ChainTrackModel mChainTrackModel;
-
     /***
      *
      * @param serviceType
      * @param onOrOff 0:关闭 1:开启
      */
     private void serviceTypeVideoModeTrack(ServiceType serviceType, String onOrOff) {
-        if (serviceType != ServiceType.ServiceTypeVideoMode_POP && serviceType != ServiceType.ServiceTypeVideoMode_TAG) {
+        if (serviceType != ServiceType.ServiceTypeVideoMode_POP && serviceType != ServiceTypeVideoMode_TAG) {
             return;
         }
-        mChainTrackModel = new ChainTrackModel(mPlatform, onOrOff, null);
-        mChainTrackModel.startRequest();
+        VenvyStatisticsManager.getInstance().submitVisualSwitchStatisticsInfo(onOrOff);
     }
 
     public void startVisionProgram(final String appletId, final String data, final int type, final boolean isH5Type, final IRouterCallback callback) {

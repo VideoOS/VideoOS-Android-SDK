@@ -3,7 +3,8 @@
  * Copyright (c) 2017, Alibaba Group. All rights reserved.
  *
  * This source code is licensed under the MIT.
- * For the full copyright and license information,please view the LICENSE file in the root directory of this source tree.
+ * For the full copyright and license information,please view the LICENSE file in the root
+ * directory of this source tree.
  */
 
 package com.taobao.luaview.userdata.ui;
@@ -165,10 +166,12 @@ public class UDView<T extends View> extends BaseUserdata {
      * @param bottom
      * @return
      */
-    public UDView setMargin(Integer left, Integer top, Integer right, Integer bottom) {//TODO 这里的margin，MarginLayoutParams上有一个问题，当left+right=width或者top+bottom=height有一个问题
+    public UDView setMargin(Integer left, Integer top, Integer right, Integer bottom) {//TODO
+        // 这里的margin，MarginLayoutParams上有一个问题，当left+right=width或者top+bottom=height有一个问题
         View view = getView();
         if (view != null && view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            ViewGroup.MarginLayoutParams layoutParams =
+                    (ViewGroup.MarginLayoutParams) view.getLayoutParams();
             if (left != null) {
                 layoutParams.leftMargin = left;
             }
@@ -190,7 +193,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public int getMarginLeft() {
         View view = getView();
         if (view != null && view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            ViewGroup.MarginLayoutParams layoutParams =
+                    (ViewGroup.MarginLayoutParams) view.getLayoutParams();
             return layoutParams.leftMargin;
         }
         return 0;
@@ -199,7 +203,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public int getMarginTop() {
         View view = getView();
         if (view != null && view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            ViewGroup.MarginLayoutParams layoutParams =
+                    (ViewGroup.MarginLayoutParams) view.getLayoutParams();
             return layoutParams.topMargin;
         }
         return 0;
@@ -208,7 +213,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public int getMarginRight() {
         View view = getView();
         if (view != null && view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            ViewGroup.MarginLayoutParams layoutParams =
+                    (ViewGroup.MarginLayoutParams) view.getLayoutParams();
             return layoutParams.rightMargin;
         }
         return 0;
@@ -217,7 +223,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public int getMarginBottom() {
         View view = getView();
         if (view != null && view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            ViewGroup.MarginLayoutParams layoutParams =
+                    (ViewGroup.MarginLayoutParams) view.getLayoutParams();
             return layoutParams.bottomMargin;
         }
         return 0;
@@ -262,7 +269,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public float getBackgroundAlpha() {
         T view = getView();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            return (view != null && view.getBackground() != null) ? view.getBackground().getAlpha() / 255.0f : 1;
+            return (view != null && view.getBackground() != null) ?
+                    view.getBackground().getAlpha() / 255.0f : 1;
         }
         return 1;
     }
@@ -276,7 +284,8 @@ public class UDView<T extends View> extends BaseUserdata {
         if (color != null) {
             View view = getView();
             if (view != null) {
-                LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
+                LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable
+                        ? (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
                 drawable.setColor(color);
                 LuaViewUtil.setBackground(view, drawable);
             }
@@ -303,7 +312,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public UDView setCornerRadius(float radius) {
         T view = getView();
         if (view != null) {
-            LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
+            LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ?
+                    (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
             drawable.setCornerRadius(radius);
             LuaViewUtil.setBackground(view, drawable);
         }
@@ -313,9 +323,21 @@ public class UDView<T extends View> extends BaseUserdata {
     public float getCornerRadius() {
         T view = getView();
         if (view != null) {
-            return view.getBackground() instanceof LVGradientDrawable ? ((LVGradientDrawable) view.getBackground()).getCornerRadius() : 0;
+            return view.getBackground() instanceof LVGradientDrawable ?
+                    ((LVGradientDrawable) view.getBackground()).getCornerRadius() : 0;
         }
         return 0;
+    }
+
+    public UDView setCornerRadii(float[] radii) {
+        T view = getView();
+        if (view != null) {
+            LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ?
+                    (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
+            drawable.setCornerRadii(radii);
+            LuaViewUtil.setBackground(view, drawable);
+        }
+        return this;
     }
 
     /**
@@ -327,7 +349,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public UDView setBorderWidth(int borderWidth) {
         T view = getView();
         if (view != null) {
-            LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
+            LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ?
+                    (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
             drawable.setStrokeWidth(borderWidth);
             LuaViewUtil.setBackground(view, drawable);
         }
@@ -337,7 +360,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public int getBorderWidth() {
         T view = getView();
         if (view != null) {
-            return view.getBackground() instanceof LVGradientDrawable ? ((LVGradientDrawable) view.getBackground()).getStrokeWidth() : 0;
+            return view.getBackground() instanceof LVGradientDrawable ?
+                    ((LVGradientDrawable) view.getBackground()).getStrokeWidth() : 0;
         }
         return 0;
     }
@@ -352,7 +376,8 @@ public class UDView<T extends View> extends BaseUserdata {
         if (borderColor != null) {
             T view = getView();
             if (view != null) {
-                LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
+                LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable
+                        ? (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
                 drawable.setStrokeColor(borderColor);
                 LuaViewUtil.setBackground(view, drawable);
             }
@@ -363,7 +388,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public int getBorderColor() {
         T view = getView();
         if (view != null) {
-            return view.getBackground() instanceof LVGradientDrawable ? ((LVGradientDrawable) view.getBackground()).getStrokeColor() : 0;
+            return view.getBackground() instanceof LVGradientDrawable ?
+                    ((LVGradientDrawable) view.getBackground()).getStrokeColor() : 0;
         }
         return 0;
     }
@@ -378,7 +404,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public UDView setBorderDashSize(float dashWidth, float dashGap) {
         T view = getView();
         if (view != null) {
-            LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
+            LVGradientDrawable drawable = view.getBackground() instanceof LVGradientDrawable ?
+                    (LVGradientDrawable) view.getBackground() : new LVGradientDrawable();
             drawable.setDashSize(dashWidth, dashGap);
         }
         return this;
@@ -387,7 +414,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public float getBorderDashWidth() {
         T view = getView();
         if (view != null) {
-            return view.getBackground() instanceof LVGradientDrawable ? ((LVGradientDrawable) view.getBackground()).getDashWidth() : 0;
+            return view.getBackground() instanceof LVGradientDrawable ?
+                    ((LVGradientDrawable) view.getBackground()).getDashWidth() : 0;
         }
         return 0;
     }
@@ -395,7 +423,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public float getBorderDashGap() {
         T view = getView();
         if (view != null) {
-            return view.getBackground() instanceof LVGradientDrawable ? ((LVGradientDrawable) view.getBackground()).getDashGap() : 0;
+            return view.getBackground() instanceof LVGradientDrawable ?
+                    ((LVGradientDrawable) view.getBackground()).getDashGap() : 0;
         }
         return 0;
     }
@@ -412,7 +441,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public UDView setFrame(int x, int y, int width, int height) {
         View view = getView();
         if (view != null && view.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+            RelativeLayout.LayoutParams layoutParams =
+                    (RelativeLayout.LayoutParams) view.getLayoutParams();
             layoutParams.leftMargin = x;
             layoutParams.topMargin = y;
             layoutParams.width = width;
@@ -433,7 +463,8 @@ public class UDView<T extends View> extends BaseUserdata {
         View view = getView();
         if (view != null) {
             if (view.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+                RelativeLayout.LayoutParams layoutParams =
+                        (RelativeLayout.LayoutParams) view.getLayoutParams();
                 layoutParams.leftMargin = x;
                 layoutParams.topMargin = y;
                 view.setLayoutParams(layoutParams);
@@ -452,7 +483,8 @@ public class UDView<T extends View> extends BaseUserdata {
         View view = getView();
         if (view != null) {
             if (view.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+                RelativeLayout.LayoutParams layoutParams =
+                        (RelativeLayout.LayoutParams) view.getLayoutParams();
                 layoutParams.leftMargin = x;
                 view.setLayoutParams(layoutParams);
             }
@@ -485,7 +517,8 @@ public class UDView<T extends View> extends BaseUserdata {
         View view = getView();
         if (view != null) {
             if (view.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+                RelativeLayout.LayoutParams layoutParams =
+                        (RelativeLayout.LayoutParams) view.getLayoutParams();
                 layoutParams.topMargin = y;
                 view.setLayoutParams(layoutParams);
             }
@@ -592,7 +625,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public int getWidth() {
         View view = getView();
         if (view != null && view.getLayoutParams() != null) {
-            return view.getLayoutParams().width >= 0 ? view.getLayoutParams().width : view.getWidth();
+            return view.getLayoutParams().width >= 0 ? view.getLayoutParams().width :
+                    view.getWidth();
         }
         return view != null ? view.getWidth() : 0;
     }
@@ -654,7 +688,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public int getHeight() {
         View view = getView();
         if (view != null && view.getLayoutParams() != null) {
-            return view.getLayoutParams().height >= 0 ? view.getLayoutParams().height : view.getHeight();
+            return view.getLayoutParams().height >= 0 ? view.getLayoutParams().height :
+                    view.getHeight();
         }
         return view != null ? view.getHeight() : 0;
     }
@@ -717,7 +752,8 @@ public class UDView<T extends View> extends BaseUserdata {
     public UDView align(Integer... rules) {
         View view = getView();
         if (view != null && view.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+            RelativeLayout.LayoutParams layoutParams =
+                    (RelativeLayout.LayoutParams) view.getLayoutParams();
             if (rules != null) {
                 for (int rule : rules) {
                     layoutParams.addRule(rule);
@@ -992,9 +1028,12 @@ public class UDView<T extends View> extends BaseUserdata {
     public UDView setCallback(LuaValue callbacks) {
         this.mCallback = callbacks;
         if (this.mCallback != null) {
-            mOnClick = mCallback.isfunction() ? mCallback : LuaUtil.getFunction(mCallback, "onClick", "Click", "OnClick", "click");//TODO OnClick
-            mOnLongClick = mCallback.istable() ? LuaUtil.getFunction(mCallback, "onLongClick", "LongClick", "OnLongClick", "longClick") : null;//TODO OnLongClick
-            mOnTouch = mCallback.istable() ? LuaUtil.getFunction(mCallback, "onTouch", "OnTouch") : null;//TODO OnTouch
+            mOnClick = mCallback.isfunction() ? mCallback : LuaUtil.getFunction(mCallback,
+                    "onClick", "Click", "OnClick", "click");//TODO OnClick
+            mOnLongClick = mCallback.istable() ? LuaUtil.getFunction(mCallback, "onLongClick",
+                    "LongClick", "OnLongClick", "longClick") : null;//TODO OnLongClick
+            mOnTouch = mCallback.istable() ?
+                    LuaUtil.getFunction(mCallback, "onTouch", "OnTouch") : null;//TODO OnTouch
 
             //setup listener
             setOnClickListener();
@@ -1060,8 +1099,8 @@ public class UDView<T extends View> extends BaseUserdata {
      *
      * @return
      */
-    public LuaValue callOnClick() {
-        return LuaUtil.callFunction(this.mOnClick);
+    public void callOnClick(Object... params) {
+        LuaUtil.callFunction(this.mOnClick, params);
     }
 
     public boolean callOnLongClick() {
@@ -1076,15 +1115,10 @@ public class UDView<T extends View> extends BaseUserdata {
      * 点击
      */
     void setOnClickListener() {
-        T view = getView();
+        final T view = getView();
         if (view != null) {
             if (LuaUtil.isValid(this.mOnClick)) {
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        callOnClick();
-                    }
-                });
+                view.setOnTouchListener(mCommontOnTouchListener);
             }//TODO mOnClick 为nil的时候（非null）的时候如何清空onClick，且不影响事件传递
         }
     }
@@ -1096,12 +1130,7 @@ public class UDView<T extends View> extends BaseUserdata {
         T view = getView();
         if (view != null) {
             if (LuaUtil.isValid(this.mOnLongClick)) {
-                view.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        return callOnLongClick();
-                    }
-                });
+                view.setOnTouchListener(mCommontOnTouchListener);
             }//TODO mOnClick 为nil的时候（非null）的时候如何清空onClick，且不影响事件传递
         }
     }
@@ -1114,26 +1143,73 @@ public class UDView<T extends View> extends BaseUserdata {
         T view = getView();
         if (view != null) {
             if (LuaUtil.isValid(this.mOnTouch)) {
-                view.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (mOnTouchEventData == null) {
-                            mOnTouchEventData = new LuaTable();
-                        }
-                        if (event != null) {
-                            mOnTouchEventData.set("action", event.getActionMasked());//0按下，1起来，2移动，3取消，4外部
-                            mOnTouchEventData.set("pointer", event.getPointerId(event.getActionIndex()));
-                            mOnTouchEventData.set("x", DimenUtil.pxToDpi(event.getX()));
-                            mOnTouchEventData.set("y", DimenUtil.pxToDpi(event.getY()));
-                            mOnTouchEventData.set("gx", DimenUtil.pxToDpi(event.getRawX()));
-                            mOnTouchEventData.set("gy", DimenUtil.pxToDpi(event.getRawY()));
-                        }
-                        return callOnTouch(mOnTouchEventData);
-                    }
-                });
+                view.setOnTouchListener(mCommontOnTouchListener);
             }//TODO mOnClick 为nil的时候（非null）的时候如何清空onClick，且不影响事件传递
         }
     }
+
+    private long mActionDownTime = 0;
+    private boolean mCallOnLongClick = false;
+    private boolean onLongClickCallback = false;
+    private View.OnTouchListener mCommontOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            T view = getView();
+            if (view != null) {
+                //onTouch
+                if (LuaUtil.isValid(UDView.this.mOnTouch)) {
+                    if (mOnTouchEventData == null) {
+                        mOnTouchEventData = new LuaTable();
+                    }
+                    if (event != null) {
+                        mOnTouchEventData.set("action", event.getActionMasked());//0按下，1起来，2移动，3取消，4外部
+                        mOnTouchEventData.set("pointer", event.getPointerId(event.getActionIndex()));
+                        mOnTouchEventData.set("x", DimenUtil.pxToDpi(event.getX()));
+                        mOnTouchEventData.set("y", DimenUtil.pxToDpi(event.getY()));
+                        mOnTouchEventData.set("gx", DimenUtil.pxToDpi(event.getRawX()));
+                        mOnTouchEventData.set("gy", DimenUtil.pxToDpi(event.getRawY()));
+                    }
+                    if (callOnTouch(mOnTouchEventData)) {
+                        return true;
+                    }
+                }
+
+                if(!LuaUtil.isValid(UDView.this.mOnClick) && !LuaUtil.isValid(UDView.this.mOnLongClick)){
+                    return false;
+                }
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    mActionDownTime = System.currentTimeMillis();
+                    return true;
+                }
+
+                //onLongClick
+                if (!mCallOnLongClick && LuaUtil.isValid(UDView.this.mOnLongClick) && (System.currentTimeMillis() - mActionDownTime) >= 500) {
+                    mCallOnLongClick = true;
+                    if (callOnLongClick()) {
+                        onLongClickCallback = true;
+                        return true;
+                    }
+                }
+
+                //onClick
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    mCallOnLongClick = false;
+                    if (LuaUtil.isValid(UDView.this.mOnClick) && !onLongClickCallback) {
+                        double x = 0, y = 0, mx = 0, my = 0;
+                        if (event != null) {
+                            x = DimenUtil.pxToDpi(event.getX());
+                            y = DimenUtil.pxToDpi(event.getY());
+                            mx = DimenUtil.pxToDpi(event.getRawX());
+                            my = DimenUtil.pxToDpi(event.getRawY());
+                        }
+                        callOnClick(LuaValue.valueOf(x), LuaValue.valueOf(y), LuaValue.valueOf(mx), LuaValue.valueOf(my));
+                    }
+                }
+            }
+            return false;
+        }
+    };
 
     /**
      * get callback

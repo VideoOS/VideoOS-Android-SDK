@@ -49,12 +49,16 @@ public class VenvyObservableTarget {
         public static final String CONSTANT_TITLE = "title";
         public static final String CONSTANT_NVG_SHOW = "navIsShow";
         public static final String CONSTANT_APP_TYPE = "appType";
-        public static final int CONSTANT_APP_TYPE_LUA = 1;
-        public static final int CONSTANT_APP_TYPE_H5 = 2;
+        public static final int CONSTANT_APP_TYPE_LUA = 1; // 视联网小程序lua
+        public static final int CONSTANT_APP_TYPE_H5 = 2; // 视联网小程序 H5
+        public static final int CONSTANT_APP_TYPE_TOOLS = 3; // 视联网小工具
         public static final String CONSTANT_H5_URL = "h5Url";
         public static final String CONSTANT_LUA_NAME = "luaName";
         public static final String CONSTANT_TEMPLATE = "template";
-        public static final String CONSTANT_ID  = "id";
+        public static final String CONSTANT_ID = "id";
+        public static final String CONSTANT_MINI_APP_INFO = "miniAppInfo";
+        public static final String CONSTANT_VIDEO_MODE_TYPE = "videoModeType";
+        public static final String CONSTANT_DEVELOPER_USER_ID = "developerUserId";
     }
 
 }

@@ -196,7 +196,9 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
      *
      * @param url
      */
-    public void startH5(String url) {
+    public void startH5(String url, String developerUserId) {
+        currentH5Program.addDeveloperUserIdToJsBridge(developerUserId);
+//        url = "http://cytroncdn.videojj.com/pages/jijiMall/dev/index.html#debug";
         currentH5Program.openLink(url);
     }
 
@@ -281,13 +283,13 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     }
 
 
-    public void setCurrentProgramTitle(String title,boolean nvgShow) {
+    public void setCurrentProgramTitle(String title, boolean nvgShow) {
         if (currentProgram != null) {
-            currentProgram.setTitle(title,nvgShow);
+            currentProgram.setTitle(title, nvgShow);
         }
 
-        if(currentH5Program != null){
-            currentH5Program.setTitle(title,nvgShow);
+        if (currentH5Program != null) {
+            currentH5Program.setTitle(title, nvgShow);
         }
     }
 

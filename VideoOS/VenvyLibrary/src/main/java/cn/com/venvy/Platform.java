@@ -7,9 +7,11 @@ import org.json.JSONArray;
 
 import java.io.File;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.download.DownloadImageTask;
 import cn.com.venvy.common.download.DownloadImageTaskRunner;
 import cn.com.venvy.common.download.DownloadTask;
@@ -55,9 +57,10 @@ public class Platform implements Serializable {
     private static final String PRE_LOAD_IMAGE = "pre_load_images";
     private static final String PRE_LOAD_MEDIA = "pre_load_medias";
 
-    public static final int STATISTICS_DOWNLOAD_STAGE_REAPP = 0;
-    public static final int STATISTICS_DOWNLOAD_STAGE_REVIDEO = 1;
-    public static final int STATISTICS_DOWNLOAD_STAGE_REALPLAY = 2;
+    // track 类型
+    public static final int STATISTICS_DOWNLOAD_STAGE_REAPP = 0;   // app启动的时候
+    public static final int STATISTICS_DOWNLOAD_STAGE_REVIDEO = 1;  // 开始播放的时候
+    public static final int STATISTICS_DOWNLOAD_STAGE_REALPLAY = 2; // 实时
 
     private DownloadImageTaskRunner mDownloadImageTaskRunner;
     private DownloadTaskRunner mDownloadTaskRunner;
@@ -189,7 +192,7 @@ public class Platform implements Serializable {
         mDownloadImageTaskRunner.startTasks(arrayList, new TaskListener<DownloadImageTask, Boolean>() {
             @Override
             public boolean isFinishing() {
-                if (taskListener != null) {
+                if(taskListener != null){
                     return taskListener.isFinishing();
                 }
                 return false;
@@ -197,35 +200,35 @@ public class Platform implements Serializable {
 
             @Override
             public void onTaskStart(DownloadImageTask downloadImageTask) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTaskStart(downloadImageTask);
                 }
             }
 
             @Override
             public void onTaskProgress(DownloadImageTask downloadImageTask, int progress) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTaskProgress(downloadImageTask, progress);
                 }
             }
 
             @Override
             public void onTaskFailed(DownloadImageTask downloadImageTask, @Nullable Throwable throwable) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTaskFailed(downloadImageTask, throwable);
                 }
             }
 
             @Override
             public void onTaskSuccess(DownloadImageTask downloadImageTask, Boolean aBoolean) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTaskSuccess(downloadImageTask, aBoolean);
                 }
             }
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadImageTask> successfulTasks, @Nullable List<DownloadImageTask> failedTasks) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTasksComplete(successfulTasks, failedTasks);
                 }
             }
@@ -248,7 +251,7 @@ public class Platform implements Serializable {
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
             @Override
             public boolean isFinishing() {
-                if (taskListener != null) {
+                if(taskListener != null){
                     return taskListener.isFinishing();
                 }
                 return false;
@@ -256,50 +259,75 @@ public class Platform implements Serializable {
 
             @Override
             public void onTaskStart(DownloadTask downloadTask) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTaskStart(downloadTask);
                 }
             }
 
             @Override
             public void onTaskProgress(DownloadTask downloadTask, int progress) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTaskProgress(downloadTask, progress);
                 }
             }
 
             @Override
             public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTaskFailed(downloadTask, throwable);
-                } else {
+                }else {
                     downloadTask.failed();
                 }
             }
 
             @Override
             public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
-                if (taskListener != null) {
+                if(taskListener != null){
                     taskListener.onTaskSuccess(downloadTask, aBoolean);
                 }
             }
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
-                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks, Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
-                if (taskListener != null) {
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
+                if(taskListener != null){
                     taskListener.onTasksComplete(successfulTasks, failedTasks);
                 }
             }
         });
     }
 
-    public void preloadLuaList(final Platform platform, final JSONArray luas, final PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
-        if (luas == null || luas.length() <= 0) {
+    public void preloadMiniAppLua(final Platform platform, final List<LuaFileInfo> listOfLuaInfo, final PreloadLuaUpdate.CacheLuaUpdateCallback cacheLuaUpdateCallback) {
+        if (listOfLuaInfo == null || listOfLuaInfo.size() <= 0) {
             return;
         }
-        mPreloadLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, platform, callback);
-        mPreloadLuaUpdate.startDownloadLuaFile(luas);
+        mPreloadLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO, platform, new PreloadLuaUpdate.CacheLuaUpdateCallback() {
+            @Override
+            public void updateComplete(boolean isUpdateByNetWork) {
+                if (isUpdateByNetWork) {
+                    try {
+                        //TODO 反射 强制更新Lua目录
+                        Class<?> mClass = Class.forName("cn.com.videopls.pub.view.VideoOSLuaView");
+                        Method method = mClass.getMethod("destroyLuaScript");
+                        method.setAccessible(true);
+                        method.invoke(mClass, new Object[]{});
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (cacheLuaUpdateCallback != null) {
+                    cacheLuaUpdateCallback.updateComplete(isUpdateByNetWork);
+                }
+            }
+
+            @Override
+            public void updateError(Throwable t) {
+                if (cacheLuaUpdateCallback != null) {
+                    cacheLuaUpdateCallback.updateError(t);
+                }
+            }
+        });
+        mPreloadLuaUpdate.startDownloadLuaFile(listOfLuaInfo);
     }
 
     public DownloadTaskRunner getDownloadTaskRunner() {

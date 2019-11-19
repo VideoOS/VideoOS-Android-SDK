@@ -9,7 +9,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.com.venvy.App;
@@ -17,6 +19,7 @@ import cn.com.venvy.AppSecret;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PreloadLuaUpdate;
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -33,6 +36,7 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 import static cn.com.venvy.App.getContext;
 import static cn.com.venvy.PreloadLuaUpdate.LUA_CACHE_PATH;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_DEVELOPER_USER_ID;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_H5_URL;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
@@ -47,7 +51,7 @@ import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTA
 public class VisionProgramConfigModel extends VideoPlusBaseModel {
 
 
-    private static final String CONFIG = "/vision/getMiniAppConf";
+    private static final String CONFIG = "/vision/v2/getMiniAppConf";
 
     private VisionProgramConfigCallback callback;
     private PreloadLuaUpdate mDownLuaUpdate;
@@ -100,6 +104,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                         if (callback != null) {
                             callback.downError(new Exception("download lua script error"));
                         }
+                        return;
                     }
                     // 解密返回数据
                     final JSONObject value = new JSONObject(response.getResult());
@@ -130,6 +135,13 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     }
 
                     final JSONObject decryptData = new JSONObject(jsonStr);
+                    // lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
+                    // 开发者模式下 则是：[{url:本地filePath}, {url:本地filePath} , ...]
+                    JSONObject miniAppInfoObj = decryptData.optJSONObject("miniAppInfo");
+                    final String template = miniAppInfoObj.optString("template");
+                    final String miniAppId = miniAppInfoObj.optString("miniAppId");
+                    final String developerUserId = miniAppInfoObj.optString("developerUserId");
+                    JSONArray fileListArray = miniAppInfoObj.optJSONArray("luaList");
 
                     if (isH5Type) {
                         final String h5Url = decryptData.optString("h5Url");
@@ -139,15 +151,12 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                             // 拉起一个H5容器
                             Bundle bundle = new Bundle();
                             bundle.putString(CONSTANT_H5_URL, h5Url);
+                            bundle.putString(CONSTANT_DEVELOPER_USER_ID, developerUserId);
                             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, bundle);
                         }
-
                         return;
                     }
-                    // lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
-                    // 开发者模式下 则是：[{url:本地filePath}, {url:本地filePath} , ...]
-                    JSONArray fileListArray = decryptData.optJSONArray("luaList");
-                    final String template = decryptData.optString("template"); //  入口lua文件名称
+
                     String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
                     JSONObject displayObj = decryptData.optJSONObject("display");
                     if (displayObj != null) {
@@ -156,8 +165,38 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                         updateVisionTitle(nativeTitle, nvgShow);
                     }
 
-
                     if (resCode.equalsIgnoreCase("00")) {
+                        //LuaArray --> JavaBean
+                        List<LuaFileInfo> luaFileInfoList = new ArrayList<>();
+                        LuaFileInfo luaFileInfo = new LuaFileInfo();
+                        luaFileInfo.setMiniAppId(miniAppId);
+                        List<LuaFileInfo.LuaListBean> luaList = new ArrayList<>();
+                        for (int i = 0; i < fileListArray.length(); i++) {
+                            JSONObject luaFileObj = fileListArray.optJSONObject(i);
+                            if (luaFileObj == null) {
+                                continue;
+                            }
+                            String luaMD5 = luaFileObj.optString("md5");
+                            String luaUrl = luaFileObj.optString("url");
+
+                            if(TextUtils.isEmpty(luaMD5) || TextUtils.isEmpty(luaUrl)){
+                                continue;
+                            }
+                            LuaFileInfo.LuaListBean luaListBean = new LuaFileInfo.LuaListBean();
+                            luaListBean.setLuaFileMd5(luaMD5);
+                            luaListBean.setLuaFileUrl(luaUrl);
+                            luaList.add(luaListBean);
+                        }
+                        if(luaList.size() <= 0){
+                            VisionProgramConfigModel.VisionProgramConfigCallback callback = getCallback();
+                            if (callback != null) {
+                                callback.downError(new NullPointerException("response lua script is null"));
+                            }
+                            return;
+                        }
+                        luaFileInfo.setLuaList(luaList);
+                        luaFileInfoList.add(luaFileInfo);
+
                         if (mDownLuaUpdate == null) {
                             mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new PreloadLuaUpdate.CacheLuaUpdateCallback() {
                                 @Override
@@ -180,7 +219,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                 }
                             });
                         }
-                        mDownLuaUpdate.startDownloadLuaFile(fileListArray);
+                        mDownLuaUpdate.startDownloadLuaFile(luaFileInfoList);
                     } else if (resCode.equalsIgnoreCase("01")) {
                         // 小程序下架不可用
                         Bundle bundle = new Bundle();

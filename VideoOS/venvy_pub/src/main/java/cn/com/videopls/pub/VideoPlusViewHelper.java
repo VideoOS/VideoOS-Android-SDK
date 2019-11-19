@@ -1,13 +1,12 @@
 package cn.com.videopls.pub;
 
-import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import java.util.HashMap;
 
+import cn.com.venvy.common.interf.RotateStatus;
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
@@ -57,20 +56,15 @@ public class VideoPlusViewHelper implements VenvyObserver {
                             }
 
                             if (videoPlusView != null) {
-                                if (VenvyObservableTarget.Constant.CONSTANT_LANDSCAPE == orientationType && !isHorizontal()) {
-                                    // 请求一个横屏视联网小程序，如果是竖屏需要强转
-//                                    videoPlusView.clearAllVisionProgram();
-                                    ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                                if (videoPlusView.getAdapter() != null) {
+                                    videoPlusView.getAdapter().buildWidgetRotationListener().onRotate(orientationType == RotateStatus.TO_LANDSCAPE.getId() ?
+                                            RotateStatus.TO_LANDSCAPE : RotateStatus.TO_VERTICAL);
                                 }
-
-                                if (VenvyObservableTarget.Constant.CONSTANT_PORTRAIT == orientationType && isHorizontal()) {
-                                    // 请求一个竖屏屏视联网小程序，如果是横屏需要强转
-//                                    videoPlusView.clearAllVisionProgram();
-                                    ((Activity) videoPlusView.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                                if (appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_TOOLS) {
+                                    videoPlusView.launchVisionToolsProgram(appletsId,data); // 请求视联网小工具
+                                } else {
+                                    videoPlusView.launchVisionProgram(appletsId, data, orientationType, appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_H5);
                                 }
-
-
-                                videoPlusView.launchVisionProgram(appletsId, data, orientationType, appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_H5);
                             }
                         }
                     }
@@ -121,7 +115,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                         String title = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TITLE);
                         boolean nvgShow = bundle.getBoolean(VenvyObservableTarget.Constant.CONSTANT_NVG_SHOW);
                         if (videoPlusView != null) {
-                            videoPlusView.setCurrentVisionProgramTitle(title,nvgShow);
+                            videoPlusView.setCurrentVisionProgramTitle(title, nvgShow);
                         }
                     }
                 });
@@ -133,8 +127,8 @@ public class VideoPlusViewHelper implements VenvyObserver {
                     public void run() {
                         if (videoPlusView != null) {
                             String h5Url = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_H5_URL);
-                            String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
-                            videoPlusView.launchH5VisionProgram(h5Url);
+                            String developerUserId = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DEVELOPER_USER_ID);
+                            videoPlusView.launchH5VisionProgram(h5Url, developerUserId);
                         }
                     }
                 });
@@ -158,7 +152,9 @@ public class VideoPlusViewHelper implements VenvyObserver {
                     public void run() {
                         if (videoPlusView != null) {
                             String luaName = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_LUA_NAME);
-                            videoPlusView.launchDesktopProgram(luaName);
+                            String miniAppInfo = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO);
+                            String videoModeType = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE);
+                            videoPlusView.launchDesktopProgram(luaName, miniAppInfo, videoModeType);
                         }
                     }
                 });

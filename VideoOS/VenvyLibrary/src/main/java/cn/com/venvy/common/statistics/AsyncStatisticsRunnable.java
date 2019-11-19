@@ -7,17 +7,17 @@ import cn.com.venvy.Platform;
  */
 
 public class AsyncStatisticsRunnable implements Runnable {
-    private StatisticsInfoBean statisticsInfoBean;
-    private Platform platform;
+    private String dataJson;
+    private Platform  platform;
 
-    public AsyncStatisticsRunnable(Platform platform,StatisticsInfoBean statisticsInfoBean) {
+    public AsyncStatisticsRunnable(Platform platform,String dataJson) {
         this.platform = platform;
-        this.statisticsInfoBean = statisticsInfoBean;
+        this.dataJson = dataJson;
     }
 
     @Override
     public void run() {
-        VideoPlusStatisticsModel videoPlusStatisticsModel = new VideoPlusStatisticsModel(platform, statisticsInfoBean, new VideoPlusStatisticsModel.VideoPlusStatisticsCallback() {
+        VideoPlusStatisticsModel videoPlusStatisticsModel = new VideoPlusStatisticsModel(platform, dataJson, new VideoPlusStatisticsModel.VideoPlusStatisticsCallback() {
             @Override
             public void updateComplete(String result) {
 

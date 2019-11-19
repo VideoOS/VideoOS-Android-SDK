@@ -263,6 +263,13 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         cancelLoadingAnimation();
     }
 
+    public void addDeveloperUserIdToJsBridge(String developerUserId){
+        if(jsBridge != null){
+            jsBridge.setDeveloperUserId(developerUserId);
+            webView.setJsBridge(jsBridge);
+        }
+    }
+
     public void reload(String data) {
         if (jsBridge != null) {
             jsBridge.setJsData(data);
