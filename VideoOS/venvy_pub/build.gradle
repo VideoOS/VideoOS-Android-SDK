@@ -19,21 +19,21 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            buildConfigField "int", "DebugStatus", "1"
+            buildConfigField "int", "DebugStatus", "4"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         preRelease {
             //是否混淆
             minifyEnabled false
-            buildConfigField "int", "DebugStatus", "2"
+            buildConfigField "int", "DebugStatus", "3"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
             //是否混淆
             minifyEnabled false
-            buildConfigField "int", "DebugStatus", "3"
+            buildConfigField "int", "DebugStatus", "1"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

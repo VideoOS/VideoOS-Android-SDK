@@ -1,8 +1,16 @@
 package cn.com.videopls.pub;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.com.venvy.Platform;
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.http.HttpStatusPlugin;
 import cn.com.venvy.common.http.RequestFactory;
 import cn.com.venvy.common.http.base.BaseRequestConnect;
@@ -76,4 +84,31 @@ public abstract class VideoPlusBaseModel {
         return mRequestConnect;
     }
 
+    public List<LuaFileInfo.LuaListBean> luaArray2LuaList(JSONArray luaArray) {
+        if(luaArray == null || luaArray.length() <= 0){
+            return null;
+        }
+        List<LuaFileInfo.LuaListBean> videoModeLuaList = new ArrayList<>();
+        for (int j = 0; j < luaArray.length(); j++) {
+            JSONObject luaFileObj = luaArray.optJSONObject(j);
+            if(luaFileObj == null){
+                break;
+            }
+            String luaName = luaFileObj.optString("name");
+            String luaMD5 = luaFileObj.optString("md5");
+            String luaUrl = luaFileObj.optString("url");
+            String luaPath = luaFileObj.optString("path");
+            if(TextUtils.isEmpty(luaMD5) || TextUtils.isEmpty(luaUrl)){
+                break;
+            }
+            LuaFileInfo.LuaListBean luaListBean = new LuaFileInfo.LuaListBean();
+            luaListBean.setLuaFileMd5(luaMD5);
+            luaListBean.setLuaFileName(luaName);
+            luaListBean.setLuaFilePath(luaPath);
+            luaListBean.setLuaFileUrl(luaUrl);
+
+            videoModeLuaList.add(luaListBean);
+        }
+        return videoModeLuaList;
+    }
 }

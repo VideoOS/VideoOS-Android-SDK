@@ -196,15 +196,36 @@ public abstract class BaseImageView extends ForegroundImageView {
         mPath = new Path();
         Rect rect = mStyleDrawable.getBounds();
         float radius = mStyleDrawable.getCornerRadius();
+        float[] radii = mStyleDrawable.getCornerRadii();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mPath.addRoundRect(rect.left, rect.top, rect.right, rect.bottom, radius, radius, Path.Direction.CW);
+            if (radii == null || radii.length == 0) {
+                mPath.addRoundRect(rect.left, rect.top, rect.right, rect.bottom, radius, radius,
+                        Path.Direction.CW);
+            } else {
+                mPath.addRoundRect(rect.left, rect.top, rect.right, rect.bottom, radii,
+                        Path.Direction.CW);
+            }
         } else {
-            mPath.addCircle(rect.left + radius, rect.top + radius, radius, Path.Direction.CW);
-            mPath.addCircle(rect.right - radius, rect.top + radius, radius, Path.Direction.CW);
-            mPath.addCircle(rect.right - radius, rect.bottom - radius, radius, Path.Direction.CW);
-            mPath.addCircle(rect.left + radius, rect.bottom - radius, radius, Path.Direction.CW);
-            mPath.addRect(rect.left + radius, rect.top, rect.right - radius, rect.bottom, Path.Direction.CW);
-            mPath.addRect(rect.left, rect.top + radius, rect.right, rect.bottom - radius, Path.Direction.CW);
+            if (radii == null || radii.length == 0) {
+                mPath.addCircle(rect.left + radius, rect.top + radius, radius, Path.Direction.CW);
+                mPath.addCircle(rect.right - radius, rect.top + radius, radius, Path.Direction.CW);
+                mPath.addCircle(rect.right - radius, rect.bottom - radius, radius, Path.Direction.CW);
+                mPath.addCircle(rect.left + radius, rect.bottom - radius, radius, Path.Direction.CW);
+                mPath.addRect(rect.left + radius, rect.top, rect.right - radius, rect.bottom, Path.Direction.CW);
+                mPath.addRect(rect.left, rect.top + radius, rect.right, rect.bottom - radius, Path.Direction.CW);
+            } else {
+                float topLeftX = radii[0], topLeftY = radii[1];
+                float topRightX = radii[2], topRightY = radii[3];
+                float bottomLeftX = radii[4], bottomLeftY = radii[5];
+                float bottomRightX = radii[6], bottomRightY = radii[7];
+                mPath.addCircle(rect.left + topLeftX, rect.top + topLeftY, topLeftY, Path.Direction.CW);
+                mPath.addCircle(rect.right - topRightX, rect.top + topRightY, topRightY, Path.Direction.CW);
+                mPath.addCircle(rect.right - bottomLeftX, rect.bottom - bottomLeftY, bottomLeftY, Path.Direction.CW);
+                mPath.addCircle(rect.left + bottomRightX, rect.bottom - bottomRightY, bottomRightY, Path.Direction.CW);
+                mPath.addRect(rect.left + topLeftX, rect.top, rect.right - topRightX, rect.bottom, Path.Direction.CW);
+                mPath.addRect(rect.left, rect.top + topLeftY, rect.right, rect.bottom - bottomLeftY, Path.Direction.CW);
+            }
+
         }
         return mPath;
     }
@@ -228,6 +249,13 @@ public abstract class BaseImageView extends ForegroundImageView {
             mStyleDrawable = new LVGradientDrawable();
         }
         return mStyleDrawable;
+    }
+
+    public void setCornerRadii(float[] radii) {
+        getStyleDrawable().setCornerRadii(radii);
+        LVGradientDrawable drawable = this.getBackground() instanceof LVGradientDrawable ? (LVGradientDrawable) this.getBackground() : new LVGradientDrawable();
+        drawable.setCornerRadii(radii);
+        LuaViewUtil.setBackground(this, drawable);
     }
 
     /**

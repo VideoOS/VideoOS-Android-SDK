@@ -15,9 +15,10 @@ public class DebugStatus {
     public final static String CURRENT_ENVIRONMENT = "venvy_current_environment";
 
     public enum EnvironmentStatus {
-        DEBUG(1),
+        RELEASE(1),
         PREVIEW(2),
-        RELEASE(3);
+        TEST(3),
+        DEV(4);
 
         int environmentValue = 0;
 
@@ -32,11 +33,13 @@ public class DebugStatus {
         public static EnvironmentStatus getStatusByIntType(int type) {
             switch (type) {
                 case 1:
-                    return DEBUG;
+                    return RELEASE;
                 case 2:
                     return PREVIEW;
                 case 3:
-                    return RELEASE;
+                    return TEST;
+                case 4:
+                    return DEV;
             }
             return RELEASE;
         }
@@ -54,10 +57,6 @@ public class DebugStatus {
         }
     }
 
-    public static boolean isDebug() {
-        return sCurrentDebugStatus == EnvironmentStatus.DEBUG;
-    }
-
     public static boolean isRelease() {
         return sCurrentDebugStatus == EnvironmentStatus.RELEASE;
     }
@@ -66,9 +65,16 @@ public class DebugStatus {
         return sCurrentDebugStatus == EnvironmentStatus.PREVIEW;
     }
 
+    public static boolean isTest() {
+        return sCurrentDebugStatus == EnvironmentStatus.TEST;
+    }
+
+    public static boolean isDev() {
+        return sCurrentDebugStatus == EnvironmentStatus.DEV;
+    }
+
     public static EnvironmentStatus getCurrentEnvironmentStatus() {
         return sCurrentDebugStatus;
     }
-
 
 }

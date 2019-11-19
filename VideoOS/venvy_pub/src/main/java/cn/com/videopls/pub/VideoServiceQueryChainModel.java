@@ -7,7 +7,9 @@ import android.text.TextUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.com.venvy.AppSecret;
@@ -16,6 +18,7 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.PreloadLuaUpdate;
 import cn.com.venvy.PreloadZipUpdate;
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
@@ -40,7 +43,7 @@ import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTA
 
 public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
     private static final String SERVICE_QUERYALL_CHAIN_URL_MOCK = Config.HOST_VIDEO_OS
-            + "/vision/getLabelConf";
+            + "/vision/v2/getLabelConf";
     private static final String LUA_ZIP = "/lua/os/chain.zip";
     private ServiceQueryChainCallback mQueryChainCallback;
     private PreloadLuaUpdate mDownLuaUpdate;
@@ -100,35 +103,65 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    final String desktopTemplate = obj.optString("desktopTemplate");
-                    final String template = obj.optString("template");
+                    JSONObject videoModeMiniAppInfoObj = obj.optJSONObject("videoModeMiniAppInfo");
+                    JSONObject desktopMiniAppInfoObj = obj.optJSONObject("desktopMiniAppInfo");
+                    if(videoModeMiniAppInfoObj == null || desktopMiniAppInfoObj == null){
+                        ServiceQueryChainCallback callback = getQueryChainCallback();
+                        if (callback != null) {
+                            callback.queryError(new Exception("query appInfo is error."));
+                        }
+                        return;
+                    }
                     final JSONArray dataJsonArray = obj.optJSONArray("jsonList");
-                    final JSONArray luaJsonArray = obj.optJSONArray("luaList");
 
-                    if (TextUtils.isEmpty(template)) {
+                    final String videoModeMiniAppId = videoModeMiniAppInfoObj.optString("miniAppId");
+                    final String videoModeTemplate = videoModeMiniAppInfoObj.optString("template");
+                    JSONArray videoModeLuaArray = videoModeMiniAppInfoObj.optJSONArray("luaList");
+
+                    final String desktopMiniAppId = desktopMiniAppInfoObj.optString("miniAppId");
+                    final String desktopTemplate = desktopMiniAppInfoObj.optString("template");
+                    JSONArray desktopModeLuaArray = desktopMiniAppInfoObj.optJSONArray("luaList");
+
+                    //条件判断
+                    if(TextUtils.isEmpty(videoModeMiniAppId) || TextUtils.isEmpty(videoModeTemplate) || videoModeLuaArray == null || videoModeLuaArray.length() <= 0 ||
+                        TextUtils.isEmpty(desktopMiniAppId) || TextUtils.isEmpty(desktopTemplate) || desktopModeLuaArray == null || desktopModeLuaArray.length() <= 0){
                         ServiceQueryChainCallback callback = getQueryChainCallback();
                         if (callback != null) {
-                            callback.queryError(new Exception("query chain data with template is " +
-                                    "null"));
+                            callback.queryError(new Exception("query data is null."));
                         }
                         return;
                     }
-//                    if (dataJsonArray == null || dataJsonArray.length() <= 0) {
-//                        ServiceQueryChainCallback callback = getQueryChainCallback();
-//                        if (callback != null) {
-//                            callback.queryError(new Exception("query chain data with jsonList is " +
-//                                    "null"));
-//                        }
-//                        return;
-//                    }
-                    if (luaJsonArray == null || luaJsonArray.length() <= 0) {
+
+                    List<LuaFileInfo> luaFileInfoList = new ArrayList<>();
+
+                    //videoModeLuaArray json --> bean
+                    LuaFileInfo videoModeLuaFileInfo = new LuaFileInfo();
+                    videoModeLuaFileInfo.setMiniAppId(videoModeMiniAppId);
+                    List<LuaFileInfo.LuaListBean> videoModeLuaList = luaArray2LuaList(videoModeLuaArray);
+
+                    if(videoModeLuaList != null && videoModeLuaList.size() > 0){
+                        videoModeLuaFileInfo.setLuaList(videoModeLuaList);
+                        luaFileInfoList.add(videoModeLuaFileInfo);
+                    }
+
+                    //desktopModeLuaArray json --> bean
+                    LuaFileInfo desktopLuaFileInfo = new LuaFileInfo();
+                    desktopLuaFileInfo.setMiniAppId(desktopMiniAppId);
+                    List<LuaFileInfo.LuaListBean> desktopLuaList = luaArray2LuaList(desktopModeLuaArray);
+
+                    if(desktopLuaList != null && desktopLuaList.size() > 0){
+                        desktopLuaFileInfo.setLuaList(desktopLuaList);
+                        luaFileInfoList.add(desktopLuaFileInfo);
+                    }
+
+                    if (luaFileInfoList.size() <= 0) {
                         ServiceQueryChainCallback callback = getQueryChainCallback();
                         if (callback != null) {
-                            callback.queryError(new Exception("query chain data with luaList is " +
-                                    "null"));
+                            callback.queryError(new Exception("query data is null."));
                         }
                         return;
                     }
+
                     if (mDownLuaUpdate == null) {
                         mDownLuaUpdate = new PreloadLuaUpdate(Platform.STATISTICS_DOWNLOAD_STAGE_REALPLAY, getPlatform(), new
                                 PreloadLuaUpdate.CacheLuaUpdateCallback() {
@@ -140,7 +173,9 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         //  load desktop lua
                                         loadDesktopProgram(desktopTemplate);
 
-                                        mDownZipUpdate.startDownloadZipFile(dataJsonArray);
+                                        if(dataJsonArray != null && dataJsonArray.length() > 0){
+                                            mDownZipUpdate.startDownloadZipFile(dataJsonArray);
+                                        }
                                     }
 
                                     @Override
@@ -163,7 +198,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                 ServiceQueryAdsInfo queryAdsInfo =
                                         new ServiceQueryAdsInfo
                                                 .Builder()
-                                                .setQueryAdsTemplate(template)
+                                                .setQueryAdsTemplate(videoModeTemplate)
                                                 .setQueryAdsId(queryAdsId)
                                                 .setQueryAdsType(!TextUtils.isEmpty(adsType) ?
                                                         Integer.valueOf(adsType) : 0).build();
@@ -192,7 +227,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                             }
                         });
                     }
-                    mDownLuaUpdate.startDownloadLuaFile(luaJsonArray);
+                    mDownLuaUpdate.startDownloadLuaFile(luaFileInfoList);
                 } catch (Exception e) {
                     VenvyLog.e(VideoServiceQueryChainModel.class.getName(), e);
                     ServiceQueryChainCallback callback = getQueryChainCallback();

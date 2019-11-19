@@ -9,6 +9,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.LibFunction;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.lua.maper.LVWebViewMethodMapper;
 import cn.com.venvy.lua.view.VenvyLVWebView;
 
@@ -18,9 +19,14 @@ import cn.com.venvy.lua.view.VenvyLVWebView;
  */
 
 public class VenvyWebViewBinder extends BaseFunctionBinder {
+    private Platform platform;
 
     public VenvyWebViewBinder() {
         super("WebView");
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
     }
 
     @Override
@@ -33,8 +39,8 @@ public class VenvyWebViewBinder extends BaseFunctionBinder {
         return new BaseVarArgUICreator(env.checkglobals(), metaTable, getMapperClass()) {
             @Override
             public ILVView createView(Globals globals, LuaValue metaTable, Varargs varargs) {
-                VenvyLVWebView venvyLVWebView = new VenvyLVWebView(globals, metaTable, varargs);
-                venvyLVWebView.init(globals.getContext());
+                VenvyLVWebView venvyLVWebView = new VenvyLVWebView(platform, globals, metaTable, varargs);
+                venvyLVWebView.init(globals.getContext(),globals);
                 return venvyLVWebView;
             }
         };

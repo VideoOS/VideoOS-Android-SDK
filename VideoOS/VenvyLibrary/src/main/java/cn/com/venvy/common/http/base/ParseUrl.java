@@ -11,31 +11,42 @@ import cn.com.venvy.common.debug.DebugStatus;
 public class ParseUrl {
 
     public enum VenvyUrl {
-        ADS_API("ads-api.videojj.com", "test-ads-api.videojj.com", "test-ads-api.videojj.com"),
-        VA("va.videojj.com", "test-va.videojj.com", "test-va.videojj.com"),
-        CYTRON("cytron.videojj.com", "test-cytron.videojj.com", "test-cytron.videojj.com"),
-        LIVE("liveapi.videojj.com", "test.liveapi.videojj.com", "test.liveapi.videojj.com"),
-        LOG_REPORT("log.videojj.com", "test-log.videojj.com", "test-log.videojj.com"),
-        OS("os-open.videojj.com", "test-os-open.videojj.com", "dev-os-open.videojj.com"),
-        OS_SAAS("os-saas.videojj.com", "test-os-saas.videojj.com", "dev-os-saas.videojj.com"),
-        PLAT_LIVE("plat.videojj.com", "pre-plat.videojj.com", "test-plat.videojj.com");
+        ADS_API("ads-api.videojj.com", "ads-api.videojj.com", "test-ads-api.videojj.com", "test-ads-api.videojj.com"),
+
+        VA("va.videojj.com", "va.videojj.com", "test-va.videojj.com", "test-va.videojj.com"),
+
+        CYTRON("cytron.videojj.com", "precytron.videojj.com", "test-cytron.videojj.com", "test-cytron.videojj.com"),
+
+        LIVE("liveapi.videojj.com", "liveapi.videojj.com", "test.liveapi.videojj.com", "test.liveapi.videojj.com"),
+
+        LOG_REPORT("log.videojj.com", "test-log.videojj.com", "test-log.videojj.com", "test-log.videojj.com"),
+
+        OS("os-open.videojj.com", "pre-os-open.videojj.com", "test-os-open.videojj.com", "dev-os-open.videojj.com"),
+
+        OS_SAAS("os-saas.videojj.com", "pre-os-saas.videojj.com", "test-os-saas.videojj.com", "dev-os-saas.videojj.com"),
+
+        PLAT_LIVE("plat.videojj.com", "pre-plat.videojj.com", "test-plat.videojj.com", "dev-plat.videojj.com");
 
         private String url;
         private String preUrl;
-        private String debugUrl;
+        private String testUrl;
+        private String devUrl;
 
-        VenvyUrl(String url, String preUrl, String debugUrl) {
+        VenvyUrl(String url, String preUrl, String testUrl, String devUrl) {
             this.url = url;
             this.preUrl = preUrl;
-            this.debugUrl = debugUrl;
+            this.testUrl = testUrl;
+            this.devUrl = devUrl;
         }
 
         public String getCurrentUrl() {
-            if (DebugStatus.isDebug()) {
-                return debugUrl;
+            if (DebugStatus.isDev()) {
+                return devUrl;
             } else if (DebugStatus.isPreView()) {
                 return preUrl;
-            } else {
+            } else if(DebugStatus.isTest()){
+                return testUrl;
+            }else {
                 return url;
             }
         }

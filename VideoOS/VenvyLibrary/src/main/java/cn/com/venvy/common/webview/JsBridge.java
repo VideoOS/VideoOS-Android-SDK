@@ -36,6 +36,7 @@ import cn.com.venvy.common.utils.VenvyBase64;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyMD5Util;
+import cn.com.venvy.common.utils.VenvyPreferenceHelper;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
 import static cn.com.venvy.common.observer.VenvyObservableTarget.TAG_JS_BRIDGE_OBSERVER;
@@ -58,6 +59,8 @@ public class JsBridge implements VenvyObserver {
     //    private JsParamsInfo mParamsInfo;
     public String mJsData;
     public String mJsTitle;
+    //开发者id
+    public String mDeveloperUserId;
 
     public JsBridge(Context context, @NonNull IVenvyWebView webView, Platform platform) {
         this.mVenvyWebView = webView;
@@ -73,7 +76,7 @@ public class JsBridge implements VenvyObserver {
         this.mJsData = jsData;
     }
 
-    public void setJsTitle(String jsTitle){
+    public void setJsTitle(String jsTitle) {
         this.mJsTitle = jsTitle;
     }
 
@@ -83,6 +86,10 @@ public class JsBridge implements VenvyObserver {
 
     public void setSsid(String ssid) {
         this.ssid = ssid;
+    }
+
+    public void setDeveloperUserId(String developerUserId) {
+        this.mDeveloperUserId = developerUserId;
     }
 
     public void setPlatformLoginInterface(IPlatformLoginInterface platformLoginInterface) {
@@ -299,6 +306,48 @@ public class JsBridge implements VenvyObserver {
         }
     }
 
+    /***
+     * 写入本地数据
+     * @param jsonParams
+     */
+    @JavascriptInterface
+    public void setStorageData(String jsonParams) {
+
+        try {
+            JSONObject json = new JSONObject(jsonParams);
+            JSONObject msgObj = json.optJSONObject("msg");
+            String key = msgObj.optString("key");
+            String value = msgObj.optString("value");
+            VenvyPreferenceHelper.putString(mContext, TextUtils.isEmpty(mDeveloperUserId) ? "" : mDeveloperUserId, key, value);
+
+        } catch (JSONException e) {
+
+        }
+    }
+
+    /***
+     * 读取本地数据
+     * @param jsParams
+     */
+    public void getStorageData(String jsParams) {
+        try {
+            final JSONObject jsonObj = new JSONObject(jsParams);
+            JSONObject msgObj = jsonObj.optJSONObject("msg");
+            final String key = msgObj.optString("key");
+            if (jsonObj.has("callback")) {
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callJsFunction(jsonObj.optString("callback"), VenvyPreferenceHelper.getString(mContext, mDeveloperUserId, key, ""));
+                    }
+                });
+
+            }
+
+        } catch (JSONException e) {
+
+        }
+    }
 
     @JavascriptInterface
     public void requireLogin(final String jsParams) {

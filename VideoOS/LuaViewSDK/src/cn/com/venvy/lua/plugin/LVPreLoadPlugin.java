@@ -1,19 +1,26 @@
 package cn.com.venvy.lua.plugin;
 
+import android.text.TextUtils;
+
 import com.taobao.luaview.util.LuaUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import cn.com.venvy.Platform;
 import cn.com.venvy.App;
+import cn.com.venvy.Platform;
+import cn.com.venvy.PreloadLuaUpdate;
+import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.download.DownloadDbHelper;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
@@ -28,7 +35,7 @@ public class LVPreLoadPlugin {
     public static void install(VenvyLVLibBinder venvyLVLibBinder, Platform platform) {
         venvyLVLibBinder.set("preloadImage", new PreLoadImageData(platform));
         venvyLVLibBinder.set("preloadVideo", new PreLoadVideoCacheData(platform));
-        venvyLVLibBinder.set("preloadLuaList", new PreLoadLuaCacheData(platform));
+        venvyLVLibBinder.set("preloadMiniAppLua", new PreLoadMiniAppLuaCacheData(platform));
         venvyLVLibBinder.set("isCacheVideo", sISVideoCachedData == null ? sISVideoCachedData = new ISVideoCachedData() : sISVideoCachedData);
     }
 
@@ -86,10 +93,10 @@ public class LVPreLoadPlugin {
         }
     }
 
-    private static class PreLoadLuaCacheData extends VarArgFunction {
+    private static class PreLoadMiniAppLuaCacheData extends VarArgFunction {
         private Platform mPlatform;
 
-        PreLoadLuaCacheData(Platform platform) {
+        PreLoadMiniAppLuaCacheData(Platform platform) {
             super();
             this.mPlatform = platform;
         }
@@ -99,16 +106,54 @@ public class LVPreLoadPlugin {
             int fixIndex = VenvyLVLibBinder.fixIndex(args);
             if (args.narg() > fixIndex) {
                 LuaTable table = LuaUtil.getTable(args, fixIndex + 1);
+                final LuaFunction callback = LuaUtil.getFunction(args, fixIndex + 2);
                 try {
                     HashMap<String, String> paramsMap = LuaUtil.toMap(table);
                     if (paramsMap == null || paramsMap.size() <= 0) {
                         return LuaValue.NIL;
                     }
-                    JSONArray proLoadArray=new JSONArray();
-                    for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
-                        proLoadArray.put(new JSONObject(entry.getValue().toString()));
+
+                    JSONObject miniAppInfoObj = new JSONObject(paramsMap);
+                    if(miniAppInfoObj == null){
+                        return LuaValue.NIL;
                     }
-                    mPlatform.preloadLuaList(mPlatform, proLoadArray);
+                    String miniAppId = miniAppInfoObj.optString("miniAppId");
+                    String luaListStr = miniAppInfoObj.optString("luaList");
+                    if(TextUtils.isEmpty(miniAppId) || TextUtils.isEmpty(luaListStr)){
+                        return LuaValue.NIL;
+                    }
+
+                    JSONArray luaListArray = new JSONArray(luaListStr);
+                    if(luaListArray == null || luaListArray.length() <= 0){
+                        return LuaValue.NIL;
+                    }
+                    List<LuaFileInfo> luaFileInfoList = new ArrayList<>();
+                    LuaFileInfo luaFileInfo = new LuaFileInfo();
+                    luaFileInfo.setMiniAppId(miniAppId);
+                    List<LuaFileInfo.LuaListBean> luaList = luaArray2LuaList(luaListArray);
+
+                    if (luaList == null || luaList.size() <= 0) {
+                        return LuaValue.NIL;
+                    }
+
+                    luaFileInfo.setLuaList(luaList);
+                    luaFileInfoList.add(luaFileInfo);
+
+                    mPlatform.preloadMiniAppLua(mPlatform, luaFileInfoList, new PreloadLuaUpdate.CacheLuaUpdateCallback() {
+                        @Override
+                        public void updateComplete(boolean isUpdateByNetWork) {
+                            if (callback != null && callback.isfunction()) {
+                                LuaUtil.callFunction(callback, LuaValue.valueOf(true));
+                            }
+                        }
+
+                        @Override
+                        public void updateError(Throwable t) {
+                            if (callback != null && callback.isfunction()) {
+                                LuaUtil.callFunction(callback, LuaValue.valueOf(false));
+                            }
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -138,5 +183,33 @@ public class LVPreLoadPlugin {
             }
             return LuaValue.valueOf(info.status == DownloadDbHelper.DownloadStatus.DOWNLOAD_SUCCESS);
         }
+    }
+
+    public static List<LuaFileInfo.LuaListBean> luaArray2LuaList(JSONArray luaArray) {
+        if(luaArray == null || luaArray.length() <= 0){
+            return null;
+        }
+        List<LuaFileInfo.LuaListBean> videoModeLuaList = new ArrayList<>();
+        for (int j = 0; j < luaArray.length(); j++) {
+            JSONObject luaFileObj = luaArray.optJSONObject(j);
+            if(luaFileObj == null){
+                break;
+            }
+            String luaName = luaFileObj.optString("name");
+            String luaMD5 = luaFileObj.optString("md5");
+            String luaUrl = luaFileObj.optString("url");
+            String luaPath = luaFileObj.optString("path");
+            if(TextUtils.isEmpty(luaMD5) || TextUtils.isEmpty(luaUrl)){
+                break;
+            }
+            LuaFileInfo.LuaListBean luaListBean = new LuaFileInfo.LuaListBean();
+            luaListBean.setLuaFileMd5(luaMD5);
+            luaListBean.setLuaFileName(luaName);
+            luaListBean.setLuaFilePath(luaPath);
+            luaListBean.setLuaFileUrl(luaUrl);
+
+            videoModeLuaList.add(luaListBean);
+        }
+        return videoModeLuaList;
     }
 }

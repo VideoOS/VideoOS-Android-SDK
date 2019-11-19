@@ -17,6 +17,8 @@ import android.graphics.drawable.GradientDrawable;
  * @date 15/10/27
  */
 public class LVGradientDrawable extends GradientDrawable {
+
+    float[] mCornerRadii;
     float mCornerRadius;
     int mColor;
     int mStrokeWidth;//边框宽
@@ -47,6 +49,12 @@ public class LVGradientDrawable extends GradientDrawable {
     }
 
     @Override
+    public void setCornerRadii(float[] radii) {
+        this.mCornerRadii = radii;
+        super.setCornerRadii(radii);
+    }
+
+    @Override
     public void setCornerRadius(float radius) {
         this.mCornerRadius = radius;
         super.setCornerRadius(radius);
@@ -56,6 +64,11 @@ public class LVGradientDrawable extends GradientDrawable {
     public void setColor(int color) {
         this.mColor = color;
         super.setColor(color);
+    }
+
+    @Override
+    public float[] getCornerRadii() {
+        return mCornerRadii;
     }
 
     public float getCornerRadius() {

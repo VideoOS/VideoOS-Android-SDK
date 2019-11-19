@@ -145,7 +145,8 @@ public class UIViewMethodMapper<U extends UDView> extends BaseMethodMapper<U> {
             "margin",//104
             "onTouch",//105
             "mqttCallback",//106
-            "tag"//107
+            "tag",//107
+            "cornerRadii"//108
     };
 
     public Varargs tag(U view, Varargs varargs) {
@@ -387,6 +388,8 @@ public class UIViewMethodMapper<U extends UDView> extends BaseMethodMapper<U> {
                 return mqttCallback(target, varargs);
             case 107:
                 return tag(target, varargs);
+            case 108:
+                return cornerRadii(target, varargs);
 
         }
         return super.invoke(code, target, varargs);
@@ -2249,6 +2252,52 @@ public class UIViewMethodMapper<U extends UDView> extends BaseMethodMapper<U> {
     public LuaValue getCornerRadius(U view, Varargs varargs) {
         return valueOf(DimenUtil.pxToDpi(view.getCornerRadius()));
     }
+
+    /**
+     * 设置边框圆角 单独设置四个角
+     *
+     * @param view
+     * @param varargs
+     * @return
+     */
+    public LuaValue cornerRadii(U view, Varargs varargs) {
+        if (varargs.narg() > 1) {
+            return setCornerRadii(view, varargs);
+        } else {
+            return LuaValue.TRUE;
+        }
+    }
+
+    public LuaValue setCornerRadii(U view, Varargs varargs) {
+        Float leftTopX = LuaUtil.getFloat(varargs, 2);
+        leftTopX = leftTopX == null ? 0 : leftTopX;
+        Float leftTopY = LuaUtil.getFloat(varargs, 3);
+        leftTopY = leftTopY == null ? 0 : leftTopY;
+        Float rightTopX = LuaUtil.getFloat(varargs, 4);
+        rightTopX = rightTopX == null ? 0 : rightTopX;
+        Float rightTopY = LuaUtil.getFloat(varargs, 5);
+        rightTopY = rightTopY == null ? 0 : rightTopY;
+        Float leftBottomX = LuaUtil.getFloat(varargs, 6);
+        leftBottomX = leftBottomX == null ? 0 : leftBottomX;
+        Float leftBottomY = LuaUtil.getFloat(varargs, 7);
+        leftBottomY = leftBottomY == null ? 0 : leftBottomY;
+        Float rightBottomX = LuaUtil.getFloat(varargs, 8);
+        rightBottomX = rightBottomX == null ? 0 : rightBottomX;
+        Float rightBottomY = LuaUtil.getFloat(varargs, 9);
+        rightBottomY = rightBottomY == null ? 0 : rightBottomY;
+        float[] radii = {
+                leftTopX != null ? DimenUtil.dpiToPxF(leftTopX) : 0.0f,
+                leftTopY != null ? DimenUtil.dpiToPxF(leftTopY) : 0.0f,
+                rightTopX != null ? DimenUtil.dpiToPxF(rightTopX) : 0.0f,
+                rightTopY != null ? DimenUtil.dpiToPxF(rightTopY) : 0.0f,
+                leftBottomX != null ? DimenUtil.dpiToPxF(leftBottomX) : 0.0f,
+                leftBottomY != null ? DimenUtil.dpiToPxF(leftBottomY) : 0.0f,
+                rightBottomX != null ? DimenUtil.dpiToPxF(rightBottomX) : 0.0f,
+                rightBottomY != null ? DimenUtil.dpiToPxF(rightBottomY) : 0.0f
+        };
+        return view.setCornerRadii(radii);
+    }
+
 
     /**
      * 开始动画

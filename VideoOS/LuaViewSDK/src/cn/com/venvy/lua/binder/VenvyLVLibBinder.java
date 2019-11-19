@@ -24,6 +24,7 @@ import cn.com.venvy.lua.plugin.LVPlayerPlugin;
 import cn.com.venvy.lua.plugin.LVPreLoadPlugin;
 import cn.com.venvy.lua.plugin.LVRSAPlugin;
 import cn.com.venvy.lua.plugin.LVReportPlugin;
+import cn.com.venvy.lua.plugin.LVStatisticsPlugin;
 import cn.com.venvy.lua.plugin.LVTableToJsonPlugin;
 import cn.com.venvy.lua.plugin.LVUrlPlugin;
 import cn.com.venvy.lua.plugin.LVVideoPlugin;
@@ -69,6 +70,7 @@ public class VenvyLVLibBinder extends BaseLuaTable implements Cloneable {
         LVPlayerPlugin.install(this, venvyNativeBinder.getPlatform());
         LVCallbackPlugin.install(this, venvyNativeBinder.getPlatform());
         LVPreLoadPlugin.install(this, venvyNativeBinder.getPlatform());
+        LVStatisticsPlugin.install(this);
     }
 
     @Override
