@@ -40,7 +40,7 @@ import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTA
 
 public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
     private static final String SERVICE_QUERYALL_CHAIN_URL_MOCK = Config.HOST_VIDEO_OS
-            + "/vision/getLabelConf";
+            + "/vision/v2/getLabelConf";
     private static final String LUA_ZIP = "/lua/os/chain.zip";
     private ServiceQueryChainCallback mQueryChainCallback;
     private PreloadLuaUpdate mDownLuaUpdate;

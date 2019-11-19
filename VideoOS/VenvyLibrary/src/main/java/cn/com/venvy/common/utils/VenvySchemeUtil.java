@@ -24,5 +24,6 @@ public class VenvySchemeUtil {
     public static final String QUERY_PARAMETER_ADS_TYPE = "adsType";
     public static final String QUERY_PARAMETER_DURATION = "duration";
     public static final String QUERY_PARAMETER_EVENT = "event";
+    public static final String QUERY_PARAMETER_VIDEO_MODE_TYPE = "videoModeType";
 
 }

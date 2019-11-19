@@ -15,7 +15,8 @@ import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
 
-import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode;
+import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode_POP;
+import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode_TAG;
 
 /**
  * Created by yanjiangbo on 2017/5/17.
@@ -324,7 +325,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
                 break;
         }
 
-        if (serviceType == ServiceTypeVideoMode) {
+        if (serviceType == ServiceTypeVideoMode_POP || serviceType == ServiceTypeVideoMode_TAG) {
             // 如果是关闭视联网模式，则移除视联网桌面
             if (programViewDesktop != null) {
                 programViewDesktop.setVisibility(GONE);

@@ -74,13 +74,4 @@ public abstract class VideoOSMediaController implements IMediaControlListener {
         return null;
     }
 
-    @Override
-    public String getVideoEpisode() {
-        return null;
-    }
-
-    @Override
-    public String getVideoTitle() {
-        return null;
-    }
 }

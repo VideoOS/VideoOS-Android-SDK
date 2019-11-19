@@ -13,6 +13,7 @@ import cn.com.venvy.common.interf.ISvgaImageView;
 import cn.com.venvy.common.interf.IWidgetClickListener;
 import cn.com.venvy.common.interf.IWidgetCloseListener;
 import cn.com.venvy.common.interf.IWidgetPrepareShowListener;
+import cn.com.venvy.common.interf.IWidgetRotationListener;
 import cn.com.venvy.common.interf.IWidgetShowListener;
 import cn.com.venvy.common.interf.MediaStatus;
 import cn.com.venvy.common.interf.OnTagKeyListener;
@@ -91,6 +92,8 @@ public abstract class VideoPlusAdapter {
     public IWidgetClickListener buildWidgetClickListener() {
         return null;
     }
+
+    public abstract IWidgetRotationListener buildWidgetRotationListener();
 
     public void updateProvider(Provider provider) {
         notifyProviderSetChanged(provider);

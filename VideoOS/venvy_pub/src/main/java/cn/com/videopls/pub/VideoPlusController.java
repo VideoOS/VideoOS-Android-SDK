@@ -42,6 +42,7 @@ import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
 import cn.com.venvy.common.utils.VenvyUIUtil;
+import cn.com.venvy.common.utils.VenvyVibrateUtil;
 import cn.com.venvy.lua.LuaHelper;
 import cn.com.venvy.processor.annotation.VenvyAutoData;
 import cn.com.videopls.pub.exception.DownloadException;
@@ -162,6 +163,20 @@ public abstract class VideoPlusController implements VenvyObserver {
                                 queryAdsInfo.getQueryAdsTemplate())
                         .appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_ID,
                                 queryAdsInfo.getQueryAdsId());
+
+                // 视联网模式 启动模式（气泡、标签）. changed on 11-18
+                if (serviceType == ServiceType.ServiceTypeVideoMode_POP) {
+                    builder.appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_VIDEO_MODE_TYPE, "1");
+                } else if (serviceType == ServiceType.ServiceTypeVideoMode_TAG) {
+                    builder.appendQueryParameter(VenvySchemeUtil.QUERY_PARAMETER_VIDEO_MODE_TYPE, "0");
+                }
+
+                // 震动一下
+                VenvyVibrateUtil.vibrate(getContext(),500);
+
+                // TODO :  需要添加从 getLabelConf接口返回的miniAppInfo 数据到lua
+
+
                 HashMap<String, String> skipParams = new HashMap<>();
                 skipParams.put("data", result.toString());
                 navigation(builder.build(), skipParams, new IRouterCallback() {
@@ -435,7 +450,8 @@ public abstract class VideoPlusController implements VenvyObserver {
 
     private void startQueryConnect(ServiceType serviceType, Map<String, String> params, final IStartQueryResult result) {
         switch (serviceType) {
-            case ServiceTypeVideoMode:
+            case ServiceTypeVideoMode_TAG:
+            case ServiceTypeVideoMode_POP:
                 mQueryAdsModel = new VideoServiceQueryChainModel(mPlatform, params, new VideoServiceQueryChainModel.ServiceQueryChainCallback() {
                     @Override
                     public void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
@@ -555,7 +571,7 @@ public abstract class VideoPlusController implements VenvyObserver {
      * @param onOrOff 0:关闭 1:开启
      */
     private void serviceTypeVideoModeTrack(ServiceType serviceType, String onOrOff) {
-        if (serviceType != ServiceType.ServiceTypeVideoMode) {
+        if (serviceType != ServiceType.ServiceTypeVideoMode_POP && serviceType != ServiceType.ServiceTypeVideoMode_TAG) {
             return;
         }
         mChainTrackModel = new ChainTrackModel(mPlatform, onOrOff, null);
