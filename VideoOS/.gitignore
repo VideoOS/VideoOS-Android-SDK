@@ -6,6 +6,4 @@
 .DS_Store
 /captures
 .externalNativeBuild
-/vidoeos_demo/
-/venvy_glide_v4/
-/svga/
+gradle/

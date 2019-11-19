@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF18191F"
+    android:orientation="vertical"
+    tools:context="both.video.venvy.com.appdemo.activity.InteractActivity">
+
+    <RelativeLayout
+        android:id="@+id/interact_top"
+        android:layout_width="match_parent"
+        android:layout_height="44dp">
+
+        <ImageView
+            android:id="@+id/interact_back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:src="@mipmap/ic_config_back"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="调试视频小工具"
+            android:textColor="#FFDFE1E6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/interact_debug"
+        android:layout_width="168dp"
+        android:layout_height="168dp"
+        android:layout_marginTop="50dp"
+        android:text="开始调试"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="@mipmap/ic_debug"
+        android:layout_below="@id/interact_top"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        android:layout_centerHorizontal="true"
+        android:text="请检查指定目录已加载相应的Lua和Json文件"
+        android:textColor="#FFADAFB3"
+        android:textSize="12sp"
+        android:layout_below="@id/interact_debug"
+        />
+
+    <ProgressBar
+        android:id="@+id/interact_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
+</RelativeLayout>

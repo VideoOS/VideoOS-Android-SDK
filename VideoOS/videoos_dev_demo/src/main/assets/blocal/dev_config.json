@@ -1,0 +1,13 @@
+{
+  "miniAppId":"123456",
+  "display":{
+    "navTitle":"开发模式测试"
+  },
+  "h5Url":"",
+  "luaList":[
+    {
+      "url":"os_video_test_hotspot.lua"
+    }
+  ],
+  "template":"os_video_test_hotspot.lua"
+}

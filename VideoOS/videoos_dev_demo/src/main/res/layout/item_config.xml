@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    >
+
+    <TextView
+        android:id="@+id/info_config"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="#3F4252"
+        android:gravity="center"
+        android:textColor="#FFADAFB3"
+        android:textSize="12sp" />
+</FrameLayout>

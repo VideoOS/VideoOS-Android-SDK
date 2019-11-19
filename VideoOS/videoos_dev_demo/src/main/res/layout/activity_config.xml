@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fl_config_parent"
+    android:background="#FF18191F">
+
+    <RelativeLayout
+        android:id="@+id/config_top"
+        android:layout_width="match_parent"
+        android:layout_height="44dp">
+
+        <ImageView
+            android:id="@+id/config_back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:src="@mipmap/ic_config_back"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="配置应用信息"
+            android:textColor="#FFDFE1E6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_appKey"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_below="@id/config_top"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="46dp"
+        android:background="@drawable/shape_round_gray_rectangle"
+        >
+
+        <TextView
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="AppKey"
+            android:textColor="#FFDFE1E6"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"
+            android:textAlignment="textStart"
+            android:paddingLeft="10dp"
+            />
+        
+        <View
+            android:id="@+id/appKey_divide_line"
+            android:layout_width="1dp"
+            android:layout_height="26dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="100dp"
+            android:background="#88DFE1E6"
+            />
+
+        <EditText
+            android:id="@+id/config_ed_AppKey"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/appKey_divide_line"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="12dp"
+            android:background="@null"
+            android:maxLines="1"
+            android:inputType="text"
+            android:textColor="#FFADAFB3"
+            android:textSize="14sp"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_appSecret"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_below="@id/rl_appKey"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/shape_round_gray_rectangle"
+        >
+
+        <TextView
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="AppSecret"
+            android:textColor="#FFDFE1E6"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"
+            android:textAlignment="textStart"
+            android:paddingLeft="10dp"
+            />
+
+        <View
+            android:id="@+id/appSecret_divide_line"
+            android:layout_width="1dp"
+            android:layout_height="26dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="100dp"
+            android:background="#88DFE1E6"
+            />
+
+        <EditText
+            android:id="@+id/config_ed_AppSecret"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/appSecret_divide_line"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="12dp"
+            android:textColor="#FFADAFB3"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:inputType="text"
+            android:background="@null"
+            />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/config_update"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_below="@id/rl_appSecret"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/shape_round_green_gradient_rectangle"
+        android:gravity="center"
+        android:text="确认更新"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+</RelativeLayout>

@@ -1,0 +1,87 @@
+apply plugin: 'com.android.application'
+
+configurations.all {
+    resolutionStrategy.force 'com.android.support:support-annotations:28.0.0'
+}
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+    defaultConfig {
+        applicationId "both.video.venvy.com.appdemodev"
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0.0"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
+        multiDexEnabled true
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_7
+            targetCompatibility JavaVersion.VERSION_1_7
+        }
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            //是否混淆
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        preRelease {
+            //是否混淆
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets']
+        }
+    }
+
+    configurations {
+        all*.exclude group: 'com.android.support', module: 'support-v4'
+    }
+}
+//apply from: 'fat-aar.gradle'
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    //    compile 'com.github.bumptech.glide:glide:4.5.0'
+//    compile "com.videoli:venvy_glide_v4:1.0.1"
+
+    //    compile 'com.github.yyued:SVGAPlayer-Android:2.1.10'
+    compile project(':venvy_pub')
+    compile 'com.shuyu:GSYVideoPlayer:4.1.0'
+    compile 'com.github.razerdp:BasePopup:2.1.9'
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.46'
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
+    compile 'com.android.support:recyclerview-v7:28.0.0'
+    compile 'com.android.support:appcompat-v7:28.0.0'
+    compile 'com.alibaba:fastjson:1.1.70.android'
+    compile 'com.android.support.constraint:constraint-layout:1.1.0'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.videoli:venvy_glide:1.0.4'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okio:okio:1.12.0'
+    compile 'com.just.agentweb:agentweb:4.1.2'
+    compile 'com.alibaba:fastjson:1.1.70.android'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+}

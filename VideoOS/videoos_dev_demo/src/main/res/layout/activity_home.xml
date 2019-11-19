@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF18191F"
+    tools:context=".activity.HomeActivity">
+
+    <ImageView
+        android:id="@+id/home_config"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:src="@mipmap/ic_config"
+        android:layout_alignParentRight="true"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/home_config"
+        android:layout_marginTop="42dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="190dp"
+            android:layout_height="146dp"
+            android:src="@mipmap/ic_home_logo"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:text="实现人与视频的互动和链接"
+            android:textColor="#FFDFE1E6"
+            android:textSize="14sp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:text="免费 I 开源 I 全新上线"
+            android:textColor="#88DFE1E6"
+            android:textSize="13sp"
+            />
+
+        <TextView
+            android:id="@+id/home_interact_program"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="71dp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginRight="70dp"
+            android:background="@drawable/shape_round_green_gradient_rectangle"
+            android:gravity="center"
+            android:text="视频小工具"
+            android:textColor="#FFFFFFFF"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/home_service_program"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginRight="70dp"
+            android:text="视频小程序"
+            android:textColor="#FFFFFFFF"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:background="@drawable/shape_round_green_gradient_rectangle"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:text="VideoOS开发者工具V1.0\n本APP用于调试视联网的各种功能"
+        android:textColor="#FF5C5F66"
+        android:textSize="12sp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        />
+</RelativeLayout>
