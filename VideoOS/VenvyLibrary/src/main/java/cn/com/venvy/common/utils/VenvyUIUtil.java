@@ -44,7 +44,9 @@ public class VenvyUIUtil {
     private static final String TAG = "VenvyUIUtil";
     private static Handler sHandler = new Handler(Looper.getMainLooper());
 
-    /** 获取状态栏高度
+    /**
+     * 获取状态栏高度
+     *
      * @param v
      * @return
      */
@@ -59,6 +61,7 @@ public class VenvyUIUtil {
 
     /**
      * dip 转换成 px
+     *
      * @param dip
      * @param context
      * @return
@@ -342,7 +345,7 @@ public class VenvyUIUtil {
             return false;
         }
         final ViewParent parent = view.getParent();
-        if(parent == null) {
+        if (parent == null) {
             return false;
         }
         if (parent instanceof ViewGroup) {
@@ -651,8 +654,14 @@ public class VenvyUIUtil {
         return display.getWidth();
     }
 
+    public static int getScreenPPI(@Nullable Context context) {
+        DisplayMetrics dm = new DisplayMetrics();
+        return dm.densityDpi;
+    }
+
     /**
      * 获取竖屏屏幕宽度
+     *
      * @param context
      * @return
      */
@@ -669,6 +678,7 @@ public class VenvyUIUtil {
 
     /**
      * 获取横屏屏幕宽度
+     *
      * @param context
      * @return
      */
@@ -685,16 +695,17 @@ public class VenvyUIUtil {
 
     /**
      * 获取导航栏高度
+     *
      * @param context
      * @return
      */
     public static int getNavigationBarHeight(Context context) {
         int resourceId;
         int rid = context.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
-        if (rid!=0){
+        if (rid != 0) {
             resourceId = context.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
             return context.getResources().getDimensionPixelSize(resourceId);
-        }else
+        } else
             return 0;
     }
 
@@ -702,23 +713,23 @@ public class VenvyUIUtil {
      * @param context
      * @return 是否存在导航栏
      */
-    public static boolean isNavigationBarShow(Context context){
+    public static boolean isNavigationBarShow(Context context) {
         if (!(context instanceof Activity)) {
             return false;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            Display display = ((Activity)(context)).getWindowManager().getDefaultDisplay();
+            Display display = ((Activity) (context)).getWindowManager().getDefaultDisplay();
             Point size = new Point();
             Point realSize = new Point();
             display.getSize(size);
             display.getRealSize(realSize);
-            return realSize.x!=size.x;
-        }else {
+            return realSize.x != size.x;
+        } else {
             boolean menu = ViewConfiguration.get(context).hasPermanentMenuKey();
             boolean back = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
-            if(menu || back) {
+            if (menu || back) {
                 return false;
-            }else {
+            } else {
                 return true;
             }
         }
@@ -749,6 +760,7 @@ public class VenvyUIUtil {
 
     /**
      * 获取 dip
+     *
      * @param context context
      * @return DensityDpi
      */
