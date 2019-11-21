@@ -36,7 +36,7 @@ import cn.com.venvy.processor.annotation.VenvyAutoData;
 
 public class VenvyLVWebView extends FrameLayout implements ILVNativeViewProvider, ILVView {
 
-    protected UDView mLuaUserdata;
+    protected VenvyUDWebView mLuaUserdata;
     protected IVenvyWebView mWebView;
     protected JsBridge mJsBridge;
     protected boolean mIsLoading;
@@ -52,6 +52,7 @@ public class VenvyLVWebView extends FrameLayout implements ILVNativeViewProvider
         this.mWebView = WebViewFactory.createWebView(context);
         mJsBridge = new JsBridge(context, mWebView, platform);
         mJsBridge.setDeveloperUserId(getDeveloperUserId(globals));
+        this.mLuaUserdata.setJsBridge(mJsBridge);
         if (mWebView instanceof VenvyWebView) {
             ((VenvyWebView) mWebView).setJsBridge(mJsBridge);
         }
@@ -94,6 +95,9 @@ public class VenvyLVWebView extends FrameLayout implements ILVNativeViewProvider
     }
 
 
+    public void setJsData(String jsData){
+        mJsBridge.setJsData(jsData);
+    }
     @Override
     public View getNativeView() {
         if (mWebView instanceof View) {

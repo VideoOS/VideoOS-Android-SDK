@@ -30,6 +30,8 @@ import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.common.webview.JsBridge;
 import cn.com.venvy.common.webview.VenvyWebView;
 
+import static cn.com.venvy.common.webview.JsBridge.WebViewCloseListener.CloseType.*;
+
 /**
  * Created by Lucas on 2019/8/30.
  */

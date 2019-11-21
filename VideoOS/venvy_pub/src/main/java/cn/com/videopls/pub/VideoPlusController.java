@@ -486,8 +486,8 @@ public abstract class VideoPlusController implements VenvyObserver {
                         JSONObject paramsJson = new JSONObject();
 
                         try {
-                            paramsJson.put("data", params.get("data"));
-                            paramsJson.put("miniAppInfo", miniAppInfo);
+                            paramsJson.put("data", new JSONObject(params.get("data")));
+                            paramsJson.put("miniAppInfo", new JSONObject(miniAppInfo));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -198,7 +198,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
      */
     public void startH5(String url, String developerUserId) {
         currentH5Program.addDeveloperUserIdToJsBridge(developerUserId);
-//        url = "http://cytroncdn.videojj.com/pages/jijiMall/dev/index.html#debug";
+        url = "http://cytroncdn.videojj.com/pages/jijiMall/dev/index.html#debug";
         currentH5Program.openLink(url);
     }
 
