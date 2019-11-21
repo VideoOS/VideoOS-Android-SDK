@@ -390,6 +390,7 @@ public class VenvyDeviceUtil {
                     case TelephonyManager.NETWORK_TYPE_CDMA:
                     case TelephonyManager.NETWORK_TYPE_1xRTT:
                     case TelephonyManager.NETWORK_TYPE_IDEN: //api<8 : replace by 11
+                    case TelephonyManager.NETWORK_TYPE_GSM:  // api<25: replace by 16
                         strNetworkType = 2;
                         break;
                     case TelephonyManager.NETWORK_TYPE_UMTS:
@@ -398,15 +399,17 @@ public class VenvyDeviceUtil {
                     case TelephonyManager.NETWORK_TYPE_HSDPA:
                     case TelephonyManager.NETWORK_TYPE_HSUPA:
                     case TelephonyManager.NETWORK_TYPE_HSPA:
-                    case TelephonyManager.NETWORK_TYPE_EVDO_B: //api<9 : replace by 14
-                    case TelephonyManager.NETWORK_TYPE_EHRPD:  //api<11 : replace by 12
-                    case TelephonyManager.NETWORK_TYPE_HSPAP:  //api<13 : replace by 15
+                    case TelephonyManager.NETWORK_TYPE_EVDO_B:   // api< 9: replace by 12
+                    case TelephonyManager.NETWORK_TYPE_EHRPD:    // api<11: replace by 14
+                    case TelephonyManager.NETWORK_TYPE_HSPAP:    // api<13: replace by 15
+                    case TelephonyManager.NETWORK_TYPE_TD_SCDMA: // api<25: replace by 17
                         strNetworkType = 3;
                         break;
-                    case TelephonyManager.NETWORK_TYPE_LTE:    //api<11 : replace by 13
+                    case TelephonyManager.NETWORK_TYPE_LTE:      // api<11: replace by 13
+                    case TelephonyManager.NETWORK_TYPE_IWLAN:    // api<25: replace by 18
                         strNetworkType = 4;
                         break;
-                    case 0x00000014:
+                    case TelephonyManager.NETWORK_TYPE_NR:// api<29: replace by 20
                         strNetworkType = 5;
                         break;
                 }
