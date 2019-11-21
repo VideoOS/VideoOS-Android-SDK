@@ -57,8 +57,11 @@ public class VideoPlusViewHelper implements VenvyObserver {
 
                             if (videoPlusView != null) {
                                 if (videoPlusView.getAdapter() != null) {
-                                    videoPlusView.getAdapter().buildWidgetRotationListener().onRotate(orientationType == RotateStatus.TO_LANDSCAPE.getId() ?
-                                            RotateStatus.TO_LANDSCAPE : RotateStatus.TO_VERTICAL);
+                                    if (videoPlusView.getAdapter().buildWidgetRotationListener() != null) {
+                                        videoPlusView.getAdapter().buildWidgetRotationListener().onRotate(orientationType == RotateStatus.TO_LANDSCAPE.getId() ?
+                                                RotateStatus.TO_LANDSCAPE : RotateStatus.TO_VERTICAL);
+                                    }
+
                                 }
                                 if (appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_TOOLS) {
                                     videoPlusView.launchVisionToolsProgram(appletsId,data); // 请求视联网小工具
