@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.taobao.luaview.cache.AppCache;
+import com.taobao.luaview.util.JsonUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -393,12 +394,24 @@ public abstract class VideoPlusController implements VenvyObserver {
             }
         }
         if (params != null) {
-            String value = params.get("data");
-            if (!TextUtils.isEmpty(value)) {
+            String miniAppInfo = params.get(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO);
+            String videoModeType = params.get(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE);
+            if (!TextUtils.isEmpty(miniAppInfo) || !TextUtils.isEmpty(videoModeType)) {
                 if (targetDataMap == null) {
                     targetDataMap = new HashMap<>();
                 }
-                targetDataMap.put("data", value);
+                try {
+                    JSONObject valueObj = new JSONObject();
+                    if (!TextUtils.isEmpty(miniAppInfo)) {
+                        valueObj.put("miniAppInfo", new JSONObject(miniAppInfo));
+                    }
+                    if (!TextUtils.isEmpty(videoModeType)) {
+                        valueObj.put("videoModeType", videoModeType);
+                    }
+                    targetDataMap.put("data", valueObj.toString());
+                } catch (Exception e) {
+
+                }
             }
         }
         if (targetDataMap != null) {
