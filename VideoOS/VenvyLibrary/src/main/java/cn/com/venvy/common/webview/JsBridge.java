@@ -167,7 +167,7 @@ public class JsBridge implements VenvyObserver {
     @JavascriptInterface
     public void getInitData(String jsParams) {
         if (TextUtils.isEmpty(mJsData)) {
-            return;
+            mJsData = "{}";
         }
         JSONObject obj = new JSONObject();
         try {
@@ -329,7 +329,8 @@ public class JsBridge implements VenvyObserver {
      * 读取本地数据
      * @param jsParams
      */
-    public void getStorageData(String jsParams) {
+    @JavascriptInterface
+    public void getStorageData(final String jsParams) {
         try {
             final JSONObject jsonObj = new JSONObject(jsParams);
             JSONObject msgObj = jsonObj.optJSONObject("msg");
@@ -338,7 +339,7 @@ public class JsBridge implements VenvyObserver {
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
-                        callJsFunction(jsonObj.optString("callback"), VenvyPreferenceHelper.getString(mContext, mDeveloperUserId, key, ""));
+                        callJsFunction(VenvyPreferenceHelper.getString(mContext, mDeveloperUserId, key, ""),jsParams);
                     }
                 });
 
@@ -547,7 +548,7 @@ public class JsBridge implements VenvyObserver {
      * h5通知关闭webView
      */
     @JavascriptInterface
-    public void close(final String jsParams) {
+    public void closeView(final String jsParams) {
         VenvyLog.i("--androidToJs-close--" + jsParams);
 
         VenvyUIUtil.runOnUIThread(new Runnable() {
