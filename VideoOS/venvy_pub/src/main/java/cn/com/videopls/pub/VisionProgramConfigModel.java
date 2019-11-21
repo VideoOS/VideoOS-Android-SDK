@@ -143,6 +143,14 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     final String developerUserId = miniAppInfoObj.optString("developerUserId");
                     JSONArray fileListArray = miniAppInfoObj.optJSONArray("luaList");
 
+                    String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
+                    JSONObject displayObj = decryptData.optJSONObject("display");
+                    if (displayObj != null) {
+                        final String nativeTitle = displayObj.optString("navTitle");
+                        nvgShow = displayObj.optBoolean("navShow", true);
+                        updateVisionTitle(nativeTitle, nvgShow);
+                    }
+
                     if (isH5Type) {
                         final String h5Url = decryptData.optString("h5Url");
                         if (TextUtils.isEmpty(h5Url)) {
@@ -157,13 +165,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                         return;
                     }
 
-                    String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
-                    JSONObject displayObj = decryptData.optJSONObject("display");
-                    if (displayObj != null) {
-                        final String nativeTitle = displayObj.optString("navTitle");
-                        nvgShow = displayObj.optBoolean("navShow", true);
-                        updateVisionTitle(nativeTitle, nvgShow);
-                    }
+
 
                     if (resCode.equalsIgnoreCase("00")) {
                         //LuaArray --> JavaBean

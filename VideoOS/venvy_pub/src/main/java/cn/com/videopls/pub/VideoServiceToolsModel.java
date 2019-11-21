@@ -87,7 +87,13 @@ public class VideoServiceToolsModel extends VideoPlusBaseModel {
                     final JSONObject decryptData = new JSONObject(jsonStr);
 
                     final JSONObject miniAppInfoObj = decryptData.optJSONObject("miniAppInfo");
-
+                    if(miniAppInfoObj == null){
+                        VenvyLog.e("miniAppInfoObj is null");
+                        if (callback != null) {
+                            callback.downError(new NullPointerException("miniAppInfoObj is null"));
+                        }
+                        return;
+                    }
                     final String miniAppId = miniAppInfoObj.optString("miniAppId");
                     final String template = miniAppInfoObj.optString("template");
                     JSONArray fileListArray = miniAppInfoObj.optJSONArray("luaList");
