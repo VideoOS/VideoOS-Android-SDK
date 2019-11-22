@@ -86,7 +86,6 @@ public class LVCommonParamPlugin {
             table.set(LuaValue.valueOf(OS_TYPE), LuaValue.valueOf(1));
             table.set(LuaValue.valueOf(ANDROID_ID), LuaValue.valueOf(VenvyDeviceUtil.getAndroidID(context)));
             table.set(LuaValue.valueOf(IMEI), LuaValue.valueOf(VenvyDeviceUtil.getIMEI(context)));
-            table.set(LuaValue.valueOf(IMSI), LuaValue.valueOf(VenvyDeviceUtil.getIMSI(context)));
             table.set(LuaValue.valueOf(DEVICE_TYPE), LuaValue.valueOf(1));
             table.set(LuaValue.valueOf(PHONE_WIDTH), LuaValue.valueOf(VenvyUIUtil.getScreenWidth(context)));
             table.set(LuaValue.valueOf(PHONE_HEIGHT), LuaValue.valueOf(VenvyUIUtil.getScreenHeight(context)));
@@ -107,6 +106,10 @@ public class LVCommonParamPlugin {
             String macAddress = VenvyDeviceUtil.getMacAddress();
             if (!TextUtils.isEmpty(macAddress)) {
                 table.set(LuaValue.valueOf(MAC), LuaValue.valueOf(macAddress));
+            }
+            String imsi = VenvyDeviceUtil.getIMSI(context);
+            if (!TextUtils.isEmpty(imsi)) {
+                table.set(LuaValue.valueOf(IMSI), LuaValue.valueOf(imsi));
             }
             return table;
         }

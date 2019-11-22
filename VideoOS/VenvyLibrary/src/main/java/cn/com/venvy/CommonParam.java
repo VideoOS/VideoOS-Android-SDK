@@ -41,40 +41,43 @@ public class CommonParam {
 
     public static JSONObject getCommonParamJson(String appKey) {
         Map<String, String> paramMap = new HashMap<>();
-        Context context=App.getContext();
-        paramMap.put(VERSION,VenvyAPKVersionCodeUtils.getVersionName(context));
-        paramMap.put(SDK_VERSION,Config.SDK_VERSION);
-        paramMap.put(OS_VERSION,VenvyDeviceUtil.getOsVersion());
-        paramMap.put(UD_ID,VenvyDeviceUtil.getAndroidID(context));
-        paramMap.put(NETWORK,String.valueOf(VenvyDeviceUtil.getNetWorkType(context)));
-        paramMap.put(LANGUAGE,VenvyDeviceUtil.getLanguage(context));
-        paramMap.put(PHONE_MODEL,android.os.Build.MODEL);
-        paramMap.put(PHONE_PROVIDER,android.os.Build.BRAND);
-        paramMap.put(OS_TYPE,String.valueOf(1));
-        paramMap.put(ANDROID_ID,VenvyDeviceUtil.getAndroidID(context));
-        paramMap.put(IMEI,VenvyDeviceUtil.getIMEI(context));
-        paramMap.put(IMSI,VenvyDeviceUtil.getIMSI(context));
-        paramMap.put(DEVICE_TYPE,String.valueOf(1));
-        paramMap.put(PHONE_WIDTH,String.valueOf(VenvyUIUtil.getScreenWidth(context)));
-        paramMap.put(PHONE_HEIGHT,String.valueOf(VenvyUIUtil.getScreenHeight(context)));
-        paramMap.put(PPI,String.valueOf(VenvyUIUtil.getScreenPPI(context)));
-        paramMap.put(CARRIER,String.valueOf(VenvyDeviceUtil.getSubscriptionOperatorType(context)));
+        Context context = App.getContext();
+        paramMap.put(VERSION, VenvyAPKVersionCodeUtils.getVersionName(context));
+        paramMap.put(SDK_VERSION, Config.SDK_VERSION);
+        paramMap.put(OS_VERSION, VenvyDeviceUtil.getOsVersion());
+        paramMap.put(UD_ID, VenvyDeviceUtil.getAndroidID(context));
+        paramMap.put(NETWORK, String.valueOf(VenvyDeviceUtil.getNetWorkType(context)));
+        paramMap.put(LANGUAGE, VenvyDeviceUtil.getLanguage(context));
+        paramMap.put(PHONE_MODEL, android.os.Build.MODEL);
+        paramMap.put(PHONE_PROVIDER, android.os.Build.BRAND);
+        paramMap.put(OS_TYPE, String.valueOf(1));
+        paramMap.put(ANDROID_ID, VenvyDeviceUtil.getAndroidID(context));
+        paramMap.put(IMEI, VenvyDeviceUtil.getIMEI(context));
+        paramMap.put(DEVICE_TYPE, String.valueOf(1));
+        paramMap.put(PHONE_WIDTH, String.valueOf(VenvyUIUtil.getScreenWidth(context)));
+        paramMap.put(PHONE_HEIGHT, String.valueOf(VenvyUIUtil.getScreenHeight(context)));
+        paramMap.put(PPI, String.valueOf(VenvyUIUtil.getScreenPPI(context)));
+        paramMap.put(CARRIER, String.valueOf(VenvyDeviceUtil.getSubscriptionOperatorType(context)));
 
         String ip = VenvyDeviceUtil.getLocalIPAddress();
         if (!TextUtils.isEmpty(ip)) {
-            paramMap.put(IP,ip);
+            paramMap.put(IP, ip);
         }
         String appName = VenvyAPKVersionCodeUtils.getAppName(context);
         if (!TextUtils.isEmpty(appName)) {
-            paramMap.put(APP_NAME,appName);
+            paramMap.put(APP_NAME, appName);
         }
         String packageName = VenvyAPKVersionCodeUtils.getPackageName(context);
         if (!TextUtils.isEmpty(packageName)) {
-            paramMap.put(PKG_NAME,packageName);
+            paramMap.put(PKG_NAME, packageName);
         }
         String macAddress = VenvyDeviceUtil.getMacAddress();
         if (!TextUtils.isEmpty(macAddress)) {
-            paramMap.put(MAC,macAddress);
+            paramMap.put(MAC, macAddress);
+        }
+        String imsi = VenvyDeviceUtil.getIMSI(context);
+        if (!TextUtils.isEmpty(imsi)) {
+            paramMap.put(IMSI, imsi);
         }
         return new JSONObject(paramMap);
     }
