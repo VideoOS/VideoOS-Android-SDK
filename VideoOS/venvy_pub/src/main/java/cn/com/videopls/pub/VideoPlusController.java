@@ -169,20 +169,25 @@ public abstract class VideoPlusController implements VenvyObserver {
 
 
                 HashMap<String, String> skipParams = new HashMap<>();
-                // json data
-                skipParams.put(CONSTANT_DATA, result.toString());
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    // json data
+                    jsonObject.put(CONSTANT_DATA, result.toString());
+                    // 视联网模式 启动模式（气泡、标签）.
+                    if (serviceType == ServiceType.ServiceTypeVideoMode_POP) {
+                        jsonObject.put(CONSTANT_VIDEO_MODE_TYPE, "1");
+                    } else if (serviceType == ServiceType.ServiceTypeVideoMode_TAG) {
+                        jsonObject.put(CONSTANT_VIDEO_MODE_TYPE, "0");
+                    }
 
-                // 视联网模式 启动模式（气泡、标签）.
-                if (serviceType == ServiceType.ServiceTypeVideoMode_POP) {
-                    skipParams.put(CONSTANT_VIDEO_MODE_TYPE, "1");
-                } else if (serviceType == ServiceType.ServiceTypeVideoMode_TAG) {
-                    skipParams.put(CONSTANT_VIDEO_MODE_TYPE, "0");
+                    // miniAppInfo
+                    if (!TextUtils.isEmpty(miniAppInfo)) {
+                        jsonObject.put(CONSTANT_MINI_APP_INFO, miniAppInfo);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                // miniAppInfo
-                if (!TextUtils.isEmpty(miniAppInfo)) {
-                    skipParams.put(CONSTANT_MINI_APP_INFO, miniAppInfo);
-                }
-
+                skipParams.put(CONSTANT_DATA, jsonObject.toString());
                 navigation(builder.build(), skipParams, new IRouterCallback() {
                     @Override
                     public void arrived() {
