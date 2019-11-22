@@ -46,6 +46,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
 
     private JsBridge jsBridge;
 
+
     public VideoWebToolBarView(Context context) {
         super(context);
         init();
@@ -272,6 +273,19 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         }
     }
 
+    public void setWebViewCloseListener(final WebViewCloseListener closeListener){
+        if(jsBridge != null){
+            jsBridge.setWebViewCloseListener(new JsBridge.WebViewCloseListener() {
+                @Override
+                public void onClose(CloseType actionType) {
+                    if(closeListener != null){
+                        closeListener.onClose(appletId);
+                    }
+                }
+            });
+        }
+    }
+
     public void reload(String data) {
         if (jsBridge != null) {
             jsBridge.setJsData(data);
@@ -288,5 +302,9 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         if (webView != null) {
             removeView(webView);
         }
+    }
+
+    public interface WebViewCloseListener{
+        void onClose(String appletId);
     }
 }
