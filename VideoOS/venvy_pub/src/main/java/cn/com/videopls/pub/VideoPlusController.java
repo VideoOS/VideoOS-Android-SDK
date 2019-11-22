@@ -169,10 +169,10 @@ public abstract class VideoPlusController implements VenvyObserver {
 
 
                 HashMap<String, String> skipParams = new HashMap<>();
-                JSONObject jsonObject = new JSONObject();
                 try {
                     // json data
-                    jsonObject.put(CONSTANT_DATA, result.toString());
+                    JSONObject jsonObject = new JSONObject(result.toString());
+
                     // 视联网模式 启动模式（气泡、标签）.
                     if (serviceType == ServiceType.ServiceTypeVideoMode_POP) {
                         jsonObject.put(CONSTANT_VIDEO_MODE_TYPE, "1");
@@ -182,12 +182,12 @@ public abstract class VideoPlusController implements VenvyObserver {
 
                     // miniAppInfo
                     if (!TextUtils.isEmpty(miniAppInfo)) {
-                        jsonObject.put(CONSTANT_MINI_APP_INFO, miniAppInfo);
+                        jsonObject.put(CONSTANT_MINI_APP_INFO, new JSONObject(miniAppInfo));
                     }
+                    skipParams.put(CONSTANT_DATA, jsonObject.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                skipParams.put(CONSTANT_DATA, jsonObject.toString());
                 navigation(builder.build(), skipParams, new IRouterCallback() {
                     @Override
                     public void arrived() {
