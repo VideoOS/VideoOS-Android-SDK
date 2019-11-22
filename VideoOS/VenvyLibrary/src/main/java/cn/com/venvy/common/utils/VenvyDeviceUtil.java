@@ -116,10 +116,15 @@ public class VenvyDeviceUtil {
      * @return
      */
     public static String getIMSI(Context context) {
-//        TelephonyManager tm = (TelephonyManager) context
-//                .getSystemService(Context.TELEPHONY_SERVICE);//
-//        return tm.getSubscriberId();
-        return "";
+        String imsi = "";
+        try {
+            TelephonyManager tm = (TelephonyManager) context
+                    .getSystemService(Context.TELEPHONY_SERVICE);//
+            imsi = tm.getSubscriberId();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return imsi;
     }
 
     /**
