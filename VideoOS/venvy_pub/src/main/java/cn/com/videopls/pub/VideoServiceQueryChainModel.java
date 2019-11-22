@@ -172,7 +172,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         //  load desktop lua
                                         loadDesktopProgram(desktopTemplate, desktopMiniAppInfoObj.toString());
 
-                                        if (isTagMode && dataJsonArray != null && dataJsonArray.length() > 0) {
+                                        if ( dataJsonArray != null && dataJsonArray.length() > 0) {
                                             mDownZipUpdate.startDownloadZipFile(dataJsonArray);
                                         }
                                     }
