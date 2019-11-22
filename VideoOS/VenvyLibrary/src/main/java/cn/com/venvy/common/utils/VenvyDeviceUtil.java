@@ -122,7 +122,7 @@ public class VenvyDeviceUtil {
                     .getSystemService(Context.TELEPHONY_SERVICE);//
             imsi = tm.getSubscriberId();
         } catch (Exception e) {
-            e.printStackTrace();
+            VenvyLog.w("SecurityException : getSubscriberId");
         }
         return imsi;
     }

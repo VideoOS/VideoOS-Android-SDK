@@ -400,21 +400,6 @@ public abstract class VideoPlusController implements VenvyObserver {
                 }
                 targetDataMap.put("data", value);
             }
-            String miniAppInfo = params.get(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO);
-            if (!TextUtils.isEmpty(miniAppInfo)) {
-                if (targetDataMap == null) {
-                    targetDataMap = new HashMap<>();
-                }
-                targetDataMap.put(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfo);
-            }
-
-            String videoModeType = params.get(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE);
-            if (!TextUtils.isEmpty(videoModeType)) {
-                if (targetDataMap == null) {
-                    targetDataMap = new HashMap<>();
-                }
-                targetDataMap.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, videoModeType);
-            }
 
         }
         if (targetDataMap != null) {
