@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 import cn.com.venvy.App;
@@ -213,7 +215,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     /**
      * 拉起一个视联网小工具
      */
-    public void launchVisionToolsProgram(String miniAppId,String data) {
+    public void launchVisionToolsProgram(String miniAppId, String data) {
         if (programViewA != null) {
             HashMap<String, String> params = new HashMap<>();
             params.put("miniAppId", miniAppId);
@@ -278,8 +280,8 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
             programViewDesktop.setVisibility(VISIBLE);
             Uri uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
             HashMap<String, String> params = new HashMap<>();
-            params.put(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfo); //  miniAppInfo
-            params.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, videoModeType); //  videoModeType
+            params.put(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfo);//  miniAppInfo
+            params.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, videoModeType);//  videoModeType
             programViewDesktop.navigation(uri, params, null);
         }
 

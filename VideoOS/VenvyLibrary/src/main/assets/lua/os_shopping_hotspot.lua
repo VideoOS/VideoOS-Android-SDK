@@ -99,7 +99,6 @@ end
 
 --入口Native调用--
 function show(args)
-
     local dataTable = args.data
     if (dataTable == nil) then
         return
