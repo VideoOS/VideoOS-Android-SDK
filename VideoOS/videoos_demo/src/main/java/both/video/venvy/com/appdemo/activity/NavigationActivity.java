@@ -34,7 +34,7 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
         tv_app_secret = findViewById(R.id.tv_app_secret);
 
         ((RadioButton) findViewById(R.id.rb_release)).setChecked(DebugStatus.isRelease());
-        ((RadioButton) findViewById(R.id.rb_debug)).setChecked(DebugStatus.isDebug());
+        ((RadioButton) findViewById(R.id.rb_debug)).setChecked(DebugStatus.isTest());
         ((RadioButton) findViewById(R.id.rb_preview)).setChecked(DebugStatus.isPreView());
         ((RadioGroup) findViewById(R.id.rg_environment)).setVisibility(View.GONE);
         ((RadioGroup) findViewById(R.id.rg_environment)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -48,7 +48,7 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
                     case R.id.rb_debug:
                         ConfigUtil.putAppKey(ConfigUtil.DEV_APP_KEY);
                         ConfigUtil.putAppSecret(ConfigUtil.DEV_APP_SECRET);
-                        DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.DEBUG);
+                        DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.DEV);
                         tv_app_key.setText(getString(R.string.current_app_key, ConfigUtil.getAppKey()));
                         tv_app_secret.setText(getString(R.string.current_app_secret, ConfigUtil.getAppSecret()));
                         break;

@@ -12,7 +12,7 @@ import cn.com.venvy.common.interf.ScreenStatus;
 
 public class SettingsBean implements Serializable {
 
-    public DebugStatus.EnvironmentStatus mStatus = DebugStatus.EnvironmentStatus.DEBUG;
+    public DebugStatus.EnvironmentStatus mStatus = DebugStatus.EnvironmentStatus.DEV;
     //点播参数相关
     public String mAppkey;
     public String mUrl;
