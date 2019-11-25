@@ -30,8 +30,6 @@ import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.common.webview.JsBridge;
 import cn.com.venvy.common.webview.VenvyWebView;
 
-import static cn.com.venvy.common.webview.JsBridge.WebViewCloseListener.CloseType.*;
-
 /**
  * Created by Lucas on 2019/8/30.
  */
@@ -158,15 +156,15 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
                     String appletId = jsonObject.getString("appletId");
                     String screenType = jsonObject.getString("screenType");
                     String appType = jsonObject.getString("appType");
-                    String data = jsonObject.getString("data");
 
                     // 拉起一个对应的容器
                     Bundle bundle = new Bundle();
                     bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, appletId);
                     bundle.putString(VenvyObservableTarget.KEY_ORIENTATION_TYPE, screenType);
                     bundle.putString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE, appType);
-                    if (!TextUtils.isEmpty(data)) {
-                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, data);
+
+                    if (jsonObject.has("data")) {
+                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, jsonObject.getString("data"));
                     }
                     ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_LAUNCH_VISION_PROGRAM, bundle);
 
@@ -259,6 +257,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
 
     public void openLink(final String url) {
         VenvyLog.d("openLink : " + url);
+
         webView.setVisibility(VISIBLE);
         loadingContent.setVisibility(GONE);
         webView.loadUrl(url);
@@ -266,19 +265,19 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         cancelLoadingAnimation();
     }
 
-    public void addDeveloperUserIdToJsBridge(String developerUserId){
-        if(jsBridge != null){
+    public void addDeveloperUserIdToJsBridge(String developerUserId) {
+        if (jsBridge != null) {
             jsBridge.setDeveloperUserId(developerUserId);
             webView.setJsBridge(jsBridge);
         }
     }
 
-    public void setWebViewCloseListener(final WebViewCloseListener closeListener){
-        if(jsBridge != null){
+    public void setWebViewCloseListener(final WebViewCloseListener closeListener) {
+        if (jsBridge != null) {
             jsBridge.setWebViewCloseListener(new JsBridge.WebViewCloseListener() {
                 @Override
                 public void onClose(CloseType actionType) {
-                    if(closeListener != null){
+                    if (closeListener != null) {
                         closeListener.onClose(appletId);
                     }
                 }
@@ -304,7 +303,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         }
     }
 
-    public interface WebViewCloseListener{
+    public interface WebViewCloseListener {
         void onClose(String appletId);
     }
 }

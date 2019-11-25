@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
@@ -132,6 +133,7 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
 
     @Override
     public void loadUrl(String url) {
+
         if (mAgentWeb != null && !TextUtils.isEmpty(url)) {
             mAgentWeb.getUrlLoader().loadUrl(url);
         }
@@ -181,6 +183,8 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
                     .setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.ASK)//打开其他应用时，弹窗咨询用户是否前往其他应用
                     .interceptUnkownUrl() //拦截找不到相关页面的Scheme
                     .createAgentWeb().ready().get();
+
+            mAgentWeb.getWebCreator().getWebView().setLayerType(View.LAYER_TYPE_SOFTWARE,null);
         }
     }
 
@@ -203,6 +207,16 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
         if (mIJsParamsCallback != null) {
             mIJsParamsCallback.openApplet(openApplet);
         }
+    }
+
+    @Override
+    public int getWebViewX() {
+        return (int) getX();
+    }
+
+    @Override
+    public int getWebViewY() {
+        return (int) getY();
     }
 
     public void setJsParamsCallback(IJsParamsCallback callback) {
@@ -320,4 +334,5 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
 //			Log.i(TAG, "onReceivedError:" + errorCode + "  description:" + description + "  errorResponse:" + failingUrl);
         }
     };
+
 }

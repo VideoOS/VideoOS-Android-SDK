@@ -104,11 +104,16 @@ public class JsBridge implements VenvyObserver {
         float width = height / 375.0f * 230;
         JSONObject obj = new JSONObject();
         JSONObject objSize = new JSONObject();
+        JSONObject xyObj = new JSONObject();
         try {
             objSize.put("width", width);
             objSize.put("height", height);
             obj.put("common", CommonParam.getCommonParamJson(mPlatform.getPlatformInfo().getAppKey()));
             obj.put("size", objSize);
+
+            xyObj.put("x", mVenvyWebView.getWebViewX());
+            xyObj.put("y", mVenvyWebView.getWebViewY());
+            obj.put("origin", xyObj);
             obj.put("secret", mPlatform.getPlatformInfo().getAppSecret());
         } catch (Exception e) {
 
@@ -134,7 +139,7 @@ public class JsBridge implements VenvyObserver {
             }
             String adID = VenvyMD5Util.MD5(actionString);
             WidgetInfo.WidgetActionType widgetActionType = WidgetInfo.WidgetActionType.findTypeById(1);
-            WidgetInfo widgetInfo = new WidgetInfo.Builder()
+            final WidgetInfo widgetInfo = new WidgetInfo.Builder()
                     .setAdId(adID)
                     .setWidgetActionType(widgetActionType)
                     .setUrl(actionString)
@@ -144,7 +149,12 @@ public class JsBridge implements VenvyObserver {
                     .setSelfLink(selfLink)
                     .build();
             if (mPlatform.getWidgetClickListener() != null) {
-                mPlatform.getWidgetClickListener().onClick(widgetInfo);
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPlatform.getWidgetClickListener().onClick(widgetInfo);
+                    }
+                });
             }
             JSONObject jsonObject = new JSONObject();
             if (TextUtils.isEmpty(deepLink)) {
@@ -339,7 +349,7 @@ public class JsBridge implements VenvyObserver {
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
-                        callJsFunction(VenvyPreferenceHelper.getString(mContext, mDeveloperUserId, key, ""),jsParams);
+                        callJsFunction(VenvyPreferenceHelper.getString(mContext, mDeveloperUserId, key, ""), jsParams);
                     }
                 });
 

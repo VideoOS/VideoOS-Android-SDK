@@ -212,7 +212,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
-//        if (luaName.contains("os_video_mode_desktop_hotspot.lua")) {
+//        if (luaName.contains("os_video_figureStarList_hotspot.lua")) {
 //            runLua(luaView, luaName, valueData);
 //            return;
 //        }
