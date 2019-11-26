@@ -27,6 +27,7 @@ import cn.com.venvy.common.bean.PlatformUserInfo;
 import cn.com.venvy.common.bean.WidgetInfo;
 import cn.com.venvy.common.exception.LoginException;
 import cn.com.venvy.common.interf.ICallJsFunction;
+import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
@@ -115,6 +116,7 @@ public class JsBridge implements VenvyObserver {
             xyObj.put("y", mVenvyWebView.getWebViewY());
             obj.put("origin", xyObj);
             obj.put("secret", mPlatform.getPlatformInfo().getAppSecret());
+            obj.put("videoInfo", getVideoInfo());
         } catch (Exception e) {
 
         }
@@ -661,5 +663,24 @@ public class JsBridge implements VenvyObserver {
             }
         }
         return "";
+    }
+
+    private JSONObject getVideoInfo() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (mPlatform != null) {
+                jsonObject.put("videoID", mPlatform.getPlatformInfo().getVideoId());
+                IMediaControlListener mediaControlListener = mPlatform.getMediaControlListener();
+                if (mediaControlListener != null) {
+                    jsonObject.put("title", TextUtils.isEmpty(mediaControlListener.getVideoTitle()) ? "" : mediaControlListener.getVideoTitle());
+                    jsonObject.put("episode", TextUtils.isEmpty(mediaControlListener.getVideoEpisode()) ? "" : mediaControlListener.getVideoEpisode());
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
     }
 }
