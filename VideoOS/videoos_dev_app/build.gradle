@@ -1,5 +1,27 @@
 apply plugin: 'com.android.application'
 
+def keystoreFilepath = ''
+def keystorePSW = ''
+def keystoreAlias = ''
+def keystoreAliasPSW = ''
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('key.properties').newDataInputStream())
+keystoreFilepath = properties.getProperty("keystore.path")
+
+if (keystoreFilepath) {
+    keystorePSW = properties.getProperty("keystore.password")
+    keystoreAlias = properties.getProperty("keystore.alias")
+    keystoreAliasPSW = properties.getProperty("keystore.alias_password")
+} else {
+    keystoreFilepath = "${System.properties['user.home']}/.android/debug.keystore"
+    println("No release keystore found. Using default at [$keystoreFilepath]")
+    keystorePSW = 'android'
+    keystoreAlias = 'androiddebugkey'
+    keystoreAliasPSW = 'android'
+}
+
+
 configurations.all {
     resolutionStrategy.force 'com.android.support:support-annotations:28.0.0'
 }
@@ -10,7 +32,7 @@ android {
     defaultConfig {
         applicationId "both.video.venvy.com.appdemodev"
         minSdkVersion 19
-        targetSdkVersion 21
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0.0"
         javaCompileOptions {
@@ -24,23 +46,28 @@ android {
             targetCompatibility JavaVersion.VERSION_1_7
         }
     }
+
+    signingConfigs {
+        release {
+            storeFile file(keystoreFilepath)
+            storePassword keystorePSW
+            keyAlias keystoreAlias
+            keyPassword keystoreAliasPSW
+        }
+    }
+
+
     buildTypes {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
-            //是否混淆
             minifyEnabled true
+            zipAlignEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
-        preRelease {
-            //是否混淆
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
@@ -80,7 +107,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.squareup.okio:okio:1.12.0'
     compile 'com.just.agentweb:agentweb:4.1.2'
-    compile 'com.alibaba:fastjson:1.1.70.android'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.6.2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
