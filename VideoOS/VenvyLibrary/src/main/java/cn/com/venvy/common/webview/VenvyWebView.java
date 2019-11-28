@@ -25,6 +25,7 @@ import com.just.agentweb.DefaultWebClient;
 import cn.com.venvy.common.agentweb.common.CommonWebChromeClient;
 import cn.com.venvy.common.interf.IJsParamsCallback;
 import cn.com.venvy.common.interf.IWebViewClient;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 
 
 /**
@@ -184,7 +185,7 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
                     .interceptUnkownUrl() //拦截找不到相关页面的Scheme
                     .createAgentWeb().ready().get();
 
-            mAgentWeb.getWebCreator().getWebView().setLayerType(View.LAYER_TYPE_SOFTWARE,null);
+            mAgentWeb.getWebCreator().getWebView().setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
     }
 
@@ -211,12 +212,21 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
 
     @Override
     public int getWebViewX() {
-        return (int) getX();
+        if (VenvyUIUtil.isScreenOriatationPortrait(getContext())) {
+            return VenvyUIUtil.px2dip(getContext(), getX());
+        } else {
+            return VenvyUIUtil.px2dip(getContext(), VenvyUIUtil.getScreenWidth(getContext()) - getWidth());
+        }
+
     }
 
     @Override
     public int getWebViewY() {
-        return (int) getY();
+        if (VenvyUIUtil.isScreenOriatationPortrait(getContext())) {
+            return VenvyUIUtil.px2dip(getContext(), VenvyUIUtil.getScreenHeight(getContext()) - getHeight());
+        } else {
+            return VenvyUIUtil.px2dip(getContext(), getY());
+        }
     }
 
     public void setJsParamsCallback(IJsParamsCallback callback) {

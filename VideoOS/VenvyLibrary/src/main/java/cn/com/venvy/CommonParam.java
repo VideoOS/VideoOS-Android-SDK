@@ -38,6 +38,7 @@ public class CommonParam {
     private static final String PPI = "PPI";//设备像素密度,物理像素
     private static final String IMSI = "IMSI";//国际移动客户识别码
     private static final String DEVICE_TYPE = "DEVICE_TYPE";//终端类型(1:移动端 2:PC 3:OTT)
+    private static final String APP_KEY = "APP_KEY";//终端类型(1:移动端 2:PC 3:OTT)
 
     public static JSONObject getCommonParamJson(String appKey) {
         Map<String, String> paramMap = new HashMap<>();
@@ -58,6 +59,7 @@ public class CommonParam {
         paramMap.put(PHONE_HEIGHT, String.valueOf(VenvyUIUtil.getScreenHeight(context)));
         paramMap.put(PPI, String.valueOf(VenvyUIUtil.getScreenPPI(context)));
         paramMap.put(CARRIER, String.valueOf(VenvyDeviceUtil.getSubscriptionOperatorType(context)));
+        paramMap.put(APP_KEY, appKey);
 
         String ip = VenvyDeviceUtil.getLocalIPAddress();
         if (!TextUtils.isEmpty(ip)) {

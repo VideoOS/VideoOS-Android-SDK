@@ -223,7 +223,6 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
 
             }
         });
-
         root.addView(webView);
     }
 
