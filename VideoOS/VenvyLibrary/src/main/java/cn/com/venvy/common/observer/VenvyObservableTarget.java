@@ -38,6 +38,8 @@ public class VenvyObservableTarget {
     public static final String TAG_LAUNCH_DESKTOP_PROGRAM = "notifyLaunchDesktopProgram";
     // 在顶层添加一个lua脚本
     public static final String TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL = "notifyAddLuaScriptToTopLevel";
+    // 清除所有的视联网小程序
+    public static final String TAG_CLEAR_ALL_VISION_PROGRAM = "notifyClearAllVisionProgram";
 
     public static class Constant {
         public static final int CONSTANT_LANDSCAPE = 1;

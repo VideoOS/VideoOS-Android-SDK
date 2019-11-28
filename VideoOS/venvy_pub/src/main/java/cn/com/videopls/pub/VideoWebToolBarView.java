@@ -294,6 +294,10 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         freshProgram(appletId);
     }
 
+    public void onScreenChanged(boolean isHorizontal) {
+        // 横竖屏切换要call一下js这个方法
+        webView.callJsFunction("orientationChange", isHorizontal ? "0" : "1");
+    }
 
     @Override
     protected void onDetachedFromWindow() {

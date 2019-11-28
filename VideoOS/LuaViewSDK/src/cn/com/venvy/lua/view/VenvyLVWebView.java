@@ -139,13 +139,13 @@ public class VenvyLVWebView extends FrameLayout implements ILVNativeViewProvider
     private String getDeveloperUserId(Globals globals) {
         String developerUserId = null;
         Map<String, String> dataParams = getViewPriority(globals);
-        if (dataParams != null || dataParams.size() <= 0) {
+        if (dataParams.size() <= 0) {
             return developerUserId;
         }
         try {
-            JSONObject dataObj = new JSONObject(dataParams.get("miniAppInfo"));
-//            JSONObject miniAppInfoObj = dataObj.optJSONObject("miniAppInfo");
-            developerUserId = dataObj.optString("developerUserId");
+            JSONObject dataObj = new JSONObject(dataParams.get("data"));
+            JSONObject miniAppInfoObj = dataObj.optJSONObject("miniAppInfo");
+            developerUserId = miniAppInfoObj.optString("developerUserId");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package cn.com.venvy.common.utils;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -29,6 +30,8 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
 import java.util.UUID;
+
+import cn.com.venvy.common.permission.PermissionCheckHelper;
 
 import static android.os.Environment.MEDIA_MOUNTED;
 
@@ -93,18 +96,20 @@ public class VenvyDeviceUtil {
      * @param context
      * @return
      */
-    public static String getIMEI(Context context) {
+    public static String getIMEI(final Context context) {
         String IMEI = "";
         if (context == null) {
             return IMEI;
         }
-        try {
-            TelephonyManager telephonyManager = (TelephonyManager) context
-                    .getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) context
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        if (PermissionCheckHelper.isPermissionGranted(context, Manifest.permission.READ_PHONE_STATE)) {
             IMEI = telephonyManager.getDeviceId();
-            //md5加密
-//            IMEI = VenvyStringUtil.convertMD5(IMEI);
-        } catch (Exception e) {
+            if(TextUtils.isEmpty(IMEI)){
+                // 部分Android 版本下获取的DeviceId为null的解决方案
+                IMEI = Settings.Secure.getString(context.getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+            }
+        } else {
             IMEI = "000000000000000";
         }
         return IMEI;

@@ -33,6 +33,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, this);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL, this);
+        ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_CLEAR_ALL_VISION_PROGRAM, this);
     }
 
 
@@ -177,6 +178,17 @@ public class VideoPlusViewHelper implements VenvyObserver {
                 });
                 return;
             }
+            case VenvyObservableTarget.TAG_CLEAR_ALL_VISION_PROGRAM:{
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(videoPlusView != null){
+                            videoPlusView.clearAllVisionProgram();
+                        }
+                    }
+                });
+                return;
+            }
         }
     }
 
@@ -191,6 +203,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_CLOSE_H5_VISION_PROGRAM, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, this);
         ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL, this);
+        ObservableManager.getDefaultObserable().removeObserver(VenvyObservableTarget.TAG_CLEAR_ALL_VISION_PROGRAM, this);
     }
 
     public boolean isHorizontal() {

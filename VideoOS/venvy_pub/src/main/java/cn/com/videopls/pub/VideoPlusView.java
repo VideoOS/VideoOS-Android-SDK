@@ -157,7 +157,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
     public void changeVisionProgramByOrientation(boolean isHorizontal) {
         if (programViewB != null) {
-            programViewB.setVisibility(isHorizontal ? VISIBLE : GONE);
+            programViewB.onScreenChanged(isHorizontal);
         }
     }
 

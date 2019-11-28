@@ -31,6 +31,7 @@ import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
+import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyBase64;
@@ -134,10 +135,11 @@ public class JsBridge implements VenvyObserver {
             String actionString = "";
             if (!TextUtils.isEmpty(linkUrl)) {
                 actionString = linkUrl;
-            } else if (TextUtils.isEmpty(deepLink)) {
+            } else if (!TextUtils.isEmpty(deepLink)) {
                 actionString = deepLink;
-            } else if (TextUtils.isEmpty(selfLink)) {
+            } else if (!TextUtils.isEmpty(selfLink)) {
                 actionString = selfLink;
+                ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_CLEAR_ALL_VISION_PROGRAM);
             }
             String adID = VenvyMD5Util.MD5(actionString);
             WidgetInfo.WidgetActionType widgetActionType = WidgetInfo.WidgetActionType.findTypeById(1);

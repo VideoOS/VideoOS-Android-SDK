@@ -325,6 +325,17 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     }
 
 
+    public void onScreenChanged(boolean isHorizontal) {
+        setVisibility(isHorizontal ? VISIBLE : GONE);
+
+        if(h5ProgramMap.size() > 0){
+            for(VideoWebToolBarView webToolBarView: h5ProgramMap.values()){
+                webToolBarView.onScreenChanged(isHorizontal);
+            }
+        }
+    }
+
+
     /**
      * 暂时没有注册
      *
