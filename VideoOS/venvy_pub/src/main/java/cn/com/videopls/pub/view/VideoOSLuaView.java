@@ -212,10 +212,6 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
-//        if (luaName.contains("os_video_figureStarList_hotspot.lua")) {
-//            runLua(luaView, luaName, valueData);
-//            return;
-//        }
         if (sScriptBundle == null) {
             sScriptBundle = initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
             if (sScriptBundle != null) {
