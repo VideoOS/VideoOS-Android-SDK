@@ -47,6 +47,8 @@ public class VideoOSLuaView extends VideoOSBaseView {
 
     private static final String INIT_SCRIPT = "Init_ScriptBundle";
     private static final String LOCAL_LUA_PATH = "lua/";
+    private static final String KEY_MINIAPPID = "miniAppId";
+    private static final String KEY_APPLETID = "appletId";
     private volatile LuaView mLuaView;
     private boolean hasCallShowFunction = false;
     public static ScriptBundle sScriptBundle;
@@ -214,10 +216,13 @@ public class VideoOSLuaView extends VideoOSBaseView {
         }
         String miniAppId = "";
         if (valueData instanceof HashMap) {
-            if (((HashMap) valueData).containsKey("miniAppId")) {
-                miniAppId = ((HashMap) valueData).get("miniAppId").toString();
-            } else if (((HashMap) valueData).containsKey("appletId")) {
-                miniAppId = ((HashMap) valueData).get("appletId").toString();
+            HashMap params = (HashMap) valueData;
+            if (params != null && params.size() >= 0) {
+                if (params.containsKey(KEY_MINIAPPID)) {
+                    miniAppId = params.get(KEY_MINIAPPID) == null ? "" : String.valueOf(params.get(KEY_MINIAPPID));
+                } else if (params.containsKey(KEY_APPLETID)) {
+                    miniAppId = params.get(KEY_APPLETID) == null ? "" : String.valueOf(params.get(KEY_APPLETID));
+                }
             }
         }
         if (sScriptBundle == null) {
