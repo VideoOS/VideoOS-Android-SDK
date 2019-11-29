@@ -182,7 +182,11 @@ public abstract class VideoPlusController implements VenvyObserver {
 
                     // miniAppInfo
                     if (!TextUtils.isEmpty(miniAppInfo)) {
-                        jsonObject.put(CONSTANT_MINI_APP_INFO, new JSONObject(miniAppInfo));
+                        JSONObject miniAppJson = new JSONObject(miniAppInfo);
+                        jsonObject.put(CONSTANT_MINI_APP_INFO, miniAppJson);
+                        builder.appendQueryParameter(VenvySchemeUtil.QUERY_MINIAPP_ID,miniAppJson.getString("miniAppId"));
+                    }else{
+                        builder.appendQueryParameter(VenvySchemeUtil.QUERY_MINIAPP_ID,"");
                     }
                     skipParams.put(CONSTANT_DATA, jsonObject.toString());
                 } catch (JSONException e) {

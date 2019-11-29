@@ -18,6 +18,7 @@ public class VenvySchemeUtil {
 
     public static final String QUERY_PARAMETER_TEMPLATE = "template";
     public static final String QUERY_PARAMETER_ID = "id";
+    public static final String QUERY_MINIAPP_ID = "miniAppId";
     public static final String QUERY_PARAMETER_PRIORITY = "priority";
     public static final String QUERY_PARAMETER_EVENT_TYPE = "eventType";
     public static final String QUERY_PARAMETER_ACTION_TYPE = "actionType";

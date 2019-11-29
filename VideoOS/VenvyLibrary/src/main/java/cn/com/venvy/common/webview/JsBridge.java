@@ -353,7 +353,7 @@ public class JsBridge implements VenvyObserver {
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
-                        callJsFunction(VenvyPreferenceHelper.getString(mContext, mDeveloperUserId, key, ""), jsParams);
+                        callJsFunction(VenvyPreferenceHelper.getString(mContext, TextUtils.isEmpty(mDeveloperUserId) ? "" : mDeveloperUserId, key, ""), jsParams);
                     }
                 });
 

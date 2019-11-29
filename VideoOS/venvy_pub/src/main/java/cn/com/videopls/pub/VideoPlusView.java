@@ -279,21 +279,19 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         addView(programViewDesktop, getChildCount() - 1);// 上层还有
         if (!TextUtils.isEmpty(targetName)) {
             programViewDesktop.setVisibility(VISIBLE);
-            Uri uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
-//            HashMap<String, String> params = new HashMap<>();
-//            params.put(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfo);//  miniAppInfo
-//            params.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, videoModeType);//  videoModeType
-
             JSONObject jsonObject = new JSONObject();
+            Uri uri = null;
             try {
-                jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, new JSONObject(miniAppInfo));//  miniAppInfo
+                JSONObject miniAppInfoJson = new JSONObject(TextUtils.isEmpty(miniAppInfo) ? "{}" : miniAppInfo);
+                uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&miniAppId=" + miniAppInfoJson.getString("miniAppId") + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
+                jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfoJson);//  miniAppInfo
                 jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, videoModeType);//  videoModeType
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            HashMap<String,String> finalParams = new HashMap<>();
-            finalParams.put("data",jsonObject.toString());
+            HashMap<String, String> finalParams = new HashMap<>();
+            finalParams.put("data", jsonObject.toString());
             programViewDesktop.navigation(uri, finalParams, null);
         }
 
