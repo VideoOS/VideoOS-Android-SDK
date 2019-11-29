@@ -78,9 +78,7 @@ public class CommonParam {
             paramMap.put(MAC, macAddress);
         }
         String imsi = VenvyDeviceUtil.getIMSI(context);
-        if (!TextUtils.isEmpty(imsi)) {
-            paramMap.put(IMSI, imsi);
-        }
+        paramMap.put(IMSI, TextUtils.isEmpty(imsi) ? " " : imsi);
         return new JSONObject(paramMap);
     }
 }
