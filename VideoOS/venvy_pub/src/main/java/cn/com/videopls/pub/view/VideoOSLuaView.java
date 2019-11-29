@@ -212,16 +212,24 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
+        String miniAppId = "";
+        if (valueData instanceof HashMap) {
+            if (((HashMap) valueData).containsKey("miniAppId")) {
+                miniAppId = ((HashMap) valueData).get("miniAppId").toString();
+            } else if (((HashMap) valueData).containsKey("appletId")) {
+                miniAppId = ((HashMap) valueData).get("appletId").toString();
+            }
+        }
         if (sScriptBundle == null) {
             sScriptBundle = initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
             if (sScriptBundle != null) {
-                luaView.loadScriptBundle(sScriptBundle, luaName,
+                luaView.loadScriptBundle(sScriptBundle, TextUtils.isEmpty(miniAppId) ? luaName : miniAppId + File.separator + luaName,
                         new LuaCallbackImpl(valueData));
             } else {
                 runLua(luaView, luaName, valueData);
             }
         } else {
-            luaView.loadScriptBundle(sScriptBundle, luaName, new LuaCallbackImpl(valueData));
+            luaView.loadScriptBundle(sScriptBundle, TextUtils.isEmpty(miniAppId) ? luaName : miniAppId + File.separator + luaName, new LuaCallbackImpl(valueData));
         }
     }
 
@@ -293,8 +301,9 @@ public class VideoOSLuaView extends VideoOSBaseView {
                 for (File childFile : file.listFiles()) {
                     if (TextUtils.equals("lua", VenvyFileUtil.getExtension(childFile.getName()))) {
                         byte[] data = getBytes(childFile.getPath());
+                        String fileAbsolutePath = file.getAbsolutePath();
                         ScriptFile scriptFile = new ScriptFile(null,
-                                file.getAbsolutePath(), childFile.getName(), data);
+                                fileAbsolutePath, fileAbsolutePath.substring(fileAbsolutePath.lastIndexOf("/") + 1, fileAbsolutePath.length()) + File.separator + childFile.getName(), data);
                         scriptBundle.addScript(scriptFile);
                     }
                 }
