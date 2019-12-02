@@ -489,10 +489,12 @@ mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode_TAG, new HashMap<St
 跟`视联网模式`的启动方式差不多，第一个ServiceType是个枚举。
 
 ```
-  //  ServiceTypeVideoMode(1),//视联网模式
+  // ServiceTypeVideoMode_POP(1),//视联网模式- 气泡模式
   // ServiceTypeFrontVideo(3),//前帖广告
-  //  ServiceTypeLaterVideo(4),//后贴广告
-  //  ServiceTypePauseAd(5);//暂停广告
+  // ServiceTypeLaterVideo(4),//后贴广告
+  // ServiceTypePauseAd(5);//暂停广告
+  // ServiceTypeVideoMode_TAG(6),//视联网模式 - 标签模式
+  // ServiceTypeVideoTools(7); // 视联网小工具
 
         HashMap<String, String> params = new HashMap<>();
         // duration 参数指定播放倒计时
