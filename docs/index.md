@@ -32,6 +32,8 @@ dependencies {
 	// glide 可选 com.videoli:venvy_glide:1.0.4  or com.videoli:venvy_glide_v4:1.0.1
 	// fresco 选 com.videoli:venvy_fresco:1.0.4
 	implementation "com.videoli:venvy_glide:1.0.4"
+	implementation 'com.videoli:venvy_svga:1.0.9'
+    	implementation "com.just.agentweb:agentweb:4.1.2"
 	
 	// 依赖的其他第三方库，具体视平台不同版本而不一致
 	implementation "com.github.bumptech.glide:glide:3.7.0"
