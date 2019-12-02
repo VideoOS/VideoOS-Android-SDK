@@ -29,14 +29,14 @@ dependencies {
 	implementation 'com.videoli:venvy_processor_annotation:1.0.0'
 	annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
 	// SDK Glide图片加载插件 目前仅支持Glide 和 fresco
-	// glide 可选 com.videoli:venvy_glide:1.0.4  or com.videoli:venvy_glide_v4:1.0.1
-	// fresco 选 com.videoli:venvy_fresco:1.0.4
+	// glide 可选 com.videoli:venvy_glide:1.0.5 （对应Glide3.0.0+） or com.videoli:venvy_glide_v4:1.0.1（对应Glide4.0.0+)
 	implementation "com.videoli:venvy_glide:1.0.4"
-	implementation 'com.videoli:venvy_svga:1.0.9'
+	// fresco 选 com.videoli:venvy_fresco:1.0.4
+	implementation "com.videoli:venvy_svga:1.0.9"
     	implementation "com.just.agentweb:agentweb:4.1.2"
 	
 	// 依赖的其他第三方库，具体视平台不同版本而不一致
-	implementation "com.github.bumptech.glide:glide:4.5.0" // 低版本 gif加载会叠帧
+	implementation "com.github.bumptech.glide:glide:4.5.0" // 这里依赖的4.5.0的版本，所以上面依赖venvy_glide_v4的版本
 	implementation "com.squareup.okhttp3:okhttp:3.8.0"
 	implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
 }
