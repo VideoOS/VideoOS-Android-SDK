@@ -13,11 +13,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
+import cn.com.venvy.common.interf.IAppletListener;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
@@ -26,14 +25,13 @@ import cn.com.venvy.common.router.IRouterCallback;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
-import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.videopls.pub.view.VideoOSLuaView;
 
 /**
  * Created by Lucas on 2019/7/31.
  */
 @TargetApi(Build.VERSION_CODES.M)
-public class VideoProgramToolBarView extends BaseVideoVisionView implements VenvyObserver, IRouterCallback {
+public class VideoProgramToolBarView extends BaseVideoVisionView implements VenvyObserver, IRouterCallback, IAppletListener {
 
 
     protected VideoProgramView videoProgramView;
@@ -41,8 +39,6 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
     private Set<String> templateIds = new ArraySet<>();
 
     private String currentAppletId;
-    private String cacheData;
-    private int cacheType;
 
     private String retryData;
 
@@ -89,11 +85,11 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
             public void onClick(View view) {
                 if (VenvyDeviceUtil.isNetworkAvailable(getContext())) {
                     VideoOSLuaView osLuaView = getCurrentLuaView();
-                    HashMap<String,String> map = new HashMap<>();
-                    map.put("eventType","2");
-                    map.put("appletActionType","1");
-                    map.put("data",retryData);
-                    osLuaView.callLuaFunction("event",map);
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("eventType", "2");
+                    map.put("appletActionType", "1");
+                    map.put("data", retryData);
+                    osLuaView.callLuaFunction("event", map);
                 }
             }
         });
@@ -104,32 +100,22 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
         ivBack.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                errorContent.setVisibility(GONE);
-                retryContent.setVisibility(GONE);
-                videoProgramView.setVisibility(VISIBLE);
-                videoProgramView.removeTopView();
-                checkBackDisplayLogic();
+                goBack();
             }
         });
         ivClose.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!TextUtils.isEmpty(currentAppletId)) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, currentAppletId);
-                    ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM, bundle);
-                }
-                cancelLoadingAnimation();
+                closeView();
             }
         });
     }
 
     private void initVideoProgramView() {
         videoProgramView = new VideoProgramView(getContext());
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        layoutParams.topMargin = VenvyUIUtil.dip2px(getContext(), 44f);
-        videoProgramView.setLayoutParams(layoutParams);
-        addView(videoProgramView);
+        videoProgramView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        videoProgramView.setAppletListener(this);
+        root.addView(videoProgramView);
     }
 
 
@@ -143,8 +129,6 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
             videoProgramView.startVision(appletId, data, type, false, this);
         } else {
             this.currentAppletId = appletId;
-            cacheData = data;
-            cacheType = type;
             retryContent.setVisibility(VISIBLE);
             loadingContent.setVisibility(GONE);
             errorContent.setVisibility(GONE);
@@ -152,7 +136,7 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
 
     }
 
-    public void refreshHistory(String appletId){
+    public void refreshHistory(String appletId) {
         videoProgramView.refreshRecentHistory(appletId);
     }
 
@@ -161,12 +145,11 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
     }
 
 
-    public boolean isIncludeId(String id){
+    public boolean isIncludeId(String id) {
         return templateIds.contains(id);
     }
 
-    public void showExceptionLogic(String msg, boolean needRetry,String data) {
-        VenvyLog.d("showExceptionLogic : " + msg + "  " + needRetry);
+    public void showExceptionLogic(String msg, boolean needRetry, String data) {
         videoProgramView.setVisibility(INVISIBLE);
         if (needRetry) {
             retryContent.setVisibility(VISIBLE);
@@ -185,13 +168,13 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
     }
 
 
-
     public void showExceptionLogic(String msg, boolean needRetry) {
-        showExceptionLogic(msg,needRetry,"");
+        showExceptionLogic(msg, needRetry, "");
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(final String title, boolean nvgShow) {
         tvTitle.setText(title);
+        rlTitleBar.setVisibility(nvgShow ? VISIBLE : GONE);
     }
 
 
@@ -203,10 +186,11 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
     }
 
 
-    private void checkBackDisplayLogic() {
+    private boolean checkBackDisplayLogic() {
         int luaViewCount = videoProgramView.getAllOfLuaView();
         VenvyLog.d("checkBackDisplayLogic : " + luaViewCount);
         ivBack.setVisibility(luaViewCount > 1 ? VISIBLE : GONE);
+        return luaViewCount > 1;
     }
 
 
@@ -236,7 +220,7 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
         }
     }
 
-    public void notifyLua(String data){
+    public void notifyLua(String data) {
         errorContent.setVisibility(GONE);
         retryContent.setVisibility(GONE);
         loadingContent.setVisibility(GONE);
@@ -246,20 +230,20 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
 
         // 通知正在展示的lua refresh
         VideoOSLuaView osLuaView = getCurrentLuaView();
-        HashMap<String,String> map = new HashMap<>();
-        map.put("eventType","2");
-        map.put("appletActionType","2");
-        map.put("data",data);
-        osLuaView.callLuaFunction("event",map);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("eventType", "2");
+        map.put("appletActionType", "2");
+        map.put("data", data);
+        osLuaView.callLuaFunction("event", map);
 
     }
 
-    public VideoOSLuaView getCurrentLuaView(){
-        return (VideoOSLuaView)videoProgramView.getChildAt(videoProgramView.getChildCount() -1);
+    public VideoOSLuaView getCurrentLuaView() {
+        return (VideoOSLuaView) videoProgramView.getChildAt(videoProgramView.getChildCount() - 1);
     }
 
-    public void launchLuaScript(String template, final String id, String data){
-        Uri uri = Uri.parse("LuaView://defaultLuaView?template="+template+"&id="+id);
+    public void launchLuaScript(String template, final String id, String data) {
+        Uri uri = Uri.parse("LuaView://defaultLuaView?template=" + template + "&id=" + id);
 //            Uri uri = Uri.parse("LuaView://applets?appletId=123&template=test.lua&id=test");
         HashMap<String, String> params = new HashMap<>();
         params.put("data", data);
@@ -277,4 +261,27 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
     }
 
 
+    @Override
+    public boolean canGoBack() {
+        return checkBackDisplayLogic();
+    }
+
+    @Override
+    public void goBack() {
+        errorContent.setVisibility(GONE);
+        retryContent.setVisibility(GONE);
+        videoProgramView.setVisibility(VISIBLE);
+        videoProgramView.removeTopView();
+        checkBackDisplayLogic();
+    }
+
+    @Override
+    public void closeView() {
+        if (!TextUtils.isEmpty(currentAppletId)) {
+            Bundle bundle = new Bundle();
+            bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, currentAppletId);
+            ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM, bundle);
+        }
+        cancelLoadingAnimation();
+    }
 }

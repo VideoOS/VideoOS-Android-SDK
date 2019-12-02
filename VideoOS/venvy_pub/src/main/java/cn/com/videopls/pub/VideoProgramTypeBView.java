@@ -195,7 +195,14 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
      *
      * @param url
      */
-    public void startH5(String url) {
+    public void startH5(String url, String developerUserId) {
+        currentH5Program.addDeveloperUserIdToJsBridge(developerUserId);
+        currentH5Program.setWebViewCloseListener(new VideoWebToolBarView.WebViewCloseListener() {
+            @Override
+            public void onClose(String appletId) {
+                closeH5(appletId);
+            }
+        });
         currentH5Program.openLink(url);
     }
 
@@ -280,13 +287,13 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     }
 
 
-    public void setCurrentProgramTitle(String title) {
+    public void setCurrentProgramTitle(String title, boolean nvgShow) {
         if (currentProgram != null) {
-            currentProgram.setTitle(title);
+            currentProgram.setTitle(title, nvgShow);
         }
 
-        if(currentH5Program != null){
-            currentH5Program.setTitle(title);
+        if (currentH5Program != null) {
+            currentH5Program.setTitle(title, nvgShow);
         }
     }
 
@@ -314,6 +321,17 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
             }
         });
         valueAnimator.start();
+    }
+
+
+    public void onScreenChanged(boolean isHorizontal) {
+        setVisibility(isHorizontal ? VISIBLE : GONE);
+
+        if(h5ProgramMap.size() > 0){
+            for(VideoWebToolBarView webToolBarView: h5ProgramMap.values()){
+                webToolBarView.onScreenChanged(isHorizontal);
+            }
+        }
     }
 
 

@@ -17,6 +17,8 @@ import com.taobao.luaview.view.LVHorizontalScrollView;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 
+import cn.com.venvy.common.utils.VenvyLog;
+
 /**
  * 容器类-ListView，模拟OC的section分区实现，Section顺序排列
  *

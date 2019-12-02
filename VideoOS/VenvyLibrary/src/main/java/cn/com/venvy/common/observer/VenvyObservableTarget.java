@@ -36,6 +36,10 @@ public class VenvyObservableTarget {
     public static final String TAG_CLOSE_H5_VISION_PROGRAM = "notifyCloseH5Program";
     // 启动桌面小程序
     public static final String TAG_LAUNCH_DESKTOP_PROGRAM = "notifyLaunchDesktopProgram";
+    // 在顶层添加一个lua脚本
+    public static final String TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL = "notifyAddLuaScriptToTopLevel";
+    // 清除所有的视联网小程序
+    public static final String TAG_CLEAR_ALL_VISION_PROGRAM = "notifyClearAllVisionProgram";
 
     public static class Constant {
         public static final int CONSTANT_LANDSCAPE = 1;
@@ -45,13 +49,18 @@ public class VenvyObservableTarget {
         public static final String CONSTANT_MSG = "msg";
         public static final String CONSTANT_NEED_RETRY = "needRetry";
         public static final String CONSTANT_TITLE = "title";
+        public static final String CONSTANT_NVG_SHOW = "navIsShow";
         public static final String CONSTANT_APP_TYPE = "appType";
-        public static final int CONSTANT_APP_TYPE_LUA = 1;
-        public static final int CONSTANT_APP_TYPE_H5 = 2;
+        public static final int CONSTANT_APP_TYPE_LUA = 1; // 视联网小程序lua
+        public static final int CONSTANT_APP_TYPE_H5 = 2; // 视联网小程序 H5
+        public static final int CONSTANT_APP_TYPE_TOOLS = 3; // 视联网小工具
         public static final String CONSTANT_H5_URL = "h5Url";
         public static final String CONSTANT_LUA_NAME = "luaName";
         public static final String CONSTANT_TEMPLATE = "template";
-        public static final String CONSTANT_ID  = "id";
+        public static final String CONSTANT_ID = "id";
+        public static final String CONSTANT_MINI_APP_INFO = "miniAppInfo";
+        public static final String CONSTANT_VIDEO_MODE_TYPE = "videoModeType";
+        public static final String CONSTANT_DEVELOPER_USER_ID = "developerUserId";
     }
 
 }

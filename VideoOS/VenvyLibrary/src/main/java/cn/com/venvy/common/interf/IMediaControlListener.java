@@ -36,4 +36,20 @@ public interface IMediaControlListener {
     VideoFrameSize getVideoFrameSize();
 
     long getDuration();
+
+    /**
+     * 获取剧集名称
+     *
+     * @return
+     */
+    String getVideoEpisode();
+
+    /**
+     * 获取视频标题
+     *
+     * @return
+     */
+    String getVideoTitle();
+
+
 }

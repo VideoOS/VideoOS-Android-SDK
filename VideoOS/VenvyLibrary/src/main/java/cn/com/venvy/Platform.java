@@ -17,6 +17,7 @@ import cn.com.venvy.common.download.DownloadImageTaskRunner;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.interf.IAppletListener;
 import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.interf.IWidgetClickListener;
@@ -40,6 +41,7 @@ public class Platform implements Serializable {
     private static final long serialVersionUID = 259734984506L;
 
     private PlatformInfo mPlatformInfo;
+    private boolean nvgShow = true; // 视联网小程序是否显示导航栏
     //手动上报逻辑
     private IPlatformLoginInterface mPlatformLoginInterface;
     private IMediaControlListener mMediaControlListener;
@@ -50,13 +52,15 @@ public class Platform implements Serializable {
     private IWidgetPrepareShowListener mPrepareShowListener;
     private OnTagKeyListener mTagKeyListener;
     private ViewGroup mContentViewGroup;
+    private IAppletListener mAppletListener;
 
     private static final String PRE_LOAD_IMAGE = "pre_load_images";
     private static final String PRE_LOAD_MEDIA = "pre_load_medias";
 
-    public static final int STATISTICS_DOWNLOAD_STAGE_REAPP = 0;
-    public static final int STATISTICS_DOWNLOAD_STAGE_REVIDEO = 1;
-    public static final int STATISTICS_DOWNLOAD_STAGE_REALPLAY = 2;
+    // track 类型
+    public static final int STATISTICS_DOWNLOAD_STAGE_REAPP = 0;   // app启动的时候
+    public static final int STATISTICS_DOWNLOAD_STAGE_REVIDEO = 1;  // 开始播放的时候
+    public static final int STATISTICS_DOWNLOAD_STAGE_REALPLAY = 2; // 实时
 
     private DownloadImageTaskRunner mDownloadImageTaskRunner;
     private DownloadTaskRunner mDownloadTaskRunner;
@@ -109,6 +113,14 @@ public class Platform implements Serializable {
         this.mTagKeyListener = mTagKeyListener;
     }
 
+
+    public void setAppletListener(IAppletListener AppletListener) {
+        this.mAppletListener = mAppletListener;
+    }
+
+    public IAppletListener getAppletListener() {
+        return mAppletListener;
+    }
 
     public OnTagKeyListener getTagKeyListener() {
         return mTagKeyListener;
@@ -333,5 +345,13 @@ public class Platform implements Serializable {
     public void stopBackgroundThread() {
         VenvyAsyncTaskUtil.cancel(PRE_LOAD_MEDIA);
         VenvyAsyncTaskUtil.cancel(PRE_LOAD_IMAGE);
+    }
+
+    public boolean isNvgShow() {
+        return nvgShow;
+    }
+
+    public void setNvgShow(boolean nvgShow) {
+        this.nvgShow = nvgShow;
     }
 }

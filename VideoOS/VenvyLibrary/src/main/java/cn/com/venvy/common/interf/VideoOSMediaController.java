@@ -73,4 +73,5 @@ public abstract class VideoOSMediaController implements IMediaControlListener {
     public VideoFrameSize getVideoFrameSize() {
         return null;
     }
+
 }

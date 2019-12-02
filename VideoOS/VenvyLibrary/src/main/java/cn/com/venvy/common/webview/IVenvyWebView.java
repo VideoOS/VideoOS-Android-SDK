@@ -42,4 +42,8 @@ public interface IVenvyWebView {
     void updateNaviTitle(String updateNaviTitle);
 
     void openApplet(String openApplet);
+
+    int getWebViewX();
+
+    int getWebViewY();
 }

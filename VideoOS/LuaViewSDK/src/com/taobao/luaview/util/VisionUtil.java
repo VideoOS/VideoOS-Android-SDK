@@ -11,17 +11,24 @@ public class VisionUtil {
 
     /**
      * 返回视联网容器宽高
+     *
      * @return
      */
-    public static Pair<Float, Float> getVisionProgramSize() {
+    public static Pair<Float, Float> getVisionProgramSize(boolean nvgShow) {
         int screenHeight = AndroidUtil.getScreenHeight(getContext());
         int screenWidth = AndroidUtil.getScreenWidth(getContext());
 
 
-        float height = Math.min(screenWidth,screenHeight) - DimenUtil.dpiToPx(44f);
-        float width = Math.min(screenWidth,screenHeight) / 375.0f * 230;
+        float height;
+        if (nvgShow) {
+            height = Math.min(screenWidth, screenHeight) - DimenUtil.dpiToPx(44f);
+        } else {
+            height = Math.min(screenWidth, screenHeight);
+        }
+
+        float width = Math.min(screenWidth, screenHeight) / 375.0f * 230;
 
 
-        return new Pair<>(DimenUtil.pxToDpi(width),DimenUtil.pxToDpi(height));
+        return new Pair<>(DimenUtil.pxToDpi(width), DimenUtil.pxToDpi(height));
     }
 }

@@ -47,6 +47,8 @@ public class VideoOSLuaView extends VideoOSBaseView {
 
     private static final String INIT_SCRIPT = "Init_ScriptBundle";
     private static final String LOCAL_LUA_PATH = "lua/";
+    private static final String KEY_MINIAPPID = "miniAppId";
+    private static final String KEY_APPLETID = "appletId";
     private volatile LuaView mLuaView;
     private boolean hasCallShowFunction = false;
     public static ScriptBundle sScriptBundle;
@@ -212,16 +214,27 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
+        String miniAppId = "";
+        if (valueData instanceof HashMap) {
+            HashMap params = (HashMap) valueData;
+            if (params != null && params.size() >= 0) {
+                if (params.containsKey(KEY_MINIAPPID)) {
+                    miniAppId = params.get(KEY_MINIAPPID) == null ? "" : String.valueOf(params.get(KEY_MINIAPPID));
+                } else if (params.containsKey(KEY_APPLETID)) {
+                    miniAppId = params.get(KEY_APPLETID) == null ? "" : String.valueOf(params.get(KEY_APPLETID));
+                }
+            }
+        }
         if (sScriptBundle == null) {
             sScriptBundle = initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
             if (sScriptBundle != null) {
-                luaView.loadScriptBundle(sScriptBundle, luaName,
+                luaView.loadScriptBundle(sScriptBundle, TextUtils.isEmpty(miniAppId) ? luaName : miniAppId + File.separator + luaName,
                         new LuaCallbackImpl(valueData));
             } else {
                 runLua(luaView, luaName, valueData);
             }
         } else {
-            luaView.loadScriptBundle(sScriptBundle, luaName, new LuaCallbackImpl(valueData));
+            luaView.loadScriptBundle(sScriptBundle, TextUtils.isEmpty(miniAppId) ? luaName : miniAppId + File.separator + luaName, new LuaCallbackImpl(valueData));
         }
     }
 
@@ -293,8 +306,9 @@ public class VideoOSLuaView extends VideoOSBaseView {
                 for (File childFile : file.listFiles()) {
                     if (TextUtils.equals("lua", VenvyFileUtil.getExtension(childFile.getName()))) {
                         byte[] data = getBytes(childFile.getPath());
+                        String fileAbsolutePath = file.getAbsolutePath();
                         ScriptFile scriptFile = new ScriptFile(null,
-                                file.getAbsolutePath(), childFile.getName(), data);
+                                fileAbsolutePath, fileAbsolutePath.substring(fileAbsolutePath.lastIndexOf("/") + 1, fileAbsolutePath.length()) + File.separator + childFile.getName(), data);
                         scriptBundle.addScript(scriptFile);
                     }
                 }

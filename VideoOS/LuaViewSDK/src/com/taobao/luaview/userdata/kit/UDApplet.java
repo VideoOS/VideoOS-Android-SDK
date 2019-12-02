@@ -12,6 +12,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
@@ -28,17 +29,26 @@ import static cn.com.venvy.lua.binder.VenvyLVLibBinder.luaValueToString;
 public class UDApplet extends BaseLuaTable {
 
 
-    public UDApplet(Globals globals, LuaValue metatable) {
+    public UDApplet(Globals globals, LuaValue metatable, Platform platform) {
         super(globals, metatable);
-        set("appletSize", new AppletSize());// 返回视联网小程序容器size
+        set("appletSize", new AppletSize(platform));// 返回视联网小程序容器size
         set("showRetryPage", new RetryPage());// 显示重试页面
         set("showErrorPage", new ErrorPage());// 显示错误页面
+        set("canGoBack", new CanGoBack(platform));// 是否能够返回上一页
+        set("goBack", new GoBack(platform));// 返回上一页
+        set("closeView", new CloseView(platform));// 关闭当前容器
     }
 
     class AppletSize extends VarArgFunction {
+        private Platform platform;
+
+        public AppletSize(Platform platform) {
+            this.platform = platform;
+        }
+
         @Override
         public Varargs invoke(Varargs args) {
-            Pair<Float, Float> pair = VisionUtil.getVisionProgramSize();
+            Pair<Float, Float> pair = VisionUtil.getVisionProgramSize(platform.isNvgShow());
 
             LuaValue[] luaValue = new LuaValue[]{LuaValue.valueOf(pair.first), LuaValue.valueOf(pair.second)};
             return LuaValue.varargsOf(luaValue);
@@ -78,5 +88,61 @@ public class UDApplet extends BaseLuaTable {
         }
     }
 
+    class CanGoBack extends VarArgFunction {
+
+        private Platform platform;
+
+        public CanGoBack(Platform platform) {
+            super();
+            this.platform = platform;
+        }
+
+
+        @Override
+        public Varargs invoke(Varargs args) {
+            if (platform != null && platform.getAppletListener() != null) {
+                return LuaValue.valueOf(platform.getAppletListener().canGoBack());
+            }
+            return LuaValue.valueOf(true);
+        }
+    }
+
+
+    class GoBack extends VarArgFunction {
+
+        private Platform platform;
+
+        public GoBack(Platform platform) {
+            super();
+            this.platform = platform;
+        }
+
+
+        @Override
+        public Varargs invoke(Varargs args) {
+            if (platform != null && platform.getAppletListener() != null) {
+                platform.getAppletListener().goBack();
+            }
+            return LuaValue.NIL;
+        }
+    }
+
+    class CloseView extends VarArgFunction {
+
+        private Platform platform;
+
+        public CloseView(Platform platform) {
+            super();
+            this.platform = platform;
+        }
+
+        @Override
+        public Varargs invoke(Varargs args) {
+            if (platform != null && platform.getAppletListener() != null) {
+                platform.getAppletListener().closeView();
+            }
+            return LuaValue.NIL;
+        }
+    }
 
 }

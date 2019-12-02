@@ -30,11 +30,8 @@ import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyMD5Util;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
-import cn.com.venvy.common.utils.VenvyUIUtil;
 import cn.com.venvy.lua.plugin.LVCommonParamPlugin;
 import cn.com.videopls.pub.view.VideoOSLuaView;
-
-import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_H5_URL;
 
 /**
  * Created by videojj_pls on 2019/7/22.
@@ -49,10 +46,12 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
     private PreloadLuaUpdate mDownLuaUpdate;
     private PreloadZipUpdate mDownZipUpdate;
     private Map<String, String> mQueryAdsParams;
+    private boolean isTagMode; // 是否是气泡模式
 
-    public VideoServiceQueryChainModel(Platform platform, Map<String, String> params,
+    public VideoServiceQueryChainModel(Platform platform, Map<String, String> params, boolean isTagMode,
                                        VideoServiceQueryChainModel.ServiceQueryChainCallback callback) {
         super(platform);
+        this.isTagMode = isTagMode;
         this.mQueryChainCallback = callback;
         this.mQueryAdsParams = params;
     }
@@ -103,9 +102,9 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                         }
                         return;
                     }
-                    JSONObject videoModeMiniAppInfoObj = obj.optJSONObject("videoModeMiniAppInfo");
-                    JSONObject desktopMiniAppInfoObj = obj.optJSONObject("desktopMiniAppInfo");
-                    if(videoModeMiniAppInfoObj == null || desktopMiniAppInfoObj == null){
+                    final JSONObject videoModeMiniAppInfoObj = obj.optJSONObject("videoModeMiniAppInfo");
+                    final JSONObject desktopMiniAppInfoObj = obj.optJSONObject("desktopMiniAppInfo");
+                    if (videoModeMiniAppInfoObj == null || desktopMiniAppInfoObj == null) {
                         ServiceQueryChainCallback callback = getQueryChainCallback();
                         if (callback != null) {
                             callback.queryError(new Exception("query appInfo is error."));
@@ -123,8 +122,8 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                     JSONArray desktopModeLuaArray = desktopMiniAppInfoObj.optJSONArray("luaList");
 
                     //条件判断
-                    if(TextUtils.isEmpty(videoModeMiniAppId) || TextUtils.isEmpty(videoModeTemplate) || videoModeLuaArray == null || videoModeLuaArray.length() <= 0 ||
-                        TextUtils.isEmpty(desktopMiniAppId) || TextUtils.isEmpty(desktopTemplate) || desktopModeLuaArray == null || desktopModeLuaArray.length() <= 0){
+                    if (TextUtils.isEmpty(videoModeMiniAppId) || TextUtils.isEmpty(videoModeTemplate) || videoModeLuaArray == null || videoModeLuaArray.length() <= 0 ||
+                            TextUtils.isEmpty(desktopMiniAppId) || TextUtils.isEmpty(desktopTemplate) || desktopModeLuaArray == null || desktopModeLuaArray.length() <= 0) {
                         ServiceQueryChainCallback callback = getQueryChainCallback();
                         if (callback != null) {
                             callback.queryError(new Exception("query data is null."));
@@ -139,7 +138,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                     videoModeLuaFileInfo.setMiniAppId(videoModeMiniAppId);
                     List<LuaFileInfo.LuaListBean> videoModeLuaList = luaArray2LuaList(videoModeLuaArray);
 
-                    if(videoModeLuaList != null && videoModeLuaList.size() > 0){
+                    if (videoModeLuaList != null && videoModeLuaList.size() > 0) {
                         videoModeLuaFileInfo.setLuaList(videoModeLuaList);
                         luaFileInfoList.add(videoModeLuaFileInfo);
                     }
@@ -149,7 +148,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                     desktopLuaFileInfo.setMiniAppId(desktopMiniAppId);
                     List<LuaFileInfo.LuaListBean> desktopLuaList = luaArray2LuaList(desktopModeLuaArray);
 
-                    if(desktopLuaList != null && desktopLuaList.size() > 0){
+                    if (desktopLuaList != null && desktopLuaList.size() > 0) {
                         desktopLuaFileInfo.setLuaList(desktopLuaList);
                         luaFileInfoList.add(desktopLuaFileInfo);
                     }
@@ -171,9 +170,9 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                             VideoOSLuaView.destroyLuaScript();
                                         }
                                         //  load desktop lua
-                                        loadDesktopProgram(desktopTemplate);
+                                        loadDesktopProgram(desktopTemplate, desktopMiniAppInfoObj.toString());
 
-                                        if(dataJsonArray != null && dataJsonArray.length() > 0){
+                                        if ( dataJsonArray != null && dataJsonArray.length() > 0) {
                                             mDownZipUpdate.startDownloadZipFile(dataJsonArray);
                                         }
                                     }
@@ -209,7 +208,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         if (zipJsonDataArray != null && zipJsonDataArray.length() > 0) {
                                             jsonObject.put("data", zipJsonDataArray);
                                         }
-                                        callback.queryComplete(jsonObject,
+                                        callback.queryComplete(jsonObject, videoModeMiniAppInfoObj.toString(),
                                                 queryAdsInfo);
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -286,15 +285,17 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
     }
 
 
-    private void loadDesktopProgram(String luaName) {
+    private void loadDesktopProgram(String luaName, String miniAppInfo) {
         Bundle bundle = new Bundle();
         bundle.putString(VenvyObservableTarget.Constant.CONSTANT_LUA_NAME, luaName);
+        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfo);
+        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, isTagMode ? "0" : "1");
         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, bundle);
     }
 
 
     public interface ServiceQueryChainCallback {
-        void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo);
+        void queryComplete(Object queryAdsData, String miniAppInfo, ServiceQueryAdsInfo queryAdsInfo);
 
         void queryError(Throwable t);
     }

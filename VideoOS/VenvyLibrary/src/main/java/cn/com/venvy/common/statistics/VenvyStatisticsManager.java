@@ -67,7 +67,7 @@ public final class VenvyStatisticsManager {
 
     private void submitPlayConfirmStatisticsInfo(JSONObject jsonObj){
         try {
-            String dataJson = StatisticDCUtils.obtainPlayConfirmStatisticsJson(VenvyStatisticsManager.VISUAL_SWITCH_COUNT, jsonObj);
+            String dataJson = StatisticDCUtils.obtainPlayConfirmStatisticsJson(VenvyStatisticsManager.PLAY_CONFIRM, jsonObj);
             executeThread(dataJson);
         } catch (JSONException e) {
             e.printStackTrace();

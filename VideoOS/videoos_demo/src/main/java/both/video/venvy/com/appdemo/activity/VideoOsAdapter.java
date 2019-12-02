@@ -1,6 +1,8 @@
 package both.video.venvy.com.appdemo.activity;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -24,8 +26,10 @@ import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.ISocketConnect;
 import cn.com.venvy.common.interf.IWidgetClickListener;
 import cn.com.venvy.common.interf.IWidgetCloseListener;
+import cn.com.venvy.common.interf.IWidgetRotationListener;
 import cn.com.venvy.common.interf.IWidgetShowListener;
 import cn.com.venvy.common.interf.MediaStatus;
+import cn.com.venvy.common.interf.RotateStatus;
 import cn.com.venvy.common.interf.VideoOSMediaController;
 import cn.com.venvy.common.interf.VideoType;
 import cn.com.venvy.common.interf.WedgeListener;
@@ -192,6 +196,22 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         };
     }
 
+    @Override
+    public IWidgetRotationListener buildWidgetRotationListener() {
+        return new IWidgetRotationListener() {
+            @Override
+            public void onRotate(RotateStatus status) {
+                if(status == RotateStatus.TO_VERTICAL){
+                    // 横屏转竖屏
+                    ((Activity) mPlayer.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                }else if(status == RotateStatus.TO_LANDSCAPE){
+                    // 竖屏转横屏
+                    ((Activity) mPlayer.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                }
+            }
+        };
+    }
+
     /**
      * 中插back按钮点击回调
      *
@@ -255,6 +275,15 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             public VideoFrameSize getVideoFrameSize() {
                 return new VideoFrameSize(VenvyUIUtil.getScreenWidth(MyApp.getInstance()),
                         VenvyUIUtil.getScreenHeight(MyApp.getInstance()),0,0);
+            }
+            @Override
+            public String getVideoEpisode() {
+                return "当前的剧集名称";
+            }
+
+            @Override
+            public String getVideoTitle() {
+                return "当前的视频标题";
             }
         };
     }
