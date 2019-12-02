@@ -36,7 +36,7 @@ dependencies {
     	implementation "com.just.agentweb:agentweb:4.1.2"
 	
 	// 依赖的其他第三方库，具体视平台不同版本而不一致
-	implementation "com.github.bumptech.glide:glide:3.7.0"
+	implementation "com.github.bumptech.glide:glide:4.5.0" // 低版本 gif加载会叠帧
 	implementation "com.squareup.okhttp3:okhttp:3.8.0"
 	implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
 }
