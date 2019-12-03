@@ -112,6 +112,7 @@ public class JsBridge implements VenvyObserver {
             objSize.put("height", height);
             obj.put("common", CommonParam.getCommonParamJson(mPlatform.getPlatformInfo().getAppKey()));
             obj.put("size", objSize);
+            obj.put("screenScale", String.valueOf(mContext.getResources().getDisplayMetrics().density + 0.5f));// 屏幕拉伸倍率
 
             xyObj.put("x", mVenvyWebView.getWebViewX());
             xyObj.put("y", mVenvyWebView.getWebViewY());
