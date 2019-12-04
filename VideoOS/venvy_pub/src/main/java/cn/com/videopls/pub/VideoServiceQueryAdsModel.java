@@ -101,7 +101,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                     }
 
                     final String id = launchInfoObj.optString("id");
-                    JSONObject miniAppInfoObj = launchInfoObj.optJSONObject("miniAppInfo");
+                    final JSONObject miniAppInfoObj = launchInfoObj.optJSONObject("miniAppInfo");
                     if (TextUtils.isEmpty(id) || miniAppInfoObj == null) {
                         callbackException("id or miniAppInfo is null");
                         return;
@@ -154,7 +154,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
                                                             .setQueryAdsId(id)
                                                             .setQueryAdsType(!TextUtils.isEmpty(adsType) ?
                                                                     Integer.valueOf(adsType) : 0).build();
-                                            callback.queryComplete(launchInfoObj.toString(),
+                                            callback.queryComplete(launchInfoObj.toString(),miniAppInfoObj.toString(),
                                                     queryAdsInfo);
                                         }
                                     }
@@ -228,7 +228,7 @@ public class VideoServiceQueryAdsModel extends VideoPlusBaseModel {
     }
 
     public interface ServiceQueryAdsCallback {
-        void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo);
+        void queryComplete(Object queryAdsData, String miniAppInfo,ServiceQueryAdsInfo queryAdsInfo);
 
         void queryError(Throwable t);
     }

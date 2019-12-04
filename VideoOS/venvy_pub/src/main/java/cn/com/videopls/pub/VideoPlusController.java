@@ -536,9 +536,9 @@ public abstract class VideoPlusController implements VenvyObserver {
                         new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
 
                             @Override
-                            public void queryComplete(Object queryAdsData, ServiceQueryAdsInfo queryAdsInfo) {
+                            public void queryComplete(Object queryAdsData, String miniAppInfo,ServiceQueryAdsInfo queryAdsInfo) {
                                 if (result != null) {
-                                    result.successful(queryAdsData, "", queryAdsInfo);
+                                    result.successful(queryAdsData, miniAppInfo, queryAdsInfo);
                                 }
                             }
 
