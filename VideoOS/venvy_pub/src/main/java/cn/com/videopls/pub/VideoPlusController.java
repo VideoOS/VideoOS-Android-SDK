@@ -180,13 +180,14 @@ public abstract class VideoPlusController implements VenvyObserver {
                         jsonObject.put(CONSTANT_VIDEO_MODE_TYPE, "0");
                     }
 
+
                     // miniAppInfo
                     if (!TextUtils.isEmpty(miniAppInfo)) {
                         JSONObject miniAppJson = new JSONObject(miniAppInfo);
                         jsonObject.put(CONSTANT_MINI_APP_INFO, miniAppJson);
-                        builder.appendQueryParameter(VenvySchemeUtil.QUERY_MINIAPP_ID,miniAppJson.getString("miniAppId"));
-                    }else{
-                        builder.appendQueryParameter(VenvySchemeUtil.QUERY_MINIAPP_ID,"");
+                        builder.appendQueryParameter(VenvySchemeUtil.QUERY_MINIAPP_ID, miniAppJson.getString("miniAppId"));
+                    } else {
+                        builder.appendQueryParameter(VenvySchemeUtil.QUERY_MINIAPP_ID, "");
                     }
                     skipParams.put(CONSTANT_DATA, jsonObject.toString());
                 } catch (JSONException e) {
@@ -494,15 +495,19 @@ public abstract class VideoPlusController implements VenvyObserver {
 
 
                         JSONObject paramsJson = new JSONObject();
-
+                        HashMap<String, String> finalParams = new HashMap<>();
                         try {
                             paramsJson.put("data", new JSONObject(params.get("data")));
-                            paramsJson.put("miniAppInfo", new JSONObject(miniAppInfo));
+                            JSONObject miniAppJson = new JSONObject(miniAppInfo);
+                            paramsJson.put("miniAppInfo", miniAppJson);
+                            String miniAppId = miniAppJson.getString("miniAppId");
+                            if (!TextUtils.isEmpty(miniAppId)) {
+                                builder.appendQueryParameter(VenvySchemeUtil.QUERY_MINIAPP_ID, miniAppId);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        HashMap<String, String> finalParams = new HashMap<>();
                         finalParams.put("data", paramsJson.toString());
                         navigation(builder.build(), finalParams, new IRouterCallback() {
                             @Override
@@ -536,7 +541,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                         new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
 
                             @Override
-                            public void queryComplete(Object queryAdsData, String miniAppInfo,ServiceQueryAdsInfo queryAdsInfo) {
+                            public void queryComplete(Object queryAdsData, String miniAppInfo, ServiceQueryAdsInfo queryAdsInfo) {
                                 if (result != null) {
                                     result.successful(queryAdsData, miniAppInfo, queryAdsInfo);
                                 }

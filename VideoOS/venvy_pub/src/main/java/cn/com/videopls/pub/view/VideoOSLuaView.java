@@ -10,6 +10,7 @@ import com.taobao.luaview.scriptbundle.ScriptFile;
 import com.taobao.luaview.util.JsonUtil;
 import com.taobao.luaview.util.LuaUtil;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.luaj.vm2.LuaValue;
 
@@ -49,6 +50,7 @@ public class VideoOSLuaView extends VideoOSBaseView {
     private static final String LOCAL_LUA_PATH = "lua/";
     private static final String KEY_MINIAPPID = "miniAppId";
     private static final String KEY_APPLETID = "appletId";
+    private static final String KEY_DATA = "data";
     private volatile LuaView mLuaView;
     private boolean hasCallShowFunction = false;
     public static ScriptBundle sScriptBundle;
@@ -223,8 +225,25 @@ public class VideoOSLuaView extends VideoOSBaseView {
                 } else if (params.containsKey(KEY_APPLETID)) {
                     miniAppId = params.get(KEY_APPLETID) == null ? "" : String.valueOf(params.get(KEY_APPLETID));
                 }
+                if (TextUtils.isEmpty(miniAppId)) {
+                    // 尝试去data中找miniAppId
+                    if (params.containsKey(KEY_DATA)) {
+                        try {
+                            JSONObject jsonObject = new JSONObject((String) params.get(KEY_DATA));
+                            JSONObject miniAppInfo = jsonObject.getJSONObject("miniAppInfo");
+                            if (miniAppInfo != null) {
+                                miniAppId = TextUtils.isEmpty(miniAppInfo.getString("miniAppId")) ? "" : miniAppInfo.getString("miniAppId");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
+
         }
+
+
         if (sScriptBundle == null) {
             sScriptBundle = initScriptBundle(VenvyFileUtil.getCachePath(VideoOSLuaView.this.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
             if (sScriptBundle != null) {

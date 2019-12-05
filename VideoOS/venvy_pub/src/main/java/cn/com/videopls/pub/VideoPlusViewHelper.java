@@ -158,7 +158,8 @@ public class VideoPlusViewHelper implements VenvyObserver {
                             String luaName = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_LUA_NAME);
                             String miniAppInfo = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO);
                             String videoModeType = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE);
-                            videoPlusView.launchDesktopProgram(luaName, miniAppInfo, videoModeType);
+                            String originData = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
+                            videoPlusView.launchDesktopProgram(luaName, miniAppInfo, videoModeType,originData);
                         }
                     }
                 });
