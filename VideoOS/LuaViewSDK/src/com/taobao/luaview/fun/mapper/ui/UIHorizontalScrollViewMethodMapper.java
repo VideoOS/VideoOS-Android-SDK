@@ -19,6 +19,8 @@ import org.luaj.vm2.Varargs;
 
 import java.util.List;
 
+import cn.com.venvy.common.utils.VenvyLog;
+
 /**
  * HorizontalScrollView的方法映射
  */

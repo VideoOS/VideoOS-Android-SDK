@@ -205,12 +205,12 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
                     if (imgSvga.isAnimating()) return;
 
                     if (isVisionMode) {
-                        mVideoPlusView.stopService(ServiceType.ServiceTypeVideoMode);
+                        mVideoPlusView.stopService(ServiceType.ServiceTypeVideoMode_TAG);
                         isVisionMode = false;
                         updateVisionModeStatus();
                         startVisionModeAnim("scan_off.svga");
                     } else {
-                        mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode, new HashMap<String, String>(), new IServiceCallback() {
+                        mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode_TAG, new HashMap<String, String>(), new IServiceCallback() {
 
                             @Override
                             public void onCompleteForService() {

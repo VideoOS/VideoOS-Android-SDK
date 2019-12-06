@@ -27,9 +27,11 @@ import cn.com.venvy.common.bean.PlatformUserInfo;
 import cn.com.venvy.common.bean.WidgetInfo;
 import cn.com.venvy.common.exception.LoginException;
 import cn.com.venvy.common.interf.ICallJsFunction;
+import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
+import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyBase64;
@@ -104,12 +106,19 @@ public class JsBridge implements VenvyObserver {
         float width = height / 375.0f * 230;
         JSONObject obj = new JSONObject();
         JSONObject objSize = new JSONObject();
+        JSONObject xyObj = new JSONObject();
         try {
             objSize.put("width", width);
             objSize.put("height", height);
             obj.put("common", CommonParam.getCommonParamJson(mPlatform.getPlatformInfo().getAppKey()));
             obj.put("size", objSize);
+            obj.put("screenScale", String.valueOf(mContext.getResources().getDisplayMetrics().density + 0.5f));// 屏幕拉伸倍率
+
+            xyObj.put("x", mVenvyWebView.getWebViewX());
+            xyObj.put("y", mVenvyWebView.getWebViewY());
+            obj.put("origin", xyObj);
             obj.put("secret", mPlatform.getPlatformInfo().getAppSecret());
+            obj.put("videoInfo", getVideoInfo());
         } catch (Exception e) {
 
         }
@@ -127,14 +136,15 @@ public class JsBridge implements VenvyObserver {
             String actionString = "";
             if (!TextUtils.isEmpty(linkUrl)) {
                 actionString = linkUrl;
-            } else if (TextUtils.isEmpty(deepLink)) {
+            } else if (!TextUtils.isEmpty(deepLink)) {
                 actionString = deepLink;
-            } else if (TextUtils.isEmpty(selfLink)) {
+            } else if (!TextUtils.isEmpty(selfLink)) {
                 actionString = selfLink;
+                ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_CLEAR_ALL_VISION_PROGRAM);
             }
             String adID = VenvyMD5Util.MD5(actionString);
             WidgetInfo.WidgetActionType widgetActionType = WidgetInfo.WidgetActionType.findTypeById(1);
-            WidgetInfo widgetInfo = new WidgetInfo.Builder()
+            final WidgetInfo widgetInfo = new WidgetInfo.Builder()
                     .setAdId(adID)
                     .setWidgetActionType(widgetActionType)
                     .setUrl(actionString)
@@ -144,7 +154,12 @@ public class JsBridge implements VenvyObserver {
                     .setSelfLink(selfLink)
                     .build();
             if (mPlatform.getWidgetClickListener() != null) {
-                mPlatform.getWidgetClickListener().onClick(widgetInfo);
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPlatform.getWidgetClickListener().onClick(widgetInfo);
+                    }
+                });
             }
             JSONObject jsonObject = new JSONObject();
             if (TextUtils.isEmpty(deepLink)) {
@@ -167,7 +182,7 @@ public class JsBridge implements VenvyObserver {
     @JavascriptInterface
     public void getInitData(String jsParams) {
         if (TextUtils.isEmpty(mJsData)) {
-            return;
+            mJsData = "{}";
         }
         JSONObject obj = new JSONObject();
         try {
@@ -329,7 +344,8 @@ public class JsBridge implements VenvyObserver {
      * 读取本地数据
      * @param jsParams
      */
-    public void getStorageData(String jsParams) {
+    @JavascriptInterface
+    public void getStorageData(final String jsParams) {
         try {
             final JSONObject jsonObj = new JSONObject(jsParams);
             JSONObject msgObj = jsonObj.optJSONObject("msg");
@@ -338,7 +354,7 @@ public class JsBridge implements VenvyObserver {
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
-                        callJsFunction(jsonObj.optString("callback"), VenvyPreferenceHelper.getString(mContext, mDeveloperUserId, key, ""));
+                        callJsFunction(VenvyPreferenceHelper.getString(mContext, TextUtils.isEmpty(mDeveloperUserId) ? "" : mDeveloperUserId, key, ""), jsParams);
                     }
                 });
 
@@ -547,7 +563,7 @@ public class JsBridge implements VenvyObserver {
      * h5通知关闭webView
      */
     @JavascriptInterface
-    public void close(final String jsParams) {
+    public void closeView(final String jsParams) {
         VenvyLog.i("--androidToJs-close--" + jsParams);
 
         VenvyUIUtil.runOnUIThread(new Runnable() {
@@ -650,5 +666,24 @@ public class JsBridge implements VenvyObserver {
             }
         }
         return "";
+    }
+
+    private JSONObject getVideoInfo() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (mPlatform != null) {
+                jsonObject.put("videoID", mPlatform.getPlatformInfo().getVideoId());
+                IMediaControlListener mediaControlListener = mPlatform.getMediaControlListener();
+                if (mediaControlListener != null) {
+                    jsonObject.put("title", TextUtils.isEmpty(mediaControlListener.getVideoTitle()) ? "" : mediaControlListener.getVideoTitle());
+                    jsonObject.put("episode", TextUtils.isEmpty(mediaControlListener.getVideoEpisode()) ? "" : mediaControlListener.getVideoEpisode());
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
     }
 }

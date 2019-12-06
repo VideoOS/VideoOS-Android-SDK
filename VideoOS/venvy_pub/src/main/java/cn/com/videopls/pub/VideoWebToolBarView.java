@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -44,6 +43,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
     private VideoPlusH5Controller controller;
 
     private JsBridge jsBridge;
+
 
     public VideoWebToolBarView(Context context) {
         super(context);
@@ -102,9 +102,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
 
     private void initWebView() {
         webView = new VenvyWebView(getContext());
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        layoutParams.topMargin = VenvyUIUtil.dip2px(getContext(), 44f);
-        webView.setLayoutParams(layoutParams);
+        webView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         webView.setJsParamsCallback(new IJsParamsCallback() {
             @Override
             public void showErrorPage(final String showErrorPage) {
@@ -158,15 +156,15 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
                     String appletId = jsonObject.getString("appletId");
                     String screenType = jsonObject.getString("screenType");
                     String appType = jsonObject.getString("appType");
-                    String data = jsonObject.getString("data");
 
                     // 拉起一个对应的容器
                     Bundle bundle = new Bundle();
                     bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, appletId);
                     bundle.putString(VenvyObservableTarget.KEY_ORIENTATION_TYPE, screenType);
                     bundle.putString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE, appType);
-                    if (!TextUtils.isEmpty(data)) {
-                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, data);
+
+                    if (jsonObject.has("data")) {
+                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, jsonObject.getString("data"));
                     }
                     ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_LAUNCH_VISION_PROGRAM, bundle);
 
@@ -225,15 +223,15 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
 
             }
         });
-
-        addView(webView);
+        root.addView(webView);
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(final String title, boolean nvgShow) {
         tvTitle.setText(title);
         if (jsBridge != null) {
             jsBridge.setJsTitle(title);
         }
+        rlTitleBar.setVisibility(nvgShow ? VISIBLE : GONE);
     }
 
     public void fetchTargetUrl(String appletId, String data) {
@@ -258,6 +256,7 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
 
     public void openLink(final String url) {
         VenvyLog.d("openLink : " + url);
+
         webView.setVisibility(VISIBLE);
         loadingContent.setVisibility(GONE);
         webView.loadUrl(url);
@@ -265,8 +264,28 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         cancelLoadingAnimation();
     }
 
+    public void addDeveloperUserIdToJsBridge(String developerUserId) {
+        if (jsBridge != null) {
+            jsBridge.setDeveloperUserId(developerUserId);
+            webView.setJsBridge(jsBridge);
+        }
+    }
+
+    public void setWebViewCloseListener(final WebViewCloseListener closeListener) {
+        if (jsBridge != null) {
+            jsBridge.setWebViewCloseListener(new JsBridge.WebViewCloseListener() {
+                @Override
+                public void onClose(CloseType actionType) {
+                    if (closeListener != null) {
+                        closeListener.onClose(appletId);
+                    }
+                }
+            });
+        }
+    }
+
     public void reload(String data) {
-        if(jsBridge != null){
+        if (jsBridge != null) {
             jsBridge.setJsData(data);
         }
         webView.setJsBridge(jsBridge);
@@ -274,6 +293,10 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         freshProgram(appletId);
     }
 
+    public void onScreenChanged(boolean isHorizontal) {
+        // 横竖屏切换要call一下js这个方法
+        webView.callJsFunction("orientationChange", isHorizontal ? "0" : "1");
+    }
 
     @Override
     protected void onDetachedFromWindow() {
@@ -281,5 +304,9 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
         if (webView != null) {
             removeView(webView);
         }
+    }
+
+    public interface WebViewCloseListener {
+        void onClose(String appletId);
     }
 }

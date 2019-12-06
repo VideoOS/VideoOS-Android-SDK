@@ -553,7 +553,7 @@ local function onCreate(args)
         if (vote.launchPlanId ~= nil) then
             osTrack(vote.launchPlanId, 3, 2)
         end
-        Native:sendAction(Native:base64Encode("LuaView://defaultLuaView?template=" .. "os_vote_window.lua" .. "&id=" .. "os_vote_window" .. tostring(vote.id) .. "&priority=2"), args)
+        Native:sendAction(Native:base64Encode("LuaView://topLuaView?template=" .. "os_vote_window.lua" .. "&id=" .. "os_vote_window" .. tostring(vote.id) .. "&priority=2"), args)
     end)
     local dataTable = args.data
     if (dataTable == nil) then

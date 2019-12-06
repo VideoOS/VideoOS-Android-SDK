@@ -6,9 +6,11 @@ import com.taobao.luaview.fun.mapper.LuaViewApi;
 import com.taobao.luaview.fun.mapper.LuaViewLib;
 import com.taobao.luaview.fun.mapper.ui.UIViewMethodMapper;
 import com.taobao.luaview.global.VmVersion;
+import com.taobao.luaview.util.JsonUtil;
 import com.taobao.luaview.util.LuaUtil;
 
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
@@ -35,7 +37,9 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
             "stopLoading",//8
             "url",//9
             "pullRefreshEnable",//10
-            "callJS"//11
+            "callJS",//11
+            "webViewCallback", // 12
+            "setInitData" // 13
     };
 
     @Override
@@ -71,6 +75,10 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
                 return pullRefreshEnable(target, varargs);
             case 11:
                 return callJS(target, varargs);
+            case 12:
+                return webViewCallback(target, varargs);
+            case 13:
+                return setInitData(target, varargs);
         }
         return super.invoke(code, target, varargs);
     }
@@ -146,5 +154,24 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
         String jsMethod = LuaUtil.getString(varargs, 2);
         final LuaFunction callback = LuaUtil.getFunction(varargs, 3);
         return LuaValue.valueOf(view.callJS(jsMethod, callback));
+    }
+
+    public LuaValue webViewCallback(U view, Varargs varargs) {
+        final LuaTable callback = varargs.opttable(2, null);
+        if (callback != null) {
+            LuaValue onClose = LuaUtil.getFunction(callback, "onClose", "onClose");
+            return view.webViewCallback(onClose);
+        }
+
+        return LuaValue.valueOf("");
+    }
+
+    public LuaValue setInitData(U view, Varargs varargs) {
+        final LuaTable data = varargs.opttable(2, null);
+        if (data != null) {
+            String jsData = JsonUtil.toString(data);
+            return view.setInitData(jsData);
+        }
+        return LuaValue.valueOf("");
     }
 }

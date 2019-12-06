@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
@@ -24,6 +25,7 @@ import com.just.agentweb.DefaultWebClient;
 import cn.com.venvy.common.agentweb.common.CommonWebChromeClient;
 import cn.com.venvy.common.interf.IJsParamsCallback;
 import cn.com.venvy.common.interf.IWebViewClient;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 
 
 /**
@@ -132,6 +134,7 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
 
     @Override
     public void loadUrl(String url) {
+
         if (mAgentWeb != null && !TextUtils.isEmpty(url)) {
             mAgentWeb.getUrlLoader().loadUrl(url);
         }
@@ -181,6 +184,8 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
                     .setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.ASK)//打开其他应用时，弹窗咨询用户是否前往其他应用
                     .interceptUnkownUrl() //拦截找不到相关页面的Scheme
                     .createAgentWeb().ready().get();
+
+            mAgentWeb.getWebCreator().getWebView().setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
     }
 
@@ -202,6 +207,25 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
     public void openApplet(String openApplet) {
         if (mIJsParamsCallback != null) {
             mIJsParamsCallback.openApplet(openApplet);
+        }
+    }
+
+    @Override
+    public int getWebViewX() {
+        if (VenvyUIUtil.isScreenOriatationPortrait(getContext())) {
+            return VenvyUIUtil.px2dip(getContext(), getX());
+        } else {
+            return VenvyUIUtil.px2dip(getContext(), VenvyUIUtil.getScreenWidth(getContext()) - getWidth());
+        }
+
+    }
+
+    @Override
+    public int getWebViewY() {
+        if (VenvyUIUtil.isScreenOriatationPortrait(getContext())) {
+            return VenvyUIUtil.px2dip(getContext(), VenvyUIUtil.getScreenHeight(getContext()) - getHeight());
+        } else {
+            return VenvyUIUtil.px2dip(getContext(), getY());
         }
     }
 
@@ -320,4 +344,5 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
 //			Log.i(TAG, "onReceivedError:" + errorCode + "  description:" + description + "  errorResponse:" + failingUrl);
         }
     };
+
 }

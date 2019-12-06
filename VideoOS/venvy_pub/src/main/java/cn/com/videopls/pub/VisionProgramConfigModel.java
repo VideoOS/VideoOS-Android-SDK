@@ -36,9 +36,11 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
 
 import static cn.com.venvy.App.getContext;
 import static cn.com.venvy.PreloadLuaUpdate.LUA_CACHE_PATH;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_DEVELOPER_USER_ID;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_H5_URL;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_MSG;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NEED_RETRY;
+import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_NVG_SHOW;
 import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTANT_TITLE;
 
 /**
@@ -55,6 +57,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
     private PreloadLuaUpdate mDownLuaUpdate;
     private String miniAppId;
     private boolean isH5Type;
+    private boolean nvgShow = true;
 
     public VisionProgramConfigModel(@NonNull Platform platform, String miniAppId, boolean isH5Type, VisionProgramConfigCallback configCallback) {
         super(platform);
@@ -101,6 +104,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                         if (callback != null) {
                             callback.downError(new Exception("download lua script error"));
                         }
+                        return;
                     }
                     // 解密返回数据
                     final JSONObject value = new JSONObject(response.getResult());
@@ -131,6 +135,22 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     }
 
                     final JSONObject decryptData = new JSONObject(jsonStr);
+                    // lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
+                    // 开发者模式下 则是：[{url:本地filePath}, {url:本地filePath} , ...]
+                    JSONObject miniAppInfoObj = decryptData.optJSONObject("miniAppInfo");
+                    final String template = miniAppInfoObj.optString("template");
+                    final String miniAppId = miniAppInfoObj.optString("miniAppId");
+                    final String developerUserId = miniAppInfoObj.optString("developerUserId");
+                    JSONArray fileListArray = miniAppInfoObj.optJSONArray("luaList");
+
+                    String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
+                    JSONObject displayObj = decryptData.optJSONObject("display");
+                    if (displayObj != null) {
+                        final String nativeTitle = displayObj.optString("navTitle");
+                        nvgShow = displayObj.optBoolean("navShow", true);
+                        updateVisionTitle(nativeTitle, nvgShow);
+                    }
+
                     if (isH5Type) {
                         final String h5Url = decryptData.optString("h5Url");
                         if (TextUtils.isEmpty(h5Url)) {
@@ -139,23 +159,13 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                             // 拉起一个H5容器
                             Bundle bundle = new Bundle();
                             bundle.putString(CONSTANT_H5_URL, h5Url);
+                            bundle.putString(CONSTANT_DEVELOPER_USER_ID, developerUserId);
                             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_H5_VISION_PROGRAM, bundle);
                         }
                         return;
                     }
-                    // lua文件列表  sample : [{url:xxx, md5:xxx}, {url:xxx, md5:xxx} , ...]
-                    // 开发者模式下 则是：[{url:本地filePath}, {url:本地filePath} , ...]
-                    JSONObject miniAppInfoObj = decryptData.optJSONObject("miniAppInfo");
-                    final String template = miniAppInfoObj.optString("template");
-                    final String miniAppId = miniAppInfoObj.optString("miniAppId");
-                    JSONArray fileListArray = miniAppInfoObj.optJSONArray("luaList");
 
-                    String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败
-                    JSONObject displayObj = decryptData.optJSONObject("display");
-                    if (displayObj != null) {
-                        final String nativeTitle = displayObj.optString("navTitle");
-                        updateVisionTitle(nativeTitle);
-                    }
+
 
                     if (resCode.equalsIgnoreCase("00")) {
                         //LuaArray --> JavaBean
@@ -198,7 +208,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                                     }
                                     VisionProgramConfigCallback callback = getCallback();
                                     if (callback != null) {
-                                        callback.downComplete(template, isUpdateByNetWork);
+                                        callback.downComplete(template, isUpdateByNetWork, nvgShow);
                                     }
                                 }
 
@@ -223,7 +233,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                         // 开发者模式
                         VisionProgramConfigCallback callback = getCallback();
                         if (callback != null) {
-                            callback.downComplete(template, false);
+                            callback.downComplete(template, false, nvgShow);
                         }
                     } else {
                         VenvyLog.e(decryptData.optString("resMsg")); //  应答信息
@@ -259,16 +269,17 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
         };
     }
 
-    private void updateVisionTitle(String title) {
+    private void updateVisionTitle(String title, boolean nvgShow) {
         if (TextUtils.isEmpty(title)) return;
         Bundle bundle = new Bundle();
         bundle.putString(CONSTANT_TITLE, title);
+        bundle.putBoolean(CONSTANT_NVG_SHOW, nvgShow);
         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_UPDATE_VISION_TITLE, bundle);
     }
 
 
     public interface VisionProgramConfigCallback {
-        void downComplete(String entranceLua, boolean isUpdateByNet);
+        void downComplete(String entranceLua, boolean isUpdateByNet, boolean nvgShow);
 
         void downError(Throwable t);
     }

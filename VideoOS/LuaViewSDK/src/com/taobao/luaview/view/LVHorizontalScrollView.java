@@ -8,6 +8,7 @@
 
 package com.taobao.luaview.view;
 
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -21,8 +22,6 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
 import java.util.ArrayList;
-
-import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
  * LuaView - HorizontalScrollView
@@ -77,20 +76,11 @@ public class LVHorizontalScrollView extends HorizontalScrollView implements ILVV
     }
 
     @Override
-    protected boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY, int scrollRangeX, int scrollRangeY, int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
-        boolean value = super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent);
-        //注意deltaX的值和isTouchEvent的值，deltaX可以认为是X轴变化的速度，isTouchEvent意思是移动事件是否来自手势。经过多次确认，当deltaX的值为1，2或-1，-2，以及isTouchEvent值为false的时候，scrollView的移动趋于停止
-        if (deltaX <= 2 && deltaX >= -2 && !isTouchEvent) {
-            //scrollView停止移动了
-            VenvyUIUtil.runOnUIThreadDelay(new Runnable() {
-                @Override
-                public void run() {
-                    mLuaUserdata.callOnScrollEnd();
-                    hasCallScrollBegin = false;
-                }
-            }, 500);
-
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_UP) {
+            mLuaUserdata.callOnScrollEnd();
+            hasCallScrollBegin = false;
         }
-        return value;
+        return super.onTouchEvent(ev);
     }
 }

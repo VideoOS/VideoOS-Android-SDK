@@ -2,12 +2,14 @@ package cn.com.videopls.pub;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import java.util.HashMap;
 
+import cn.com.venvy.common.interf.IAppletListener;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.router.IRouterCallback;
@@ -119,6 +121,12 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
     public void stopService(ServiceType serviceType) {
         if (controller != null) {
             controller.stopService(serviceType);
+        }
+    }
+
+    public void setAppletListener(@NonNull IAppletListener appletListener){
+        if(controller != null){
+            controller.setAppletListener(appletListener);
         }
     }
 

@@ -13,6 +13,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
 import cn.com.venvy.common.webview.IVenvyWebView;
+import cn.com.venvy.common.webview.JsBridge;
 import cn.com.venvy.lua.view.VenvyLVWebView;
 
 /**
@@ -20,8 +21,15 @@ import cn.com.venvy.lua.view.VenvyLVWebView;
  */
 
 public class VenvyUDWebView extends UDView<VenvyLVWebView> {
+
+    private JsBridge jsBridge;
+
     public VenvyUDWebView(VenvyLVWebView view, Globals globals, LuaValue metatable, Varargs initParams) {
         super(view, globals, metatable, initParams);
+    }
+
+    public void setJsBridge(JsBridge jsBridge) {
+        this.jsBridge = jsBridge;
     }
 
     /**
@@ -176,5 +184,24 @@ public class VenvyUDWebView extends UDView<VenvyLVWebView> {
 
         return "";
     }
+
+    public VenvyUDWebView webViewCallback(final LuaValue callback){
+        jsBridge.setWebViewCloseListener(new JsBridge.WebViewCloseListener() {
+            @Override
+            public void onClose(CloseType actionType) {
+                LuaUtil.callFunction(callback);
+            }
+        });
+        return this;
+    }
+
+    public VenvyUDWebView setInitData(String data){
+        final VenvyLVWebView view = this.getView();
+        if (view != null) {
+            view.setJsData(data);
+        }
+        return this;
+    }
+
 }
 
