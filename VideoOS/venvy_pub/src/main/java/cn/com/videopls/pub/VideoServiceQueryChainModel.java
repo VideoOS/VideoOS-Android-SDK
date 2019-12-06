@@ -88,7 +88,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                             AppSecret.getAppSecret(getPlatform()),
                             AppSecret.getAppSecret(getPlatform()));
                     final String queryAdsId = VenvyMD5Util.MD5(decrypt);
-                    JSONObject obj = new JSONObject(decrypt);
+                    final JSONObject obj = new JSONObject(decrypt);
                     String resCode = obj.optString("resCode");
                     if (TextUtils.equals(resCode, "01")) {
                         ServiceQueryChainCallback callback = getQueryChainCallback();
@@ -170,9 +170,9 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                             VideoOSLuaView.destroyLuaScript();
                                         }
                                         //  load desktop lua
-                                        loadDesktopProgram(desktopTemplate, desktopMiniAppInfoObj.toString());
+                                        loadDesktopProgram(desktopTemplate, desktopMiniAppInfoObj.toString(), obj.toString());
 
-                                        if ( dataJsonArray != null && dataJsonArray.length() > 0) {
+                                        if (dataJsonArray != null && dataJsonArray.length() > 0) {
                                             mDownZipUpdate.startDownloadZipFile(dataJsonArray);
                                         }
                                     }
@@ -285,11 +285,12 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
     }
 
 
-    private void loadDesktopProgram(String luaName, String miniAppInfo) {
+    private void loadDesktopProgram(String luaName, String miniAppInfo, String originData) {
         Bundle bundle = new Bundle();
         bundle.putString(VenvyObservableTarget.Constant.CONSTANT_LUA_NAME, luaName);
         bundle.putString(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfo);
         bundle.putString(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, isTagMode ? "0" : "1");
+        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, originData);
         ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_LAUNCH_DESKTOP_PROGRAM, bundle);
     }
 

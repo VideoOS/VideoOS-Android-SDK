@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.widget.FrameLayout;
 
 import org.json.JSONException;
@@ -44,6 +45,8 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     private VideoPlusViewHelper plusViewHelper;
 
     private VideoPlusAdapter adapter;
+
+    private Pair<Float, Float> videoModeDeskOffset; // 视联网模式桌面偏移量
 
     public VideoPlusView(Context context) {
         super(context);
@@ -268,7 +271,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
 
-    public void launchDesktopProgram(String targetName, String miniAppInfo, String videoModeType) {
+    public void launchDesktopProgram(String targetName, String miniAppInfo, String videoModeType, String originData) {
         // 桌面存在则不需要重复加载桌面
         if (programViewDesktop != null) return;
 
@@ -286,6 +289,13 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
                 uri = Uri.parse("LuaView://desktopLuaView?template=" + targetName + "&miniAppId=" + miniAppInfoJson.getString("miniAppId") + "&id=" + targetName.substring(0, targetName.lastIndexOf(".")));
                 jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_MINI_APP_INFO, miniAppInfoJson);//  miniAppInfo
                 jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_TYPE, videoModeType);//  videoModeType
+                if (videoModeDeskOffset != null && (videoModeDeskOffset.first > 0 || videoModeDeskOffset.second > 0)) {
+                    // 设置桌面初始偏移量
+                    jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_X_OFFSET, videoModeDeskOffset.first);
+                    jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_Y_OFFSET, videoModeDeskOffset.second);
+                }
+                jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_LABEL_CONF_DATA, originData);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -310,6 +320,12 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
 
     public void startService(ServiceType serviceType, HashMap<String, String> params, IServiceCallback callback) {
+        startService(serviceType, params, new Pair<>(0.0f, 0.0f), callback);
+
+    }
+
+    public void startService(ServiceType serviceType, HashMap<String, String> params, Pair<Float, Float> videoModeDeskOffset, IServiceCallback callback) {
+        this.videoModeDeskOffset = videoModeDeskOffset;
         switch (serviceType) {
             case ServiceTypeFrontVideo:
             case ServiceTypeLaterVideo:
@@ -326,8 +342,6 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
                 }
                 break;
         }
-
-
     }
 
     public void reResumeService(ServiceType serviceType) {

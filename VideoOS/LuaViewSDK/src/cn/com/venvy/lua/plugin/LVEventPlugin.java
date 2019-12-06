@@ -6,7 +6,10 @@ import android.text.TextUtils;
 
 import com.taobao.luaview.util.JsonUtil;
 import com.taobao.luaview.util.LuaUtil;
+import com.taobao.luaview.util.TextUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -83,6 +86,22 @@ public class LVEventPlugin {
                         }
                     }
                 }
+                if(!map.keySet().contains("miniAppId")){
+                    // 如果过来的uri中不带miniAppId，则需要尝试去table中找miniAppId put进 map里
+                    try {
+                        JSONObject jsonObject = new JSONObject(JsonUtil.toString(table));
+                        JSONObject miniAppInfo = jsonObject.getJSONObject("miniAppInfo");
+                        if(miniAppInfo != null){
+                            String miniAppId = miniAppInfo.getString("miniAppId");
+                            if(!TextUtils.isEmpty(miniAppId)){
+                                map.put("miniAppId",miniAppId);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 if (map.size() > 0) {
                     info.withSerializable("data", map);
                 }

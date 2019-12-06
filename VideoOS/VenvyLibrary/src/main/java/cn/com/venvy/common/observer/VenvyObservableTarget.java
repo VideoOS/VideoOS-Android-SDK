@@ -61,6 +61,9 @@ public class VenvyObservableTarget {
         public static final String CONSTANT_MINI_APP_INFO = "miniAppInfo";
         public static final String CONSTANT_VIDEO_MODE_TYPE = "videoModeType";
         public static final String CONSTANT_DEVELOPER_USER_ID = "developerUserId";
+        public static final String CONSTANT_VIDEO_MODE_X_OFFSET = "eyeOriginPointX";
+        public static final String CONSTANT_VIDEO_MODE_Y_OFFSET = "eyeOriginPointY";
+        public static final String CONSTANT_LABEL_CONF_DATA = "labelConfData";
     }
 
 }

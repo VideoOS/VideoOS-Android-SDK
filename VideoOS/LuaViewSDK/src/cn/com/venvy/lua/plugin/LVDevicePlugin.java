@@ -3,6 +3,8 @@ package cn.com.venvy.lua.plugin;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.taobao.luaview.util.AndroidUtil;
+
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
@@ -31,6 +33,7 @@ public class LVDevicePlugin {
         venvyLVLibBinder.set("isTitleBarShow", sIsTitleBarShow == null ? sIsTitleBarShow = new IsTitleBarShow() : sIsTitleBarShow);
         venvyLVLibBinder.set("packageName", new PackageName(platform));
         venvyLVLibBinder.set("getIdentity", new UDID(platform));
+        venvyLVLibBinder.set("screenScale", new ScreenScale());
 
     }
 
@@ -48,6 +51,13 @@ public class LVDevicePlugin {
                 return LuaValue.valueOf(mPlatform.getPlatformInfo().getIdentity());
             }
             return LuaValue.valueOf(VenvyDeviceUtil.getAndroidID(App.getContext()));
+        }
+    }
+
+    private static class ScreenScale extends VarArgFunction {
+        @Override
+        public Varargs invoke(Varargs args) {
+            return valueOf(AndroidUtil.getDensity(App.getContext()) + 0.5f);
         }
     }
 
