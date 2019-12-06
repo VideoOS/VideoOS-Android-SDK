@@ -230,9 +230,9 @@ public class VideoOSLuaView extends VideoOSBaseView {
                     if (params.containsKey(KEY_DATA)) {
                         try {
                             JSONObject jsonObject = new JSONObject((String) params.get(KEY_DATA));
-                            JSONObject miniAppInfo = jsonObject.getJSONObject("miniAppInfo");
+                            JSONObject miniAppInfo = jsonObject.optJSONObject("miniAppInfo");
                             if (miniAppInfo != null) {
-                                miniAppId = TextUtils.isEmpty(miniAppInfo.getString("miniAppId")) ? "" : miniAppInfo.getString("miniAppId");
+                                miniAppId = TextUtils.isEmpty(miniAppInfo.optString("miniAppId")) ? "" : miniAppInfo.optString("miniAppId");
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
