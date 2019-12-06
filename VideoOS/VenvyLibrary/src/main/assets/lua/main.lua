@@ -388,13 +388,18 @@ local function getTaglist()
         if (dataTable == nil) then
             return
         end
-
+        
         --下载投放的lua文件
         local luaList = {}
+        --按id去重
         for i,v in ipairs(dataTable) do
             if (v.miniAppInfo ~= nil ) then
-                Native:preloadMiniAppLua(v.miniAppInfo)
+                luaList[v.miniAppInfo.miniAppId] = v.miniAppInfo
             end
+        end
+
+        for k,v in pairs(luaList) do
+            Native:preloadMiniAppLua(v)
         end
 
         --osTypeVideoOS = 1, osTypeLiveOS = 2, 点播按时间点加载，直播直接加载
