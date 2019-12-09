@@ -38,7 +38,7 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
             "url",//9
             "pullRefreshEnable",//10
             "callJS",//11
-            "webViewCallback", // 12
+            "callback", // 12
             "setInitData" // 13
     };
 
