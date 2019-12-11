@@ -25,7 +25,7 @@ allprojects {
 
 ```
 dependencies {
-	implementation 'com.videoli:VideoOS:2.8.1'
+	implementation 'com.videoli:VideoOS:2.8.2'
 	implementation 'com.videoli:venvy_processor_annotation:1.0.0'
 	annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
 	// SDK Glide图片加载插件 目前仅支持Glide 和 fresco
