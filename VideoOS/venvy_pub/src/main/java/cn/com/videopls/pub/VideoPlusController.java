@@ -708,7 +708,7 @@ public abstract class VideoPlusController implements VenvyObserver {
      */
     public void refreshRecentHistory(String appId) {
         if (!VenvyAPIUtil.isSupport(16)) {
-            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
+            Log.e("VideoOS", "VideoOS 不支持Android4.1以下版本调用");
             return;
         }
         if (mVideoPlusAdapter == null) {
