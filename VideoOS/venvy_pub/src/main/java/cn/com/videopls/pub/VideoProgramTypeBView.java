@@ -328,8 +328,8 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     public void onScreenChanged(boolean isHorizontal) {
         setVisibility(isHorizontal ? VISIBLE : GONE);
 
-        if(h5ProgramMap.size() > 0){
-            for(VideoWebToolBarView webToolBarView: h5ProgramMap.values()){
+        if (h5ProgramMap.size() > 0) {
+            for (VideoWebToolBarView webToolBarView : h5ProgramMap.values()) {
                 webToolBarView.onScreenChanged(isHorizontal);
             }
         }
@@ -345,28 +345,33 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
      */
     @Override
     public void notifyChanged(VenvyObservable observable, String tag, Bundle bundle) {
+        // TODO : bundle maybe is null..
+
         if (VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_VISION_PROGRAM.equals(tag)) {
-            String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
-            String template = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TEMPLATE);
-            String templateId = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_ID);
-            String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
-            if (programMap.containsKey(appletId)) {
-                VideoProgramToolBarView existView = programMap.get(appletId);
+            if (bundle != null) {
+                String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
+                String template = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TEMPLATE);
+                String templateId = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_ID);
+                String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
+                if (programMap.containsKey(appletId)) {
+                    VideoProgramToolBarView existView = programMap.get(appletId);
 
 
-                if (existView.isIncludeId(templateId)) {
-                    // 当前已加载过对应lua脚本，把对应的lua脚本更新到顶层
-                    existView.bringToFront();
-                    existView.notifyLua(data);
-                    currentProgram = existView;
-                    // TODO :  notify lua script refresh
-                } else {
-                    // 如果没有加载过对应的lua,去加载
-                    existView.launchLuaScript(template, templateId, data);
+                    if (existView.isIncludeId(templateId)) {
+                        // 当前已加载过对应lua脚本，把对应的lua脚本更新到顶层
+                        existView.bringToFront();
+                        existView.notifyLua(data);
+                        currentProgram = existView;
+                        // TODO :  notify lua script refresh
+                    } else {
+                        // 如果没有加载过对应的lua,去加载
+                        existView.launchLuaScript(template, templateId, data);
+                    }
+
+
                 }
-
-
             }
+
         }
     }
 }
