@@ -10,6 +10,7 @@ package com.taobao.luaview.fun.mapper.ui;
 
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.taobao.luaview.fun.base.BaseMethodMapper;
@@ -146,7 +147,10 @@ public class UIViewMethodMapper<U extends UDView> extends BaseMethodMapper<U> {
             "onTouch",//105
             "mqttCallback",//106
             "tag",//107
-            "cornerRadii"//108
+            "cornerRadii",//108
+            "layerTypeNone",//109
+            "layerTypeSoftware",//110
+            "layerTypeHardware"//111
     };
 
     public Varargs tag(U view, Varargs varargs) {
@@ -390,6 +394,12 @@ public class UIViewMethodMapper<U extends UDView> extends BaseMethodMapper<U> {
                 return tag(target, varargs);
             case 108:
                 return cornerRadii(target, varargs);
+            case 109:
+                return layerTypeNone(target, varargs);
+            case 110:
+                return layerTypeSoftware(target, varargs);
+            case 111:
+                return layerTypeHardware(target, varargs);
 
         }
         return super.invoke(code, target, varargs);
@@ -2298,6 +2308,38 @@ public class UIViewMethodMapper<U extends UDView> extends BaseMethodMapper<U> {
         return view.setCornerRadii(radii);
     }
 
+    /**
+     * 指定支持该视图的层的类型
+     *
+     * @param view
+     * @param varargs
+     * @return
+     */
+    public LuaValue layerTypeNone(U view, Varargs varargs) {
+        return view.setLayerType(View.LAYER_TYPE_NONE);
+    }
+
+    /**
+     * 指定支持该视图的层的类型
+     *
+     * @param view
+     * @param varargs
+     * @return
+     */
+    public LuaValue layerTypeSoftware(U view, Varargs varargs) {
+        return view.setLayerType(View.LAYER_TYPE_SOFTWARE);
+    }
+
+    /**
+     * 指定支持该视图的层的类型
+     *
+     * @param view
+     * @param varargs
+     * @return
+     */
+    public LuaValue layerTypeHardware(U view, Varargs varargs) {
+        return view.setLayerType(View.LAYER_TYPE_HARDWARE);
+    }
 
     /**
      * 开始动画
