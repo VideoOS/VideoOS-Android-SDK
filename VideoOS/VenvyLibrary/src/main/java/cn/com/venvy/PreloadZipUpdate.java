@@ -69,6 +69,7 @@ public class PreloadZipUpdate {
             if (callback != null) {
                 callback.updateComplete(new JSONArray());
             }
+            VenvyLog.i(TAG, "down zip json failure，because down zip urls is null");
             return;
         }
         //检查 需要下载的Url
@@ -119,12 +120,15 @@ public class PreloadZipUpdate {
 
             @Override
             public void onPostExecute(List<String> urls) {
+                CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                 if (urls == null) {
+                    if (callback != null) {
+                        callback.updateError(new Exception("update zip error,发生未知错误"));
+                    }
                     return;
                 }
                 List<String> zipUrlArray = getAllZipUrls(zipUrls);
                 if (urls.size() == 0) {
-                    CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                     List<File> zipFiles = getZipFilesWithUrl(zipUrlArray);
                     if (zipFiles == null || zipFiles.size() <= 0) {
                         if (callback != null) {
@@ -211,7 +215,9 @@ public class PreloadZipUpdate {
                         }
                     }
                 }
-                callback.updateComplete(queryArray);
+                if (callback != null) {
+                    callback.updateComplete(queryArray);
+                }
             }
 
             @Override
