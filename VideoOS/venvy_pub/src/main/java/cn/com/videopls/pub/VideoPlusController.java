@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import cn.com.venvy.CacheConstants;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
@@ -40,6 +41,7 @@ import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
+import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
@@ -716,6 +718,15 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-        new VideoRecentlyModel(mPlatform, appId).startRequest();
+
+        String key;
+        if (mPlatform != null && mPlatform.getPlatformInfo() != null && !TextUtils.isEmpty(mPlatform.getPlatformInfo().getIdentity())) {
+            key = mPlatform.getPlatformInfo().getIdentity();
+        } else {
+            key = VenvyDeviceUtil.getAndroidID(getContext());
+        }
+
+        CacheConstants.putVisionProgramId(getContext(), key, appId); // 将id保存到本地
+//        new VideoRecentlyModel(mPlatform, appId).startRequest();
     }
 }
