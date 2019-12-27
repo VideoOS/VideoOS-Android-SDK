@@ -197,6 +197,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
      * @param url
      */
     public void startH5(String url, String developerUserId) {
+        if (currentH5Program == null) return;
         currentH5Program.addDeveloperUserIdToJsBridge(developerUserId);
         currentH5Program.setWebViewCloseListener(new VideoWebToolBarView.WebViewCloseListener() {
             @Override
@@ -345,8 +346,6 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
      */
     @Override
     public void notifyChanged(VenvyObservable observable, String tag, Bundle bundle) {
-        // TODO : bundle maybe is null..
-
         if (VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_VISION_PROGRAM.equals(tag)) {
             if (bundle != null) {
                 String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
