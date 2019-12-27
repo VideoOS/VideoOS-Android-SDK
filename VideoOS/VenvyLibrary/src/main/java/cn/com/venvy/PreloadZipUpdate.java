@@ -306,30 +306,6 @@ public class PreloadZipUpdate {
     }
 
     /***
-     * 获取所有Zip Down urls
-     * @param zipUrls
-     * @return
-     */
-    private List<String> getAllZipUrls(JSONArray zipUrls) {
-        List<String> zipUrlArray = new ArrayList<>();
-        if (zipUrls == null || zipUrls.length() <= 0) {
-            return zipUrlArray;
-        }
-        int len = zipUrls.length();
-        for (int i = 0; i < len; i++) {
-            JSONObject obj = zipUrls.optJSONObject(i);
-            if (obj == null) {
-                break;
-            }
-            String url = obj.optString("url");
-            if (!TextUtils.isEmpty(url)) {
-                zipUrlArray.add(url);
-            }
-        }
-        return zipUrlArray;
-    }
-
-    /***
      * 获取回调
      * @return
      */
