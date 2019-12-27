@@ -600,7 +600,7 @@ adapter.notifyMediaStatusChanged(MediaStatus.PLAYING);
     public IWidgetCloseListener buildWidgetCloseListener() {}
 
 ```
-##技术支持
+## 技术支持
 
 * [androidlgf](https://github.com/androidlgf) - 防防 <guofang@videopls.com>
 * [vainfeng](https://github.com/vainfeng) - 疯子 <liangzifeng@videopls.com>
