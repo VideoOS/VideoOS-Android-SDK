@@ -23,6 +23,7 @@ import cn.com.venvy.common.interf.Method;
 import cn.com.venvy.common.priority.HttpPriorityTask;
 import cn.com.venvy.common.priority.PriorityTaskDispatch;
 import cn.com.venvy.common.priority.base.PriorityTask;
+import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
@@ -520,6 +521,6 @@ public class BaseRequestConnect {
                 }
             }
         }
+        Report.report(Report.ReportLevel.w, BaseRequestConnect.TAG, builder.toString());
     }
-
 }
