@@ -147,6 +147,9 @@ public abstract class VideoPlusController implements VenvyObserver {
             Log.e("Video++", "startService api 调用参数为空");
             return;
         }
+        if (mPlatform == null) {
+            mPlatform = initPlatform(mVideoPlusAdapter);
+        }
         params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
         startQueryConnect(serviceType, params, new IStartQueryResult() {
             @Override
@@ -534,9 +537,6 @@ public abstract class VideoPlusController implements VenvyObserver {
                 break;
             default:
                 // 前后暂停贴广告
-                if (mPlatform == null) {
-                    mPlatform = initPlatform(mVideoPlusAdapter);
-                }
                 mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params,
                         new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
 
