@@ -668,7 +668,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                     @Override
                     public void run() {
                         String luaId = entranceLua;
-                        if (entranceLua.contains(".")) {
+                        if (entranceLua != null && entranceLua.contains(".")) {
                             luaId = entranceLua.split("\\.")[0];
                         }
                         //LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
