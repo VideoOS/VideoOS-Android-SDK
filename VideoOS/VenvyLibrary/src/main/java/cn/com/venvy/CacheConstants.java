@@ -29,16 +29,9 @@ public class CacheConstants {
      * @param id
      */
     public static void putVisionProgramId(Context context, String fileName, @NonNull String id) {
-        String data = VenvyPreferenceHelper.getString(context, fileName, RECENT_MINI_APP_ID, "{}");
+        String data = VenvyPreferenceHelper.getString(context, fileName, RECENT_MINI_APP_ID, "[]");
         try {
-            JSONObject ids = new JSONObject(data);
-            JSONArray array;
-            if (ids.has(RECENT_MINI_APP_ID)) {
-                array = ids.getJSONArray(RECENT_MINI_APP_ID);
-            } else {
-                array = new JSONArray();
-            }
-
+            JSONArray array = new JSONArray(data);
             // 判断数据是否之前存在
             boolean isContains = false;
             for (int i = 0, len = array.length(); i < len; i++) {
@@ -56,8 +49,7 @@ public class CacheConstants {
                 }
                 array.put(id);
             }
-            ids.put(RECENT_MINI_APP_ID, array);
-            VenvyPreferenceHelper.putString(context, fileName, RECENT_MINI_APP_ID, ids.toString());
+            VenvyPreferenceHelper.putString(context, fileName, RECENT_MINI_APP_ID, array.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

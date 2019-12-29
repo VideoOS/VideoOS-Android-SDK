@@ -847,13 +847,14 @@ local function setDesktopAdViewSize(cell, section, row)
                 if(y ~= nil) then
                     value_y = tostring(math.floor(y * 100) / 100)
                 end
-                linkUrl = string.gsub(downloadUrl, "__DOWN_X__", value_x)
-                linkUrl = string.gsub(downloadUrl, "__DOWN_Y__", value_y)
-                linkUrl = string.gsub(downloadUrl, "__UP_X__", value_x)
-                linkUrl = string.gsub(downloadUrl, "__UP_Y__", value_y)
+                linkUrl = string.gsub(linkUrl, "__DOWN_X__", value_x)
+                linkUrl = string.gsub(linkUrl, "__DOWN_Y__", value_y)
+                linkUrl = string.gsub(linkUrl, "__UP_X__", value_x)
+                linkUrl = string.gsub(linkUrl, "__UP_Y__", value_y)
                 desktopWindow.desktopAdInfo.linkData.linkUrl = linkUrl
             end
             desktopWindow.desktopAdInfo.launchPlanId = desktopWindow.launchPlanId
+
             Applet:openAds(desktopWindow.desktopAdInfo)
         end
     end)
@@ -1035,22 +1036,31 @@ local function onCreate()
 end
 
 local function getRecentRecommendDesktopInfo(callback)
+    
+    local identity = Native:getIdentity()
+    local currentApps = Applet:getStorageData("recentMiniAppId", identity)
+
     local paramData = {
-        commonParam = Native:commonParam()
---        recentMiniAppIds =
+        commonParam = Native:commonParam(),
+        recentMiniAppIds = Native:jsonToTable(currentApps)
     }
     local paramDataString = Native:tableToJson(paramData)
     local OS_HTTP_GET_COUPON_RED_PACKET = Native:videoOShost() .. "/vision/deskMiniApps/list"
     local OS_HTTP_PUBLIC_KEY = Native:appSecret()
+    print("request params : ",paramDataString)
     local requestId = desktopWindow.request:post(OS_HTTP_GET_COUPON_RED_PACKET, {
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
     }, function(response, errorInfo)
         if (response == nil) then
             return
         end
+        print("response encrypt before",response.encryptData)
+
+        print("error info ",errorInfo)
         responseData = Native:aesDecrypt(response.encryptData, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
---        print("LuaResponse:"  .. responseData)
+        print("LuaResponse:"  .. type(responseData))
         response = toTable(responseData)
+        print("responseresponse:"  .. type(response))
         if (response.resCode ~= "00") then
             return
         end
@@ -1092,7 +1102,7 @@ local function getAdDesktopInfo(callback)
             return
         end
 
-        if (response.launchInfo == nil or response.launchInfo.data == nil or response.launchInfo.launchPlanId) then
+        if (response.launchInfo == nil or response.launchInfo.data == nil or response.launchInfo.launchPlanId == nil) then
             return
         end
 

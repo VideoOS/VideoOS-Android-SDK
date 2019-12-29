@@ -3,6 +3,7 @@ package cn.com.videopls.pub;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -124,6 +125,15 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     public void clearAllVisionProgram() {
         if (programViewB != null) {
             programViewB.closeAllProgram();
+        }
+    }
+
+    /**
+     * 开始下载第三方广告资源
+     */
+    public void startDownloadRequest(Bundle bundle){
+        if(programViewA != null){
+            programViewA.startDownloadAdsRes(bundle);
         }
     }
 

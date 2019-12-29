@@ -9,13 +9,12 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
-
-import com.taobao.luaview.util.ToastUtil;
 
 import org.json.JSONObject;
 
@@ -30,6 +29,8 @@ import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.observer.VenvyObservableTarget;
+import cn.com.venvy.common.receiver.AppStatusObserver;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 
@@ -41,23 +42,44 @@ public class VideoAdsModel extends VideoPlusBaseModel {
 
     private static final String ADS_URL = "http://mock.videojj.com/mock/5b029ad88e21c409b29a2114/api/getDownloadUrl#!method=get";
     private static final String LUA_CACHE_PATH = "/lua/os/cache/demo";
+    private static final int NOTIFICATION_ID = 1;
     private DownloadTaskRunner mDownloadTaskRunner;
     private int notificationIconRes;
     private Notification notification;
     private NotificationManager notificationManager;
     private NotificationCompat.Builder builder;
     private Notification.Builder builderO;
-private String fileProviderAuthorities;
+    private String fileProviderAuthorities;
 
-    public VideoAdsModel(@NonNull Platform platform, int notificationIconRes,String fileProviderAuthorities) {
+    private AppStatusObserver appStatusObserver;
+
+    private String downloadAPI;
+    private String[] isTrackLinks;
+    private String[] dsTrackLinks;
+    private String[] dfTrackLinks;
+    private String[] instTrackLinks;
+
+    public VideoAdsModel(@NonNull Platform platform, Bundle bundle, int notificationIconRes, String fileProviderAuthorities) {
         super(platform);
+        // TODO : notificationIconRes 可能乱传，这里要讨论一下，非法数据的情况
         this.notificationIconRes = notificationIconRes;
         this.fileProviderAuthorities = fileProviderAuthorities;
+        initData(bundle);
+    }
+
+    private void initData(Bundle bundle) {
+        downloadAPI = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DOWNLOAD_API);
+        dsTrackLinks = bundle.getStringArray("dsTrackLinks"); // 下载开始
+        dfTrackLinks = bundle.getStringArray("dfTrackLinks"); // 下载完成
+        isTrackLinks = bundle.getStringArray("isTrackLinks"); // 安装开始
+        instTrackLinks = bundle.getStringArray("instTrackLinks"); // 安装完成
     }
 
     @Override
     public Request createRequest() {
-        return HttpRequest.get(ADS_URL);
+        // TODO : should replace official api
+//        return HttpRequest.get(ADS_URL);
+        return HttpRequest.get(downloadAPI);
     }
 
     @Override
@@ -77,7 +99,8 @@ private String fileProviderAuthorities;
                     }
                     final JSONObject data = new JSONObject(response.getResult());
                     JSONObject dataJson = data.getJSONObject("data");
-                    String downloadUrl = dataJson.getString("downloadUrl");
+                    String clickId = dataJson.getString("clickid");
+                    String downloadUrl = dataJson.getString("dslink");
                     VenvyLog.d("downloadUrl : " + downloadUrl);
                     execDownloadTask(downloadUrl);
                 } catch (Exception e) {
@@ -140,7 +163,7 @@ private String fileProviderAuthorities;
         }
 
 
-        notificationManager.notify(1, notification);
+        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     private void execDownloadTask(String downloadUrl) {
@@ -163,6 +186,7 @@ private String fileProviderAuthorities;
             @Override
             public void onTaskStart(DownloadTask downloadTask) {
                 VenvyLog.d("onTaskStart");
+                uploadTrack(dsTrackLinks); //  开始下载上报track
                 initNotification();
             }
 
@@ -172,15 +196,15 @@ private String fileProviderAuthorities;
                 if (progress <= 1) return;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     builderO.setProgress(100, progress, false);
-                    builderO.setContentText("下载完成度："+progress+"%");
+                    builderO.setContentText("下载完成度：" + progress + "%");
                     notification = builderO.build();
                 } else {
                     builder.setProgress(100, progress, false);
-                    builder.setContentText("下载完成度："+progress+"%");
+                    builder.setContentText("下载完成度：" + progress + "%");
                     notification = builder.build();
 
                 }
-                notificationManager.notify(1, notification);
+                notificationManager.notify(NOTIFICATION_ID, notification);
             }
 
             @Override
@@ -191,22 +215,22 @@ private String fileProviderAuthorities;
             @Override
             public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
                 VenvyLog.d("onTaskSuccess");
-                ToastUtil.showToast(getPlatform().getContentViewGroup().getContext(), "下载完成");
+
+                registerAppReceiver(filePath);// 开启对第三方APP的安装监听
 
                 // todo : 前往安装APK 页面
                 Intent resultIntent = new Intent(Intent.ACTION_VIEW);
                 resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 Uri data;
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     // 7.0 通过FileProvider的方式访问
-                    data = FileProvider.getUriForFile(getPlatform().getContentViewGroup().getContext(),fileProviderAuthorities,new File(filePath));
+                    data = FileProvider.getUriForFile(getPlatform().getContentViewGroup().getContext(), fileProviderAuthorities, new File(filePath));
                     resultIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);// 赋予临时权限
-                }else{
+                } else {
                     data = Uri.fromFile(new File(downloadTask.getDownloadCacheUrl()));
                 }
                 resultIntent.setDataAndType(data, "application/vnd.android.package-archive");
-
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(getPlatform().getContentViewGroup().getContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -221,14 +245,51 @@ private String fileProviderAuthorities;
                             .setContentIntent(pendingIntent).build();
                 }
 
-                notificationManager.notify(1, notification);
+                notificationManager.notify(NOTIFICATION_ID, notification);
             }
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
                 VenvyLog.d("onTasksComplete");
-
+                uploadTrack(dfTrackLinks); // 下载完成上报track
             }
         });
     }
+
+
+    /**
+     * 批量上报track data
+     *
+     * @param links
+     */
+    private void uploadTrack(String[] links) {
+        if (links != null && links.length > 0) {
+            for (int i = 0, len = links.length; i < len; i++) {
+                // todo : 如果链接中有替换字符 _CLICK_ID_ 需要使用clickId替换之后再请求
+                new AdsTrackModel(getPlatform(), links[i]).startRequest();
+            }
+        }
+    }
+
+    private void registerAppReceiver(String filePath) {
+        String filePackageName = VenvyFileUtil.getPackageNameByApkFile(getPlatform().getContentViewGroup().getContext(), filePath);
+        if (appStatusObserver == null) {
+            appStatusObserver = new AppStatusObserver(getPlatform().getContentViewGroup().getContext());
+        }
+        appStatusObserver.registerReceiver(filePackageName, new AppStatusObserver.AppStatusChangeListener() {
+            @Override
+            public void onAppInstall(String packageName) {
+                // 安装完成
+                uploadTrack(instTrackLinks);
+                VenvyLog.d("onAppInstall track: " + packageName);
+            }
+
+            @Override
+            public void onAppUninstall(String packageName) {
+                VenvyLog.d("onAppUninstall track: " + packageName);
+            }
+        });
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package cn.com.venvy.lua.plugin;
 
+import com.taobao.luaview.util.JsonUtil;
 import com.taobao.luaview.util.LuaUtil;
 
 import org.json.JSONObject;
@@ -18,9 +19,11 @@ import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
 public class LVTableToJsonPlugin {
     private static LVTableToJsonPlugin.TableToJsonFunction mTableToJson;
+    private static LVTableToJsonPlugin.JsonToTableFunction mJsonToTable;
 
     public static void install(VenvyLVLibBinder venvyLVLibBinder) {
         venvyLVLibBinder.set("tableToJson", mTableToJson == null ? mTableToJson = new LVTableToJsonPlugin.TableToJsonFunction() : mTableToJson);
+        venvyLVLibBinder.set("jsonToTable", mJsonToTable == null ? mJsonToTable = new LVTableToJsonPlugin.JsonToTableFunction() : mJsonToTable);
     }
 
     private static class TableToJsonFunction extends VarArgFunction {
@@ -35,6 +38,18 @@ public class LVTableToJsonPlugin {
                 }
                 JSONObject jData = new JSONObject(params);
                 return jData != null ? LuaValue.valueOf(jData.toString()) : LuaValue.NIL;
+            }
+            return LuaValue.NIL;
+        }
+    }
+
+    private static class JsonToTableFunction extends VarArgFunction {
+        @Override
+        public Varargs invoke(Varargs args) {
+            int fixIndex = VenvyLVLibBinder.fixIndex(args);
+            if (args.narg() > fixIndex) {
+                String jsonStr = LuaUtil.getString(args, fixIndex + 1);
+                return JsonUtil.toLuaTable(jsonStr);
             }
             return LuaValue.NIL;
         }

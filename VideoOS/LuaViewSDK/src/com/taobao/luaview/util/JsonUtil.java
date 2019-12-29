@@ -91,13 +91,13 @@ public class JsonUtil {
                             } else {
                                 if (value.isboolean()) {
                                     obj.put(key, value.optboolean(false));
-                                }else if (value.isstring()) {
+                                } else if (value.isstring()) {
                                     obj.put(key, value.optstring(null));
-                                }  else if (value.isint()) {
+                                } else if (value.isint()) {
                                     obj.put(key, value.optint(0));
-                                }else if (value.islong()) {
+                                } else if (value.islong()) {
                                     obj.put(key, value.optlong(0L));
-                                }  else {
+                                } else {
                                     obj.put(key, value);
                                 }
                             }
@@ -220,5 +220,16 @@ public class JsonUtil {
             //TODO 不支持的类型
             return LuaValue.NIL;
         }
+    }
+
+
+    public static String[] toStringArray(JSONArray array) throws JSONException {
+        if (array == null) return new String[]{};
+
+        String[] args = new String[array.length()];
+        for (int i = 0, len = array.length(); i < len; i++) {
+            args[i] = String.valueOf(array.get(i));
+        }
+        return args;
     }
 }

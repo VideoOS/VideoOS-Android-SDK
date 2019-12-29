@@ -12,12 +12,14 @@ import com.taobao.luaview.util.VisionUtil;
 
 import org.json.JSONObject;
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import cn.com.venvy.CacheConstants;
 import cn.com.venvy.Platform;
+import cn.com.venvy.common.bean.WidgetInfo;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
@@ -44,7 +46,7 @@ public class UDApplet extends BaseLuaTable {
         set("closeView", new CloseView(platform));// 关闭当前容器
         set("setStorageData", new SetStorageData(platform));// 存储本地数据
         set("getStorageData", new GetStorageData(platform));// 获取本地储存的数据
-        set("openAds", new OpenAds());// 获取本地储存的数据
+        set("openAds", new OpenAds(platform));// 获取本地储存的数据
     }
 
     class AppletSize extends VarArgFunction {
@@ -202,23 +204,42 @@ public class UDApplet extends BaseLuaTable {
     }
 
     class OpenAds extends VarArgFunction {
+        private Platform platform;
+
+        public OpenAds(Platform platform) {
+            super();
+            this.platform = platform;
+        }
+
         @Override
         public Varargs invoke(Varargs args) {
-            final int fixIndex = VenvyLVLibBinder.fixIndex(args);
+            int fixIndex = VenvyLVLibBinder.fixIndex(args);
             if (args.narg() > fixIndex) {
-                final String table = LuaUtil.getString(args, fixIndex + 1);
-                String jsonStr = JsonUtil.toString(table);
+                final LuaTable table = LuaUtil.getTable(args, fixIndex + 2);
                 try {
-                    JSONObject jsonObject = new JSONObject(jsonStr);
+                    String str = JsonUtil.toString(table);
+                    JSONObject jsonObject = new JSONObject(str);
+//                    VenvyLog.d("openAds : " + jsonObject.toString());
                     if (jsonObject.has("targetType")) {
-                        String targetType = jsonObject.getString("targetType");
+                        String targetType = jsonObject.optString("targetType");
                         // targetType  1 落地页 2 deepLink 3 下载
                         if (targetType.equalsIgnoreCase("3")) {
-                            JSONObject linkData = jsonObject.getJSONObject("linkData");
-                            String downLink = linkData.getString("linkUrl");
+                            JSONObject linkData = jsonObject.optJSONObject("linkData");
+                            String downAPI = linkData.optString("linkUrl");
+                            JSONObject downloadTrackLink = jsonObject.optJSONObject("downloadTrackLink");
+                            Bundle trackData = new Bundle();
+                            trackData.putString(VenvyObservableTarget.Constant.CONSTANT_DOWNLOAD_API, downAPI);
+                            trackData.putStringArray("isTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("isTrackLinks")));
+                            trackData.putStringArray("dsTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("dsTrackLinks")));
+                            trackData.putStringArray("dfTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("dfTrackLinks")));
+                            trackData.putStringArray("instTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("instTrackLinks")));
+                            ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_DOWNLOAD_TASK, trackData);
+
+                            // 执行广告下载任务
 
 
                         } else {
+                            // TODO : 走Native:widgetNotify()  逻辑
 
                         }
                     }
@@ -228,6 +249,8 @@ public class UDApplet extends BaseLuaTable {
             }
             return LuaValue.NIL;
         }
+
+
     }
 
 }

@@ -365,6 +365,8 @@ public abstract class VideoPlusController implements VenvyObserver {
                 .setVideoType(provider.getVideoType())
                 .setVideoCategory(provider.getVideoCategory())
                 .setExtendJSONString(provider.getExtendJSONString())
+                .setFileProviderAuth(provider.getFileProviderAuth())
+                .setNotificationIcon(provider.getNotificationIcon())
                 .setAppKey(provider.getAppKey()).setAppSecret(provider.getAppSecret());
         return platformInfoBuilder.builder();
     }
@@ -728,5 +730,13 @@ public abstract class VideoPlusController implements VenvyObserver {
 
         CacheConstants.putVisionProgramId(getContext(), key, appId); // 将id保存到本地
 //        new VideoRecentlyModel(mPlatform, appId).startRequest();
+    }
+
+    public void downloadAdsRes(Bundle bundle) {
+        if (this.mPlatform == null) {
+            this.mPlatform = initPlatform(mVideoPlusAdapter);
+        }
+        mQueryAdsModel = new VideoAdsModel(mPlatform, bundle, mPlatform.getPlatformInfo().getNotificationIcon(), mPlatform.getPlatformInfo().getFileProviderAuth());
+        mQueryAdsModel.startRequest();
     }
 }
