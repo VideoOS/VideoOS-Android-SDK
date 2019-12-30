@@ -5,6 +5,8 @@ import android.text.TextUtils;
 
 import java.lang.ref.WeakReference;
 
+import cn.com.venvy.common.report.Report;
+
 /**
  * Created by yanjiangbo on 2018/1/11.
  */
@@ -29,6 +31,7 @@ public class ImageLoadResultAdapter implements IImageLoaderResult {
         if (mImageLoaderResult != null) {
             mImageLoaderResult.loadFailure(imageView, url, e);
         }
+        Report.report(Report.ReportLevel.w, ImageLoadResultAdapter.class.getName(), buildReportString(e, url));
     }
 
     private static String buildReportString(Exception exception, String url) {

@@ -346,7 +346,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
                 break;
             default:
                 // 震动一下
-                VenvyVibrateUtil.vibrate(getContext(), 500);
+//                VenvyVibrateUtil.vibrate(getContext(), 500);
                 if (programViewA != null) {
                     programViewA.startService(serviceType, params, callback);
                 }
