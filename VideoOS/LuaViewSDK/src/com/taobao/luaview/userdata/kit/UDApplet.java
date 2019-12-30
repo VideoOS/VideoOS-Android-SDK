@@ -222,10 +222,11 @@ public class UDApplet extends BaseLuaTable {
 //                    VenvyLog.d("openAds : " + jsonObject.toString());
                     if (jsonObject.has("targetType")) {
                         String targetType = jsonObject.optString("targetType");
+                        JSONObject linkData = jsonObject.optJSONObject("linkData");
+                        String downAPI = linkData.optString("linkUrl");
+                        String deepLink = linkData.optString("deepLink");
                         // targetType  1 落地页 2 deepLink 3 下载
                         if (targetType.equalsIgnoreCase("3")) {
-                            JSONObject linkData = jsonObject.optJSONObject("linkData");
-                            String downAPI = linkData.optString("linkUrl");
                             JSONObject downloadTrackLink = jsonObject.optJSONObject("downloadTrackLink");
                             Bundle trackData = new Bundle();
                             trackData.putString(VenvyObservableTarget.Constant.CONSTANT_DOWNLOAD_API, downAPI);
@@ -235,12 +236,19 @@ public class UDApplet extends BaseLuaTable {
                             trackData.putStringArray("instTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("instTrackLinks")));
                             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_DOWNLOAD_TASK, trackData);
 
-                            // 执行广告下载任务
-
-
                         } else {
-                            // TODO : 走Native:widgetNotify()  逻辑
-
+                            // 走Native:widgetNotify()  逻辑
+                            WidgetInfo.Builder builder = new WidgetInfo.Builder()
+                                    .setWidgetActionType(WidgetInfo.WidgetActionType.ACTION_OPEN_URL);
+                            if (targetType.equalsIgnoreCase("1")) {
+                                builder.setLinkUrl(downAPI);
+                            } else if(targetType.equalsIgnoreCase("2")){
+                                builder.setDeepLink(deepLink);
+                            }
+                            WidgetInfo widgetInfo = builder.build();
+                            if (platform.getWidgetClickListener() != null) {
+                                platform.getWidgetClickListener().onClick(widgetInfo);
+                            }
                         }
                     }
                 } catch (Exception e) {
