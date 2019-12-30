@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.com.venvy.CacheConstants;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
@@ -263,7 +264,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
             doExitAnimation(item);
         }
         h5ProgramMap.clear();
-
+        CacheConstants.setDeveloperId("");
         setClickable(false);
     }
 

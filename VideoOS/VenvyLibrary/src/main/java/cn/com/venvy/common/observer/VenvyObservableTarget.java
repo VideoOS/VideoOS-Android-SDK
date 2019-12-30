@@ -40,6 +40,8 @@ public class VenvyObservableTarget {
     public static final String TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL = "notifyAddLuaScriptToTopLevel";
     // 清除所有的视联网小程序
     public static final String TAG_CLEAR_ALL_VISION_PROGRAM = "notifyClearAllVisionProgram";
+    // 启动一个下载链接
+    public static final String TAG_DOWNLOAD_TASK = "notifyDownLoadTask";
 
     public static class Constant {
         public static final int CONSTANT_LANDSCAPE = 1;
@@ -64,6 +66,7 @@ public class VenvyObservableTarget {
         public static final String CONSTANT_VIDEO_MODE_X_OFFSET = "eyeOriginPointX";
         public static final String CONSTANT_VIDEO_MODE_Y_OFFSET = "eyeOriginPointY";
         public static final String CONSTANT_LABEL_CONF_DATA = "labelConfData";
+        public static final String CONSTANT_DOWNLOAD_API = "downloadAPI";
     }
 
 }

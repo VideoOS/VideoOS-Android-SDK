@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import cn.com.venvy.CacheConstants;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
@@ -40,6 +41,7 @@ import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
+import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
@@ -366,6 +368,8 @@ public abstract class VideoPlusController implements VenvyObserver {
                 .setVideoType(provider.getVideoType())
                 .setVideoCategory(provider.getVideoCategory())
                 .setExtendJSONString(provider.getExtendJSONString())
+                .setFileProviderAuth(provider.getFileProviderAuth())
+                .setNotificationIcon(provider.getNotificationIcon())
                 .setAppKey(provider.getAppKey()).setAppSecret(provider.getAppSecret());
         return platformInfoBuilder.builder();
     }
@@ -721,6 +725,23 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-        new VideoRecentlyModel(mPlatform, appId).startRequest();
+
+        String key;
+        if (mPlatform != null && mPlatform.getPlatformInfo() != null && !TextUtils.isEmpty(mPlatform.getPlatformInfo().getIdentity())) {
+            key = mPlatform.getPlatformInfo().getIdentity();
+        } else {
+            key = VenvyDeviceUtil.getAndroidID(getContext());
+        }
+
+        CacheConstants.putVisionProgramId(getContext(), key, appId); // 将id保存到本地
+//        new VideoRecentlyModel(mPlatform, appId).startRequest();
+    }
+
+    public void downloadAdsRes(Bundle bundle) {
+        if (this.mPlatform == null) {
+            this.mPlatform = initPlatform(mVideoPlusAdapter);
+        }
+        mQueryAdsModel = new VideoAdsModel(mPlatform, bundle, mPlatform.getPlatformInfo().getNotificationIcon(), mPlatform.getPlatformInfo().getFileProviderAuth());
+        mQueryAdsModel.startRequest();
     }
 }

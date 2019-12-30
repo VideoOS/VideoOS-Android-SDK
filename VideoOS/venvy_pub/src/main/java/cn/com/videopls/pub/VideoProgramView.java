@@ -2,6 +2,7 @@ package cn.com.videopls.pub;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
@@ -155,5 +156,9 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
             }
         }
         return count;
+    }
+
+    public void startDownloadAdsRes(Bundle bundle){
+        controller.downloadAdsRes(bundle);
     }
 }
