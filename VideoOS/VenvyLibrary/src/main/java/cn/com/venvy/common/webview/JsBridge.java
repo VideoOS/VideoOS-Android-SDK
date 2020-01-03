@@ -157,7 +157,14 @@ public class JsBridge implements VenvyObserver {
             return;
         }
         try {
-            JSONObject jsJsonObj = new JSONObject(jsParams);
+            JSONObject msgJsonObj = new JSONObject(jsParams);
+            if (msgJsonObj == null) {
+                return;
+            }
+            JSONObject jsJsonObj = msgJsonObj.optJSONObject("msg");
+            if (jsJsonObj == null) {
+                return;
+            }
             String url = jsJsonObj.optString("url");
             String method = jsJsonObj.optString("method");
             Map<String, String> param = VenvyMapUtil.jsonToMap(jsJsonObj.optString("param"));
@@ -178,7 +185,12 @@ public class JsBridge implements VenvyObserver {
                 public void requestFinish(Request request, IResponse response) {
                     if (response.isSuccess()) {
                         String result = response.getResult();
-                        callJsFunction(result, jsParams);
+                        try {
+                            JSONObject obj = new JSONObject(result);
+                            callJsFunction(obj.toString(), jsParams);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     } else {
                         requestError(request, new Exception("http not successful"));
                     }
@@ -186,7 +198,12 @@ public class JsBridge implements VenvyObserver {
 
                 @Override
                 public void requestError(Request request, @Nullable Exception e) {
-                    callJsFunction(e != null && e.getMessage() != null ? e.getMessage() : "unkown error", jsParams);
+                    try {
+                        JSONObject object = new JSONObject(e != null && e.getMessage() != null ? e.getMessage() : "unkown error");
+                        callJsFunction(object.toString(), jsParams);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
                 }
 
                 @Override
