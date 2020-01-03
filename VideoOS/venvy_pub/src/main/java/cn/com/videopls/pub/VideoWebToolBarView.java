@@ -156,12 +156,14 @@ public class VideoWebToolBarView extends BaseVideoVisionView {
                     String appletId = jsonObject.getString("appletId");
                     String screenType = jsonObject.getString("screenType");
                     String appType = jsonObject.getString("appType");
+                    String level = jsonObject.getString("level");
 
                     // 拉起一个对应的容器
                     Bundle bundle = new Bundle();
                     bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, appletId);
                     bundle.putString(VenvyObservableTarget.KEY_ORIENTATION_TYPE, screenType);
                     bundle.putString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE, appType);
+                    bundle.putString(VenvyObservableTarget.Constant.CONSTANT_LEVEL, level);
 
                     if (jsonObject.has("data")) {
                         bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, jsonObject.getString("data"));

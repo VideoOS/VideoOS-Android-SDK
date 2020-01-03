@@ -43,7 +43,6 @@ public class Provider implements Parcelable {
     private final String mExtendJSONString;
 
     private final String mFileProviderAuth;
-    private final int notificationIcon;
 
     private Provider(Builder builder) {
         this.mAppKey = builder.mAppKey;
@@ -64,7 +63,6 @@ public class Provider implements Parcelable {
         this.mVideoCategory = builder.videoCategory;
         this.mExtendJSONString = builder.mExtendJSONString;
         this.mFileProviderAuth = builder.mFileProviderAuth;
-        this.notificationIcon = builder.notificationIcon;
     }
 
     public String getExtendJSONString() {
@@ -133,9 +131,6 @@ public class Provider implements Parcelable {
         return mFileProviderAuth;
     }
 
-    public int getNotificationIcon() {
-        return notificationIcon;
-    }
 
     public static class Builder {
         private String mAppKey;
@@ -157,7 +152,6 @@ public class Provider implements Parcelable {
         private String videoCategory;
         private String mExtendJSONString;
         private String mFileProviderAuth;
-        private int notificationIcon;
 
         @Deprecated
         public Builder setTestUserId(String testUserId) {
@@ -282,11 +276,6 @@ public class Provider implements Parcelable {
             return this;
         }
 
-        public Builder setNotificationIcon(int notificationIcon) {
-            this.notificationIcon = notificationIcon;
-            return this;
-        }
-
         public Provider build() {
             return new Provider(this);
         }
@@ -317,7 +306,6 @@ public class Provider implements Parcelable {
         dest.writeString(this.mVideoCategory);
         dest.writeString(this.mExtendJSONString);
         dest.writeString(this.mFileProviderAuth);
-        dest.writeInt(this.notificationIcon);
     }
 
     protected Provider(Parcel in) {
@@ -338,7 +326,6 @@ public class Provider implements Parcelable {
         this.mVideoCategory = in.readString();
         this.mExtendJSONString = in.readString();
         this.mFileProviderAuth = in.readString();
-        this.notificationIcon = in.readInt();
     }
 
     public static final Parcelable.Creator<Provider> CREATOR = new Parcelable.Creator<Provider>() {

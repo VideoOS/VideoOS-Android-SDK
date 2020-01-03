@@ -28,7 +28,6 @@ public class PlatformInfo implements Parcelable {
     private final String mExtendJSONString;
     private final String mCustomerPackageName;
     private final String mFileProviderAuth;
-    private final int notificationIcon;
 
     private PlatformInfo(Builder builder) {
         mThirdPlatformId = builder.mThirdPlatformId;
@@ -47,7 +46,6 @@ public class PlatformInfo implements Parcelable {
         mExtendJSONString = builder.extendJsonString;
         mCustomerPackageName = builder.mCustomerPackageName;
         mFileProviderAuth = builder.fileProviderAuth;
-        notificationIcon = builder.notificationIcon;
     }
 
     public void updateDirection(ScreenStatus status) {
@@ -120,9 +118,6 @@ public class PlatformInfo implements Parcelable {
         return mFileProviderAuth;
     }
 
-    public int getNotificationIcon() {
-        return notificationIcon;
-    }
 
     public static class Builder {
 
@@ -142,7 +137,6 @@ public class PlatformInfo implements Parcelable {
         private String extendJsonString;
         private String mCustomerPackageName;
         private String fileProviderAuth;
-        private int notificationIcon;
 
         public Builder setCustomerPackageName(String mCustomerPackageName) {
             this.mCustomerPackageName = mCustomerPackageName;
@@ -163,10 +157,12 @@ public class PlatformInfo implements Parcelable {
             this.mAppKey = appKey;
             return this;
         }
+
         public Builder setAppSecret(String appSecret) {
             this.mAppSecret = appSecret;
             return this;
         }
+
         //初始化屏幕大小及方向
         public Builder setInitDirection(ScreenStatus status) {
             this.mInitDirection = status;
@@ -234,10 +230,6 @@ public class PlatformInfo implements Parcelable {
             return this;
         }
 
-        public Builder setNotificationIcon(int notificationIcon) {
-            this.notificationIcon = notificationIcon;
-            return this;
-        }
 
         public PlatformInfo builder() {
             return new PlatformInfo(this);
@@ -267,7 +259,6 @@ public class PlatformInfo implements Parcelable {
         dest.writeString(this.mExtendJSONString);
         dest.writeString(this.mCustomerPackageName);
         dest.writeString(this.mFileProviderAuth);
-        dest.writeInt(this.notificationIcon);
     }
 
     protected PlatformInfo(Parcel in) {
@@ -288,7 +279,6 @@ public class PlatformInfo implements Parcelable {
         this.mExtendJSONString = in.readString();
         this.mCustomerPackageName = in.readString();
         this.mFileProviderAuth = in.readString();
-        this.notificationIcon = in.readInt();
     }
 
     public static final Parcelable.Creator<PlatformInfo> CREATOR = new Parcelable.Creator<PlatformInfo>() {

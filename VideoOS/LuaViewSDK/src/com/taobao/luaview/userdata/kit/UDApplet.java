@@ -17,6 +17,8 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import java.util.HashMap;
+
 import cn.com.venvy.CacheConstants;
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.bean.WidgetInfo;
@@ -47,6 +49,7 @@ public class UDApplet extends BaseLuaTable {
         set("setStorageData", new SetStorageData(platform));// 存储本地数据
         set("getStorageData", new GetStorageData(platform));// 获取本地储存的数据
         set("openAds", new OpenAds(platform));// 获取本地储存的数据
+        set("openApplet", new OpenApplet());// 打开新的容器
     }
 
     class AppletSize extends VarArgFunction {
@@ -223,7 +226,7 @@ public class UDApplet extends BaseLuaTable {
                     if (jsonObject.has("targetType")) {
                         String targetType = jsonObject.optString("targetType");
                         JSONObject linkData = jsonObject.optJSONObject("linkData");
-                        String downAPI = linkData.optString("linkUrl");
+                        String downAPI = jsonObject.optString("downloadApkUrl");
                         String deepLink = linkData.optString("deepLink");
                         // targetType  1 落地页 2 deepLink 3 下载
                         if (targetType.equalsIgnoreCase("3")) {
@@ -234,15 +237,16 @@ public class UDApplet extends BaseLuaTable {
                             trackData.putStringArray("dsTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("dsTrackLinks")));
                             trackData.putStringArray("dfTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("dfTrackLinks")));
                             trackData.putStringArray("instTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("instTrackLinks")));
+                            trackData.putString("launchPlanId",jsonObject.optString("launchPlanId"));
                             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_DOWNLOAD_TASK, trackData);
-
                         } else {
                             // 走Native:widgetNotify()  逻辑
                             WidgetInfo.Builder builder = new WidgetInfo.Builder()
-                                    .setWidgetActionType(WidgetInfo.WidgetActionType.ACTION_OPEN_URL);
+                                    .setWidgetActionType(WidgetInfo.WidgetActionType.ACTION_OPEN_URL)
+                                    .setUrl("");
                             if (targetType.equalsIgnoreCase("1")) {
                                 builder.setLinkUrl(downAPI);
-                            } else if(targetType.equalsIgnoreCase("2")){
+                            } else if (targetType.equalsIgnoreCase("2")) {
                                 builder.setDeepLink(deepLink);
                             }
                             WidgetInfo widgetInfo = builder.build();
@@ -259,6 +263,38 @@ public class UDApplet extends BaseLuaTable {
         }
 
 
+    }
+
+    class OpenApplet extends VarArgFunction {
+        @Override
+        public Varargs invoke(Varargs args) {
+            int fixIndex = VenvyLVLibBinder.fixIndex(args);
+            if (args.narg() > fixIndex) {
+                final LuaTable luaTable = LuaUtil.getTable(args, fixIndex + 2);
+                HashMap<String, String> map = LuaUtil.toMap(luaTable);
+                if (map != null && map.size() > 0) {
+                    String appletId = map.get("appletId");
+                    String screenType = map.get("screenType");
+                    String appType = map.get("appType");
+                    String data = map.get("data");
+                    String level = map.get("level");
+                    // 发起一个视联网小程序
+                    Bundle bundle = new Bundle();
+                    bundle.putString(VenvyObservableTarget.KEY_APPLETS_ID, appletId);
+                    bundle.putString(VenvyObservableTarget.KEY_ORIENTATION_TYPE, screenType);
+                    bundle.putString(VenvyObservableTarget.Constant.CONSTANT_LEVEL, level);
+                    bundle.putString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE, appType);
+                    if (!TextUtils.isEmpty(data)) {
+                        bundle.putString(VenvyObservableTarget.Constant.CONSTANT_DATA, data);
+                    }
+                    ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_LAUNCH_VISION_PROGRAM, bundle);
+
+                }
+
+            }
+
+            return LuaValue.NIL;
+        }
     }
 
 }

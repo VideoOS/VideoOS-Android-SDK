@@ -229,11 +229,12 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     /**
      * 拉起一个视联网小工具
      */
-    public void launchVisionToolsProgram(String miniAppId, String data) {
+    public void launchVisionToolsProgram(String miniAppId, String data,String level) {
         if (programViewA != null) {
             HashMap<String, String> params = new HashMap<>();
             params.put("miniAppId", miniAppId);
             params.put("data", data);
+            params.put("level", level);
             programViewA.startService(ServiceType.ServiceTypeVideoTools, params, null);
         }
     }

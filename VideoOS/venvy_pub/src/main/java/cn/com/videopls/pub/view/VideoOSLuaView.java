@@ -216,6 +216,10 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
+//        if(luaName.contains("os_desktop_hotspot")){
+//            runLua(luaView, luaName, valueData);
+//            return;
+//        }
         String miniAppId = "";
         if (valueData instanceof HashMap) {
             HashMap params = (HashMap) valueData;
