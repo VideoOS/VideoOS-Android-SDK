@@ -40,6 +40,7 @@ import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyBase64;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
@@ -157,7 +158,14 @@ public class JsBridge implements VenvyObserver {
             return;
         }
         try {
-            JSONObject jsJsonObj = new JSONObject(jsParams);
+            JSONObject msgJsonObj = new JSONObject(jsParams);
+            if (msgJsonObj == null) {
+                return;
+            }
+            JSONObject jsJsonObj = msgJsonObj.optJSONObject("msg");
+            if (jsJsonObj == null) {
+                return;
+            }
             String url = jsJsonObj.optString("url");
             String method = jsJsonObj.optString("method");
             Map<String, String> param = VenvyMapUtil.jsonToMap(jsJsonObj.optString("param"));
@@ -178,7 +186,12 @@ public class JsBridge implements VenvyObserver {
                 public void requestFinish(Request request, IResponse response) {
                     if (response.isSuccess()) {
                         String result = response.getResult();
-                        callJsFunction(result, jsParams);
+                        try {
+                            JSONObject obj = new JSONObject(result);
+                            callJsFunction(obj.toString(), jsParams);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     } else {
                         requestError(request, new Exception("http not successful"));
                     }
@@ -186,7 +199,12 @@ public class JsBridge implements VenvyObserver {
 
                 @Override
                 public void requestError(Request request, @Nullable Exception e) {
-                    callJsFunction(e != null && e.getMessage() != null ? e.getMessage() : "unkown error", jsParams);
+                    try {
+                        JSONObject object = new JSONObject(e != null && e.getMessage() != null ? e.getMessage() : "unkown error");
+                        callJsFunction(object.toString(), jsParams);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
                 }
 
                 @Override
@@ -203,6 +221,81 @@ public class JsBridge implements VenvyObserver {
             e.printStackTrace();
         }
 
+    }
+
+    /***
+     * 统计通用追踪
+     * @param jsParams
+     */
+    @JavascriptInterface
+    public void commonTrack(final String jsParams) {
+        if (TextUtils.isEmpty(jsParams)) {
+            return;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(jsParams);
+            if (jsonObject == null) {
+                return;
+            }
+            JSONObject msgObject = jsonObject.optJSONObject("msg");
+            if (msgObject == null) {
+                return;
+            }
+            Integer type = msgObject.optInt("type");
+            String data = msgObject.optString("data");
+            VenvyStatisticsManager.getInstance().submitCommonTrack(type, new JSONObject(data));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /***
+     * 打开广告
+     * @param jsParams
+     */
+    @JavascriptInterface
+    public void openAds(String jsParams) {
+        try {
+            if(TextUtils.isEmpty(jsParams))
+                return;
+            JSONObject msgObject=
+            JSONObject jsonObject = new JSONObject(jsParams);
+//                    VenvyLog.d("openAds : " + jsonObject.toString());
+            if (jsonObject.has("targetType")) {
+                String targetType = jsonObject.optString("targetType");
+                JSONObject linkData = jsonObject.optJSONObject("linkData");
+                String downAPI = jsonObject.optString("downloadApkUrl");
+                String deepLink = linkData.optString("deepLink");
+                // targetType  1 落地页 2 deepLink 3 下载
+                if (targetType.equalsIgnoreCase("3")) {
+                    JSONObject downloadTrackLink = jsonObject.optJSONObject("downloadTrackLink");
+                    Bundle trackData = new Bundle();
+                    trackData.putString(VenvyObservableTarget.Constant.CONSTANT_DOWNLOAD_API, downAPI);
+                    trackData.putStringArray("isTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("isTrackLinks")));
+                    trackData.putStringArray("dsTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("dsTrackLinks")));
+                    trackData.putStringArray("dfTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("dfTrackLinks")));
+                    trackData.putStringArray("instTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("instTrackLinks")));
+                    trackData.putString("launchPlanId",jsonObject.optString("launchPlanId"));
+                    ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_DOWNLOAD_TASK, trackData);
+                } else {
+                    // 走Native:widgetNotify()  逻辑
+                    WidgetInfo.Builder builder = new WidgetInfo.Builder()
+                            .setWidgetActionType(WidgetInfo.WidgetActionType.ACTION_OPEN_URL)
+                            .setUrl("");
+                    if (targetType.equalsIgnoreCase("1")) {
+                        builder.setLinkUrl(downAPI);
+                    } else if (targetType.equalsIgnoreCase("2")) {
+                        builder.setDeepLink(deepLink);
+                    }
+                    WidgetInfo widgetInfo = builder.build();
+                    if (platform.getWidgetClickListener() != null) {
+                        platform.getWidgetClickListener().onClick(widgetInfo);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @JavascriptInterface
