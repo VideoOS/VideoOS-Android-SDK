@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -255,27 +256,34 @@ public class JsBridge implements VenvyObserver {
      */
     @JavascriptInterface
     public void openAds(String jsParams) {
+        if (mPlatform == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(jsParams))
+            return;
         try {
-            if(TextUtils.isEmpty(jsParams))
+            JSONObject msgObject = new JSONObject(jsParams);
+            if (msgObject == null) {
                 return;
-            JSONObject msgObject=
-            JSONObject jsonObject = new JSONObject(jsParams);
-//                    VenvyLog.d("openAds : " + jsonObject.toString());
+            }
+            JSONObject jsonObject = msgObject.optJSONObject("msg");
+            if (msgObject == null) {
+                return;
+            }
             if (jsonObject.has("targetType")) {
                 String targetType = jsonObject.optString("targetType");
                 JSONObject linkData = jsonObject.optJSONObject("linkData");
                 String downAPI = jsonObject.optString("downloadApkUrl");
-                String deepLink = linkData.optString("deepLink");
                 // targetType  1 落地页 2 deepLink 3 下载
                 if (targetType.equalsIgnoreCase("3")) {
                     JSONObject downloadTrackLink = jsonObject.optJSONObject("downloadTrackLink");
                     Bundle trackData = new Bundle();
                     trackData.putString(VenvyObservableTarget.Constant.CONSTANT_DOWNLOAD_API, downAPI);
-                    trackData.putStringArray("isTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("isTrackLinks")));
-                    trackData.putStringArray("dsTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("dsTrackLinks")));
-                    trackData.putStringArray("dfTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("dfTrackLinks")));
-                    trackData.putStringArray("instTrackLinks", JsonUtil.toStringArray(downloadTrackLink.optJSONArray("instTrackLinks")));
-                    trackData.putString("launchPlanId",jsonObject.optString("launchPlanId"));
+                    trackData.putStringArray("isTrackLinks", toStringArray(downloadTrackLink.optJSONArray("isTrackLinks")));
+                    trackData.putStringArray("dsTrackLinks", toStringArray(downloadTrackLink.optJSONArray("dsTrackLinks")));
+                    trackData.putStringArray("dfTrackLinks",toStringArray(downloadTrackLink.optJSONArray("dfTrackLinks")));
+                    trackData.putStringArray("instTrackLinks", toStringArray(downloadTrackLink.optJSONArray("instTrackLinks")));
+                    trackData.putString("launchPlanId", jsonObject.optString("launchPlanId"));
                     ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_DOWNLOAD_TASK, trackData);
                 } else {
                     // 走Native:widgetNotify()  逻辑
@@ -283,17 +291,17 @@ public class JsBridge implements VenvyObserver {
                             .setWidgetActionType(WidgetInfo.WidgetActionType.ACTION_OPEN_URL)
                             .setUrl("");
                     if (targetType.equalsIgnoreCase("1")) {
-                        builder.setLinkUrl(downAPI);
+                        builder.setLinkUrl(linkData.optString("linkUrl"));
                     } else if (targetType.equalsIgnoreCase("2")) {
-                        builder.setDeepLink(deepLink);
+                        builder.setDeepLink(linkData.optString("deepLink"));
                     }
                     WidgetInfo widgetInfo = builder.build();
-                    if (platform.getWidgetClickListener() != null) {
-                        platform.getWidgetClickListener().onClick(widgetInfo);
+                    if (mPlatform.getWidgetClickListener() != null) {
+                        mPlatform.getWidgetClickListener().onClick(widgetInfo);
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -858,5 +866,15 @@ public class JsBridge implements VenvyObserver {
         }
 
         return jsonObject;
+    }
+
+    private String[] toStringArray(JSONArray array) throws JSONException {
+        if (array == null) return new String[]{};
+
+        String[] args = new String[array.length()];
+        for (int i = 0, len = array.length(); i < len; i++) {
+            args[i] = String.valueOf(array.get(i));
+        }
+        return args;
     }
 }
