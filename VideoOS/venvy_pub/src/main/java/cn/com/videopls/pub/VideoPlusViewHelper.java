@@ -52,6 +52,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
                             int orientationType = Integer.parseInt(bundle.getString(VenvyObservableTarget.KEY_ORIENTATION_TYPE));
                             int appType = Integer.parseInt(bundle.getString(VenvyObservableTarget.Constant.CONSTANT_APP_TYPE));
                             String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
+                            String level = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_LEVEL);
                             if (TextUtils.isEmpty(appletsId)) {
                                 VenvyLog.e("try to launch a vision program , but appletsId is null");
                                 return;
@@ -66,7 +67,7 @@ public class VideoPlusViewHelper implements VenvyObserver {
 
                                 }
                                 if (appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_TOOLS) {
-                                    videoPlusView.launchVisionToolsProgram(appletsId, data); // 请求视联网小工具
+                                    videoPlusView.launchVisionToolsProgram(appletsId, data,level); // 请求视联网小工具
                                 } else {
                                     videoPlusView.launchVisionProgram(appletsId, data, orientationType, appType == VenvyObservableTarget.Constant.CONSTANT_APP_TYPE_H5);
                                 }

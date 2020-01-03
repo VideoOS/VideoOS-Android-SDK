@@ -3,7 +3,6 @@ package cn.com.venvy.common.utils;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
@@ -512,6 +511,6 @@ public class VenvyFileUtil {
 
         PackageManager packageManager = context.getPackageManager();
         PackageInfo pi = packageManager.getPackageArchiveInfo(filePath, 0);
-        return pi.applicationInfo.packageName;
+        return pi != null ? pi.applicationInfo != null ? pi.applicationInfo.packageName : "" : "";
     }
 }

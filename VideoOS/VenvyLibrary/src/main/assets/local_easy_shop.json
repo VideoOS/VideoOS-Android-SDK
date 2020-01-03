@@ -3,22 +3,28 @@
   "data":{
     "hotEditInfor":{
       "isShowAds":true,
-      "hotImage":"http://os-saas-share.videojj.com/dev/app_info/506/8824188c-54b9-4824-9e4d-74e35c996a01.jpeg",
-      "hotTitle":"壹贰叁肆伍陸壹贰叁肆伍陸",
-      "isShowClose":true
+      "isShowClose":true,
+      "hotImage":"https://os-saas-share.videojj.com/pro/os_operation/debug/img/04389837-9181-4eae-860b-38651baa2a52.jpg",
+      "hotTitle":"热点标题0023456"
     },
     "inforEdit":{
-      "preferential":999999.9,
-      "originalPrice":99999.9,
-      "btnTxt":"快来加入购物车",
-      "goodsTag":"限时秒杀",
-      "goodsImage":"http://os-saas-share.videojj.com/dev/app_info/506/3d9d08e9-8dd5-481c-b2d6-3b0f32d9dae0.jpg",
-      "goodsTitle":"ONLY2019秋季新款桔梗气质高腰珠饰A字雪纺连衣裙女连衣裙衣裙",
-      "optionLinkUrl":"https://www.baidu.com"
+      "btnTxt":"加入购物车",
+      "goodsTitle":"003",
+      "goodsImage":"https://os-saas-share.videojj.com/pro/os_operation/debug/img/65946b0b-5ce3-4425-a426-b0ae628e1e6a.jpg",
+      "goodsTag":"004",
+      "preferential":1,
+      "originalPrice":10,
+      "linkData":{
+        "linkUrl":"https://www.baidu.com",
+        "deepLink":"",
+        "selfLink":""
+      }
     },
-    "creativeName":"easy go title",
-    "miniAppId":"14062",
-    "interactionTypeId":"2867"
+    "creativeName":"超级轻松购02",
+    "creativeIdList":[
+      1735,
+      1736
+    ]
   },
   "deviceType":3,
   "duration":10000,
@@ -36,6 +42,9 @@
       "exposureTrackLink":"http://v.admaster.com.cn/i/a122445,b3554599,c3925,i0,m202,8a2,8b3,h"
     }
   ],
+  "miniAppInfo":{
+    "miniAppId":12304
+  },
   "launchPlanId":"103",
   "sumHotspot":1,
   "template":"os_easy_shop_hotspot.lua",

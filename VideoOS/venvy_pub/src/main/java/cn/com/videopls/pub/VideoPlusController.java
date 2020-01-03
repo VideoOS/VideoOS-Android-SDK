@@ -75,6 +75,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     private VideoPlusAdapter mVideoPlusAdapter;
     private VideoPlusBaseModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
+    private VideoAdsHandler videoAdsHandler;
 
     public VideoPlusController(VideoProgramView videoPlusView) {
         mContext = videoPlusView.getContext();
@@ -287,6 +288,7 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.removeAllViews();
             mContentView.setVisibility(View.GONE);
         }
+
     }
 
     void destroy() {
@@ -297,6 +299,9 @@ public abstract class VideoPlusController implements VenvyObserver {
             mPlatform.onDestroy();
         }
         mPlatform = null;
+        if (videoAdsHandler != null) {
+            videoAdsHandler.release();
+        }
     }
 
 
@@ -369,7 +374,6 @@ public abstract class VideoPlusController implements VenvyObserver {
                 .setVideoCategory(provider.getVideoCategory())
                 .setExtendJSONString(provider.getExtendJSONString())
                 .setFileProviderAuth(provider.getFileProviderAuth())
-                .setNotificationIcon(provider.getNotificationIcon())
                 .setAppKey(provider.getAppKey()).setAppSecret(provider.getAppSecret());
         return platformInfoBuilder.builder();
     }
@@ -516,6 +520,24 @@ public abstract class VideoPlusController implements VenvyObserver {
                         }
 
                         finalParams.put("data", paramsJson.toString());
+
+
+                        String level = params.get("level");
+                        if (!TextUtils.isEmpty(level) && level.equalsIgnoreCase("5")) {
+                            // 加载到顶层视图
+                            Bundle bundle = new Bundle();
+                            bundle.putString("template", entranceLua);
+                            String luaId = entranceLua;
+                            if (entranceLua != null && entranceLua.contains(".")) {
+                                luaId = entranceLua.split("\\.")[0];
+                            }
+                            bundle.putString("id", luaId);
+                            bundle.putSerializable("data", finalParams);
+                            ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL, bundle);
+                            return;
+                        }
+
+
                         navigation(builder.build(), finalParams, new IRouterCallback() {
                             @Override
                             public void arrived() {
@@ -741,7 +763,10 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (this.mPlatform == null) {
             this.mPlatform = initPlatform(mVideoPlusAdapter);
         }
-        mQueryAdsModel = new VideoAdsModel(mPlatform, bundle, mPlatform.getPlatformInfo().getNotificationIcon(), mPlatform.getPlatformInfo().getFileProviderAuth());
-        mQueryAdsModel.startRequest();
+        if (videoAdsHandler == null) {
+            videoAdsHandler = new VideoAdsHandler(mPlatform);
+        }
+        videoAdsHandler.initData(bundle, mPlatform.getPlatformInfo().getFileProviderAuth());
+        videoAdsHandler.execDownloadTask();
     }
 }
