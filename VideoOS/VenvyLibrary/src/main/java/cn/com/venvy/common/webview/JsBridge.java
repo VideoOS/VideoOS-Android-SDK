@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 
@@ -26,6 +27,12 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.common.bean.PlatformUserInfo;
 import cn.com.venvy.common.bean.WidgetInfo;
 import cn.com.venvy.common.exception.LoginException;
+import cn.com.venvy.common.http.HttpRequest;
+import cn.com.venvy.common.http.RequestFactory;
+import cn.com.venvy.common.http.base.BaseRequestConnect;
+import cn.com.venvy.common.http.base.IRequestHandler;
+import cn.com.venvy.common.http.base.IResponse;
+import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.interf.ICallJsFunction;
 import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
@@ -38,6 +45,7 @@ import cn.com.venvy.common.utils.VenvyBase64;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyMD5Util;
+import cn.com.venvy.common.utils.VenvyMapUtil;
 import cn.com.venvy.common.utils.VenvyPreferenceHelper;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -51,6 +59,8 @@ public class JsBridge implements VenvyObserver {
     protected IPlatformLoginInterface mPlatformLoginInterface;
     private Map<String, List<String>> jsMap = new HashMap<>();
     private ICallJsFunction mCallJsFunction;
+    //网络请求类
+    private BaseRequestConnect mBaseRequestConnect;
     protected Context mContext;
     protected String ssid = System.currentTimeMillis() + "";
     private WebViewCloseListener mWebViewCloseListener;
@@ -98,6 +108,15 @@ public class JsBridge implements VenvyObserver {
         mPlatformLoginInterface = platformLoginInterface;
     }
 
+    /***
+     * 获取网络RequestConnect
+     * @return
+     */
+    @NonNull
+    public BaseRequestConnect getRequestConnect() {
+        return mBaseRequestConnect;
+    }
+
     @JavascriptInterface
     public void commonData(String jsParams) {
         int screenHeight = VenvyUIUtil.getScreenHeight(mContext);
@@ -123,6 +142,67 @@ public class JsBridge implements VenvyObserver {
 
         }
         callJsFunction(obj.toString(), jsParams);
+    }
+
+    /***
+     * 网络请求
+     * @param jsParams
+     */
+    @JavascriptInterface
+    public void network(final String jsParams) {
+        if (mPlatform == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(jsParams)) {
+            return;
+        }
+        try {
+            JSONObject jsJsonObj = new JSONObject(jsParams);
+            String url = jsJsonObj.optString("url");
+            String method = jsJsonObj.optString("method");
+            Map<String, String> param = VenvyMapUtil.jsonToMap(jsJsonObj.optString("param"));
+            if (TextUtils.isEmpty(url)) {
+                return;
+            }
+            if (mBaseRequestConnect == null) {
+                mBaseRequestConnect = RequestFactory.initConnect(mPlatform);
+            }
+            Request request;
+            if (TextUtils.equals(method, "post")) {
+                request = HttpRequest.post(url, param);
+            } else {
+                request = HttpRequest.get(url, param);
+            }
+            mBaseRequestConnect.connect(request, new IRequestHandler() {
+                @Override
+                public void requestFinish(Request request, IResponse response) {
+                    if (response.isSuccess()) {
+                        String result = response.getResult();
+                        callJsFunction(result, jsParams);
+                    } else {
+                        requestError(request, new Exception("http not successful"));
+                    }
+                }
+
+                @Override
+                public void requestError(Request request, @Nullable Exception e) {
+                    callJsFunction(e != null && e.getMessage() != null ? e.getMessage() : "unkown error", jsParams);
+                }
+
+                @Override
+                public void startRequest(Request request) {
+
+                }
+
+                @Override
+                public void requestProgress(Request request, int progress) {
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @JavascriptInterface
