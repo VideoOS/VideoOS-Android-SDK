@@ -108,6 +108,15 @@ public class JsBridge implements VenvyObserver {
         mPlatformLoginInterface = platformLoginInterface;
     }
 
+    /***
+     * 获取网络RequestConnect
+     * @return
+     */
+    @NonNull
+    public BaseRequestConnect getRequestConnect() {
+        return mBaseRequestConnect;
+    }
+
     @JavascriptInterface
     public void commonData(String jsParams) {
         int screenHeight = VenvyUIUtil.getScreenHeight(mContext);
