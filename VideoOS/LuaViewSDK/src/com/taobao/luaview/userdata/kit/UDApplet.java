@@ -227,7 +227,6 @@ public class UDApplet extends BaseLuaTable {
                         String targetType = jsonObject.optString("targetType");
                         JSONObject linkData = jsonObject.optJSONObject("linkData");
                         String downAPI = jsonObject.optString("downloadApkUrl");
-                        String deepLink = linkData.optString("deepLink");
                         // targetType  1 落地页 2 deepLink 3 下载
                         if (targetType.equalsIgnoreCase("3")) {
                             JSONObject downloadTrackLink = jsonObject.optJSONObject("downloadTrackLink");
@@ -245,9 +244,9 @@ public class UDApplet extends BaseLuaTable {
                                     .setWidgetActionType(WidgetInfo.WidgetActionType.ACTION_OPEN_URL)
                                     .setUrl("");
                             if (targetType.equalsIgnoreCase("1")) {
-                                builder.setLinkUrl(downAPI);
+                                builder.setLinkUrl(linkData.optString("linkUrl"));
                             } else if (targetType.equalsIgnoreCase("2")) {
-                                builder.setDeepLink(deepLink);
+                                builder.setDeepLink(linkData.optString("deepLink"));
                             }
                             WidgetInfo widgetInfo = builder.build();
                             if (platform.getWidgetClickListener() != null) {
