@@ -796,6 +796,51 @@ local function createDesktopAdView(cell, section, row)
     cell.adContentLayout:addView(cell.adContentTitleBgView)
 end
 
+local function listDataReplaceClickid(array, clickid)
+    if(array == nil or clickid == nil) then
+        return
+    end
+    for i, v in ipairs(array) do
+        if (v ~= nil and string.find(v, "__CLICK_ID__") ~= nil) then
+            array[i] = string.gsub(v, "__CLICK_ID__", clickid)
+        end
+    end
+end
+
+local function getDownloadInfo(callback)
+    local requestId = desktopWindow.request:get(desktopWindow.desktopAdInfo.linkData.linkUrl, nil, function(response, errorInfo)
+        if (response == nil) then
+            return
+        end
+
+        local clickid = response.clickid
+        local dstlink = response.dstlink
+
+        if(desktopWindow.desktopAdInfo.downloadTrackLink ~= nil) then
+            listDataReplaceClickid(desktopWindow.desktopAdInfo.downloadTrackLink.isTrackLinks,clickid)
+        end
+
+        if(desktopWindow.desktopAdInfo.downloadTrackLink.dsTrackLinks ~= nil) then
+            listDataReplaceClickid(desktopWindow.desktopAdInfo.downloadTrackLink.dsTrackLinks,clickid)
+        end
+
+        if(desktopWindow.desktopAdInfo.downloadTrackLink.dfTrackLinks ~= nil) then
+            listDataReplaceClickid(desktopWindow.desktopAdInfo.downloadTrackLink.dfTrackLinks,clickid)
+        end
+
+        if(desktopWindow.desktopAdInfo.downloadTrackLink.instTrackLinks ~= nil) then
+            listDataReplaceClickid(desktopWindow.desktopAdInfo.downloadTrackLink.instTrackLinks,clickid)
+        end
+
+        if(dstlink ~= nil) then
+            desktopWindow.desktopAdInfo.downloadApkUrl = dstlink
+            if(Applet.openAds) then
+                Applet:openAds(desktopWindow.desktopAdInfo)
+            end
+        end
+    end)
+end
+
 local function setDesktopAdViewSize(cell, section, row)
 
     local adContentLayoutX = desktopWindow.landscapeWidth * 0.0804
@@ -855,7 +900,13 @@ local function setDesktopAdViewSize(cell, section, row)
             end
             desktopWindow.desktopAdInfo.launchPlanId = desktopWindow.launchPlanId
 
-            Applet:openAds(desktopWindow.desktopAdInfo)
+            if(System.android() and desktopWindow.desktopAdInfo.targetType == 3) then
+                getDownloadInfo()
+            else
+                if(Applet.openAds) then
+                    Applet:openAds(desktopWindow.desktopAdInfo)
+                end
+            end
         end
     end)
 end
@@ -1047,20 +1098,14 @@ local function getRecentRecommendDesktopInfo(callback)
     local paramDataString = Native:tableToJson(paramData)
     local OS_HTTP_GET_COUPON_RED_PACKET = Native:videoOShost() .. "/vision/deskMiniApps/list"
     local OS_HTTP_PUBLIC_KEY = Native:appSecret()
-    print("request params : ",paramDataString)
     local requestId = desktopWindow.request:post(OS_HTTP_GET_COUPON_RED_PACKET, {
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
     }, function(response, errorInfo)
         if (response == nil) then
             return
         end
-        print("response encrypt before",response.encryptData)
-
-        print("error info ",errorInfo)
         responseData = Native:aesDecrypt(response.encryptData, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
-        print("LuaResponse:"  .. type(responseData))
         response = toTable(responseData)
-        print("responseresponse:"  .. type(response))
         if (response.resCode ~= "00") then
             return
         end
@@ -1096,7 +1141,6 @@ local function getAdDesktopInfo(callback)
             return
         end
         responseData = Native:aesDecrypt(response.encryptData, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
---        print("AdDesktopInfo LuaResponse:" .. responseData)
         response = toTable(responseData)
         if (response.resCode ~= "00") then
             return
@@ -1141,10 +1185,12 @@ function show(args)
     -- 获取最近使用
     getRecentRecommendDesktopInfo(function()
         onCreate()
-        getAdDesktopInfo(function()
-            if(desktopWindow.desktopScrollview ~= nil) then
-                desktopWindow.desktopScrollview:reload()
-            end
-        end)
+        if(Applet.openAds) then
+            getAdDesktopInfo(function()
+                if(desktopWindow.desktopScrollview ~= nil) then
+                    desktopWindow.desktopScrollview:reload()
+                end
+            end)
+        end
     end)
 end
