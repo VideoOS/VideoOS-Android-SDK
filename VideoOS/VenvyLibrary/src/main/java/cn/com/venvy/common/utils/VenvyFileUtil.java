@@ -3,8 +3,10 @@ package cn.com.venvy.common.utils;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -513,4 +515,56 @@ public class VenvyFileUtil {
         PackageInfo pi = packageManager.getPackageArchiveInfo(filePath, 0);
         return pi != null ? pi.applicationInfo != null ? pi.applicationInfo.packageName : "" : "";
     }
+
+
+    /**
+     * 获取APK图标
+     *
+     * @param context
+     * @param apkPath
+     * @return
+     */
+    public static Drawable getApkIcon(Context context, String apkPath) {
+
+        PackageManager packageManager = context.getPackageManager();
+        PackageInfo pi = packageManager.getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
+
+        if (pi != null) {
+            ApplicationInfo appInfo = pi.applicationInfo;
+            appInfo.sourceDir = apkPath;
+            appInfo.publicSourceDir = apkPath;
+            try {
+                return appInfo.loadIcon(packageManager);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 获取APK名称
+     *
+     * @param context
+     * @param apkPath
+     * @return
+     */
+    public static String getApkLabel(Context context, String apkPath) {
+        PackageManager packageManager = context.getPackageManager();
+        PackageInfo pi = packageManager.getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
+
+        if (pi != null) {
+            ApplicationInfo appInfo = pi.applicationInfo;
+            appInfo.sourceDir = apkPath;
+            appInfo.publicSourceDir = apkPath;
+            try {
+                return appInfo.loadLabel(packageManager).toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
+    }
+
 }
