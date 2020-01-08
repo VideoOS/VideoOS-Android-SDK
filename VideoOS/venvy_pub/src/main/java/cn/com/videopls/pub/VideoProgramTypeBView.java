@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.com.venvy.CacheConstants;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
@@ -196,6 +197,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
      * @param url
      */
     public void startH5(String url, String developerUserId) {
+        if (currentH5Program == null) return;
         currentH5Program.addDeveloperUserIdToJsBridge(developerUserId);
         currentH5Program.setWebViewCloseListener(new VideoWebToolBarView.WebViewCloseListener() {
             @Override
@@ -219,6 +221,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
         if (!TextUtils.isEmpty(appletId)) {
             VideoProgramToolBarView programView = programMap.get(appletId);
             if (programView != null) {
+                programView.closed(appletId);
                 if (needAnimation) {
                     doExitAnimation(programView);
                 } else {
@@ -261,8 +264,13 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
             doExitAnimation(item);
         }
         h5ProgramMap.clear();
-
+        CacheConstants.setDeveloperId("");
         setClickable(false);
+
+        if (currentProgram != null) {
+            currentProgram.closed(currentProgramId);
+        }
+
     }
 
     /**
@@ -327,8 +335,8 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     public void onScreenChanged(boolean isHorizontal) {
         setVisibility(isHorizontal ? VISIBLE : GONE);
 
-        if(h5ProgramMap.size() > 0){
-            for(VideoWebToolBarView webToolBarView: h5ProgramMap.values()){
+        if (h5ProgramMap.size() > 0) {
+            for (VideoWebToolBarView webToolBarView : h5ProgramMap.values()) {
                 webToolBarView.onScreenChanged(isHorizontal);
             }
         }
@@ -345,27 +353,30 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
     @Override
     public void notifyChanged(VenvyObservable observable, String tag, Bundle bundle) {
         if (VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_VISION_PROGRAM.equals(tag)) {
-            String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
-            String template = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TEMPLATE);
-            String templateId = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_ID);
-            String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
-            if (programMap.containsKey(appletId)) {
-                VideoProgramToolBarView existView = programMap.get(appletId);
+            if (bundle != null) {
+                String appletId = bundle.getString(VenvyObservableTarget.KEY_APPLETS_ID);
+                String template = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_TEMPLATE);
+                String templateId = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_ID);
+                String data = bundle.getString(VenvyObservableTarget.Constant.CONSTANT_DATA);
+                if (programMap.containsKey(appletId)) {
+                    VideoProgramToolBarView existView = programMap.get(appletId);
 
 
-                if (existView.isIncludeId(templateId)) {
-                    // 当前已加载过对应lua脚本，把对应的lua脚本更新到顶层
-                    existView.bringToFront();
-                    existView.notifyLua(data);
-                    currentProgram = existView;
-                    // TODO :  notify lua script refresh
-                } else {
-                    // 如果没有加载过对应的lua,去加载
-                    existView.launchLuaScript(template, templateId, data);
+                    if (existView.isIncludeId(templateId)) {
+                        // 当前已加载过对应lua脚本，把对应的lua脚本更新到顶层
+                        existView.bringToFront();
+                        existView.notifyLua(data);
+                        currentProgram = existView;
+                        // TODO :  notify lua script refresh
+                    } else {
+                        // 如果没有加载过对应的lua,去加载
+                        existView.launchLuaScript(template, templateId, data);
+                    }
+
+
                 }
-
-
             }
+
         }
     }
 }

@@ -3,6 +3,7 @@ package cn.com.videopls.pub;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -127,6 +128,15 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         }
     }
 
+    /**
+     * 开始下载第三方广告资源
+     */
+    public void startDownloadRequest(Bundle bundle){
+        if(programViewA != null){
+            programViewA.startDownloadAdsRes(bundle);
+        }
+    }
+
 
     /**
      * 展示视联网小程序异常情况
@@ -219,11 +229,12 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     /**
      * 拉起一个视联网小工具
      */
-    public void launchVisionToolsProgram(String miniAppId, String data) {
+    public void launchVisionToolsProgram(String miniAppId, String data,String level) {
         if (programViewA != null) {
             HashMap<String, String> params = new HashMap<>();
             params.put("miniAppId", miniAppId);
             params.put("data", data);
+            params.put("level", level);
             programViewA.startService(ServiceType.ServiceTypeVideoTools, params, null);
         }
     }

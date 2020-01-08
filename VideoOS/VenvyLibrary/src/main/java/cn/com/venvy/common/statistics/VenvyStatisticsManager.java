@@ -21,6 +21,8 @@ public final class VenvyStatisticsManager {
     public static final int VISUAL_SWITCH_COUNT = 3;
     public static final int PLAY_CONFIRM = 4;
     public static final int PRELOAD_FLOW = 5;
+    public static final int OPEN_PAGE = 6;
+    public static final int CLOSE_PAGE = 7;
 
     private Platform platform;
     private VenvyStatisticsManager() {
@@ -53,6 +55,8 @@ public final class VenvyStatisticsManager {
             submitPlayConfirmStatisticsInfo(jsonObj);
         }else if (VenvyStatisticsManager.PRELOAD_FLOW == type) {
             submitPreLoadFlowStatisticsInfo(jsonObj);
+        }else if (VenvyStatisticsManager.OPEN_PAGE == type || VenvyStatisticsManager.CLOSE_PAGE == type) {
+            executeThread(jsonObj.toString());
         }
     }
 

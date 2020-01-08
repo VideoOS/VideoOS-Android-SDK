@@ -90,9 +90,9 @@ public class LVEventPlugin {
                     // 如果过来的uri中不带miniAppId，则需要尝试去table中找miniAppId put进 map里
                     try {
                         JSONObject jsonObject = new JSONObject(JsonUtil.toString(table));
-                        JSONObject miniAppInfo = jsonObject.getJSONObject("miniAppInfo");
+                        JSONObject miniAppInfo = jsonObject.optJSONObject("miniAppInfo");
                         if(miniAppInfo != null){
-                            String miniAppId = miniAppInfo.getString("miniAppId");
+                            String miniAppId = miniAppInfo.optString("miniAppId");
                             if(!TextUtils.isEmpty(miniAppId)){
                                 map.put("miniAppId",miniAppId);
                             }

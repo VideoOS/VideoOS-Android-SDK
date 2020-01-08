@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +28,12 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.common.bean.PlatformUserInfo;
 import cn.com.venvy.common.bean.WidgetInfo;
 import cn.com.venvy.common.exception.LoginException;
+import cn.com.venvy.common.http.HttpRequest;
+import cn.com.venvy.common.http.RequestFactory;
+import cn.com.venvy.common.http.base.BaseRequestConnect;
+import cn.com.venvy.common.http.base.IRequestHandler;
+import cn.com.venvy.common.http.base.IResponse;
+import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.interf.ICallJsFunction;
 import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
@@ -33,11 +41,13 @@ import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.observer.VenvyObserver;
+import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyBase64;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyMD5Util;
+import cn.com.venvy.common.utils.VenvyMapUtil;
 import cn.com.venvy.common.utils.VenvyPreferenceHelper;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -51,6 +61,8 @@ public class JsBridge implements VenvyObserver {
     protected IPlatformLoginInterface mPlatformLoginInterface;
     private Map<String, List<String>> jsMap = new HashMap<>();
     private ICallJsFunction mCallJsFunction;
+    //网络请求类
+    private BaseRequestConnect mBaseRequestConnect;
     protected Context mContext;
     protected String ssid = System.currentTimeMillis() + "";
     private WebViewCloseListener mWebViewCloseListener;
@@ -98,6 +110,15 @@ public class JsBridge implements VenvyObserver {
         mPlatformLoginInterface = platformLoginInterface;
     }
 
+    /***
+     * 获取网络RequestConnect
+     * @return
+     */
+    @NonNull
+    public BaseRequestConnect getRequestConnect() {
+        return mBaseRequestConnect;
+    }
+
     @JavascriptInterface
     public void commonData(String jsParams) {
         int screenHeight = VenvyUIUtil.getScreenHeight(mContext);
@@ -123,6 +144,163 @@ public class JsBridge implements VenvyObserver {
 
         }
         callJsFunction(obj.toString(), jsParams);
+    }
+
+    /***
+     * 网络请求
+     * @param jsParams
+     */
+    @JavascriptInterface
+    public void network(final String jsParams) {
+        if (mPlatform == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(jsParams)) {
+            return;
+        }
+        try {
+            JSONObject msgJsonObj = new JSONObject(jsParams);
+            if (msgJsonObj == null) {
+                return;
+            }
+            JSONObject jsJsonObj = msgJsonObj.optJSONObject("msg");
+            if (jsJsonObj == null) {
+                return;
+            }
+            String url = jsJsonObj.optString("url");
+            String method = jsJsonObj.optString("method");
+            Map<String, String> param = VenvyMapUtil.jsonToMap(jsJsonObj.optString("param"));
+            if (TextUtils.isEmpty(url)) {
+                return;
+            }
+            if (mBaseRequestConnect == null) {
+                mBaseRequestConnect = RequestFactory.initConnect(mPlatform);
+            }
+            Request request;
+            if (TextUtils.equals(method, "post")) {
+                request = HttpRequest.post(url, param);
+            } else {
+                request = HttpRequest.get(url, param);
+            }
+            mBaseRequestConnect.connect(request, new IRequestHandler() {
+                @Override
+                public void requestFinish(Request request, IResponse response) {
+                    if (response.isSuccess()) {
+                        String result = response.getResult();
+                        try {
+                            JSONObject obj = new JSONObject(result);
+                            callJsFunction(obj.toString(), jsParams);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        requestError(request, new Exception("http not successful"));
+                    }
+                }
+
+                @Override
+                public void requestError(Request request, @Nullable Exception e) {
+                    try {
+                        JSONObject object = new JSONObject(e != null && e.getMessage() != null ? e.getMessage() : "unkown error");
+                        callJsFunction(object.toString(), jsParams);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void startRequest(Request request) {
+
+                }
+
+                @Override
+                public void requestProgress(Request request, int progress) {
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /***
+     * 统计通用追踪
+     * @param jsParams
+     */
+    @JavascriptInterface
+    public void commonTrack(final String jsParams) {
+        if (TextUtils.isEmpty(jsParams)) {
+            return;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(jsParams);
+            if (jsonObject == null) {
+                return;
+            }
+            JSONObject msgObject = jsonObject.optJSONObject("msg");
+            if (msgObject == null) {
+                return;
+            }
+            Integer type = msgObject.optInt("type");
+            String data = msgObject.optString("data");
+            VenvyStatisticsManager.getInstance().submitCommonTrack(type, new JSONObject(data));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /***
+     * 打开广告
+     * @param jsParams
+     */
+    @JavascriptInterface
+    public void openAds(String jsParams) {
+        if (mPlatform == null) {
+            return;
+        }
+        if (TextUtils.isEmpty(jsParams))
+            return;
+        try {
+            JSONObject msgObject = new JSONObject(jsParams);
+            JSONObject jsonObject = msgObject.optJSONObject("msg");
+            if (jsonObject == null) {
+                return;
+            }
+            if (jsonObject.has("targetType")) {
+                String targetType = jsonObject.optString("targetType");
+                JSONObject linkData = jsonObject.optJSONObject("linkData");
+                String downAPI = jsonObject.optString("downloadApkUrl");
+                // targetType  1 落地页 2 deepLink 3 下载
+                if (targetType.equalsIgnoreCase("3")) {
+                    JSONObject downloadTrackLink = jsonObject.optJSONObject("downloadTrackLink");
+                    Bundle trackData = new Bundle();
+                    trackData.putString(VenvyObservableTarget.Constant.CONSTANT_DOWNLOAD_API, downAPI);
+                    trackData.putStringArray("isTrackLinks", toStringArray(downloadTrackLink.optJSONArray("isTrackLinks")));
+                    trackData.putStringArray("dsTrackLinks", toStringArray(downloadTrackLink.optJSONArray("dsTrackLinks")));
+                    trackData.putStringArray("dfTrackLinks",toStringArray(downloadTrackLink.optJSONArray("dfTrackLinks")));
+                    trackData.putStringArray("instTrackLinks", toStringArray(downloadTrackLink.optJSONArray("instTrackLinks")));
+                    trackData.putString("launchPlanId", jsonObject.optString("launchPlanId"));
+                    ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_DOWNLOAD_TASK, trackData);
+                } else {
+                    // 走Native:widgetNotify()  逻辑
+                    WidgetInfo.Builder builder = new WidgetInfo.Builder()
+                            .setWidgetActionType(WidgetInfo.WidgetActionType.ACTION_OPEN_URL)
+                            .setUrl("");
+                    if (targetType.equalsIgnoreCase("1")) {
+                        builder.setLinkUrl(linkData.optString("linkUrl"));
+                    } else if (targetType.equalsIgnoreCase("2")) {
+                        builder.setDeepLink(linkData.optString("deepLink"));
+                    }
+                    WidgetInfo widgetInfo = builder.build();
+                    if (mPlatform.getWidgetClickListener() != null) {
+                        mPlatform.getWidgetClickListener().onClick(widgetInfo);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @JavascriptInterface
@@ -685,5 +863,15 @@ public class JsBridge implements VenvyObserver {
         }
 
         return jsonObject;
+    }
+
+    private String[] toStringArray(JSONArray array) throws JSONException {
+        if (array == null) return new String[]{};
+
+        String[] args = new String[array.length()];
+        for (int i = 0, len = array.length(); i < len; i++) {
+            args[i] = String.valueOf(array.get(i));
+        }
+        return args;
     }
 }

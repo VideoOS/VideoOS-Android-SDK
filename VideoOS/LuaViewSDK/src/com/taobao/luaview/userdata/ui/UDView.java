@@ -340,6 +340,14 @@ public class UDView<T extends View> extends BaseUserdata {
         return this;
     }
 
+    public UDView setLayerType(int type) {
+        T view = getView();
+        if (view != null) {
+            view.setLayerType(type, null);
+        }
+        return this;
+    }
+
     /**
      * 边框宽度
      *
@@ -1174,7 +1182,7 @@ public class UDView<T extends View> extends BaseUserdata {
                     }
                 }
 
-                if(!LuaUtil.isValid(UDView.this.mOnClick) && !LuaUtil.isValid(UDView.this.mOnLongClick)){
+                if (!LuaUtil.isValid(UDView.this.mOnClick) && !LuaUtil.isValid(UDView.this.mOnLongClick)) {
                     return false;
                 }
 
