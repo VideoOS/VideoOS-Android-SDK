@@ -87,7 +87,6 @@ public class VideoAdsHandler extends BroadcastReceiver implements VenvyObserver 
         launchPlanId = bundle.getString("launchPlanId"); // 投放计划id
         this.fileProviderAuthorities = fileProviderAuthorities;
 
-        VenvyStatisticsManager.getInstance().init(platform);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_INSTALL_START, this);
     }
 

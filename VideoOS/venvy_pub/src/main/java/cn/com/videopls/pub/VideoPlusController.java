@@ -771,10 +771,6 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     public void trackPageTime(boolean isOpen, String appletId) {
-        if (mPlatform == null) {
-            mPlatform = initPlatform(mVideoPlusAdapter);
-        }
-        VenvyStatisticsManager.getInstance().init(mPlatform);
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("type", isOpen ? String.valueOf(VenvyStatisticsManager.OPEN_PAGE) : String.valueOf(VenvyStatisticsManager.CLOSE_PAGE));
