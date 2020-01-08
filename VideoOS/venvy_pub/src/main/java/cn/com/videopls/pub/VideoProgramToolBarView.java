@@ -96,7 +96,6 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
                 }
             }
         });
-
         initVideoProgramView();
 
         ivBack.setVisibility(INVISIBLE);
@@ -130,6 +129,7 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
             errorContent.setVisibility(GONE);
             startLoadingAnimation();
             videoProgramView.startVision(appletId, data, type, false, this);
+            videoProgramView.getController().trackPageTime(true,appletId);
         } else {
             this.currentAppletId = appletId;
             retryContent.setVisibility(VISIBLE);
@@ -288,5 +288,9 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM, bundle);
         }
         cancelLoadingAnimation();
+    }
+
+    public void closed(String appletId){
+        videoProgramView.getController().trackPageTime(false,appletId);
     }
 }

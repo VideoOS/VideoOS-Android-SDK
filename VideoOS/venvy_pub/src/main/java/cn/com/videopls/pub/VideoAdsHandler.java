@@ -7,7 +7,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+
+import com.taobao.luaview.util.DrawableUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,12 +87,11 @@ public class VideoAdsHandler extends BroadcastReceiver implements VenvyObserver 
         launchPlanId = bundle.getString("launchPlanId"); // 投放计划id
         this.fileProviderAuthorities = fileProviderAuthorities;
 
-        VenvyStatisticsManager.getInstance().init(platform);
         ObservableManager.getDefaultObserable().addObserver(VenvyObservableTarget.TAG_INSTALL_START, this);
     }
 
 
-    private void initNotification() {
+    private void initNotification(String fileName) {
         Context context = platform.getContentViewGroup().getContext();
         if (notificationManager == null) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -104,7 +107,7 @@ public class VideoAdsHandler extends BroadcastReceiver implements VenvyObserver 
                         .setSmallIcon(notificationIconRes)
                         .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), notificationIconRes))
                         .setAutoCancel(false)
-                        .setContentTitle("开始下载")
+                        .setContentTitle("开始下载 " + fileName)
                         .setContentText("准备下载")
                         .setProgress(100, 0, false);
                 notification = builderO.build();
@@ -136,7 +139,8 @@ public class VideoAdsHandler extends BroadcastReceiver implements VenvyObserver 
         if (mDownloadTaskRunner == null) {
             mDownloadTaskRunner = new DownloadTaskRunner(platform);
         }
-        final String filePath = VenvyFileUtil.getCachePath(platform.getContentViewGroup().getContext()) + LUA_CACHE_PATH + File.separator + Uri.parse(downloadAPI).getLastPathSegment();
+        final String fileName = Uri.parse(downloadAPI).getLastPathSegment();
+        final String filePath = VenvyFileUtil.getCachePath(platform.getContentViewGroup().getContext()) + LUA_CACHE_PATH + File.separator + fileName;
         VenvyLog.d("download to : " + filePath);
         DownloadTask downloadTask = new DownloadTask(platform.getContentViewGroup().getContext(), downloadAPI, filePath, true);
         mDownloadTaskRunner.startTask(downloadTask, new TaskListener<DownloadTask, Boolean>() {
@@ -150,7 +154,7 @@ public class VideoAdsHandler extends BroadcastReceiver implements VenvyObserver 
                 VenvyLog.d("onTaskStart");
                 trackToVideoOS("4");
                 uploadTrack(dsTrackLinks); //  开始下载上报track
-                initNotification();
+                initNotification(fileName);
             }
 
             @Override
@@ -187,15 +191,20 @@ public class VideoAdsHandler extends BroadcastReceiver implements VenvyObserver 
                 notifyIntent.putExtra("filePath", filePath);
                 notifyIntent.putExtra("fileProvider", fileProviderAuthorities);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(platform.getContentViewGroup().getContext(), 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                Drawable icon = VenvyFileUtil.getApkIcon(platform.getContentViewGroup().getContext(), filePath);
+                Bitmap largeIcon = icon == null ? BitmapFactory.decodeResource(platform.getContentViewGroup().getContext().getResources(), notificationIconRes) : DrawableUtil.drawableToBitmap(icon);
+                String fileLabel = VenvyFileUtil.getApkLabel(platform.getContentViewGroup().getContext(), filePath);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    notification = builderO.setContentTitle("下载完成")
+                    notification = builderO.setContentTitle("下载完成 " + fileLabel)
                             .setContentText("点击安装")
                             .setAutoCancel(true)
+                            .setLargeIcon(largeIcon)
                             .setContentIntent(pendingIntent).build();
                 } else {
-                    notification = builder.setContentTitle("下载完成")
+                    notification = builder.setContentTitle("下载完成 " + fileLabel)
                             .setContentText("点击安装")
                             .setAutoCancel(true)
+                            .setLargeIcon(largeIcon)
                             .setContentIntent(pendingIntent).build();
                 }
 
@@ -244,7 +253,7 @@ public class VideoAdsHandler extends BroadcastReceiver implements VenvyObserver 
         }
     }
 
-    private void registerAppReceiver(String filePath) {
+    private void registerAppReceiver(final String filePath) {
         String filePackageName = VenvyFileUtil.getPackageNameByApkFile(platform.getContentViewGroup().getContext(), filePath);
 
         if (TextUtils.isEmpty(filePackageName)) return;
@@ -259,6 +268,13 @@ public class VideoAdsHandler extends BroadcastReceiver implements VenvyObserver 
                 uploadTrack(instTrackLinks);
                 trackToVideoOS("7");
                 VenvyLog.d("onAppInstall track: " + packageName);
+
+                // delete installed file
+                File file = new File(filePath);
+                if (file.exists()) {
+                    file.delete();
+                }
+
             }
 
             @Override

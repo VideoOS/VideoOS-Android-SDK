@@ -263,11 +263,8 @@ public class JsBridge implements VenvyObserver {
             return;
         try {
             JSONObject msgObject = new JSONObject(jsParams);
-            if (msgObject == null) {
-                return;
-            }
             JSONObject jsonObject = msgObject.optJSONObject("msg");
-            if (msgObject == null) {
+            if (jsonObject == null) {
                 return;
             }
             if (jsonObject.has("targetType")) {
