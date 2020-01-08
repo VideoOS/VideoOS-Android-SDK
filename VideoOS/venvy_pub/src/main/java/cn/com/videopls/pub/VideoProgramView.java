@@ -125,20 +125,20 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
         }
     }
 
-    public void setAppletListener(@NonNull IAppletListener appletListener){
-        if(controller != null){
+    public void setAppletListener(@NonNull IAppletListener appletListener) {
+        if (controller != null) {
             controller.setAppletListener(appletListener);
         }
     }
 
-    public void startVision(String appletId, String data, int type,boolean isH5Type,final IRouterCallback callback) {
+    public void startVision(String appletId, String data, int type, boolean isH5Type, final IRouterCallback callback) {
         if (controller != null) {
-            controller.startVisionProgram(appletId, data, type,isH5Type,callback);
+            controller.startVisionProgram(appletId, data, type, isH5Type, callback);
             refreshRecentHistory(appletId);
         }
     }
 
-    public void refreshRecentHistory(String appletId){
+    public void refreshRecentHistory(String appletId) {
         controller.refreshRecentHistory(appletId);
     }
 
@@ -158,7 +158,11 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
         return count;
     }
 
-    public void startDownloadAdsRes(Bundle bundle){
+    public void startDownloadAdsRes(Bundle bundle) {
         controller.downloadAdsRes(bundle);
+    }
+
+    public T getController() {
+        return controller;
     }
 }

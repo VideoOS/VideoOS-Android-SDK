@@ -769,4 +769,19 @@ public abstract class VideoPlusController implements VenvyObserver {
         videoAdsHandler.initData(bundle, mPlatform.getPlatformInfo().getFileProviderAuth());
         videoAdsHandler.execDownloadTask();
     }
+
+    public void trackPageTime(boolean isOpen, String appletId) {
+        if (mPlatform == null) {
+            mPlatform = initPlatform(mVideoPlusAdapter);
+        }
+        VenvyStatisticsManager.getInstance().init(mPlatform);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("type", isOpen ? String.valueOf(VenvyStatisticsManager.OPEN_PAGE) : String.valueOf(VenvyStatisticsManager.CLOSE_PAGE));
+            jsonObject.put("appletId", appletId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        VenvyStatisticsManager.getInstance().submitCommonTrack(isOpen ? VenvyStatisticsManager.OPEN_PAGE : VenvyStatisticsManager.CLOSE_PAGE, jsonObject);
+    }
 }

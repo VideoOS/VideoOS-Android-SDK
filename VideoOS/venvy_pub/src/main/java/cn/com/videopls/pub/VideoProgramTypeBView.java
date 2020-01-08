@@ -222,6 +222,7 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
         if (!TextUtils.isEmpty(appletId)) {
             VideoProgramToolBarView programView = programMap.get(appletId);
             if (programView != null) {
+                programView.closed(appletId);
                 if (needAnimation) {
                     doExitAnimation(programView);
                 } else {
@@ -266,6 +267,11 @@ public class VideoProgramTypeBView extends FrameLayout implements VenvyObserver 
         h5ProgramMap.clear();
         CacheConstants.setDeveloperId("");
         setClickable(false);
+
+        if (currentProgram != null) {
+            currentProgram.closed(currentProgramId);
+        }
+
     }
 
     /**
