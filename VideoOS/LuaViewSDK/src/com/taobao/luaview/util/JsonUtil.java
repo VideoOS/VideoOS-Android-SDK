@@ -11,6 +11,10 @@ package com.taobao.luaview.util;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.luaj.vm2.LuaBoolean;
+import org.luaj.vm2.LuaDouble;
+import org.luaj.vm2.LuaInteger;
+import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
@@ -89,14 +93,14 @@ public class JsonUtil {
                             if (value.istable()) {
                                 obj.put(key, toJSON((LuaTable) value));
                             } else {
-                                if (value.isboolean()) {
+                                if (value instanceof LuaBoolean) {
                                     obj.put(key, value.optboolean(false));
-                                } else if (value.isstring()) {
-                                    obj.put(key, value.optstring(null));
-                                } else if (value.isint()) {
+                                } else if (value instanceof LuaInteger) {
                                     obj.put(key, value.optint(0));
-                                } else if (value.islong()) {
+                                } else if (value instanceof LuaDouble) {
                                     obj.put(key, value.optlong(0L));
+                                } else if (value instanceof LuaString) {
+                                    obj.put(key, value.optstring(null));
                                 } else {
                                     obj.put(key, value);
                                 }
