@@ -31,7 +31,7 @@ public class ImageLoadResultAdapter implements IImageLoaderResult {
         if (mImageLoaderResult != null) {
             mImageLoaderResult.loadFailure(imageView, url, e);
         }
-        Report.report(Report.ReportLevel.w, ImageLoadResultAdapter.class.getName(), buildReportString(e, url));
+//        Report.report(Report.ReportLevel.w, ImageLoadResultAdapter.class.getName(), buildReportString(e, url));
     }
 
     private static String buildReportString(Exception exception, String url) {
