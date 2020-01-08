@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 26
+        minSdkVersion 19
+        targetSdkVersion 28
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [moduleName: project.getName()]
@@ -57,9 +57,9 @@ dependencies {
     compile project(path: ':LuaViewSDK')
 //    compile project(path: ':venvy_ai')
 
-    provided 'com.android.support:support-v4:25.3.1'
-    provided 'com.android.support:recyclerview-v7:25.3.1'
-    provided 'com.android.support:appcompat-v7:25.3.1'
+    provided 'com.android.support:support-v4:28.0.0'
+    provided 'com.android.support:recyclerview-v7:28.0.0'
+    provided 'com.android.support:appcompat-v7:28.0.0'
     annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
 }
 

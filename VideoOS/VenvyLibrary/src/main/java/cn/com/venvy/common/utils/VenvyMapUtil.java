@@ -2,6 +2,8 @@ package cn.com.venvy.common.utils;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -22,4 +24,19 @@ public class VenvyMapUtil {
         return jsonObject.toString();
     }
 
+    public static Map<String, String> jsonToMap(String json) {
+        HashMap<String, String> data = new HashMap<>();
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            Iterator it = jsonObject.keys();
+            while (it.hasNext()) {
+                String key = String.valueOf(it.next());
+                String value = jsonObject.optString(key);
+                data.put(key, value);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
 }

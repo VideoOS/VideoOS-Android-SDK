@@ -84,16 +84,18 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
             @Override
             public void onClick(View view) {
                 if (VenvyDeviceUtil.isNetworkAvailable(getContext())) {
-                    VideoOSLuaView osLuaView = getCurrentLuaView();
-                    HashMap<String, String> map = new HashMap<>();
-                    map.put("eventType", "2");
-                    map.put("appletActionType", "1");
-                    map.put("data", retryData);
-                    osLuaView.callLuaFunction("event", map);
+                    if(getCurrentLuaView() instanceof VideoOSLuaView){
+                        VideoOSLuaView osLuaView = (VideoOSLuaView)getCurrentLuaView();
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put("eventType", "2");
+                        map.put("appletActionType", "1");
+                        map.put("data", retryData);
+                        osLuaView.callLuaFunction("event", map);
+                    }
+
                 }
             }
         });
-
         initVideoProgramView();
 
         ivBack.setVisibility(INVISIBLE);
@@ -127,6 +129,7 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
             errorContent.setVisibility(GONE);
             startLoadingAnimation();
             videoProgramView.startVision(appletId, data, type, false, this);
+            videoProgramView.getController().trackPageTime(true,appletId);
         } else {
             this.currentAppletId = appletId;
             retryContent.setVisibility(VISIBLE);
@@ -229,17 +232,19 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
         VenvyLog.d("call event function");
 
         // 通知正在展示的lua refresh
-        VideoOSLuaView osLuaView = getCurrentLuaView();
-        HashMap<String, String> map = new HashMap<>();
-        map.put("eventType", "2");
-        map.put("appletActionType", "2");
-        map.put("data", data);
-        osLuaView.callLuaFunction("event", map);
+        if (getCurrentLuaView() instanceof VideoOSLuaView) {
+            VideoOSLuaView osLuaView = (VideoOSLuaView) getCurrentLuaView();
+            HashMap<String, String> map = new HashMap<>();
+            map.put("eventType", "2");
+            map.put("appletActionType", "2");
+            map.put("data", data);
+            osLuaView.callLuaFunction("event", map);
+        }
 
     }
 
-    public VideoOSLuaView getCurrentLuaView() {
-        return (VideoOSLuaView) videoProgramView.getChildAt(videoProgramView.getChildCount() - 1);
+    public View getCurrentLuaView() {
+        return videoProgramView.getChildAt(videoProgramView.getChildCount() - 1);
     }
 
     public void launchLuaScript(String template, final String id, String data) {
@@ -283,5 +288,9 @@ public class VideoProgramToolBarView extends BaseVideoVisionView implements Venv
             ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_CLOSE_VISION_PROGRAM, bundle);
         }
         cancelLoadingAnimation();
+    }
+
+    public void closed(String appletId){
+        videoProgramView.getController().trackPageTime(false,appletId);
     }
 }

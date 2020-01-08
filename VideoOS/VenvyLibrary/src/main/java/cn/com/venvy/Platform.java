@@ -28,6 +28,7 @@ import cn.com.venvy.common.interf.OnTagKeyListener;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.media.StorageUtils;
 import cn.com.venvy.common.media.file.Md5FileNameGenerator;
+import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.track.TrackHelper;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
@@ -71,6 +72,7 @@ public class Platform implements Serializable {
             mPlatformInfo = platformInfo;
         }
         TrackHelper.init(this);
+//        Report.initReport(this);
     }
 
     public void setContentViewGroup(ViewGroup contentViewGroup) {
@@ -192,7 +194,7 @@ public class Platform implements Serializable {
         mDownloadImageTaskRunner.startTasks(arrayList, new TaskListener<DownloadImageTask, Boolean>() {
             @Override
             public boolean isFinishing() {
-                if(taskListener != null){
+                if (taskListener != null) {
                     return taskListener.isFinishing();
                 }
                 return false;
@@ -200,35 +202,35 @@ public class Platform implements Serializable {
 
             @Override
             public void onTaskStart(DownloadImageTask downloadImageTask) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskStart(downloadImageTask);
                 }
             }
 
             @Override
             public void onTaskProgress(DownloadImageTask downloadImageTask, int progress) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskProgress(downloadImageTask, progress);
                 }
             }
 
             @Override
             public void onTaskFailed(DownloadImageTask downloadImageTask, @Nullable Throwable throwable) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskFailed(downloadImageTask, throwable);
                 }
             }
 
             @Override
             public void onTaskSuccess(DownloadImageTask downloadImageTask, Boolean aBoolean) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskSuccess(downloadImageTask, aBoolean);
                 }
             }
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadImageTask> successfulTasks, @Nullable List<DownloadImageTask> failedTasks) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTasksComplete(successfulTasks, failedTasks);
                 }
             }
@@ -251,7 +253,7 @@ public class Platform implements Serializable {
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {
             @Override
             public boolean isFinishing() {
-                if(taskListener != null){
+                if (taskListener != null) {
                     return taskListener.isFinishing();
                 }
                 return false;
@@ -259,38 +261,38 @@ public class Platform implements Serializable {
 
             @Override
             public void onTaskStart(DownloadTask downloadTask) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskStart(downloadTask);
                 }
             }
 
             @Override
             public void onTaskProgress(DownloadTask downloadTask, int progress) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskProgress(downloadTask, progress);
                 }
             }
 
             @Override
             public void onTaskFailed(DownloadTask downloadTask, @Nullable Throwable throwable) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskFailed(downloadTask, throwable);
-                }else {
+                } else {
                     downloadTask.failed();
                 }
             }
 
             @Override
             public void onTaskSuccess(DownloadTask downloadTask, Boolean aBoolean) {
-                if(taskListener != null){
+                if (taskListener != null) {
                     taskListener.onTaskSuccess(downloadTask, aBoolean);
                 }
             }
 
             @Override
             public void onTasksComplete(@Nullable List<DownloadTask> successfulTasks, @Nullable List<DownloadTask> failedTasks) {
-                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks,Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
-                if(taskListener != null){
+                VenvyStatisticsManager.getInstance().submitFileStatisticsInfo(successfulTasks, Platform.STATISTICS_DOWNLOAD_STAGE_REVIDEO);
+                if (taskListener != null) {
                     taskListener.onTasksComplete(successfulTasks, failedTasks);
                 }
             }

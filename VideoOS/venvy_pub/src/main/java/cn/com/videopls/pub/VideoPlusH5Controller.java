@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 import java.util.Set;
 
+import cn.com.venvy.CacheConstants;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
@@ -16,6 +17,7 @@ import cn.com.venvy.common.router.IRouterCallback;
 import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
+import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 
 /**
@@ -114,7 +116,15 @@ public class VideoPlusH5Controller {
             return;
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-        new VideoRecentlyModel(mPlatform,appId).startRequest();
+
+        String key;
+        if (mPlatform != null && mPlatform.getPlatformInfo() != null && !TextUtils.isEmpty(mPlatform.getPlatformInfo().getIdentity())) {
+            key = mPlatform.getPlatformInfo().getIdentity();
+        } else {
+            key = VenvyDeviceUtil.getAndroidID(mContext);
+        }
+        CacheConstants.putVisionProgramId(mContext, key, appId); // 将id保存到本地
+//        new VideoRecentlyModel(mPlatform,appId).startRequest();
     }
 
 

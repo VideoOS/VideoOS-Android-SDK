@@ -38,7 +38,7 @@ public class PreloadLuaUpdate {
     private int preloadType;
     private String taskTag = "";
 
-    public PreloadLuaUpdate(int preloadType, Platform platform, PreloadLuaUpdate.CacheLuaUpdateCallback callback) {
+    public PreloadLuaUpdate(int preloadType, Platform platform, CacheLuaUpdateCallback callback) {
         this.preloadType = preloadType;
         this.mPlatform = platform;
         this.mUpdateCallback = callback;
@@ -207,7 +207,7 @@ public class PreloadLuaUpdate {
         });
     }
 
-    private PreloadLuaUpdate.CacheLuaUpdateCallback getCacheLuaUpdateCallback() {
+    private CacheLuaUpdateCallback getCacheLuaUpdateCallback() {
         return mUpdateCallback;
     }
 

@@ -16,6 +16,7 @@ import java.util.Map;
 
 import cn.com.venvy.App;
 import cn.com.venvy.AppSecret;
+import cn.com.venvy.CacheConstants;
 import cn.com.venvy.Config;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PreloadLuaUpdate;
@@ -141,6 +142,7 @@ public class VisionProgramConfigModel extends VideoPlusBaseModel {
                     final String template = miniAppInfoObj.optString("template");
                     final String miniAppId = miniAppInfoObj.optString("miniAppId");
                     final String developerUserId = miniAppInfoObj.optString("developerUserId");
+                    CacheConstants.setDeveloperId(developerUserId);
                     JSONArray fileListArray = miniAppInfoObj.optJSONArray("luaList");
 
                     String resCode = App.isIsDevMode() ? "-1" : decryptData.optString("resCode"); //  应答码  00-成功  01-失败

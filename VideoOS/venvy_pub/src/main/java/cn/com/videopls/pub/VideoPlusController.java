@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import cn.com.venvy.CacheConstants;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
@@ -40,6 +41,7 @@ import cn.com.venvy.common.router.PostInfo;
 import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
+import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyResourceUtil;
 import cn.com.venvy.common.utils.VenvySchemeUtil;
@@ -73,6 +75,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     private VideoPlusAdapter mVideoPlusAdapter;
     private VideoPlusBaseModel mQueryAdsModel;
     private static final String MAIN_DEFAULT_ID = "main_default";
+    private VideoAdsHandler videoAdsHandler;
 
     public VideoPlusController(VideoProgramView videoPlusView) {
         mContext = videoPlusView.getContext();
@@ -146,6 +149,9 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (params == null || serviceType == null) {
             Log.e("Video++", "startService api 调用参数为空");
             return;
+        }
+        if (mPlatform == null) {
+            mPlatform = initPlatform(mVideoPlusAdapter);
         }
         params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
         startQueryConnect(serviceType, params, new IStartQueryResult() {
@@ -282,6 +288,7 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.removeAllViews();
             mContentView.setVisibility(View.GONE);
         }
+
     }
 
     void destroy() {
@@ -292,6 +299,9 @@ public abstract class VideoPlusController implements VenvyObserver {
             mPlatform.onDestroy();
         }
         mPlatform = null;
+        if (videoAdsHandler != null) {
+            videoAdsHandler.release();
+        }
     }
 
 
@@ -363,6 +373,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                 .setVideoType(provider.getVideoType())
                 .setVideoCategory(provider.getVideoCategory())
                 .setExtendJSONString(provider.getExtendJSONString())
+                .setFileProviderAuth(provider.getFileProviderAuth())
                 .setAppKey(provider.getAppKey()).setAppSecret(provider.getAppSecret());
         return platformInfoBuilder.builder();
     }
@@ -509,6 +520,24 @@ public abstract class VideoPlusController implements VenvyObserver {
                         }
 
                         finalParams.put("data", paramsJson.toString());
+
+
+                        String level = params.get("level");
+                        if (!TextUtils.isEmpty(level) && level.equalsIgnoreCase("5")) {
+                            // 加载到顶层视图
+                            Bundle bundle = new Bundle();
+                            bundle.putString("template", entranceLua);
+                            String luaId = entranceLua;
+                            if (entranceLua != null && entranceLua.contains(".")) {
+                                luaId = entranceLua.split("\\.")[0];
+                            }
+                            bundle.putString("id", luaId);
+                            bundle.putSerializable("data", finalParams);
+                            ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_ADD_LUA_SCRIPT_TO_TOP_LEVEL, bundle);
+                            return;
+                        }
+
+
                         navigation(builder.build(), finalParams, new IRouterCallback() {
                             @Override
                             public void arrived() {
@@ -534,9 +563,6 @@ public abstract class VideoPlusController implements VenvyObserver {
                 break;
             default:
                 // 前后暂停贴广告
-                if (mPlatform == null) {
-                    mPlatform = initPlatform(mVideoPlusAdapter);
-                }
                 mQueryAdsModel = new VideoServiceQueryAdsModel(mPlatform, params,
                         new VideoServiceQueryAdsModel.ServiceQueryAdsCallback() {
 
@@ -652,18 +678,23 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (mContentView != null) {
             mContentView.setVisibility(View.VISIBLE);
         }
-        this.mPlatform = initPlatform(mVideoPlusAdapter);
+        if (this.mPlatform == null) {
+            this.mPlatform = initPlatform(mVideoPlusAdapter);
+        }
         VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, isH5Type, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
             @Override
             public void downComplete(final String entranceLua, boolean isUpdateByNet, boolean nvgShow) {
                 VenvyLog.d("vision program downComplete : " + isUpdateByNet + "   - " + entranceLua);
+                if (mPlatform == null) {
+                    mPlatform = initPlatform(mVideoPlusAdapter);
+                }
                 mPlatform.setNvgShow(false);
                 VenvyUIUtil.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
                         String luaId = entranceLua;
-                        if (entranceLua.contains(".")) {
+                        if (entranceLua != null && entranceLua.contains(".")) {
                             luaId = entranceLua.split("\\.")[0];
                         }
                         //LuaView://applets?appletId=xxxx&template=xxxx.lua&id=xxxx&(priority=x)
@@ -708,7 +739,7 @@ public abstract class VideoPlusController implements VenvyObserver {
      */
     public void refreshRecentHistory(String appId) {
         if (!VenvyAPIUtil.isSupport(16)) {
-            Log.e("VideoOS", "VideoOS 不支持Android4.0以下版本调用");
+            Log.e("VideoOS", "VideoOS 不支持Android4.1以下版本调用");
             return;
         }
         if (mVideoPlusAdapter == null) {
@@ -716,6 +747,37 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
         this.mPlatform = initPlatform(mVideoPlusAdapter);
-        new VideoRecentlyModel(mPlatform, appId).startRequest();
+
+        String key;
+        if (mPlatform != null && mPlatform.getPlatformInfo() != null && !TextUtils.isEmpty(mPlatform.getPlatformInfo().getIdentity())) {
+            key = mPlatform.getPlatformInfo().getIdentity();
+        } else {
+            key = VenvyDeviceUtil.getAndroidID(getContext());
+        }
+
+        CacheConstants.putVisionProgramId(getContext(), key, appId); // 将id保存到本地
+//        new VideoRecentlyModel(mPlatform, appId).startRequest();
+    }
+
+    public void downloadAdsRes(Bundle bundle) {
+        if (this.mPlatform == null) {
+            this.mPlatform = initPlatform(mVideoPlusAdapter);
+        }
+        if (videoAdsHandler == null) {
+            videoAdsHandler = new VideoAdsHandler(mPlatform);
+        }
+        videoAdsHandler.initData(bundle, mPlatform.getPlatformInfo().getFileProviderAuth());
+        videoAdsHandler.execDownloadTask();
+    }
+
+    public void trackPageTime(boolean isOpen, String appletId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("type", isOpen ? String.valueOf(VenvyStatisticsManager.OPEN_PAGE) : String.valueOf(VenvyStatisticsManager.CLOSE_PAGE));
+            jsonObject.put("appletId", appletId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        VenvyStatisticsManager.getInstance().submitCommonTrack(isOpen ? VenvyStatisticsManager.OPEN_PAGE : VenvyStatisticsManager.CLOSE_PAGE, jsonObject);
     }
 }
