@@ -216,10 +216,6 @@ public class VideoOSLuaView extends VideoOSBaseView {
         if (TextUtils.isEmpty(luaName)) {
             return;
         }
-//        if (luaName.contains("os_video_starContent_hotspot") || luaName.contains("os_video_figureStarList_hotspot")) {
-//            runLua(luaView, luaName, valueData);
-//            return;
-//        }
         String miniAppId = "";
         if (valueData instanceof HashMap) {
             HashMap params = (HashMap) valueData;

@@ -521,6 +521,6 @@ public class BaseRequestConnect {
                 }
             }
         }
-        Report.report(Report.ReportLevel.w, BaseRequestConnect.TAG, builder.toString());
+//        Report.report(Report.ReportLevel.w, BaseRequestConnect.TAG, builder.toString());
     }
 }
