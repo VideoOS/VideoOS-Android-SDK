@@ -246,6 +246,7 @@ public class UDApplet extends BaseLuaTable {
                             if (targetType.equalsIgnoreCase("1")) {
                                 builder.setLinkUrl(linkData.optString("linkUrl"));
                             } else if (targetType.equalsIgnoreCase("2")) {
+                                builder.setLinkUrl(linkData.optString("linkUrl"));
                                 builder.setDeepLink(linkData.optString("deepLink"));
                             }
                             WidgetInfo widgetInfo = builder.build();
