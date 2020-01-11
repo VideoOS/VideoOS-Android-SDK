@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.HashMap;
@@ -53,6 +57,7 @@ public class VideoPlayActivity extends BasePlayerActivity {
         }else if(programMode == VideoPlayActivity.TYPE_PROGRAM_A_ONLINE){
             String luaPath = bundle.getString("luaPath");
             String jsonPath = bundle.getString("jsonPath");
+            miniAppId = bundle.getString("miniAppId");
             luaName = luaPath.substring(0,luaPath.lastIndexOf("."));
             jsonName = jsonPath.substring(0,jsonPath.lastIndexOf("."));
         }else if(programMode == VideoPlayActivity.TYPE_PROGRAM_B){
@@ -80,7 +85,11 @@ public class VideoPlayActivity extends BasePlayerActivity {
         if(programMode == VideoPlayActivity.TYPE_PROGRAM_A_LOCAL){
             programALocalDebug();
         }else if(programMode == VideoPlayActivity.TYPE_PROGRAM_A_ONLINE){
-            programAOnlineDebug();
+            try {
+                programAOnlineDebug();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }else if(programMode == VideoPlayActivity.TYPE_PROGRAM_B){
             programBDebug();
         }
@@ -104,25 +113,22 @@ public class VideoPlayActivity extends BasePlayerActivity {
         });
     }
 
-    private void programAOnlineDebug() {
-        Uri uri = Uri.parse("LuaView://defaultLuaView?template=" + luaName + ".lua&id=" + luaName);
+    private void programAOnlineDebug() throws JSONException {
+
+        Uri uri = Uri.parse("LuaView://defaultLuaView?template=" + luaName + ".lua&id=" + luaName +"&miniAppId=" + miniAppId);
         HashMap<String, String> params = new HashMap<>();
 
-        String serviceConfigJson = VenvyFileUtil.readFormFile(VideoPlayActivity.this, VenvyFileUtil.getCachePath(VideoPlayActivity.this) + LUA_CACHE_PATH + File.separator + jsonName + ".json");
-        String luaConfigJson = "{" +
-                                    "\"creativeId\":" + 60 + "," +
-                                    "\"data\":" + serviceConfigJson + "," +
-                                    "\"template\":" + "\""+ luaName + ".lua" + "\"" + "," +
-                                    "\"deviceType\":" + 3 + "," +
-                                    "\"duration\":" + 10000 + "," +
-                                    "\"hotspotOrder\":" + 0 + "," +
-                                    "\"id\":" + "\""+ "b3fb78e8-72d2-4265-9e44-f313b3d3614c" + "\"" + "," +
-                                    "\"launchPlanId\":" + "\""+ "90" + "\"" + "," +
-                                    "\"sumHotspot\":" + 1 + "," +
-                                    "\"videoEndTime\":" + 15000 + "," +
-                                    "\"videoStartTime\":" + 5000 +
-                                "}";
-        params.put("data", luaConfigJson);
+        String serviceConfigJson = VenvyFileUtil.readFormFile(VideoPlayActivity.this, VenvyFileUtil.getCachePath(VideoPlayActivity.this) + LUA_CACHE_PATH + File.separator + miniAppId + File.separator + jsonName + ".json");
+
+        String commonConfigJson = FileUtil.getFromAssets(this, "common/luaConfig.json");
+        JSONObject commonJsonObject = new JSONObject(commonConfigJson);
+        commonJsonObject.putOpt("data", new JSONObject(serviceConfigJson));
+        commonJsonObject.putOpt("template", luaName + ".lua");
+        JSONObject miniAppInfoObj = commonJsonObject.optJSONObject("miniAppInfo");
+        miniAppInfoObj.put("miniAppId", miniAppId);
+        Log.i("zhangjunling", "commonConfigJson:" + commonJsonObject.toString());
+
+        params.put("data", commonJsonObject.toString());
 
         mVideoPlusView.navigation(uri, params, new IRouterCallback() {
             @Override

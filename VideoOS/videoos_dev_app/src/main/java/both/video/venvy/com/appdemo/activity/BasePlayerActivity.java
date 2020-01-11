@@ -140,7 +140,9 @@ public abstract class BasePlayerActivity extends AppCompatActivity {
             }else{
                 videoName = FileUtil.getFileName(ConfigUtil.getVideoName());
             }
-            mVideoPlayer.setUp(TextUtils.isEmpty(videoUrl) ? ConfigUtil.getVideoName() : videoUrl, true, videoName);
+            String url = TextUtils.isEmpty(videoUrl) ? ConfigUtil.getVideoName() : videoUrl;
+            mVideoPlayer.setUp(url,true, videoName);
+            mVideoPlayer.setPlayTag(url);
         }
         mVideoPlusView.start();
         // 开启前贴

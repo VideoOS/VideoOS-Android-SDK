@@ -7,15 +7,28 @@ import android.view.View;
 import android.widget.Toast;
 
 import both.video.venvy.com.appdemo.R;
+import both.video.venvy.com.appdemo.mvp.MvpActivity;
+import both.video.venvy.com.appdemo.mvp.presenter.HomePresenter;
+import both.video.venvy.com.appdemo.mvp.view.IHomeView;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
+public class HomeActivity extends MvpActivity<IHomeView,HomePresenter> implements View.OnClickListener,IHomeView{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         initView();
+    }
+
+    @Override
+    public HomePresenter createPresenter() {
+        return new HomePresenter(this);
+    }
+
+    @Override
+    public IHomeView createView() {
+        return this;
     }
 
     private void initView() {
@@ -28,31 +41,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.home_config:
-                ConfigActivity.newIntent(this);
+                getPresenter().onHomeConfig();
                 break;
             case R.id.home_interact_program:
-                if(isCachedAppKeySecret()){
-                    InteractActivity.newIntent(this);
-                }else{
-                    Toast.makeText(HomeActivity.this,"请先填写后台的应用信息再调试",Toast.LENGTH_SHORT).show();
-                    ConfigActivity.newIntent(HomeActivity.this);
-                }
+                getPresenter().onInteractProgram();
                 break;
             case R.id.home_service_program:
-                if (isCachedAppKeySecret()) {
-                    ServiceActivity.newIntent(this);
-                }else{
-                    Toast.makeText(HomeActivity.this,"请先填写后台的应用信息再调试",Toast.LENGTH_SHORT).show();
-                    ConfigActivity.newIntent(HomeActivity.this);
-                }
+                getPresenter().onServiceProgram();
                 break;
         }
-    }
-
-    public boolean isCachedAppKeySecret() {
-        if(!TextUtils.isEmpty(ConfigUtil.getAppKey()) && !TextUtils.isEmpty(ConfigUtil.getAppSecret())){
-            return true;
-        }
-        return false;
     }
 }

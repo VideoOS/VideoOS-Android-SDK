@@ -190,6 +190,20 @@ public class VideoOsAdapter extends VideoPlusAdapter {
         };
     }
 
+    @Override
+    public IWidgetRotationListener buildWidgetRotationListener() {
+        return new IWidgetRotationListener() {
+            @Override
+            public void onRotate(RotateStatus status) {
+                if (status == RotateStatus.TO_VERTICAL) {
+                    ((Activity) mPlayer.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } else if (status == RotateStatus.TO_LANDSCAPE) {
+                    ((Activity) mPlayer.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                }
+            }
+        };
+    }
+
     /**
      * 广告关闭监听
      *
@@ -201,27 +215,6 @@ public class VideoOsAdapter extends VideoPlusAdapter {
             @Override
             public void onClose(WidgetInfo info) {
                 widgetAction(info);
-            }
-        };
-    }
-
-    /**
-     * 横竖屏切换时的回调
-     *
-     * @return
-     */
-    @Override
-    public IWidgetRotationListener buildWidgetRotationListener() {
-        return new IWidgetRotationListener() {
-            @Override
-            public void onRotate(RotateStatus status) {
-                if(status == RotateStatus.TO_VERTICAL){
-                    // 横屏转竖屏
-                    ((Activity) mPlayer.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                }else if(status == RotateStatus.TO_LANDSCAPE){
-                    // 竖屏转横屏
-                    ((Activity) mPlayer.getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                }
             }
         };
     }
@@ -299,12 +292,12 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
             @Override
             public String getVideoEpisode() {
-                return "当前的剧集名称";
+                return "";
             }
 
             @Override
             public String getVideoTitle() {
-                return "当前的视频标题";
+                return "";
             }
 
         };
@@ -403,8 +396,8 @@ public class VideoOsAdapter extends VideoPlusAdapter {
     }
 
 
-    private boolean isPlayInstall(Uri uri) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    private boolean isPlayInstall(Uri uri){
+        Intent intent = new Intent(Intent.ACTION_VIEW,uri);
         ComponentName componentName = intent.resolveActivity(mPlayer.getContext().getPackageManager());
         return componentName != null;
     }

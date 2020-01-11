@@ -1,16 +1,21 @@
 package both.video.venvy.com.appdemo.utils;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -117,6 +122,63 @@ public class FileUtil {
         }
     }
 
+    private static final int BYTE_BUF_SIZE = 2048;
+
+    public static void copyFileFromAssetsFile(Context context, String assetName, String targetName) throws IOException {
+
+        File targetFile = null;
+        InputStream inputStream = null;
+        FileOutputStream outputStream = null;
+
+        try {
+            AssetManager assets = context.getAssets();
+            targetFile = new File(targetName);
+            if(!targetFile.getParentFile().exists()){
+                targetFile.getParentFile().mkdirs();
+            }
+            if(!targetFile.exists()){
+                targetFile.createNewFile();
+            }
+            inputStream = assets.open(assetName);
+            outputStream = new FileOutputStream(targetFile, false /* append */);
+            copy(inputStream, outputStream);
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
+    }
+
+    public static String getFromAssets(Context context, String fileName){
+        try {
+            InputStreamReader inputReader = new InputStreamReader( context.getResources().getAssets().open(fileName) );
+            BufferedReader bufReader = new BufferedReader(inputReader);
+            String line="";
+            StringBuffer Result = new StringBuffer();
+            while((line = bufReader.readLine()) != null)
+                Result.append(line);
+            return Result.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private static void copy(InputStream from, OutputStream to) throws IOException {
+        byte[] buf = new byte[BYTE_BUF_SIZE];
+        while (true) {
+            int r = from.read(buf);
+            if (r == -1) {
+                break;
+            }
+            to.write(buf, 0, r);
+        }
+    }
+
+
     public static void copyFile(String oldPath, String newPath) throws IOException {
 
         File oldFile = new File(oldPath);
@@ -134,11 +196,11 @@ public class FileUtil {
         }
     }
 
-    public static void startDownloadLuaFile(Context context, List<String> urls, final DownloadFileCallback downloadFileCallback) {
+    public static void startDownloadLuaFile(Context context, String miniAppId, List<String> urls, final DownloadFileCallback downloadFileCallback) {
         DownloadTaskRunner mDownloadTaskRunner = new DownloadTaskRunner(new Platform(new PlatformInfo.Builder().setAppKey(ConfigUtil.getAppKey()).setAppSecret(ConfigUtil.getAppSecret()).builder()));
         ArrayList<DownloadTask> arrayList = new ArrayList<>();
         for (String string : urls) {
-            DownloadTask task = new DownloadTask(context, string, VenvyFileUtil.getCachePath(context) + LUA_CACHE_PATH + File.separator + Uri.parse(string).getLastPathSegment(),true);
+            DownloadTask task = new DownloadTask(context, string, VenvyFileUtil.getCachePath(context) + LUA_CACHE_PATH + File.separator + miniAppId + File.separator + Uri.parse(string).getLastPathSegment(),true);
             arrayList.add(task);
         }
         mDownloadTaskRunner.startTasks(arrayList, new TaskListener<DownloadTask, Boolean>() {

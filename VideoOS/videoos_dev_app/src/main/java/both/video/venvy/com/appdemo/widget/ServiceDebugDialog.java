@@ -27,9 +27,9 @@ public class ServiceDebugDialog extends DebugDialog {
     public List<VideoInfo> generateVideoData() {
         List<VideoInfo> videoInfos = new ArrayList<>();
         if (currentMode == LOCAL_MODE) {
-            videoInfos.add(new VideoInfo(Environment.getExternalStorageDirectory().getAbsolutePath().toString() + File.separator + "1.mp4"));
-            videoInfos.add(new VideoInfo(Environment.getExternalStorageDirectory().getAbsolutePath().toString() + File.separator + "2.mp4"));
-            videoInfos.add(new VideoInfo(Environment.getExternalStorageDirectory().getAbsolutePath().toString() + File.separator + "3.mp4"));
+            videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/car.mp4"));
+            videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/ec.mp4"));
+            videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/food.mp4"));
         } else if (currentMode == ONLINE_MODE) {
             videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/car.mp4"));
             videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/ec.mp4"));

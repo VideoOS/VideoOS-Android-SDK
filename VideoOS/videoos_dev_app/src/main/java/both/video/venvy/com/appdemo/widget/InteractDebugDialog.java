@@ -30,9 +30,9 @@ public class InteractDebugDialog extends DebugDialog {
     public List<VideoInfo> generateVideoData() {
         List<VideoInfo> videoInfos = new ArrayList<>();
         if (currentMode == LOCAL_MODE) {
-            videoInfos.add(new VideoInfo(Environment.getExternalStorageDirectory().getAbsolutePath().toString() + File.separator + "1.mp4"));
-            videoInfos.add(new VideoInfo(Environment.getExternalStorageDirectory().getAbsolutePath().toString() + File.separator + "2.mp4"));
-            videoInfos.add(new VideoInfo(Environment.getExternalStorageDirectory().getAbsolutePath().toString() + File.separator + "3.mp4"));
+            videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/car.mp4"));
+            videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/ec.mp4"));
+            videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/food.mp4"));
         } else if (currentMode == ONLINE_MODE) {
             videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/car.mp4"));
             videoInfos.add(new VideoInfo("https://videojj-mobile.oss-cn-beijing.aliyuncs.com/resource/demo/ec.mp4"));
@@ -73,7 +73,8 @@ public class InteractDebugDialog extends DebugDialog {
                 etSecondValueView.setText(ConfigUtil.getInteractOnLineJsonUrl());
                 etThirdValueView.setText(ConfigUtil.getInteractOnLineVideoUrl());
 
-//                etSecondValueView.setText("http://os-saas-share.videojj.com/test/applet/development/5db7bae236111b0010581ba7/1572942499372.json");
+//                etFirstValueView.setText("383");
+//                etSecondValueView.setText("http://os-saas-share.videojj.com/test/applet/manage/5d9d53f4f1de5800113fae39/1575611774526.json");
                 break;
         }
     }
@@ -95,10 +96,10 @@ public class InteractDebugDialog extends DebugDialog {
                 return null;
             }
 
-            if (!new File(thirdData).exists()) {
-                Toast.makeText(context,"视频文件不存在！",Toast.LENGTH_SHORT).show();
-                return null;
-            }
+//            if (!new File(thirdData).exists()) {
+//                Toast.makeText(context,"视频文件不存在！",Toast.LENGTH_SHORT).show();
+//                return null;
+//            }
 
             //数据缓存
             ConfigUtil.putInteractLocalVideoPath(thirdData);

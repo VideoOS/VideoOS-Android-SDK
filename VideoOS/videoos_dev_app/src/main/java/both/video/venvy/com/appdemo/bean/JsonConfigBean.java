@@ -9,26 +9,14 @@ import java.util.List;
 public class JsonConfigBean {
 
     /**
-     * miniAppId : 276637949880172544
      * display : {"navTitle":"开发模式测试"}
      * h5Url :
-     * luaList : [{"url":"os_video_starContent_hotspot.lua"},{"url":"os_video_figureStarList_hotspot.lua"}]
-     * template : os_video_figureStarList_hotspot.lua
+     * miniAppInfo : {"miniAppId":"123456","template":"os_video_test_hotspot.lua","luaList":[{"url":"os_video_test_hotspot.lua"}]}
      */
 
-    private String miniAppId;
     private DisplayBean display;
     private String h5Url;
-    private String template;
-    private List<LuaListBean> luaList;
-
-    public String getMiniAppId() {
-        return miniAppId;
-    }
-
-    public void setMiniAppId(String miniAppId) {
-        this.miniAppId = miniAppId;
-    }
+    private MiniAppInfoBean miniAppInfo;
 
     public DisplayBean getDisplay() {
         return display;
@@ -46,20 +34,12 @@ public class JsonConfigBean {
         this.h5Url = h5Url;
     }
 
-    public String getTemplate() {
-        return template;
+    public MiniAppInfoBean getMiniAppInfo() {
+        return miniAppInfo;
     }
 
-    public void setTemplate(String template) {
-        this.template = template;
-    }
-
-    public List<LuaListBean> getLuaList() {
-        return luaList;
-    }
-
-    public void setLuaList(List<LuaListBean> luaList) {
-        this.luaList = luaList;
+    public void setMiniAppInfo(MiniAppInfoBean miniAppInfo) {
+        this.miniAppInfo = miniAppInfo;
     }
 
     public static class DisplayBean {
@@ -78,19 +58,55 @@ public class JsonConfigBean {
         }
     }
 
-    public static class LuaListBean {
+    public static class MiniAppInfoBean {
         /**
-         * url : os_video_starContent_hotspot.lua
+         * miniAppId : 123456
+         * template : os_video_test_hotspot.lua
+         * luaList : [{"url":"os_video_test_hotspot.lua"}]
          */
 
-        private String url;
+        private String miniAppId;
+        private String template;
+        private List<LuaListBean> luaList;
 
-        public String getUrl() {
-            return url;
+        public String getMiniAppId() {
+            return miniAppId;
         }
 
-        public void setUrl(String url) {
-            this.url = url;
+        public void setMiniAppId(String miniAppId) {
+            this.miniAppId = miniAppId;
+        }
+
+        public String getTemplate() {
+            return template;
+        }
+
+        public void setTemplate(String template) {
+            this.template = template;
+        }
+
+        public List<LuaListBean> getLuaList() {
+            return luaList;
+        }
+
+        public void setLuaList(List<LuaListBean> luaList) {
+            this.luaList = luaList;
+        }
+
+        public static class LuaListBean {
+            /**
+             * url : os_video_test_hotspot.lua
+             */
+
+            private String url;
+
+            public String getUrl() {
+                return url;
+            }
+
+            public void setUrl(String url) {
+                this.url = url;
+            }
         }
     }
 }

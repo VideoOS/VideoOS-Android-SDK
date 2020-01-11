@@ -33,7 +33,7 @@ public class MyApp extends Application {
         appContext = this;
 
         //测试环境
-        DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.RELEASE);
+        DebugStatus.changeEnvironmentStatus(DebugStatus.EnvironmentStatus.DEV);
         VenvyLog.needLog = true;
         VideoPlus.appCreateSAAS(MyApp.this, ConfigUtil.getAppKey(), ConfigUtil.getAppSecret());
     }

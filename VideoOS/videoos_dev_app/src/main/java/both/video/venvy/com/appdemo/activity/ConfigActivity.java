@@ -41,8 +41,8 @@ public class ConfigActivity extends AppCompatActivity implements View.OnClickLis
             appKeyView.setText(ConfigUtil.getAppKey());
             appSecretView.setText(ConfigUtil.getAppSecret());
         }
-//        appKeyView.setText("dc8b6c9b-a592-4100-a532-9886ffce7dce");
-//        appSecretView.setText("0b511c09045c4876");
+//        appKeyView.setText("9085f724-5490-4331-9f3e-ae492e97f167");
+//        appSecretView.setText("f57716f935b94378");
     }
 
 

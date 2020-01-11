@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import com.alibaba.fastjson.JSON;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,9 @@ import both.video.venvy.com.appdemo.R;
 import both.video.venvy.com.appdemo.bean.DevAppDebugInfo;
 import both.video.venvy.com.appdemo.bean.JsonConfigBean;
 import both.video.venvy.com.appdemo.http.DevelopDebugConfigInfoModel;
+import both.video.venvy.com.appdemo.mvp.MvpActivity;
+import both.video.venvy.com.appdemo.mvp.presenter.ServicePresenter;
+import both.video.venvy.com.appdemo.mvp.view.IServiceView;
 import both.video.venvy.com.appdemo.utils.ConfigUtil;
 import both.video.venvy.com.appdemo.utils.FileUtil;
 import both.video.venvy.com.appdemo.widget.DebugDialog;
@@ -34,7 +39,7 @@ import cn.com.venvy.common.utils.VenvyFileUtil;
 
 import static cn.com.venvy.PreloadLuaUpdate.LUA_CACHE_PATH;
 
-public class ServiceActivity extends AppCompatActivity implements View.OnClickListener{
+public class ServiceActivity extends MvpActivity<IServiceView,ServicePresenter> implements View.OnClickListener,IServiceView{
 
     ProgressBar loadingView;
 
@@ -49,6 +54,16 @@ public class ServiceActivity extends AppCompatActivity implements View.OnClickLi
         initView();
     }
 
+    @Override
+    public ServicePresenter createPresenter() {
+        return new ServicePresenter(this);
+    }
+
+    @Override
+    public IServiceView createView() {
+        return this;
+    }
+
     private void initView() {
         this.findViewById(R.id.service_back).setOnClickListener(this);
         this.findViewById(R.id.service_debug).setOnClickListener(this);
@@ -56,7 +71,7 @@ public class ServiceActivity extends AppCompatActivity implements View.OnClickLi
         hideLoadingView();
     }
 
-    private void showLoadingView() {
+    public void showLoadingView() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -65,7 +80,7 @@ public class ServiceActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private void hideLoadingView() {
+    public void hideLoadingView() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -74,7 +89,7 @@ public class ServiceActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private void showErrorToast() {
+    public void showErrorToast() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -101,39 +116,7 @@ public class ServiceActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onOK(Dialog dialog, Bundle bundleData) {
                 dialog.dismiss();
-                int mode = bundleData.getInt("mode");
-                if(DebugDialog.LOCAL_MODE == mode){
-                    String jsonPath = bundleData.getString("jsonPath");
-                    String videoPath = bundleData.getString("videoPath");
-
-                    ConfigUtil.putVideoName(videoPath);
-
-                    VenvyFileUtil.copyFilesFromAssets(ServiceActivity.this, "blocal", VenvyFileUtil.getCachePath(App.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH);
-
-
-                    //获取dev_config.json中的miniAppId
-                    String obtainJsonText = obtainJsonText();
-                    if(!TextUtils.isEmpty(obtainJsonText)){
-                        String miniAppId = null;
-                        JsonConfigBean jsonConfigBean = JSON.parseObject(obtainJsonText, JsonConfigBean.class);
-                        if(jsonConfigBean != null){
-                            miniAppId = jsonConfigBean.getMiniAppId();
-                        }
-
-                        if(!TextUtils.isEmpty(miniAppId)){
-                            Bundle playerBundler = new Bundle();
-                            playerBundler.putInt("program_type",VideoPlayActivity.TYPE_PROGRAM_B);
-                            playerBundler.putString("miniAppId", miniAppId);
-                            VideoPlayActivity.newIntent(ServiceActivity.this, playerBundler);
-                        }
-                    }
-                }else if(DebugDialog.ONLINE_MODE == mode){
-                    showLoadingView();
-                    String commitID = bundleData.getString("commitID");
-                    String videoUrl = bundleData.getString("videoUrl");
-                    ConfigUtil.putVideoName(videoUrl);
-                    serviceOnLineOperate(commitID, videoUrl);
-                }
+                getPresenter().onDealInteract(bundleData);
             }
 
             @Override
@@ -142,103 +125,5 @@ public class ServiceActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
         serviceDialog.show();
-    }
-
-    private String obtainJsonText() {
-        String text = null;
-        File jsonTextFile = new File(VenvyFileUtil.getCachePath(App.getContext()) + PreloadLuaUpdate.LUA_CACHE_PATH + File.separator + "dev_config.json");
-        if(jsonTextFile != null && jsonTextFile.exists()){
-            text = VenvyFileUtil.readFormFile(ServiceActivity.this, jsonTextFile.getAbsolutePath());
-        }
-        return text;
-    }
-
-    private void serviceOnLineOperate(String commitID, String videoUrl) {
-        //获取下载的lua地址
-        DevelopDebugConfigInfoModel developDebugConfigInfoModel = new DevelopDebugConfigInfoModel(2, commitID, new DevelopDebugConfigInfoModel.AppDebugInfoCallback() {
-            @Override
-            public void updateComplete(String result) {
-                //TODO... 下载 Lua
-                try {
-                    String decryptData = VenvyAesUtil.decrypt(new JSONObject(result).optString("encryptData"), ConfigUtil.getAppSecret(), ConfigUtil.getAppSecret());
-                    DevAppDebugInfo devAppDebugInfo = JSON.parseObject(decryptData, DevAppDebugInfo.class);
-                    if(devAppDebugInfo != null && devAppDebugInfo.getLuaList() != null && devAppDebugInfo.getLuaList().size() > 0){
-                        startDownloadLuaFile(devAppDebugInfo);
-                    }else{
-                        throw new IllegalArgumentException();
-                    }
-                } catch (Exception e) {
-                    hideLoadingView();
-                    showErrorToast();
-                }
-            }
-
-            @Override
-            public void updateError(Throwable t) {
-                hideLoadingView();
-                showErrorToast();
-            }
-        });
-        developDebugConfigInfoModel.startRequest();
-    }
-
-    //下载Lua/Json 文件
-    private void startDownloadLuaFile(final DevAppDebugInfo devAppDebugInfo) {
-        List<String> urlArray = new ArrayList<>();
-        for(DevAppDebugInfo.LuaListBean bean : devAppDebugInfo.getLuaList()){
-            String url = bean.getUrl();
-            if(!TextUtils.isEmpty(url)){
-                urlArray.add(url);
-            }
-        }
-
-        FileUtil.startDownloadLuaFile(ServiceActivity.this, urlArray, new FileUtil.DownloadFileCallback() {
-            @Override
-            public void onFailed(String errorMessage) {
-                hideLoadingView();
-                showErrorToast();
-            }
-
-            @Override
-            public void onSuccess(List<DownloadTask> successfulTasks) {
-                hideLoadingView();
-                //TODO 构建json
-                //1.通过 DevAppDebugInfo 构建 JsonConfigBean
-                JsonConfigBean jsonConfigBean = new JsonConfigBean();
-
-                jsonConfigBean.setMiniAppId(devAppDebugInfo.getMiniAppId());
-
-                JsonConfigBean.DisplayBean displayBean = new JsonConfigBean.DisplayBean();
-                displayBean.setNavTitle(devAppDebugInfo.getDisplay().getNavTitle());
-                jsonConfigBean.setDisplay(displayBean);
-
-                List<JsonConfigBean.LuaListBean> luaList = new ArrayList<JsonConfigBean.LuaListBean>();
-
-                for(DownloadTask task : successfulTasks){
-                    String downloadUrl = task.getDownloadUrl();
-                    String fileName = downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1);
-                    JsonConfigBean.LuaListBean luaListBean = new JsonConfigBean.LuaListBean();
-                    luaListBean.setUrl(fileName);
-                    luaList.add(luaListBean);
-                }
-
-                jsonConfigBean.setLuaList(luaList);
-
-                jsonConfigBean.setTemplate(devAppDebugInfo.getTemplate());
-
-                //2.把 JsonConfigBean 转化成 json 文本
-                String devConfigJson = JSON.toJSONString(jsonConfigBean);
-
-                //3.把json 文本写入到 dev_config.json
-                String devConfigJsonPath = VenvyFileUtil.getCachePath(ServiceActivity.this) + LUA_CACHE_PATH + File.separator + "dev_config.json";
-
-                FileUtil.writeToFile(ServiceActivity.this, devConfigJsonPath, devConfigJson);
-//
-                Bundle playerBundler = new Bundle();
-                playerBundler.putInt("program_type", VideoPlayActivity.TYPE_PROGRAM_B);
-                playerBundler.putString("miniAppId", devAppDebugInfo.getMiniAppId());
-                VideoPlayActivity.newIntent(ServiceActivity.this, playerBundler);
-            }
-        });
     }
 }
