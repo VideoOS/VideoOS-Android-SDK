@@ -773,7 +773,6 @@ public abstract class VideoPlusController implements VenvyObserver {
     public void trackPageTime(boolean isOpen, String appletId) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("type", isOpen ? String.valueOf(VenvyStatisticsManager.OPEN_PAGE) : String.valueOf(VenvyStatisticsManager.CLOSE_PAGE));
             jsonObject.put("appletId", appletId);
         } catch (JSONException e) {
             e.printStackTrace();

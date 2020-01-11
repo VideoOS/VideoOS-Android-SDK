@@ -65,6 +65,7 @@ public class JsBridge implements VenvyObserver {
     private BaseRequestConnect mBaseRequestConnect;
     protected Context mContext;
     protected String ssid = System.currentTimeMillis() + "";
+
     private WebViewCloseListener mWebViewCloseListener;
     //是否禁止打开支付宝app true：禁止；false：打开支付宝
     public boolean payDisabled;
@@ -278,7 +279,7 @@ public class JsBridge implements VenvyObserver {
                     trackData.putString(VenvyObservableTarget.Constant.CONSTANT_DOWNLOAD_API, downAPI);
                     trackData.putStringArray("isTrackLinks", toStringArray(downloadTrackLink.optJSONArray("isTrackLinks")));
                     trackData.putStringArray("dsTrackLinks", toStringArray(downloadTrackLink.optJSONArray("dsTrackLinks")));
-                    trackData.putStringArray("dfTrackLinks",toStringArray(downloadTrackLink.optJSONArray("dfTrackLinks")));
+                    trackData.putStringArray("dfTrackLinks", toStringArray(downloadTrackLink.optJSONArray("dfTrackLinks")));
                     trackData.putStringArray("instTrackLinks", toStringArray(downloadTrackLink.optJSONArray("instTrackLinks")));
                     trackData.putString("launchPlanId", jsonObject.optString("launchPlanId"));
                     ObservableManager.getDefaultObserable().sendToTarget(VenvyObservableTarget.TAG_DOWNLOAD_TASK, trackData);
@@ -290,11 +291,17 @@ public class JsBridge implements VenvyObserver {
                     if (targetType.equalsIgnoreCase("1")) {
                         builder.setLinkUrl(linkData.optString("linkUrl"));
                     } else if (targetType.equalsIgnoreCase("2")) {
+                        builder.setLinkUrl(linkData.optString("linkUrl"));
                         builder.setDeepLink(linkData.optString("deepLink"));
                     }
-                    WidgetInfo widgetInfo = builder.build();
+                    final WidgetInfo widgetInfo = builder.build();
                     if (mPlatform.getWidgetClickListener() != null) {
-                        mPlatform.getWidgetClickListener().onClick(widgetInfo);
+                        VenvyUIUtil.runOnUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPlatform.getWidgetClickListener().onClick(widgetInfo);
+                            }
+                        });
                     }
                 }
             }
