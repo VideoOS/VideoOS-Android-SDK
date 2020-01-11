@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import cn.com.venvy.common.utils.VenvyPreferenceHelper;
 
 /**
@@ -29,6 +31,7 @@ public class CacheConstants {
      * @param id
      */
     public static void putVisionProgramId(Context context, String fileName, @NonNull String id) {
+
         String data = VenvyPreferenceHelper.getString(context, fileName, RECENT_MINI_APP_ID, "[]");
         try {
             JSONArray array = new JSONArray(data);
@@ -49,10 +52,20 @@ public class CacheConstants {
                 }
                 array.put(id);
             }
+
             VenvyPreferenceHelper.putString(context, fileName, RECENT_MINI_APP_ID, array.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private static JSONArray reverse(JSONArray jsonArray) throws JSONException {
+        for (int i = 0; i < jsonArray.length() / 2; i++) {
+            Object temp = jsonArray.get(i);
+            jsonArray.put(i,jsonArray.get(jsonArray.length() - 1 - i));
+            jsonArray.put(jsonArray.length() - 1 - i, temp);
+        }
+        return jsonArray;
     }
 
     /**
@@ -62,9 +75,12 @@ public class CacheConstants {
      * @return
      */
     public static String getVisionProgramId(Context context, String fileName) {
-        return VenvyPreferenceHelper.getString(context, fileName, RECENT_MINI_APP_ID, "{}");
+        try {
+            return reverse(new JSONArray(VenvyPreferenceHelper.getString(context, fileName, RECENT_MINI_APP_ID, "[]"))).toString();
+        } catch (JSONException e) {
+            return "[]";
+        }
     }
-
 
     private static JSONArray removeDuplicates(JSONArray array, String id) throws JSONException {
         boolean isContains;
