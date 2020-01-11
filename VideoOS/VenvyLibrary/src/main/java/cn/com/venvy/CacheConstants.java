@@ -38,7 +38,7 @@ public class CacheConstants {
             // 判断数据是否之前存在
             boolean isContains = false;
             for (int i = 0, len = array.length(); i < len; i++) {
-                isContains = ((String) array.get(i)).equals(id);
+                isContains = ((String) array.opt(i)).equals(id);
                 if (isContains) {
                     array.remove(i);
                     array.put(id);
@@ -61,8 +61,8 @@ public class CacheConstants {
 
     private static JSONArray reverse(JSONArray jsonArray) throws JSONException {
         for (int i = 0; i < jsonArray.length() / 2; i++) {
-            Object temp = jsonArray.get(i);
-            jsonArray.put(i,jsonArray.get(jsonArray.length() - 1 - i));
+            Object temp = jsonArray.opt(i);
+            jsonArray.put(i,jsonArray.opt(jsonArray.length() - 1 - i));
             jsonArray.put(jsonArray.length() - 1 - i, temp);
         }
         return jsonArray;
