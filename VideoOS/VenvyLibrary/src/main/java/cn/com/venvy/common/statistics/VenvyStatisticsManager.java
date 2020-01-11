@@ -23,8 +23,10 @@ public final class VenvyStatisticsManager {
     public static final int PRELOAD_FLOW = 5;
     public static final int OPEN_PAGE = 6;
     public static final int CLOSE_PAGE = 7;
+    public static final int PAGE_NAME = 8;
 
     private Platform platform;
+
     private VenvyStatisticsManager() {
 
     }
@@ -42,25 +44,27 @@ public final class VenvyStatisticsManager {
     }
 
     public void submitCommonTrack(int type, JSONObject jsonObj) {
-        if(jsonObj == null){
+        if (jsonObj == null) {
             return;
         }
         if (VenvyStatisticsManager.AB_APPLET_TRACK == type) {
             submitABAppletTrackStatisticsInfo(jsonObj);
         } else if (VenvyStatisticsManager.USER_ACTION == type) {
             submitUserActionStatisticsInfo(jsonObj);
-        }else if (VenvyStatisticsManager.VISUAL_SWITCH_COUNT == type) {
+        } else if (VenvyStatisticsManager.VISUAL_SWITCH_COUNT == type) {
             submitVisualSwitchStatisticsInfo(jsonObj);
-        }else if (VenvyStatisticsManager.PLAY_CONFIRM == type) {
+        } else if (VenvyStatisticsManager.PLAY_CONFIRM == type) {
             submitPlayConfirmStatisticsInfo(jsonObj);
-        }else if (VenvyStatisticsManager.PRELOAD_FLOW == type) {
+        } else if (VenvyStatisticsManager.PRELOAD_FLOW == type) {
             submitPreLoadFlowStatisticsInfo(jsonObj);
-        }else if (VenvyStatisticsManager.OPEN_PAGE == type || VenvyStatisticsManager.CLOSE_PAGE == type) {
-            executeThread(jsonObj.toString());
+        } else if (VenvyStatisticsManager.OPEN_PAGE == type
+                || VenvyStatisticsManager.CLOSE_PAGE == type
+                || VenvyStatisticsManager.PAGE_NAME == type) {
+            submitABAppletTrackStatisticsInfo(type, jsonObj);
         }
     }
 
-    private void submitPreLoadFlowStatisticsInfo(JSONObject jsonObj){
+    private void submitPreLoadFlowStatisticsInfo(JSONObject jsonObj) {
         try {
             String dataJson = StatisticDCUtils.obtainPreLoadFlowStatisticsJson(VenvyStatisticsManager.PRELOAD_FLOW, jsonObj);
             executeThread(dataJson);
@@ -69,7 +73,7 @@ public final class VenvyStatisticsManager {
         }
     }
 
-    private void submitPlayConfirmStatisticsInfo(JSONObject jsonObj){
+    private void submitPlayConfirmStatisticsInfo(JSONObject jsonObj) {
         try {
             String dataJson = StatisticDCUtils.obtainPlayConfirmStatisticsJson(VenvyStatisticsManager.PLAY_CONFIRM, jsonObj);
             executeThread(dataJson);
@@ -78,7 +82,7 @@ public final class VenvyStatisticsManager {
         }
     }
 
-    private void submitVisualSwitchStatisticsInfo(JSONObject jsonObj){
+    private void submitVisualSwitchStatisticsInfo(JSONObject jsonObj) {
         try {
             String dataJson = StatisticDCUtils.obtainVisualSwitchStatisticsJson(VenvyStatisticsManager.VISUAL_SWITCH_COUNT, jsonObj);
             executeThread(dataJson);
@@ -105,14 +109,23 @@ public final class VenvyStatisticsManager {
         }
     }
 
+    private void submitABAppletTrackStatisticsInfo(int type, JSONObject jsonObj) {
+        try {
+            String dataJson = StatisticDCUtils.obtainABAppletTrackStatisticsJson(type, jsonObj);
+            executeThread(dataJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void executeThread(String dataJson) {
-        if(!TextUtils.isEmpty(dataJson) && platform != null){
-            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform,dataJson));
+        if (!TextUtils.isEmpty(dataJson) && platform != null) {
+            ThreadManager.getInstance().createLongPool().execute(new AsyncStatisticsRunnable(platform, dataJson));
         }
     }
 
     public void submitVisualSwitchStatisticsInfo(String onOrOff) {
-        if(TextUtils.isEmpty(onOrOff) || platform == null){
+        if (TextUtils.isEmpty(onOrOff) || platform == null) {
             return;
         }
         try {
@@ -123,20 +136,20 @@ public final class VenvyStatisticsManager {
         }
     }
 
-    public void submitFileStatisticsInfo(List<DownloadTask> downloadTaskList ,int downLoadStage) {
-        if(downloadTaskList == null || downloadTaskList.size() <= 0 || platform == null){
+    public void submitFileStatisticsInfo(List<DownloadTask> downloadTaskList, int downLoadStage) {
+        if (downloadTaskList == null || downloadTaskList.size() <= 0 || platform == null) {
             return;
         }
         try {
-            String  dataJson = StatisticDCUtils.obtainFlowStatisticJson(VenvyStatisticsManager.PRELOAD_FLOW,downloadTaskList,downLoadStage);
+            String dataJson = StatisticDCUtils.obtainFlowStatisticJson(VenvyStatisticsManager.PRELOAD_FLOW, downloadTaskList, downLoadStage);
             executeThread(dataJson);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void submitFileStatisticsInfo(StatisticsInfoBean.FileInfoBean fileInfoBean , int downLoadStage) {
-        if(fileInfoBean == null || platform == null){
+    public void submitFileStatisticsInfo(StatisticsInfoBean.FileInfoBean fileInfoBean, int downLoadStage) {
+        if (fileInfoBean == null || platform == null) {
             return;
         }
         try {
