@@ -90,7 +90,7 @@ public class VideoPlusH5Controller {
                 .setInitDirection(provider.getDirection())
                 .setVideoType(provider.getVideoType())
                 .setVideoCategory(provider.getVideoCategory())
-                .setExtendJSONString(provider.getExtendJSONString())
+                .setExtendDict(provider.getExtendDict())
                 .setAppKey(provider.getAppKey()).setAppSecret(provider.getAppSecret());
         return platformInfoBuilder.builder();
     }

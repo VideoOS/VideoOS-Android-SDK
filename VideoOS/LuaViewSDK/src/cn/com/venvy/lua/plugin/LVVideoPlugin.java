@@ -75,7 +75,7 @@ public class LVVideoPlugin {
 
         @Override
         public Varargs invoke(Varargs args) {
-            return mPlatform != null && mPlatform.getPlatformInfo().getExtendJSONString() != null ? LuaValue.valueOf(mPlatform.getPlatformInfo().getExtendJSONString()) : LuaValue.NIL;
+            return mPlatform != null && mPlatform.getPlatformInfo() != null && mPlatform.getPlatformInfo().getExtendDict() != null && mPlatform.getPlatformInfo().getExtendDict().size() > 0 ? LuaUtil.toTable(mPlatform.getPlatformInfo().getExtendDict()) : LuaValue.NIL;
         }
     }
 
@@ -403,8 +403,8 @@ public class LVVideoPlugin {
             if (!TextUtils.isEmpty(platformInfo.getVideoCategory())) {
                 table.set("category", platformInfo.getVideoCategory());
             }
-            if (!TextUtils.isEmpty(platformInfo.getExtendJSONString())) {
-                table.set("extendJSONString", platformInfo.getExtendJSONString());
+            if (platformInfo.getExtendDict() != null && platformInfo.getExtendDict().size() > 0) {
+                table.set("extendDict", LuaUtil.toTable(platformInfo.getExtendDict()));
             }
             return table;
         }
