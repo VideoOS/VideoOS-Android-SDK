@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import cn.com.venvy.common.utils.VenvyPreferenceHelper;
 
 /**
@@ -29,13 +31,14 @@ public class CacheConstants {
      * @param id
      */
     public static void putVisionProgramId(Context context, String fileName, @NonNull String id) {
+
         String data = VenvyPreferenceHelper.getString(context, fileName, RECENT_MINI_APP_ID, "[]");
         try {
             JSONArray array = new JSONArray(data);
             // 判断数据是否之前存在
             boolean isContains = false;
             for (int i = 0, len = array.length(); i < len; i++) {
-                isContains = ((String) array.get(i)).equals(id);
+                isContains = ((String) array.opt(i)).equals(id);
                 if (isContains) {
                     array.remove(i);
                     array.put(id);
@@ -49,10 +52,20 @@ public class CacheConstants {
                 }
                 array.put(id);
             }
+
             VenvyPreferenceHelper.putString(context, fileName, RECENT_MINI_APP_ID, array.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private static JSONArray reverse(JSONArray jsonArray) throws JSONException {
+        for (int i = 0; i < jsonArray.length() / 2; i++) {
+            Object temp = jsonArray.opt(i);
+            jsonArray.put(i,jsonArray.opt(jsonArray.length() - 1 - i));
+            jsonArray.put(jsonArray.length() - 1 - i, temp);
+        }
+        return jsonArray;
     }
 
     /**
@@ -62,9 +75,12 @@ public class CacheConstants {
      * @return
      */
     public static String getVisionProgramId(Context context, String fileName) {
-        return VenvyPreferenceHelper.getString(context, fileName, RECENT_MINI_APP_ID, "{}");
+        try {
+            return reverse(new JSONArray(VenvyPreferenceHelper.getString(context, fileName, RECENT_MINI_APP_ID, "[]"))).toString();
+        } catch (JSONException e) {
+            return "[]";
+        }
     }
-
 
     private static JSONArray removeDuplicates(JSONArray array, String id) throws JSONException {
         boolean isContains;

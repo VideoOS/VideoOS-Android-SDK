@@ -101,6 +101,7 @@ public class StatisticDCUtils {
     }
 
 
+
     public static String obtainFlowStatisticJson(int type, List<DownloadTask> downloadTaskList, int downLoadStage) throws JSONException {
         JSONArray fileInfoArray = new JSONArray();
         JSONObject tmpObj = null;

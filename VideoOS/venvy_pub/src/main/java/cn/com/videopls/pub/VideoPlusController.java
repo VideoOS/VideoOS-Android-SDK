@@ -372,7 +372,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                 .setInitDirection(provider.getDirection())
                 .setVideoType(provider.getVideoType())
                 .setVideoCategory(provider.getVideoCategory())
-                .setExtendJSONString(provider.getExtendJSONString())
+                .setExtendDict(provider.getExtendDict())
                 .setFileProviderAuth(provider.getFileProviderAuth())
                 .setAppKey(provider.getAppKey()).setAppSecret(provider.getAppSecret());
         return platformInfoBuilder.builder();
@@ -773,7 +773,6 @@ public abstract class VideoPlusController implements VenvyObserver {
     public void trackPageTime(boolean isOpen, String appletId) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("type", isOpen ? String.valueOf(VenvyStatisticsManager.OPEN_PAGE) : String.valueOf(VenvyStatisticsManager.CLOSE_PAGE));
             jsonObject.put("appletId", appletId);
         } catch (JSONException e) {
             e.printStackTrace();
