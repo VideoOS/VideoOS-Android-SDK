@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import java.util.Map;
+
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.interf.VideoType;
 
@@ -40,7 +42,7 @@ public class Provider implements Parcelable {
     @Deprecated
     private final int mVerticalSmallVideoWidth;
 
-    private final String mExtendJSONString;
+    private Map mExtendDict;
 
     private final String mFileProviderAuth;
 
@@ -61,12 +63,12 @@ public class Provider implements Parcelable {
         this.mPackageName = builder.mPackageName;
         this.mCustomUDID = builder.mCustomUDID;
         this.mVideoCategory = builder.videoCategory;
-        this.mExtendJSONString = builder.mExtendJSONString;
+        this.mExtendDict = builder.mExtendDict;
         this.mFileProviderAuth = builder.mFileProviderAuth;
     }
 
-    public String getExtendJSONString() {
-        return mExtendJSONString;
+    public Map getExtendDict() {
+        return mExtendDict;
     }
 
     public String getVideoCategory() {
@@ -150,7 +152,7 @@ public class Provider implements Parcelable {
         private String mPackageName;
         private String mCustomUDID;
         private String videoCategory;
-        private String mExtendJSONString;
+        private Map mExtendDict;
         private String mFileProviderAuth;
 
         @Deprecated
@@ -158,8 +160,8 @@ public class Provider implements Parcelable {
             return this;
         }
 
-        public Builder setExtendJSONString(String extendJSONString) {
-            this.mExtendJSONString = extendJSONString;
+        public Builder setExtendDict(Map extendDict) {
+            this.mExtendDict = extendDict;
             return this;
         }
 
@@ -304,7 +306,7 @@ public class Provider implements Parcelable {
         dest.writeInt(this.mVerticalSmallVideoWidth);
         dest.writeString(this.mCustomUDID);
         dest.writeString(this.mVideoCategory);
-        dest.writeString(this.mExtendJSONString);
+        dest.writeMap(this.mExtendDict);
         dest.writeString(this.mFileProviderAuth);
     }
 
@@ -324,7 +326,7 @@ public class Provider implements Parcelable {
         this.mVerticalSmallVideoWidth = in.readInt();
         this.mCustomUDID = in.readString();
         this.mVideoCategory = in.readString();
-        this.mExtendJSONString = in.readString();
+        in.readMap(this.mExtendDict, Map.class.getClassLoader());
         this.mFileProviderAuth = in.readString();
     }
 

@@ -858,12 +858,23 @@ public class JsBridge implements VenvyObserver {
 
         try {
             if (mPlatform != null) {
-                jsonObject.put("videoID", mPlatform.getPlatformInfo().getVideoId());
+                if(mPlatform.getPlatformInfo() != null){
+                    if(!TextUtils.isEmpty(mPlatform.getPlatformInfo().getVideoId())){
+                        jsonObject.put("videoID", mPlatform.getPlatformInfo().getVideoId());
+                    }
+                    if (!TextUtils.isEmpty(mPlatform.getPlatformInfo().getVideoCategory())) {
+                        jsonObject.put("category", mPlatform.getPlatformInfo().getVideoCategory());
+                    }
+                    if (mPlatform.getPlatformInfo().getExtendDict() != null && mPlatform.getPlatformInfo().getExtendDict().size() > 0) {
+                        jsonObject.put("extendDict", new JSONObject(mPlatform.getPlatformInfo().getExtendDict()));
+                    }
+                }
                 IMediaControlListener mediaControlListener = mPlatform.getMediaControlListener();
                 if (mediaControlListener != null) {
                     jsonObject.put("title", TextUtils.isEmpty(mediaControlListener.getVideoTitle()) ? "" : mediaControlListener.getVideoTitle());
                     jsonObject.put("episode", TextUtils.isEmpty(mediaControlListener.getVideoEpisode()) ? "" : mediaControlListener.getVideoEpisode());
                 }
+
             }
         } catch (JSONException e) {
             e.printStackTrace();

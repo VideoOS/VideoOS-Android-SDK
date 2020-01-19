@@ -3,6 +3,8 @@ package cn.com.venvy;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Map;
+
 import cn.com.venvy.common.interf.ScreenStatus;
 import cn.com.venvy.common.interf.VideoType;
 
@@ -25,7 +27,7 @@ public class PlatformInfo implements Parcelable {
     private ScreenStatus mDirection;
     private VideoType mVideoType;
     private final String mVideoCategory;
-    private final String mExtendJSONString;
+    private Map mExtendDict;
     private final String mCustomerPackageName;
     private final String mFileProviderAuth;
 
@@ -43,7 +45,7 @@ public class PlatformInfo implements Parcelable {
         mDirection = builder.mInitDirection == null ? ScreenStatus.SMALL_VERTICAL : builder.mInitDirection;
         mVideoType = builder.mVideoType == null ? VideoType.VIDEOOS : builder.mVideoType;
         mVideoCategory = builder.videoCategory;
-        mExtendJSONString = builder.extendJsonString;
+        mExtendDict = builder.extendDict;
         mCustomerPackageName = builder.mCustomerPackageName;
         mFileProviderAuth = builder.fileProviderAuth;
     }
@@ -54,8 +56,8 @@ public class PlatformInfo implements Parcelable {
         }
     }
 
-    public String getExtendJSONString() {
-        return mExtendJSONString;
+    public Map getExtendDict() {
+        return mExtendDict;
     }
 
     public String getVideoCategory() {
@@ -134,7 +136,7 @@ public class PlatformInfo implements Parcelable {
         private ScreenStatus mInitDirection;
         private VideoType mVideoType;
         private String videoCategory;
-        private String extendJsonString;
+        private Map extendDict;
         private String mCustomerPackageName;
         private String fileProviderAuth;
 
@@ -143,8 +145,8 @@ public class PlatformInfo implements Parcelable {
             return this;
         }
 
-        public Builder setExtendJSONString(String extendJsonString) {
-            this.extendJsonString = extendJsonString;
+        public Builder setExtendDict(Map extendDict) {
+            this.extendDict = extendDict;
             return this;
         }
 
@@ -256,7 +258,7 @@ public class PlatformInfo implements Parcelable {
         dest.writeInt(this.mDirection == null ? -1 : this.mDirection.getId());
         dest.writeInt(this.mVideoType == null ? 0 : this.mVideoType.getId());
         dest.writeString(this.mVideoCategory);
-        dest.writeString(this.mExtendJSONString);
+        dest.writeMap(this.mExtendDict);
         dest.writeString(this.mCustomerPackageName);
         dest.writeString(this.mFileProviderAuth);
     }
@@ -276,7 +278,7 @@ public class PlatformInfo implements Parcelable {
         this.mDirection = tmpMInitDirection == -1 ? ScreenStatus.SMALL_VERTICAL : ScreenStatus.getStatusById(tmpMInitDirection);
         this.mVideoType = tmpMInitDirection == -1 ? VideoType.VIDEOOS : VideoType.getStatusById(tmpMInitDirection);
         this.mVideoCategory = in.readString();
-        this.mExtendJSONString = in.readString();
+        in.readMap(this.mExtendDict,Map.class.getClassLoader());
         this.mCustomerPackageName = in.readString();
         this.mFileProviderAuth = in.readString();
     }
