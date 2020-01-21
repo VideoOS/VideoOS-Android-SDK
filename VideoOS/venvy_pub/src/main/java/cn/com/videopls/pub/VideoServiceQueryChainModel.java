@@ -208,7 +208,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         if (zipJsonDataArray != null && zipJsonDataArray.length() > 0) {
                                             jsonObject.put("data", zipJsonDataArray);
                                         }
-                                        callback.queryComplete(jsonObject, videoModeMiniAppInfoObj.toString(),
+                                        callback.queryComplete(jsonObject, videoModeMiniAppInfoObj.toString(), obj.toString(),
                                                 queryAdsInfo);
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -296,7 +296,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
 
 
     public interface ServiceQueryChainCallback {
-        void queryComplete(Object queryAdsData, String miniAppInfo, ServiceQueryAdsInfo queryAdsInfo);
+        void queryComplete(Object queryAdsData, String miniAppInfo, String originData ,ServiceQueryAdsInfo queryAdsInfo);
 
         void queryError(Throwable t);
     }
