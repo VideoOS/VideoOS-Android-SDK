@@ -1,14 +1,18 @@
 package cn.com.venvy.lua.plugin;
 
+import android.provider.Settings;
 import android.text.TextUtils;
 
+import com.taobao.luaview.global.LuaViewCore;
 import com.taobao.luaview.util.LuaUtil;
 
+import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import cn.com.venvy.common.report.Report;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
 /**
@@ -22,7 +26,7 @@ public class LVReportPlugin {
     private static final String TAG = "LVReportPlugin";
 
     public static void install(VenvyLVLibBinder venvyLVLibBinder) {
-        venvyLVLibBinder.set("report", sLuaReport == null ? sLuaReport = new LuaReport() : sLuaReport);
+        venvyLVLibBinder.set("logReport", sLuaReport == null ? sLuaReport = new LuaReport() : sLuaReport);
     }
 
     private static class LuaReport extends VarArgFunction {
@@ -30,28 +34,31 @@ public class LVReportPlugin {
         public Varargs invoke(Varargs args) {
             int fixIndex = VenvyLVLibBinder.fixIndex(args);
             if (args.narg() > fixIndex) {
-                LuaValue keyValue = args.arg(fixIndex + 2);  //key
-                String message = VenvyLVLibBinder.luaValueToString(keyValue);
+                LuaValue messageValue = args.arg(fixIndex + 1);//key
+                String message = VenvyLVLibBinder.luaValueToString(messageValue);
                 if (TextUtils.isEmpty(message)) {
                     return LuaValue.NIL;
                 }
-                switch (LuaUtil.getString(args, fixIndex + 1)) {
-                    case "0":
-                        Report.report(Report.ReportLevel.i, TAG, message);
+                int level = LuaUtil.getInt(args, fixIndex + 2) == null ? 0 : LuaUtil.getInt(args, fixIndex + 2);
+                boolean needReport = LuaUtil.getBoolean(args, fixIndex + 3) == null ? true : false;
+                switch (level) {
+                    case 0:
+                        VenvyLog.i(message);
+                        if (true) {
+                            Report.report(Report.ReportLevel.i, TAG, message);
+                        }
                         break;
-                    case "1":
-                        Report.report(Report.ReportLevel.w, TAG, message);
-                        break;
-                    case "2":
-                        Report.report(Report.ReportLevel.e, TAG, message);
-                        break;
-                    case "3":
-                        Report.report(Report.ReportLevel.u, TAG, message);
-                        break;
-                    case "4":
-                        Report.report(Report.ReportLevel.d, TAG, message);
+                    case 1:
+                        VenvyLog.i(message);
+                        if (needReport) {
+                            Report.report(Report.ReportLevel.w, TAG, message);
+                        }
                         break;
                     default:
+                        VenvyLog.i(message);
+                        if (true) {
+                            Report.report(Report.ReportLevel.i, TAG, message);
+                        }
                         break;
                 }
             }
