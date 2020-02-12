@@ -16,6 +16,7 @@ import java.util.Map;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
@@ -64,6 +65,7 @@ public class PreloadZipUpdate {
 
     /***
      * 开启下载Lua文件
+     *
      * @param luaUrls Lua文件列表
      */
     public void startDownloadZipFile(JSONArray luaUrls) {
@@ -81,6 +83,7 @@ public class PreloadZipUpdate {
 
     /***
      * 检查获取需要下载的Zip文件
+     *
      * @param zipUrls
      */
     private void checkDownZipUrls(final JSONArray zipUrls) {
@@ -162,6 +165,7 @@ public class PreloadZipUpdate {
 
     /***
      * 解压Zip并读取文件
+     *
      * @param zipFiles
      */
     private void unZipAndReadData(final List<File> zipFiles) {
@@ -244,7 +248,8 @@ public class PreloadZipUpdate {
 
     /***
      * 下载Zip
-     * @param downZipUrls 全部的Url
+     *
+     * @param downZipUrls     全部的Url
      * @param needDownZipUrls 需要下载的Url
      */
     private void startDownloadZipFile(final List<String> downZipUrls, final List<String> needDownZipUrls) {
@@ -289,6 +294,7 @@ public class PreloadZipUpdate {
                     CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                     if (callback != null) {
                         callback.updateError(new Exception("update error,because downloadTask error"));
+                        Report.report(Report.ReportLevel.w, PreloadZipUpdate.class.getName(), buildReportString(failedTasks));
                     }
                     return;
                 }
@@ -307,6 +313,7 @@ public class PreloadZipUpdate {
 
     /***
      * 获取回调
+     *
      * @return
      */
     private CacheZipUpdateCallback getCacheLuaUpdateCallback() {
@@ -331,6 +338,7 @@ public class PreloadZipUpdate {
 
     /***
      * 获取本地Zip文件内容MD5值
+     *
      * @param fileName
      * @return
      */
@@ -340,6 +348,7 @@ public class PreloadZipUpdate {
 
     /***
      * 获取下载Zip的绝对路径
+     *
      * @return
      */
     private String getZipAbsolutePath() {
@@ -348,9 +357,24 @@ public class PreloadZipUpdate {
 
     /***
      * 获取解压Zip的绝对路径
+     *
      * @return
      */
     private String getUnZipAbsolutePath() {
         return VenvyFileUtil.getCachePath(App.getContext()) + UN_ZIP_PATH;
+    }
+
+    private static String buildReportString(List<DownloadTask> failedTasks) {
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("[download zip failed],");
+        builder.append("\\n");
+        if (failedTasks != null) {
+            for (DownloadTask downloadTask : failedTasks) {
+                builder.append("url = ").append(downloadTask.getDownloadUrl());
+                builder.append("\\n");
+            }
+        }
+        return builder.toString();
     }
 }

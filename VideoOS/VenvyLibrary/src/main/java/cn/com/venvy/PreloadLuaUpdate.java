@@ -18,6 +18,7 @@ import cn.com.venvy.common.bean.LuaFileInfo;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
@@ -199,6 +200,7 @@ public class PreloadLuaUpdate {
                 if (callback != null) {
                     if (failedTasks != null && failedTasks.size() > 0) {
                         callback.updateError(new Exception("update Lua error,because down urls is failed"));
+                        Report.report(Report.ReportLevel.w, PreloadLuaUpdate.class.getName(), buildReportString(failedTasks));
                     } else {
                         callback.updateComplete(true);
                     }
@@ -229,5 +231,18 @@ public class PreloadLuaUpdate {
             return VenvyMD5Util.EncoderByMd5(new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + miniAppId + File.separator + fileName));
         }
         return VenvyMD5Util.EncoderByMd5(new File(VenvyFileUtil.getCachePath(App.getContext()) + LUA_CACHE_PATH + File.separator + fileName));
+    }
+    private static String buildReportString(List<DownloadTask> failedTasks) {
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("[download lua failed],");
+        builder.append("\\n");
+        if (failedTasks != null) {
+            for (DownloadTask downloadTask : failedTasks) {
+                builder.append("url = ").append(downloadTask.getDownloadUrl());
+                builder.append("\\n");
+            }
+        }
+        return builder.toString();
     }
 }
