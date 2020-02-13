@@ -70,6 +70,17 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
 
 
     @Override
+    public void setZoomScale(float scale) {
+        if (mAgentWeb != null && mAgentWeb.getWebCreator() != null) {
+            WebView webView = mAgentWeb.getWebCreator().getWebView();
+            if (webView == null) {
+                return;
+            }
+            webView.setInitialScale((int) (scale * 100));
+        }
+    }
+
+    @Override
     public boolean canGoBack() {
         if (mAgentWeb == null || mAgentWeb.getWebCreator() == null) {
             return false;

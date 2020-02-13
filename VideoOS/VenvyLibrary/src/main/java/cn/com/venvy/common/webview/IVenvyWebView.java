@@ -29,6 +29,8 @@ public interface IVenvyWebView {
 
     void stopLoading();
 
+    void setZoomScale(float scale);
+
     String getTitle();
 
     String getUrl();

@@ -38,8 +38,9 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
             "url",//9
             "pullRefreshEnable",//10
             "callJS",//11
-            "callback", // 12
-            "setInitData" // 13
+            "webViewCallback", // 12
+            "setInitData", // 13
+            "setZoomScale" // 14
     };
 
     @Override
@@ -79,6 +80,8 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
                 return webViewCallback(target, varargs);
             case 13:
                 return setInitData(target, varargs);
+            case 14:
+                return setZoomScale(target, varargs);
         }
         return super.invoke(code, target, varargs);
     }
@@ -173,5 +176,13 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
             return view.setInitData(jsData);
         }
         return LuaValue.valueOf("");
+    }
+
+    public LuaValue setZoomScale(U view, Varargs varargs) {
+        Float scale = LuaUtil.getFloat(varargs, 2);
+        if (scale > 0) {
+            view.setZoomScale(scale);
+        }
+        return LuaValue.TRUE;
     }
 }

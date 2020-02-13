@@ -203,5 +203,12 @@ public class VenvyUDWebView extends UDView<VenvyLVWebView> {
         return this;
     }
 
+    public void setZoomScale(float scale) {
+        final VenvyLVWebView view = this.getView();
+        if (view != null) {
+            view.setZoomScale(scale);
+        }
+    }
+
 }
 
