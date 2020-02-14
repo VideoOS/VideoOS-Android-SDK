@@ -372,7 +372,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                 .setInitDirection(provider.getDirection())
                 .setVideoType(provider.getVideoType())
                 .setVideoCategory(provider.getVideoCategory())
-                .setExtendJSONString(provider.getExtendJSONString())
+                .setExtendDict(provider.getExtendDict())
                 .setFileProviderAuth(provider.getFileProviderAuth())
                 .setAppKey(provider.getAppKey()).setAppSecret(provider.getAppSecret());
         return platformInfoBuilder.builder();
