@@ -163,12 +163,6 @@ local function checkHotspotShow(data)
         commonParam = Native:commonParam()
     }
 
-    local videoInfo = Native:getVideoInfo()
-
-    if videoInfo["extendDict"] ~= nil then
-        paramData["videoInfo"] = videoInfo["extendDict"]
-    end
-
     local paramDataString = Native:tableToJson(paramData)
     -- local OS_HTTP_POST_CHECK_HOTSPOT = OS_HTTP_HOST .. "/api/notice"
 
@@ -371,13 +365,6 @@ local function getTaglist()
         title = Native:getVideoTitle(),
         commonParam = Native:commonParam()
     }
-
-    local videoInfo = Native:getVideoInfo()
-
-    if videoInfo["extendDict"] ~= nil then
-        paramData["videoInfo"] = videoInfo["extendDict"]
-    end
-
     local paramDataString = Native:tableToJson(paramData)
     --print("[LuaView] "..paramDataString)
     --print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
@@ -391,7 +378,6 @@ local function getTaglist()
             return
         end
         responseData = Native:aesDecrypt(response.encryptData, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
-        print("luaview "..responseData)
 
         response = toTable(responseData)
         if (response.resCode ~= "00") then
@@ -442,15 +428,8 @@ local function getSimulationTag()
         videoId = Native:nativeVideoID(),
         commonParam = Native:commonParam()
     }
-
-    local extendTable = nil
-
-    local videoInfo = Native:getVideoInfo()
-
-    if videoInfo["extendDict"] ~= nil then
-        paramData["videoInfo"] = videoInfo["extendDict"]
-        extendTable = videoInfo["extendDict"]
-    end
+    local extendJson = Native:getConfigExtendJSONString()
+    local extendTable = toTable(extendJson)
 
     if extendTable["creativeName"] ~= nil then
         paramData["creativeName"] = extendTable["creativeName"]
@@ -507,13 +486,6 @@ local function getResourcelist()
         videoId = Native:nativeVideoID(),
         commonParam = Native:commonParam()
     }
-
-    local videoInfo = Native:getVideoInfo()
-
-    if videoInfo["extendDict"] ~= nil then
-        paramData["videoInfo"] = videoInfo["extendDict"]
-    end
-
     local paramDataString = Native:tableToJson(paramData)
     -- print("[LuaView] getResourcelist")
     --print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
@@ -589,13 +561,6 @@ function show(args)
         videoId = Native:nativeVideoID(),
         commonParam = Native:commonParam()
     }
-
-    local videoInfo = Native:getVideoInfo()
-
-    if videoInfo["extendDict"] ~= nil then
-        paramData["videoInfo"] = videoInfo["extendDict"]
-    end
-
     local paramDataString = Native:tableToJson(paramData)
     --print("luaview "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
     mainNode.request:post(OS_HTTP_GET_CONFIG, {
