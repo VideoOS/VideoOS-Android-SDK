@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.FrameLayout;
 
@@ -305,7 +306,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
                     jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_X_OFFSET, videoModeDeskOffset.first);
                     jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_VIDEO_MODE_Y_OFFSET, videoModeDeskOffset.second);
                 }
-                jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_LABEL_CONF_DATA, originData);
+                jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_LABEL_CONF_DATA, new JSONObject(originData));
 
             } catch (JSONException e) {
                 e.printStackTrace();
