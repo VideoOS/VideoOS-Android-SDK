@@ -156,7 +156,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
         startQueryConnect(serviceType, params, new IStartQueryResult() {
             @Override
-            public void successful(Object result, String miniAppInfo, final ServiceQueryAdsInfo queryAdsInfo) {
+            public void successful(Object result, String miniAppInfo, String originData, final ServiceQueryAdsInfo queryAdsInfo) {
                 if (queryAdsInfo == null) {
                     if (callback != null) {
                         callback.onFailToCompleteForService(new Exception("error query ads params" +
@@ -195,6 +195,11 @@ public abstract class VideoPlusController implements VenvyObserver {
                     } else {
                         builder.appendQueryParameter(VenvySchemeUtil.QUERY_MINIAPP_ID, "");
                     }
+
+                    if (!TextUtils.isEmpty(originData)) {
+                        jsonObject.put(VenvyObservableTarget.Constant.CONSTANT_LABEL_CONF_DATA, new JSONObject(originData));
+                    }
+
                     skipParams.put(CONSTANT_DATA, jsonObject.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -478,9 +483,9 @@ public abstract class VideoPlusController implements VenvyObserver {
                 // 视联网模式
                 mQueryAdsModel = new VideoServiceQueryChainModel(mPlatform, params, serviceType == ServiceTypeVideoMode_TAG, new VideoServiceQueryChainModel.ServiceQueryChainCallback() {
                     @Override
-                    public void queryComplete(Object queryAdsData, String miniAppInfo, ServiceQueryAdsInfo queryAdsInfo) {
+                    public void queryComplete(Object queryAdsData, String miniAppInfo, String originData, ServiceQueryAdsInfo queryAdsInfo) {
                         if (result != null) {
-                            result.successful(queryAdsData, miniAppInfo, queryAdsInfo);
+                            result.successful(queryAdsData, miniAppInfo, originData, queryAdsInfo);
                         }
                     }
 
@@ -569,7 +574,7 @@ public abstract class VideoPlusController implements VenvyObserver {
                             @Override
                             public void queryComplete(Object queryAdsData, String miniAppInfo, ServiceQueryAdsInfo queryAdsInfo) {
                                 if (result != null) {
-                                    result.successful(queryAdsData, miniAppInfo, queryAdsInfo);
+                                    result.successful(queryAdsData, miniAppInfo, "", queryAdsInfo);
                                 }
                             }
 
