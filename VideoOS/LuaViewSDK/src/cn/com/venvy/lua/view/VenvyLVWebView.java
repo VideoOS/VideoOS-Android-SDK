@@ -94,6 +94,9 @@ public class VenvyLVWebView extends FrameLayout implements ILVNativeViewProvider
         return mIsLoading;
     }
 
+    public void setZoomScale(float scale) {
+        mWebView.setZoomScale(scale);
+    }
 
     public void setJsData(String jsData){
         mJsBridge.setJsData(jsData);
