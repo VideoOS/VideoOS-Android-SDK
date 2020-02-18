@@ -163,6 +163,12 @@ local function checkHotspotShow(data)
         commonParam = Native:commonParam()
     }
 
+    local videoInfo = Native:getVideoInfo()
+
+    if videoInfo["extendDict"] ~= nil then
+        paramData["videoInfo"] = videoInfo["extendDict"]
+    end
+
     local paramDataString = Native:tableToJson(paramData)
     -- local OS_HTTP_POST_CHECK_HOTSPOT = OS_HTTP_HOST .. "/api/notice"
 
@@ -177,10 +183,15 @@ local function checkHotspotShow(data)
     }, function(response, errorInfo)
         -- print("luaview getVoteCountInfo")
 
+        if (errorInfo ~= nil) then
+            Native:logReport("[http request failed], url:" .. OS_HTTP_POST_CHECK_HOTSPOT .. ", msg:" .. errorInfo, 1, true)
+            return
+        end
+
         local requestType = 0
         local playStatus = 0
         local isShow = 0
-        if (response ~= nil) then
+        if (response ~= nil and response.encryptData ~= nil) then
             requestType = 1
             -- print("luaview getVoteCountInfo 11"..Native:tableToJson(response))
             responseData = Native:aesDecrypt(response.encryptData, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
@@ -197,7 +208,11 @@ local function checkHotspotShow(data)
                         isShow = 1
                     end
                 end
+            else
+                Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_POST_CHECK_HOTSPOT .. ", msg:" .. "Response data code failed, code:" .. tostring(response.resCode) .. ", msg:" .. tostring(response.resMsg), 1, true)
             end
+        else
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_POST_CHECK_HOTSPOT .. ", msg:Response data parsing failure", 1, true)
         end
         trackNotice(data, requestType, playStatus, isShow)
     end)
@@ -365,6 +380,13 @@ local function getTaglist()
         title = Native:getVideoTitle(),
         commonParam = Native:commonParam()
     }
+
+    local videoInfo = Native:getVideoInfo()
+
+    if videoInfo["extendDict"] ~= nil then
+        paramData["videoInfo"] = videoInfo["extendDict"]
+    end
+
     local paramDataString = Native:tableToJson(paramData)
     --print("[LuaView] "..paramDataString)
     --print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
@@ -374,13 +396,22 @@ local function getTaglist()
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
     }, function(response, errorInfo)
         --print("luaview getTaglist")
-        if (response == nil) then
+
+        if (errorInfo ~= nil) then
+            Native:logReport("[http request failed], url:" .. OS_HTTP_GET_TAG_LIST .. ", msg:" .. errorInfo, 1, true)
+            return
+        end
+
+        if (response == nil or response.encryptData == nil) then
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_POST_CHECK_HOTSPOT .. ", msg:Response data parsing failure", 1, true)
             return
         end
         responseData = Native:aesDecrypt(response.encryptData, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
+        print("luaview "..responseData)
 
         response = toTable(responseData)
         if (response.resCode ~= "00") then
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_GET_TAG_LIST .. ", msg:" .. "Response data code failed, code:" .. tostring(response.resCode) .. ", msg:" .. tostring(response.resMsg), 1, true)
             return
         end
         local dataTable = response.launchInfoList
@@ -428,8 +459,15 @@ local function getSimulationTag()
         videoId = Native:nativeVideoID(),
         commonParam = Native:commonParam()
     }
-    local extendJson = Native:getConfigExtendJSONString()
-    local extendTable = toTable(extendJson)
+
+    local extendTable = nil
+
+    local videoInfo = Native:getVideoInfo()
+
+    if videoInfo["extendDict"] ~= nil then
+        paramData["videoInfo"] = videoInfo["extendDict"]
+        extendTable = videoInfo["extendDict"]
+    end
 
     if extendTable["creativeName"] ~= nil then
         paramData["creativeName"] = extendTable["creativeName"]
@@ -443,13 +481,22 @@ local function getSimulationTag()
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
     }, function(response, errorInfo)
         --print("luaview getSimulationTag")
-        if (response == nil) then
+
+        if (errorInfo ~= nil) then
+            Native:logReport("[http request failed], url:" .. OS_HTTP_GET_SIMULATION_TAG .. ", msg:" .. errorInfo, 1, true)
             return
         end
+
+        if (response == nil or response.encryptData == nil) then
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_GET_SIMULATION_TAG .. ", msg:Response data parsing failure", 1, true)
+            return
+        end
+
         responseData = Native:aesDecrypt(response.encryptData, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
         --print("luaview "..responseData)
         response = toTable(responseData)
         if (response.resCode ~= "00") then
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_GET_SIMULATION_TAG .. ", msg:" .. "Response data code failed, code:" .. tostring(response.resCode) .. ", msg:" .. tostring(response.resMsg), 1, true)
             return
         end
         local dataTable = response.launchInfoList
@@ -486,6 +533,13 @@ local function getResourcelist()
         videoId = Native:nativeVideoID(),
         commonParam = Native:commonParam()
     }
+
+    local videoInfo = Native:getVideoInfo()
+
+    if videoInfo["extendDict"] ~= nil then
+        paramData["videoInfo"] = videoInfo["extendDict"]
+    end
+
     local paramDataString = Native:tableToJson(paramData)
     -- print("[LuaView] getResourcelist")
     --print("[LuaView] "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
@@ -494,7 +548,15 @@ local function getResourcelist()
         device_type = deviceType,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
     }, function(response, errorInfo)
-        if (response == nil) then
+
+        if (errorInfo ~= nil) then
+            Native:logReport("[http request failed], url:" .. OS_HTTP_GET_RESOURCE_LIST .. ", msg:" .. errorInfo, 1, true)
+            reloadGetResourcelist()
+            return
+        end
+
+        if (response == nil or response.encryptData == nil) then
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_GET_RESOURCE_LIST .. ", msg:Response data parsing failure", 1, true)
             reloadGetResourcelist()
             return
         end
@@ -503,11 +565,13 @@ local function getResourcelist()
         -- print("luaview "..responseData)
 
         response = toTable(responseData)
+
         if (response == nil) then
             reloadGetResourcelist()
             return
         end
         if (response.resCode ~= "00") then
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_GET_RESOURCE_LIST .. ", msg:" .. "Response data code failed, code:" .. tostring(response.resCode) .. ", msg:" .. tostring(response.resMsg), 1, true)
             reloadGetResourcelist()
             return
         end
@@ -561,6 +625,13 @@ function show(args)
         videoId = Native:nativeVideoID(),
         commonParam = Native:commonParam()
     }
+
+    local videoInfo = Native:getVideoInfo()
+
+    if videoInfo["extendDict"] ~= nil then
+        paramData["videoInfo"] = videoInfo["extendDict"]
+    end
+
     local paramDataString = Native:tableToJson(paramData)
     --print("luaview "..Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY))
     mainNode.request:post(OS_HTTP_GET_CONFIG, {
@@ -569,13 +640,22 @@ function show(args)
         target_id = roomId,
         data = Native:aesEncrypt(paramDataString, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
     }, function(response, errorInfo)
-        if (response == nil) then
+
+        if (errorInfo ~= nil) then
+            Native:logReport("[http request failed], url:" .. OS_HTTP_GET_CONFIG .. ", msg:" .. errorInfo, 1, true)
             return
         end
+
+        if (response == nil or response.encryptData == nil) then
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_GET_CONFIG .. ", msg:Response data parsing failure", 1, true)
+            return
+        end
+
         responseData = Native:aesDecrypt(response.encryptData, OS_HTTP_PUBLIC_KEY, OS_HTTP_PUBLIC_KEY)
         --print("luaview "..responseData)
         response = toTable(responseData)
         if (response.resCode ~= "00") then
+            Native:logReport("[HTTP response incorrect], url:" .. OS_HTTP_GET_CONFIG .. ", msg:" .. "Response data code failed, code:" .. tostring(response.resCode) .. ", msg:" .. tostring(response.resMsg), 1, true)
             return
         end
 
