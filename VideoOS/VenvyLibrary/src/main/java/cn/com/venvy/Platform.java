@@ -3,8 +3,6 @@ package cn.com.venvy;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
-import org.json.JSONArray;
-
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -72,7 +70,7 @@ public class Platform implements Serializable {
             mPlatformInfo = platformInfo;
         }
         TrackHelper.init(this);
-//        Report.initReport(this);
+        Report.initReport(this);
     }
 
     public void setContentViewGroup(ViewGroup contentViewGroup) {
