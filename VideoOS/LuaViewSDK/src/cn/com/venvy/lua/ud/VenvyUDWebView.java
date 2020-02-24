@@ -210,5 +210,11 @@ public class VenvyUDWebView extends UDView<VenvyLVWebView> {
         }
     }
 
+    public void disableDeepLink(boolean disableDeepLink) {
+        final VenvyLVWebView view = this.getView();
+        if (view != null) {
+            view.disableDeepLink(disableDeepLink);
+        }
+    }
 }
 

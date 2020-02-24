@@ -31,6 +31,8 @@ public interface IVenvyWebView {
 
     void setZoomScale(float scale);
 
+    void disableDeepLink(boolean disableDeepLink);
+
     String getTitle();
 
     String getUrl();
