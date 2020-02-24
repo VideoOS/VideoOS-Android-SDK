@@ -12,8 +12,12 @@ import android.text.TextUtils;
 
 import com.taobao.luaview.userdata.ui.UDSpannableString;
 
+import org.luaj.vm2.LuaBoolean;
+import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaInteger;
 import org.luaj.vm2.LuaNumber;
+import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
@@ -804,16 +808,18 @@ public class LuaUtil {
                 String value = null;
                 if (luaValue.istable()) {
                     value = JsonUtil.toString(luaValue);
-                } else if (luaValue.isint()) {
-                    value = String.valueOf(luaValue.optint(0));
-                } else if (luaValue.islong()) {
-                    value = String.valueOf(luaValue.optlong(0));
-                } else if (luaValue.isnumber()) {
-                    value = String.valueOf(luaValue.optint(0));
-                } else if (luaValue.isboolean()) {
-                    value = String.valueOf(luaValue.optboolean(false));
-                } else if (luaValue.isstring()) {
-                    value = String.valueOf(luaValue.optstring(null));
+                } else {
+                    if (luaValue instanceof LuaBoolean) {
+                        value = String.valueOf(luaValue.optboolean(false));
+                    } else if (luaValue instanceof LuaInteger) {
+                        value = String.valueOf(luaValue.optint(0));
+                    } else if (luaValue instanceof LuaDouble) {
+                        value = String.valueOf(luaValue.optdouble(0));
+                    } else if (luaValue instanceof LuaString) {
+                        value = String.valueOf(luaValue.optstring(null));
+                    } else {
+                        value = String.valueOf(luaValue);
+                    }
                 }
                 if (value != null) {
                     result.put(key.optjstring(null), value);
