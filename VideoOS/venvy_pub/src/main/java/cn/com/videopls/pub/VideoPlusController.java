@@ -92,6 +92,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         VenvyRegisterLibsManager.registerImageViewLib(videoOSAdapter.buildImageView());
         VenvyRegisterLibsManager.registerSvgaImageView(videoOSAdapter.buildSvgaImageView());
         VenvyRegisterLibsManager.registerSocketConnect(videoOSAdapter.buildSocketConnect());
+        VenvyRegisterLibsManager.registerACRCloud(videoOSAdapter.buildACRCloud());
     }
 
     public void setAppletListener(IAppletListener appletListener) {

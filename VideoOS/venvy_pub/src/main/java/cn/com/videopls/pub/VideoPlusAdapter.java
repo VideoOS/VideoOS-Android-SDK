@@ -6,6 +6,7 @@ import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.image.IImageLoader;
 import cn.com.venvy.common.image.IImageSize;
 import cn.com.venvy.common.image.IImageView;
+import cn.com.venvy.common.interf.IACRCloud;
 import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
 import cn.com.venvy.common.interf.ISocketConnect;
@@ -58,6 +59,10 @@ public abstract class VideoPlusAdapter {
     }
 
     public Class<? extends ISocketConnect> buildSocketConnect() {
+        return null;
+    }
+
+    public Class<? extends IACRCloud> buildACRCloud() {
         return null;
     }
 
