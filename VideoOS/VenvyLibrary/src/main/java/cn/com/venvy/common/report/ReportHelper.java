@@ -48,7 +48,7 @@ class ReportHelper {
     private static final String REPORT_AES_IV = "lx7eZhVoBEnKXELF";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
-    private static final String REPORT_URL = "https://log.videojj.com/api/log";
+    private static final String REPORT_URL = "https://os-saas.videojj.com/os-report-log/api/log";
 
     //最大缓存条数
     private static final int MAX_CACHE_NUM = 5;
@@ -122,7 +122,7 @@ class ReportHelper {
                     HashMap<String, String> params = new HashMap<>();
                     String signParams = VenvyAesUtil.encrypt(REPORT_AES_KEY, REPORT_AES_IV, gzipString);
                     params.put(REPORT_SERVER_KEY, signParams);
-                    Request request = HttpRequest.put(REPORT_URL, params);
+                    Request request = HttpRequest.post(REPORT_URL, params);
                     request.setPriority(Priority.LOW);
                     mConnect.connect(request, new IRequestHandler() {
                         @Override
@@ -136,8 +136,8 @@ class ReportHelper {
                                         return;
                                     }
                                     JSONObject jsonObject = new JSONObject(body);
-                                    if (jsonObject.has("logReport")) {
-                                        int reportNum = jsonObject.optInt("logReport");
+                                    if (jsonObject.has("data")) {
+                                        int reportNum = jsonObject.optInt("data");
                                         Report.ReportLevel.buildLevelAble(reportNum);
                                     }
                                 } catch (Exception e) {
