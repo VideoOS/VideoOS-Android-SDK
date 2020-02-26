@@ -51,7 +51,7 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
     public LuaValue acrRecognizeCallback(U target, Varargs varargs) {
         final LuaFunction callback = varargs.optfunction(2, null);
         if (callback != null && callback.isfunction()) {
-            return target.setMqttCallback(callback);
+            return target.setAcrCloudCallback(callback);
         }
         return LuaValue.NIL;
     }

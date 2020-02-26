@@ -9,6 +9,7 @@ import cn.com.venvy.common.image.IImageView;
 import cn.com.venvy.common.interf.IACRCloud;
 import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
+import cn.com.venvy.common.interf.IPlatformRecordInterface;
 import cn.com.venvy.common.interf.ISocketConnect;
 import cn.com.venvy.common.interf.ISvgaImageView;
 import cn.com.venvy.common.interf.IWidgetClickListener;
@@ -81,7 +82,9 @@ public abstract class VideoPlusAdapter {
     public IPlatformLoginInterface buildLoginInterface() {
         return null;
     }
-
+    public IPlatformRecordInterface buildRecordInterface(){
+        return null;
+    }
     public IWidgetPrepareShowListener buildWidgetPrepareShowListener() {
         return null;
     }

@@ -3,8 +3,6 @@ package cn.com.venvy;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
-import org.json.JSONArray;
-
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -20,6 +18,7 @@ import cn.com.venvy.common.download.TaskListener;
 import cn.com.venvy.common.interf.IAppletListener;
 import cn.com.venvy.common.interf.IMediaControlListener;
 import cn.com.venvy.common.interf.IPlatformLoginInterface;
+import cn.com.venvy.common.interf.IPlatformRecordInterface;
 import cn.com.venvy.common.interf.IWidgetClickListener;
 import cn.com.venvy.common.interf.IWidgetCloseListener;
 import cn.com.venvy.common.interf.IWidgetPrepareShowListener;
@@ -28,7 +27,6 @@ import cn.com.venvy.common.interf.OnTagKeyListener;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.media.StorageUtils;
 import cn.com.venvy.common.media.file.Md5FileNameGenerator;
-import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.track.TrackHelper;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
@@ -45,6 +43,7 @@ public class Platform implements Serializable {
     private boolean nvgShow = true; // 视联网小程序是否显示导航栏
     //手动上报逻辑
     private IPlatformLoginInterface mPlatformLoginInterface;
+    private IPlatformRecordInterface mPlatformRecordInterface;
     private IMediaControlListener mMediaControlListener;
     private IWidgetShowListener mWidgetShowListener;
     private IWidgetCloseListener mWidgetCloseListener;
@@ -103,6 +102,10 @@ public class Platform implements Serializable {
         this.mPlatformLoginInterface = mPlatformLoginInterface;
     }
 
+    public void setPlatformRecordInterface(IPlatformRecordInterface mPlatformRecordInterface) {
+        this.mPlatformRecordInterface = mPlatformRecordInterface;
+    }
+
     public void setWidgetClickListener(IWidgetClickListener mWidgetClickListener) {
         this.mWidgetClickListener = mWidgetClickListener;
     }
@@ -156,6 +159,10 @@ public class Platform implements Serializable {
 
     public IPlatformLoginInterface getPlatformLoginInterface() {
         return mPlatformLoginInterface;
+    }
+
+    public IPlatformRecordInterface getPlatformRecordInterface() {
+        return mPlatformRecordInterface;
     }
 
     public void updatePlatformInfo(PlatformInfo platformInfo) {

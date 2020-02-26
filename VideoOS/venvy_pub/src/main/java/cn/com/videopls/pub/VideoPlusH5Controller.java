@@ -61,6 +61,7 @@ public class VideoPlusH5Controller {
         platform.setWidgetCloseListener(videoOSAdapter.buildWidgetCloseListener());
         platform.setMediaControlListener(videoOSAdapter.buildMediaController());
         platform.setPlatformLoginInterface(videoOSAdapter.buildLoginInterface());
+        platform.setPlatformRecordInterface(videoOSAdapter.buildRecordInterface());
         platform.setTagKeyListener(videoOSAdapter.buildOttKeyListener());
         platform.setWedgeListener(videoOSAdapter.buildWedgeListener());
         platform.setWidgetPrepareShowListener(videoOSAdapter.buildWidgetPrepareShowListener());
