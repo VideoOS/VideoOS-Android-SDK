@@ -10,6 +10,7 @@ import com.taobao.luaview.global.LuaViewConfig;
 
 import cn.com.venvy.Platform;
 import cn.com.venvy.lua.binder.UIGradientViewBinder;
+import cn.com.venvy.lua.binder.VenvyAcrCloudBinder;
 import cn.com.venvy.lua.binder.VenvyActivityLifeCycleBinder;
 import cn.com.venvy.lua.binder.VenvyAppletBinder;
 import cn.com.venvy.lua.binder.VenvyHttpRequestBinder;
@@ -34,6 +35,7 @@ public class LuaHelper {
     private static UIGradientViewBinder uiGradientViewBinder;
     private static VenvyMediaLifeCycleBinder venvyMediaLifeCycleBinder;
     private static VenvyMqttBinder venvyMqttBinder;
+    private static VenvyAcrCloudBinder acrCloudBinder;
     private static VenvyWebViewBinder venvyWebViewBinder;
     private static VenvyActivityLifeCycleBinder venvyActivityLifeCycleBinder;
     private static VenvyKeyboardBinder venvyKeyboardBinder;
@@ -76,6 +78,7 @@ public class LuaHelper {
         luaView.registerLibs(getUiGradientViewBinder(),
                 getMediaLifeCycleBinder(platform),
                 getMqttBinder(),
+                getAcrCloudBinder(),
                 getAppletBinder(platform),
                 getSvgaBinder(),
                 getWebViewBinder(platform),
@@ -123,6 +126,10 @@ public class LuaHelper {
         return venvyMqttBinder == null ? venvyMqttBinder = new VenvyMqttBinder() : venvyMqttBinder;
     }
 
+    private static VenvyAcrCloudBinder getAcrCloudBinder() {
+        return acrCloudBinder == null ? acrCloudBinder = new VenvyAcrCloudBinder() : acrCloudBinder;
+    }
+
     private static VenvyAppletBinder getAppletBinder(Platform platform) {
         VenvyAppletBinder appletBinder = venvyAppletBinder == null ? venvyAppletBinder = new VenvyAppletBinder() : venvyAppletBinder;
         appletBinder.setPlatform(platform);
@@ -156,6 +163,7 @@ public class LuaHelper {
         venvyWebViewBinder = null;
         venvyMediaLifeCycleBinder = null;
         venvyMqttBinder = null;
+        acrCloudBinder = null;
         venvyAppletBinder = null;
         venvyActivityLifeCycleBinder = null;
         venvyKeyboardBinder = null;
