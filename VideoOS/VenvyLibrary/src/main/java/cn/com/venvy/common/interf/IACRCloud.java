@@ -1,5 +1,7 @@
 package cn.com.venvy.common.interf;
 
+import cn.com.venvy.common.bean.AcrConfigInfo;
+
 /**
  * Created by lgf on 2020/2/24.
  */
@@ -13,7 +15,7 @@ public interface IACRCloud {
      由于“ Android UI主线程”无法发送网络请求，因此必须在子线程中调用此函数。
      * @param buffer
      */
-    void startRecognize(byte[] buffer);
+    void startRecognize(AcrConfigInfo info, byte[] buffer);
 
     /***
      * 此功能将立即取消识别。

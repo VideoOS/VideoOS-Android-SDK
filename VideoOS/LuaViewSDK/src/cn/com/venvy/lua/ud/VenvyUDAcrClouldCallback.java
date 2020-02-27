@@ -12,6 +12,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
 import cn.com.venvy.common.acr.VenvyACRCloudFactory;
+import cn.com.venvy.common.bean.AcrConfigInfo;
 import cn.com.venvy.common.interf.IACRCloud;
 import cn.com.venvy.lua.view.VenvyLVAcrClouldCallback;
 
@@ -46,9 +47,9 @@ public class VenvyUDAcrClouldCallback extends UDView<VenvyLVAcrClouldCallback> {
         LuaUtil.callFunction(mMqttCallback, JsonUtil.toLuaTable(message));
     }
 
-    public void startRecognize(byte[] buffer) {
+    public void startRecognize(AcrConfigInfo info,byte[] buffer) {
         if (mAcrCloud != null) {
-            mAcrCloud.startRecognize(buffer);
+            mAcrCloud.startRecognize(info,buffer);
         }
     }
 

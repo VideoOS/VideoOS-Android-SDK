@@ -13,6 +13,7 @@ import org.luaj.vm2.Varargs;
 import java.io.File;
 import java.util.List;
 
+import cn.com.venvy.common.bean.AcrConfigInfo;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.ud.VenvyUDAcrClouldCallback;
@@ -64,12 +65,18 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
                     VenvyLog.e(VenvyAcrCloudMapper.class.getName(), new NullPointerException("startAcrRecognize is error,because recognize url is null"));
                     return LuaValue.NIL;
                 }
-                File file=new File(filePath);
-                if(!file.exists()||!file.isFile()){
+                String key = LuaUtil.getString(args, 3);
+                String secret = LuaUtil.getString(args, 4);
+                if (TextUtils.isEmpty(key) || TextUtils.isEmpty(secret)) {
+                    VenvyLog.e(VenvyAcrCloudMapper.class.getName(), new NullPointerException("startAcrRecognize is error,because key or  secret is null"));
+                    return LuaValue.NIL;
+                }
+                File file = new File(filePath);
+                if (!file.exists() || !file.isFile()) {
                     VenvyLog.e(VenvyAcrCloudMapper.class.getName(), new NullPointerException("startAcrRecognize is error,because recognize url is null"));
                     return LuaValue.NIL;
                 }
-                target.startRecognize(VenvyFileUtil.readBytes(file));
+                target.startRecognize(new AcrConfigInfo(key, secret, null), VenvyFileUtil.readBytes(file));
             }
         } catch (Exception e) {
             VenvyLog.e(VenvyAcrCloudMapper.class.getName(), e);
