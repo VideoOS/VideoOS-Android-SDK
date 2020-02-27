@@ -23,6 +23,7 @@ import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.interf.CallbackType;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
 import cn.com.venvy.common.utils.VenvyAesUtil;
@@ -174,6 +175,11 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
 
                                         if (dataJsonArray != null && dataJsonArray.length() > 0) {
                                             mDownZipUpdate.startDownloadZipFile(dataJsonArray);
+                                        } else {
+                                            ServiceQueryChainCallback callback = getQueryChainCallback();
+                                            if (callback != null) {
+                                                callback.queryComplete(CallbackType.CallbackTypeDesktop,null,null,null,null);
+                                            }
                                         }
                                     }
 
@@ -208,7 +214,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
                                         if (zipJsonDataArray != null && zipJsonDataArray.length() > 0) {
                                             jsonObject.put("data", zipJsonDataArray);
                                         }
-                                        callback.queryComplete(jsonObject, videoModeMiniAppInfoObj.toString(), obj.toString(),
+                                        callback.queryComplete(CallbackType.CallbackTypePreloadZip, jsonObject, videoModeMiniAppInfoObj.toString(), obj.toString(),
                                                 queryAdsInfo);
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -296,7 +302,7 @@ public class VideoServiceQueryChainModel extends VideoPlusBaseModel {
 
 
     public interface ServiceQueryChainCallback {
-        void queryComplete(Object queryAdsData, String miniAppInfo, String originData ,ServiceQueryAdsInfo queryAdsInfo);
+        void queryComplete(CallbackType callbackType, Object queryAdsData, String miniAppInfo, String originData , ServiceQueryAdsInfo queryAdsInfo);
 
         void queryError(Throwable t);
     }
