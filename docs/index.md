@@ -25,7 +25,7 @@ allprojects {
 
 ```
 dependencies {
-	implementation 'com.videoli:VideoOS:3.0.0'
+	implementation 'com.videoli:VideoOS:3.0.1'
 	implementation 'com.videoli:venvy_processor_annotation:1.0.0'
 	annotationProcessor 'com.videoli:venvy_processor_compiler:1.0.1'
 	// SDK Glide图片加载插件 目前仅支持Glide 和 fresco
@@ -512,6 +512,64 @@ mVideoPlusView.startService(ServiceType.ServiceTypeVideoMode_TAG, new HashMap<St
         });
 
 ```
+
+## 分层投放
+```
+所有参数采用key:array方式传递，key为分层的层级关键字，array里面为层级对应的具体值
+
+一些常见的参数，推荐使用下面的命名方式(json格式)
+
+标题(title)，例如 邪恶力量 第九季 第五集，{"title":["邪恶力量 第九季 第五集"]};
+
+剧集(episode)，例如 邪恶力量第九季，{"episode":["邪恶力量第九季"]};
+
+剧集Id，例如 628916289，{"episodeId":["628916289"]};
+
+地区/区域(area)，例如 美剧，{"area":["美剧"]};
+
+年份(year)，例如 2019，{"years":["2019"]};
+
+类型(type)，例如 科幻，武侠，{"type":["科幻", "武侠"]};
+
+其他扩展字段也可以通过extendDict字段传递
+```
+- 分层投放的版本支持 3.0.1以上
+- 分层投放的配置:
+    1.分层投放通过在VideoOsAdapter中createProvider()中设置
+    2.分层投放的参数通过extendDict字段传递,事例代码如下
+
+```
+public class VideoOsAdapter extends VideoPlusAdapter {
+    /***
+    * 设置配置信息
+    * @return Provider配置信息类
+    * 注:setVideoID(String videoId)为点播视频ID,直播为房间号
+    *    VideoType为视频类型，VideoType.VIDEOOS为点播,VideoType.LIVEOS为直播
+    *    appKey 平台创建的应用信息（注：saas版本需要设置）
+    *    appSecret 平台创建的应用信息（注：saas版本需要设置）
+    */
+    @Override
+    public Provider createProvider() {
+
+        Map<String, List<String>> extendDict = new HashMap<>();
+            List<String> comedy = new ArrayList<>();
+            comedy.add("喜剧");
+            extendDict.put("type", comedy);
+
+        return new Provider.Builder()
+                .setAppKey(appKey)
+                .setAppSecret(appSecret)
+                .setVideoID(videoId)
+                .setVideoType(VideoType.VIDEOOS)
+                .setExtendDict(extendDict)
+                .build();    
+    }
+
+    ...
+}
+
+```
+
 
 
 ## 其他

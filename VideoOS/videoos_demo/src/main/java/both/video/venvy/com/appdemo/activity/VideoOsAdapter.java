@@ -119,7 +119,7 @@ public class VideoOsAdapter extends VideoPlusAdapter {
                     .setVideoType(isLive ? VideoType.LIVEOS : VideoType.VIDEOOS)
                     .setCustomUDID(String.valueOf(System.currentTimeMillis()))
                     .setVideoID(videoId)
-                    .setExtendJSONString(new JSONObject(extendParams).toString()).build();
+                    .build();
         }
 
     }
