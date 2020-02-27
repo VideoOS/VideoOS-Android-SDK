@@ -37,6 +37,8 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
     private IJsParamsCallback mIJsParamsCallback;
     private IWebViewClient mIwebViewClient;
 
+    private boolean mDisableDeepLink;
+
     public VenvyWebView(Context context) {
         super(context);
         init(context);
@@ -68,6 +70,10 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
 
     }
 
+    @Override
+    public void disableDeepLink(boolean disableDeepLink) {
+        mDisableDeepLink = disableDeepLink;
+    }
 
     @Override
     public void setZoomScale(float scale) {
@@ -200,6 +206,10 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
         }
     }
 
+//    private DefaultWebClient.OpenOtherPageWays findOtherPageWays() {
+////        VenvyPreferenceHelper.getInt(App.getContext(), lvcache);
+//    }
+
     @Override
     public void showErrorPage(String showErrorPage) {
         if (mIJsParamsCallback != null) {
@@ -270,10 +280,11 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+
             if (mIwebViewClient != null) {
                 return mIwebViewClient.shouldOverrideUrlLoading(view, request);
             }
-            return super.shouldOverrideUrlLoading(view, request);
+            return !mDisableDeepLink && super.shouldOverrideUrlLoading(view, request);
         }
 
         @Nullable
@@ -291,10 +302,11 @@ public class VenvyWebView extends FrameLayout implements IVenvyWebView {
             //优酷想唤起自己应用播放该视频 ， 下面拦截地址返回 true  则会在应用内 H5 播放 ，禁止优酷唤起播放该视频， 如果返回 false ， DefaultWebClient  会根据intent 协议处理 该地址 ， 首先匹配该应用存不存在 ，如果存在 ， 唤起该应用播放 ， 如果不存在 ， 则跳到应用市场下载该应用 .
             /*else if (isAlipay(view, mUrl))   //1.2.5开始不用调用该方法了 ，只要引入支付宝sdk即可 ， DefaultWebClient 默认会处理相应url调起支付宝
                 return true;*/
+
             if (mIwebViewClient != null) {
                 return mIwebViewClient.shouldOverrideUrlLoading(view, url);
             }
-            return super.shouldOverrideUrlLoading(view, url);
+            return !mDisableDeepLink && super.shouldOverrideUrlLoading(view, url);
         }
 
         @Override

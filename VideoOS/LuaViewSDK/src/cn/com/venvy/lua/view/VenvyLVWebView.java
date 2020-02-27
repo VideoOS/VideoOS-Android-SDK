@@ -98,6 +98,12 @@ public class VenvyLVWebView extends FrameLayout implements ILVNativeViewProvider
         mWebView.setZoomScale(scale);
     }
 
+    public void disableDeepLink(boolean disableDeepLink) {
+        if (mWebView != null) {
+            mWebView.disableDeepLink(disableDeepLink);
+        }
+    }
+
     public void setJsData(String jsData){
         mJsBridge.setJsData(jsData);
     }

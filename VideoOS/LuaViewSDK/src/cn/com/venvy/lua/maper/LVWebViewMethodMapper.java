@@ -40,7 +40,8 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
             "callJS",//11
             "webViewCallback", // 12
             "setInitData", // 13
-            "setZoomScale" // 14
+            "setZoomScale", // 14
+            "disableDeepLink" // 15
     };
 
     @Override
@@ -82,6 +83,8 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
                 return setInitData(target, varargs);
             case 14:
                 return setZoomScale(target, varargs);
+            case 15:
+                return disableDeepLink(target, varargs);
         }
         return super.invoke(code, target, varargs);
     }
@@ -183,6 +186,12 @@ public class LVWebViewMethodMapper<U extends VenvyUDWebView> extends UIViewMetho
         if (scale > 0) {
             view.setZoomScale(scale);
         }
+        return LuaValue.TRUE;
+    }
+
+    public LuaValue disableDeepLink(U view, Varargs varargs) {
+        boolean disableDeepLink = LuaUtil.getBoolean(varargs, 2);
+        view.disableDeepLink(disableDeepLink);
         return LuaValue.TRUE;
     }
 }
