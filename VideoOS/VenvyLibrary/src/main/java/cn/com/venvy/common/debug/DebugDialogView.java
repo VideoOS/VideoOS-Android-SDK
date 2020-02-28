@@ -8,6 +8,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -141,6 +143,11 @@ class DebugDialogView extends FrameLayout {
                 mPreCheckoutBox.setText(openPreTxt);
                 break;
         }
+        if (Report.isReportAble()) {
+            mReportCheckBox.setText("是否关闭日志上报功能？");
+        } else {
+            mReportCheckBox.setText("是否打开日志上报功能？");
+        }
     }
 
     private class PositiveClickListener implements DialogInterface.OnClickListener {
@@ -163,7 +170,7 @@ class DebugDialogView extends FrameLayout {
 
             DebugStatus.changeEnvironmentStatus(status);
             if (mReportCheckBox.isChecked()) {
-
+                Report.setReportAble(!Report.isReportAble());
             }
 
             //根据选中与否来决定是否打开LOG

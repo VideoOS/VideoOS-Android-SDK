@@ -74,7 +74,7 @@ class ReportHelper {
     }
 
     boolean isEnable() {
-        return DebugStatus.isRelease() && enable;
+        return !DebugStatus.isPreView() && enable;
     }
 
     public void report(@NonNull final ReportInfo reportInfo) {
