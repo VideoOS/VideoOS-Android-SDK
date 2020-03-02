@@ -361,11 +361,18 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (programViewA != null) {
             programViewA.reResumeService(serviceType);
         }
+
+        if (programTopLevel != null) {
+            programTopLevel.reResumeService(serviceType);
+        }
     }
 
     public void pauseService(ServiceType serviceType) {
         if (programViewA != null) {
             programViewA.pauseService(serviceType);
+        }
+        if (programTopLevel != null) {
+            programTopLevel.pauseService(serviceType);
         }
     }
 

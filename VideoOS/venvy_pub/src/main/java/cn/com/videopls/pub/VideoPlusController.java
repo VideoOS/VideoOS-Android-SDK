@@ -62,7 +62,7 @@ import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTA
  * Created by yanjiangbo on 2017/5/17.
  */
 
-public abstract class VideoPlusController implements VenvyObserver {
+public class VideoPlusController implements VenvyObserver {
 
     protected VideoProgramView mContentView;
 
@@ -169,7 +169,13 @@ public abstract class VideoPlusController implements VenvyObserver {
                     }
                     return;
                 }
-                mQueryAdsArray.add(queryAdsInfo);
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mQueryAdsArray.add(queryAdsInfo);
+                    }
+                });
+
                 Uri.Builder builder = new Uri.Builder();
                 builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                         .path(VenvySchemeUtil.PATH_LUA_VIEW)

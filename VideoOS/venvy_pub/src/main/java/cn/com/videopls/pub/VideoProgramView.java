@@ -20,10 +20,10 @@ import cn.com.videopls.pub.view.VideoOSLuaView;
  * Created by Lucas on 2019/7/30.
  */
 
-public class VideoProgramView<T extends VideoPlusController> extends FrameLayout {
+public class VideoProgramView extends FrameLayout {
 
 
-    private T controller;
+    private VideoPlusController controller;
 
 
     public VideoProgramView(Context context) {
@@ -58,9 +58,7 @@ public class VideoProgramView<T extends VideoPlusController> extends FrameLayout
 
     private void init() {
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        controller = (T) new VideoPlusController(this) {
-
-        };
+        controller = new VideoPlusController(this);
     }
 
     public void navigation(Uri uri, HashMap<String, String> params, IRouterCallback callback) {
