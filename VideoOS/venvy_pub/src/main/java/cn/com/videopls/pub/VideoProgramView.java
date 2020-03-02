@@ -160,7 +160,7 @@ public class VideoProgramView extends FrameLayout {
         controller.downloadAdsRes(bundle);
     }
 
-    public T getController() {
+    public VideoPlusController getController() {
         return controller;
     }
 }
