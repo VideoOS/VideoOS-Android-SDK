@@ -8,7 +8,6 @@ public interface IPlatformRecordInterface {
     void startRecord();
     void endRecord(RecordCallback loginCallback);
     interface RecordCallback {
-        void onRecordResult(byte[] data);
         void onRecordResult(String filePath);
     }
 }

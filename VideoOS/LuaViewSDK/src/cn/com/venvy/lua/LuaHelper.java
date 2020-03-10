@@ -78,7 +78,7 @@ public class LuaHelper {
         luaView.registerLibs(getUiGradientViewBinder(),
                 getMediaLifeCycleBinder(platform),
                 getMqttBinder(),
-                getAcrCloudBinder(),
+                getAcrCloudBinder(platform),
                 getAppletBinder(platform),
                 getSvgaBinder(),
                 getWebViewBinder(platform),
@@ -126,8 +126,10 @@ public class LuaHelper {
         return venvyMqttBinder == null ? venvyMqttBinder = new VenvyMqttBinder() : venvyMqttBinder;
     }
 
-    private static VenvyAcrCloudBinder getAcrCloudBinder() {
-        return acrCloudBinder == null ? acrCloudBinder = new VenvyAcrCloudBinder() : acrCloudBinder;
+    private static VenvyAcrCloudBinder getAcrCloudBinder(Platform platform) {
+        VenvyAcrCloudBinder venvyAcrCloudBinder = acrCloudBinder == null ? acrCloudBinder = new VenvyAcrCloudBinder() : acrCloudBinder;
+        venvyAcrCloudBinder.setPlatform(platform);
+        return venvyAcrCloudBinder;
     }
 
     private static VenvyAppletBinder getAppletBinder(Platform platform) {

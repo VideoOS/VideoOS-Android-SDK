@@ -11,8 +11,6 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.common.interf.IPlatformRecordInterface;
 import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 
-import static android.R.attr.data;
-
 /**
  * Created by lgf on 2020/2/26.
  */
@@ -62,11 +60,6 @@ public class LVRecordPlugin {
                         return LuaValue.NIL;
                     }
                     mPlatform.getPlatformRecordInterface().endRecord(new IPlatformRecordInterface.RecordCallback() {
-                        @Override
-                        public void onRecordResult(byte[] data) {
-                            LuaUtil.callFunction(callback, LuaValue.valueOf(data));
-                        }
-
                         @Override
                         public void onRecordResult(String filePath) {
                             LuaUtil.callFunction(callback, LuaValue.valueOf(filePath));

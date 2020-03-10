@@ -9,6 +9,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.LibFunction;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.lua.maper.VenvyAcrCloudMapper;
 import cn.com.venvy.lua.view.VenvyLVAcrClouldCallback;
 
@@ -17,9 +18,14 @@ import cn.com.venvy.lua.view.VenvyLVAcrClouldCallback;
  */
 
 public class VenvyAcrCloudBinder extends BaseFunctionBinder {
+    private Platform mPlatform;
 
     public VenvyAcrCloudBinder() {
         super("AcrCloud");
+    }
+
+    public void setPlatform(Platform platform) {
+        this.mPlatform = platform;
     }
 
     @Override
@@ -32,7 +38,7 @@ public class VenvyAcrCloudBinder extends BaseFunctionBinder {
         return new BaseVarArgUICreator(env.checkglobals(), metaTable, getMapperClass()) {
             @Override
             public ILVView createView(Globals globals, LuaValue metaTable, Varargs varargs) {
-                return new VenvyLVAcrClouldCallback(globals, metaTable, varargs);
+                return new VenvyLVAcrClouldCallback(mPlatform,globals, metaTable, varargs);
             }
         };
     }

@@ -8,12 +8,16 @@ import com.taobao.luaview.util.JsonUtil;
 import com.taobao.luaview.util.LuaUtil;
 
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.acr.VenvyACRCloudFactory;
 import cn.com.venvy.common.bean.AcrConfigInfo;
 import cn.com.venvy.common.interf.IACRCloud;
+import cn.com.venvy.common.interf.IPlatformRecordInterface;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.lua.view.VenvyLVAcrClouldCallback;
 
 /**
@@ -21,12 +25,15 @@ import cn.com.venvy.lua.view.VenvyLVAcrClouldCallback;
  */
 
 public class VenvyUDAcrClouldCallback extends UDView<VenvyLVAcrClouldCallback> {
+    private static final String TAG = VenvyUDAcrClouldCallback.class.getName();
     private IACRCloud mAcrCloud;
     LuaValue mAcrCloudCallback;
+    private Platform mPlatform;
 
-    public VenvyUDAcrClouldCallback(VenvyLVAcrClouldCallback view, Globals globals, LuaValue metatable, Varargs initParams) {
+    public VenvyUDAcrClouldCallback(Platform platform, VenvyLVAcrClouldCallback view, Globals globals, LuaValue metatable, Varargs initParams) {
         super(view, globals, metatable, initParams);
         mAcrCloud = VenvyACRCloudFactory.getACRCloud();
+        this.mPlatform = platform;
     }
 
     public VenvyUDAcrClouldCallback setAcrCloudCallback(LuaValue callbacks) {
@@ -47,9 +54,9 @@ public class VenvyUDAcrClouldCallback extends UDView<VenvyLVAcrClouldCallback> {
         LuaUtil.callFunction(mMqttCallback, JsonUtil.toLuaTable(message));
     }
 
-    public void startRecognize(AcrConfigInfo info,byte[] buffer) {
+    public void startRecognize(AcrConfigInfo info, byte[] buffer) {
         if (mAcrCloud != null) {
-            mAcrCloud.startRecognize(info,buffer);
+            mAcrCloud.startRecognize(info, buffer);
         }
     }
 
@@ -57,6 +64,35 @@ public class VenvyUDAcrClouldCallback extends UDView<VenvyLVAcrClouldCallback> {
         if (mAcrCloud != null) {
             mAcrCloud.stopRecognize();
         }
+    }
+
+    public void acrRecordStart() {
+        if (mPlatform == null) {
+            return;
+        }
+        IPlatformRecordInterface platformRecord = mPlatform.getPlatformRecordInterface();
+        if (platformRecord == null) {
+            VenvyLog.i(TAG, "start acrRecordStart error,because VideoPlusAdapter no interface buildRecordInterface");
+            return;
+        }
+        platformRecord.startRecord();
+    }
+
+    public void acrRecordEnd(final LuaFunction callback) {
+        if (mPlatform == null || callback == null) {
+            return;
+        }
+        IPlatformRecordInterface platformRecord = mPlatform.getPlatformRecordInterface();
+        if (platformRecord == null) {
+            VenvyLog.i(TAG, "start acrRecordStart error,because VideoPlusAdapter no interface buildRecordInterface");
+            return;
+        }
+        platformRecord.endRecord(new IPlatformRecordInterface.RecordCallback() {
+            @Override
+            public void onRecordResult(String filePath) {
+                LuaUtil.callFunction(callback, LuaValue.valueOf(filePath));
+            }
+        });
     }
 
     public void destroyRecognize() {

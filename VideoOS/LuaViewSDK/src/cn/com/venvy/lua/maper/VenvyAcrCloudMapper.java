@@ -16,6 +16,7 @@ import java.util.List;
 import cn.com.venvy.common.bean.AcrConfigInfo;
 import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.lua.binder.VenvyLVLibBinder;
 import cn.com.venvy.lua.ud.VenvyUDAcrClouldCallback;
 
 /**
@@ -28,6 +29,8 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
             "acrRecognizeCallback",
             "startAcrRecognize",
             "stopAcrRecognize",
+            "acrRecordStart",
+            "acrRecordEnd"
     };
 
     @Override
@@ -45,6 +48,10 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
                 return startAcrRecognize(target, varargs);
             case 2:
                 return stopAcrRecognize(target, varargs);
+            case 3:
+                return acrRecordStart(target, varargs);
+            case 4:
+                return acrRecordEnd(target, varargs);
         }
         return super.invoke(code, target, varargs);
     }
@@ -80,6 +87,27 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
             }
         } catch (Exception e) {
             VenvyLog.e(VenvyAcrCloudMapper.class.getName(), e);
+        }
+        return LuaValue.NIL;
+    }
+
+    public LuaValue acrRecordStart(U target, Varargs args) {
+        try {
+            target.acrRecordStart();
+        } catch (Exception e) {
+            VenvyLog.e(VenvyAcrCloudMapper.class.getName(), e);
+        }
+        return LuaValue.NIL;
+    }
+
+    public LuaValue acrRecordEnd(U target, Varargs args) {
+        final int fixIndex = VenvyLVLibBinder.fixIndex(args);
+        if (args.narg() > fixIndex) {
+            final LuaFunction callback = LuaUtil.getFunction(args, fixIndex + 1);
+            if (callback == null) {
+                return LuaValue.NIL;
+            }
+            target.acrRecordEnd(callback);
         }
         return LuaValue.NIL;
     }

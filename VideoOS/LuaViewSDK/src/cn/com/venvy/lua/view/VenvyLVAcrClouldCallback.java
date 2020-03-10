@@ -10,6 +10,7 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.observer.VenvyObservable;
 import cn.com.venvy.common.observer.VenvyObserver;
@@ -24,9 +25,9 @@ import static cn.com.venvy.common.observer.VenvyObservableTarget.TAG_ACR_DATA_ME
 public class VenvyLVAcrClouldCallback extends View implements ILVView, VenvyObserver {
     private VenvyUDAcrClouldCallback mLuaUserdata;
 
-    public VenvyLVAcrClouldCallback(Globals globals, LuaValue metaTable, Varargs varargs) {
+    public VenvyLVAcrClouldCallback(Platform platform, Globals globals, LuaValue metaTable, Varargs varargs) {
         super(globals.getContext());
-        this.mLuaUserdata = new VenvyUDAcrClouldCallback(this, globals, metaTable, varargs);
+        this.mLuaUserdata = new VenvyUDAcrClouldCallback(platform, this, globals, metaTable, varargs);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class VenvyLVAcrClouldCallback extends View implements ILVView, VenvyObse
 
     @Override
     public void notifyChanged(VenvyObservable observable, String tag, Bundle bundle) {
-        if(mLuaUserdata!=null){
+        if (mLuaUserdata != null) {
             mLuaUserdata.handleAcrMessageBundle(bundle);
         }
     }
