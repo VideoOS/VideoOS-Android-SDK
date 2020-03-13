@@ -151,9 +151,7 @@ public class VideoPlusController implements VenvyObserver {
             Log.e("Video++", "startService api 调用参数为空");
             return;
         }
-        if (mPlatform == null) {
-            mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        mPlatform = initPlatform(mVideoPlusAdapter);
         params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
         startQueryConnect(serviceType, params, new IStartQueryResult() {
             @Override
