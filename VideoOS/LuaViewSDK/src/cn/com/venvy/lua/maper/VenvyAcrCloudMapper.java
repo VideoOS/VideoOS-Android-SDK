@@ -103,7 +103,7 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
     public LuaValue acrRecordEnd(U target, Varargs args) {
         final int fixIndex = VenvyLVLibBinder.fixIndex(args);
         if (args.narg() > fixIndex) {
-            final LuaFunction callback = LuaUtil.getFunction(args, fixIndex + 1);
+            final LuaFunction callback = LuaUtil.getFunction(args, fixIndex + 2);
             if (callback == null) {
                 return LuaValue.NIL;
             }

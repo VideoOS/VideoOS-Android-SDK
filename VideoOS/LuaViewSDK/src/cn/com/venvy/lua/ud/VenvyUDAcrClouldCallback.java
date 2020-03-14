@@ -51,7 +51,7 @@ public class VenvyUDAcrClouldCallback extends UDView<VenvyLVAcrClouldCallback> {
         if (TextUtils.isEmpty(message)) {
             return;
         }
-        LuaUtil.callFunction(mMqttCallback, JsonUtil.toLuaTable(message));
+        LuaUtil.callFunction(mAcrCloudCallback, JsonUtil.toLuaTable(message));
     }
 
     public void startRecognize(AcrConfigInfo info, byte[] buffer) {
