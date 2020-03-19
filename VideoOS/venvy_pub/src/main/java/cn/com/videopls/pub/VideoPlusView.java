@@ -223,7 +223,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
 
         if (programTopLevel != null) {
             programTopLevel.stop();
-            programTopLevel = null;
+//            programTopLevel = null;
         }
 
         if (programViewDesktop != null) {
