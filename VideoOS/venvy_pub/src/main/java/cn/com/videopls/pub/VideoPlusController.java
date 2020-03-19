@@ -25,6 +25,7 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
 import cn.com.venvy.VideoCopyLuaAssetsHelper;
+import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.debug.DebugHelper;
 import cn.com.venvy.common.interf.ActionType;
 import cn.com.venvy.common.interf.CallbackType;
@@ -296,7 +297,7 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.removeAllViews();
             mContentView.setVisibility(View.GONE);
         }
-
+        VideoPositionHelper.getInstance().cancel();
     }
 
     void destroy() {
