@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 import cn.com.venvy.App;
+import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.interf.IServiceCallback;
 import cn.com.venvy.common.interf.ServiceType;
 import cn.com.venvy.common.observer.VenvyObservableTarget;
@@ -214,6 +215,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     public void stop() {
         if (programViewA != null) {
             programViewA.stop();
+            VideoPositionHelper.getInstance().cancel();
         }
 
         if (programViewB != null) {

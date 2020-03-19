@@ -297,7 +297,6 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.removeAllViews();
             mContentView.setVisibility(View.GONE);
         }
-        VideoPositionHelper.getInstance().cancel();
     }
 
     void destroy() {
