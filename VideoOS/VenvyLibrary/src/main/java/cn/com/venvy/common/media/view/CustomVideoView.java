@@ -211,6 +211,9 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
             stopPlay();
             initPlayer(url);
         }
+        if (TextUtils.isEmpty(mCurrentUrl)) {
+            initPlayer(url);
+        }
         mCurrentUrl = url;
     }
 
@@ -501,16 +504,17 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
     }
 
     private volatile boolean isStatistic = true;
+
     @Override
     public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
-        if(isStatistic && cacheFile != null && cacheFile.exists() && cacheFile.getAbsolutePath().endsWith(".download")){
+        if (isStatistic && cacheFile != null && cacheFile.exists() && cacheFile.getAbsolutePath().endsWith(".download")) {
             isStatistic = false;
             statisticVideoFileSize();
         }
     }
 
     private void statisticVideoFileSize() {
-        if(TextUtils.isEmpty(mCurrentUrl)){
+        if (TextUtils.isEmpty(mCurrentUrl)) {
             return;
         }
         ThreadManager.getInstance().createShortPool().execute(new Runnable() {
