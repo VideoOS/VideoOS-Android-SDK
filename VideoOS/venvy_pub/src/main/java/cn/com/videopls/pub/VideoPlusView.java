@@ -215,6 +215,21 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (programViewA != null) {
             programViewA.stop();
         }
+
+        if (programViewB != null) {
+            programViewB.closeAllProgram();
+//            programViewB = null;
+        }
+
+        if (programTopLevel != null) {
+            programTopLevel.stop();
+            programTopLevel = null;
+        }
+
+        if (programViewDesktop != null) {
+            programViewDesktop.stop();
+            programViewDesktop = null;
+        }
     }
 
     /**

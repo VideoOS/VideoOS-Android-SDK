@@ -151,9 +151,7 @@ public abstract class VideoPlusController implements VenvyObserver {
             Log.e("Video++", "startService api 调用参数为空");
             return;
         }
-        if (mPlatform == null) {
-            mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        mPlatform = initPlatform(mVideoPlusAdapter);
         params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
         startQueryConnect(serviceType, params, new IStartQueryResult() {
             @Override
@@ -403,9 +401,7 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
 
-        if (mPlatform == null) {
-            mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        mPlatform = initPlatform(mVideoPlusAdapter);
 
         PostInfo postInfo = VenvyRouterManager.getInstance().setUri(uri)
                 .withTargetPlatform("platform", mPlatform)
@@ -688,9 +684,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (mContentView != null) {
             mContentView.setVisibility(View.VISIBLE);
         }
-        if (this.mPlatform == null) {
-            this.mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
         VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, isH5Type, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
             @Override
