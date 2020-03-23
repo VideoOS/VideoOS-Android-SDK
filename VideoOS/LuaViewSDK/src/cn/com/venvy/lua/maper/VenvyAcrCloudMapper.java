@@ -30,7 +30,8 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
             "startAcrRecognize",
             "stopAcrRecognize",
             "acrRecordStart",
-            "acrRecordEnd"
+            "acrRecordEnd",
+            "acrEnable"
     };
 
     @Override
@@ -52,6 +53,8 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
                 return acrRecordStart(target, varargs);
             case 4:
                 return acrRecordEnd(target, varargs);
+            case 5:
+                return acrEnable(target, varargs);
         }
         return super.invoke(code, target, varargs);
     }
@@ -110,6 +113,10 @@ public class VenvyAcrCloudMapper<U extends VenvyUDAcrClouldCallback> extends UIV
             target.acrRecordEnd(callback);
         }
         return LuaValue.NIL;
+    }
+
+    public LuaValue acrEnable(U target, Varargs args) {
+        return target.acrEnable() ? LuaValue.TRUE : LuaValue.FALSE;
     }
 
     public LuaValue stopAcrRecognize(U target, Varargs args) {

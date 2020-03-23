@@ -95,6 +95,16 @@ public class VenvyUDAcrClouldCallback extends UDView<VenvyLVAcrClouldCallback> {
         });
     }
 
+    public boolean acrEnable() {
+        if (mPlatform == null || mPlatform.getPlatformRecordInterface() == null) {
+            return false;
+        }
+        if (mAcrCloud == null) {
+            return false;
+        }
+        return true;
+    }
+
     public void destroyRecognize() {
         if (mAcrCloud != null) {
             mAcrCloud.destroyRecognize();
