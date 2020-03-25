@@ -25,6 +25,7 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
 import cn.com.venvy.VideoCopyLuaAssetsHelper;
+import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.debug.DebugHelper;
 import cn.com.venvy.common.interf.ActionType;
 import cn.com.venvy.common.interf.CallbackType;
@@ -303,7 +304,6 @@ public class VideoPlusController implements VenvyObserver {
             mContentView.removeAllViews();
             mContentView.setVisibility(View.GONE);
         }
-
     }
 
     void destroy() {
@@ -409,9 +409,11 @@ public class VideoPlusController implements VenvyObserver {
             return;
         }
 
-        if (mPlatform == null) {
-            mPlatform = initPlatform(mVideoPlusAdapter);
+        if (mContentView.getVisibility() == View.GONE || mContentView.getVisibility() == View.INVISIBLE) {
+            mContentView.setVisibility(View.VISIBLE);
         }
+
+        mPlatform = initPlatform(mVideoPlusAdapter);
 
         PostInfo postInfo = VenvyRouterManager.getInstance().setUri(uri)
                 .withTargetPlatform("platform", mPlatform)
@@ -694,9 +696,7 @@ public class VideoPlusController implements VenvyObserver {
         if (mContentView != null) {
             mContentView.setVisibility(View.VISIBLE);
         }
-        if (this.mPlatform == null) {
-            this.mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
         VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, isH5Type, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
             @Override
@@ -776,9 +776,7 @@ public class VideoPlusController implements VenvyObserver {
     }
 
     public void downloadAdsRes(Bundle bundle) {
-        if (this.mPlatform == null) {
-            this.mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
         if (videoAdsHandler == null) {
             videoAdsHandler = new VideoAdsHandler(mPlatform);
         }
