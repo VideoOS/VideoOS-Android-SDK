@@ -178,6 +178,15 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
             adjustVideoSize(mp.getVideoWidth(), mp.getVideoHeight());
         }
     };
+    private MediaPlayer.OnBufferingUpdateListener mOnBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
+        @Override
+        public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+            if (i >= 100) {
+                mCurrentState = STATE_PLAYING;
+                stateChanged(mCurrentState);
+            }
+        }
+    };
 
     public CustomVideoView(Context context) {
         this(context, null, 0);
@@ -227,6 +236,12 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
         if (mCurrentState == STATE_BUFFERING_PLAYING) {
             mMediaPlayer.pause();
             mCurrentState = STATE_BUFFERING_PAUSED;
+            stateChanged(mCurrentState);
+            VenvyLog.d(TAG, "STATE_BUFFERING_PAUSED");
+        }
+        if (mCurrentState == STATE_PREPARED) {
+            mMediaPlayer.pause();
+            mCurrentState = STATE_PAUSED;
             stateChanged(mCurrentState);
             VenvyLog.d(TAG, "STATE_BUFFERING_PAUSED");
         }
@@ -382,6 +397,7 @@ public class CustomVideoView extends VenvyTextureView implements VideoController
                 mMediaPlayer.setOnInfoListener(mOnInfoListener);
                 mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
                 mMediaPlayer.setOnVideoSizeChangedListener(mOnVideoSizeChangedListener);
+                mMediaPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
                 mCurrentState = STATE_PREPARING;
                 stateChanged(mCurrentState);
             } catch (Exception ex) {
