@@ -33,7 +33,6 @@ import static cn.com.venvy.common.interf.ServiceType.ServiceTypeVideoMode_TAG;
 
 public abstract class VideoPlusView<T extends VideoPlusController> extends FrameLayout {
 
-
     // 顶层小程序容器 4
     protected VideoProgramView programTopLevel;
     // A 类小程序 0，1
@@ -52,39 +51,15 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     private Pair<Float, Float> videoModeDeskOffset; // 视联网模式桌面偏移量
 
     public VideoPlusView(Context context) {
-        super(context);
-        init();
+        this(context,null);
     }
 
     public VideoPlusView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
+        this(context, attrs, 0);
     }
 
     public VideoPlusView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
-    }
-
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (plusViewHelper != null) {
-            plusViewHelper.detachedFromWindow();
-        }
-    }
-
-    @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // 手机竖屏
-
-        } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // 手机横屏
-
-        }
     }
 
     private void init() {
@@ -96,6 +71,7 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         addView(programViewB);
         addView(programTopLevel);
         programViewB.setClickable(false);
+        initViewAdapter();
     }
 
     /**
@@ -106,7 +82,6 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     private VideoProgramView createTypeAProgram() {
         return new VideoProgramView(getContext());
     }
-
 
     /**
      * 生成B类小程序容器
@@ -190,6 +165,10 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
     public void setVideoOSAdapter(VideoPlusAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    private void initViewAdapter() {
         if (programTopLevel != null) {
             programTopLevel.setVideoOSAdapter(adapter);
         }
@@ -199,7 +178,6 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
         if (programViewB != null) {
             programViewB.setVideoOSAdapter(adapter);
         }
-        this.adapter = adapter;
     }
 
     public VideoPlusAdapter getAdapter() {
@@ -207,31 +185,39 @@ public abstract class VideoPlusView<T extends VideoPlusController> extends Frame
     }
 
     public void start() {
+        init();
         if (programViewA != null) {
             programViewA.start();
         }
     }
 
     public void stop() {
+        if (plusViewHelper != null) {
+            plusViewHelper.detachedFromWindow();
+            plusViewHelper = null;
+        }
+
         if (programViewA != null) {
             programViewA.stop();
             VideoPositionHelper.getInstance().cancel();
+            programViewA = null;
         }
 
         if (programViewB != null) {
             programViewB.closeAllProgram();
-//            programViewB = null;
+            programViewB = null;
         }
 
         if (programTopLevel != null) {
             programTopLevel.stop();
-//            programTopLevel = null;
+            programTopLevel = null;
         }
 
         if (programViewDesktop != null) {
             programViewDesktop.stop();
             programViewDesktop = null;
         }
+        this.removeAllViews();
     }
 
     /**

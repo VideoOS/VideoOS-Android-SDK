@@ -401,6 +401,10 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
 
+        if (mContentView.getVisibility() == View.GONE || mContentView.getVisibility() == View.INVISIBLE) {
+            mContentView.setVisibility(View.VISIBLE);
+        }
+
         mPlatform = initPlatform(mVideoPlusAdapter);
 
         PostInfo postInfo = VenvyRouterManager.getInstance().setUri(uri)
@@ -764,9 +768,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     public void downloadAdsRes(Bundle bundle) {
-        if (this.mPlatform == null) {
-            this.mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
         if (videoAdsHandler == null) {
             videoAdsHandler = new VideoAdsHandler(mPlatform);
         }
