@@ -4,6 +4,7 @@ import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.image.IImageLoader;
 import cn.com.venvy.common.image.IImageSize;
 import cn.com.venvy.common.image.IImageView;
+import cn.com.venvy.common.interf.IACRCloud;
 import cn.com.venvy.common.interf.ISocketConnect;
 import cn.com.venvy.common.interf.ISvgaImageView;
 import cn.com.venvy.common.webview.IVenvyWebView;
@@ -21,6 +22,7 @@ public class VenvyRegisterLibsManager {
     private static Class<? extends IImageView> sImageViewClass;
     private static Class<? extends ISvgaImageView> sSvgaImageViewClass;
     private static Class<? extends ISocketConnect> sSocketConnect;
+    private static Class<? extends IACRCloud> sACRCloud;
 
     public static Class<? extends IRequestConnect> getConnectLib() {
         return sConnectClass;
@@ -56,11 +58,13 @@ public class VenvyRegisterLibsManager {
             sImageLoaderClass = imageLoaderLib;
         }
     }
+
     public static void registerImageSizeLib(Class<? extends IImageSize> imageSizeLib) {
         if (sImageSizeClass == null) {
             sImageSizeClass = imageSizeLib;
         }
     }
+
     public static Class<? extends IVenvyWebView> getWebViewLib() {
         return sWebViewClass;
     }
@@ -87,5 +91,13 @@ public class VenvyRegisterLibsManager {
 
     public static void registerSocketConnect(Class<? extends ISocketConnect> socketConnect) {
         VenvyRegisterLibsManager.sSocketConnect = socketConnect;
+    }
+
+    public static Class<? extends IACRCloud> getACRCloud() {
+        return sACRCloud;
+    }
+
+    public static void registerACRCloud(Class<? extends IACRCloud> ACRCloud) {
+        VenvyRegisterLibsManager.sACRCloud = ACRCloud;
     }
 }

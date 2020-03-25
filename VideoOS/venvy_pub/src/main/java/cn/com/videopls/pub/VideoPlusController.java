@@ -93,6 +93,7 @@ public class VideoPlusController implements VenvyObserver {
         VenvyRegisterLibsManager.registerImageViewLib(videoOSAdapter.buildImageView());
         VenvyRegisterLibsManager.registerSvgaImageView(videoOSAdapter.buildSvgaImageView());
         VenvyRegisterLibsManager.registerSocketConnect(videoOSAdapter.buildSocketConnect());
+        VenvyRegisterLibsManager.registerACRCloud(videoOSAdapter.buildACRCloud());
     }
 
     public void setAppletListener(IAppletListener appletListener) {
@@ -360,6 +361,7 @@ public class VideoPlusController implements VenvyObserver {
         platform.setWidgetCloseListener(videoOSAdapter.buildWidgetCloseListener());
         platform.setMediaControlListener(videoOSAdapter.buildMediaController());
         platform.setPlatformLoginInterface(videoOSAdapter.buildLoginInterface());
+        platform.setPlatformRecordInterface(videoOSAdapter.buildRecordInterface());
         platform.setTagKeyListener(videoOSAdapter.buildOttKeyListener());
         platform.setWedgeListener(videoOSAdapter.buildWedgeListener());
         if (mAppletListener != null) {

@@ -1,21 +1,14 @@
 package cn.com.videopls.pub;
 
 import android.content.Context;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
-
-import java.util.HashMap;
-import java.util.Set;
 
 import cn.com.venvy.CacheConstants;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
-import cn.com.venvy.common.router.IRouterCallback;
-import cn.com.venvy.common.router.PostInfo;
-import cn.com.venvy.common.router.VenvyRouterManager;
 import cn.com.venvy.common.utils.VenvyAPIUtil;
 import cn.com.venvy.common.utils.VenvyDeviceUtil;
 import cn.com.venvy.common.utils.VenvyLog;
@@ -42,6 +35,7 @@ public class VideoPlusH5Controller {
         VenvyRegisterLibsManager.registerImageViewLib(videoOSAdapter.buildImageView());
         VenvyRegisterLibsManager.registerSvgaImageView(videoOSAdapter.buildSvgaImageView());
         VenvyRegisterLibsManager.registerSocketConnect(videoOSAdapter.buildSocketConnect());
+        VenvyRegisterLibsManager.registerACRCloud(videoOSAdapter.buildACRCloud());
     }
 
     protected VideoPlusAdapter getVideoPlusAdapter() {
@@ -67,6 +61,7 @@ public class VideoPlusH5Controller {
         platform.setWidgetCloseListener(videoOSAdapter.buildWidgetCloseListener());
         platform.setMediaControlListener(videoOSAdapter.buildMediaController());
         platform.setPlatformLoginInterface(videoOSAdapter.buildLoginInterface());
+        platform.setPlatformRecordInterface(videoOSAdapter.buildRecordInterface());
         platform.setTagKeyListener(videoOSAdapter.buildOttKeyListener());
         platform.setWedgeListener(videoOSAdapter.buildWedgeListener());
         platform.setWidgetPrepareShowListener(videoOSAdapter.buildWidgetPrepareShowListener());

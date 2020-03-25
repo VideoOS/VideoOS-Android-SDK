@@ -14,6 +14,7 @@ public class VenvyObservableTarget {
     public static final String TAG_CLIP_MEDIA_STATUS_CHANGED = "notifyClipMediaStatusChanged";
 
     public static final String TAG_ARRIVED_DATA_MESSAGE = "notifyLiveOnlineMessage";
+    public static final String TAG_ACR_DATA_MESSAGE = "notifyAcrRecognizeMessage";
     public static final String TAG_JS_BRIDGE_OBSERVER = "notifyJSBridge";
     public static final String TAG_KEYBOARD_STATUS_CHANGED = "notifyKeyboardChanged";
     public static final String TAG_VOLUME_STATUS_CHANGED = "notifyVolumeStatusChanged";
