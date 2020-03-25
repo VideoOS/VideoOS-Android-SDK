@@ -159,6 +159,11 @@ public class VenvyUDMediaPlayerView extends UDViewGroup<VenvyMediaPlayerView> im
             String currentSource = getSource();
             switch (status) {
                 case CustomVideoView.STATE_PLAYING:
+                    if (lastStatus != mOnStart) {
+                        LuaUtil.callFunction(mOnStart, valueOf(currentSource));
+                        lastStatus = mOnStart;
+                    }
+                    break;
                 case CustomVideoView.STATE_BUFFERING_PLAYING:
                     if (lastStatus != mOnStart) {
                         LuaUtil.callFunction(mOnStart, valueOf(currentSource));

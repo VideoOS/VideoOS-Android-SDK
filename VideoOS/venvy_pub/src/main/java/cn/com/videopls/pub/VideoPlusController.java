@@ -25,6 +25,7 @@ import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.VenvyRegisterLibsManager;
 import cn.com.venvy.VideoCopyLuaAssetsHelper;
+import cn.com.venvy.VideoPositionHelper;
 import cn.com.venvy.common.debug.DebugHelper;
 import cn.com.venvy.common.interf.ActionType;
 import cn.com.venvy.common.interf.CallbackType;
@@ -62,7 +63,7 @@ import static cn.com.venvy.common.observer.VenvyObservableTarget.Constant.CONSTA
  * Created by yanjiangbo on 2017/5/17.
  */
 
-public abstract class VideoPlusController implements VenvyObserver {
+public class VideoPlusController implements VenvyObserver {
 
     protected VideoProgramView mContentView;
 
@@ -93,6 +94,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         VenvyRegisterLibsManager.registerImageViewLib(videoOSAdapter.buildImageView());
         VenvyRegisterLibsManager.registerSvgaImageView(videoOSAdapter.buildSvgaImageView());
         VenvyRegisterLibsManager.registerSocketConnect(videoOSAdapter.buildSocketConnect());
+        VenvyRegisterLibsManager.registerACRCloud(videoOSAdapter.buildACRCloud());
     }
 
     public void setAppletListener(IAppletListener appletListener) {
@@ -151,9 +153,7 @@ public abstract class VideoPlusController implements VenvyObserver {
             Log.e("Video++", "startService api 调用参数为空");
             return;
         }
-        if (mPlatform == null) {
-            mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        mPlatform = initPlatform(mVideoPlusAdapter);
         params.put(VenvySchemeUtil.QUERY_PARAMETER_ADS_TYPE, String.valueOf(serviceType.getId()));
         startQueryConnect(serviceType, params, new IStartQueryResult() {
             @Override
@@ -169,7 +169,13 @@ public abstract class VideoPlusController implements VenvyObserver {
                     }
                     return;
                 }
-                mQueryAdsArray.add(queryAdsInfo);
+                VenvyUIUtil.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mQueryAdsArray.add(queryAdsInfo);
+                    }
+                });
+
                 Uri.Builder builder = new Uri.Builder();
                 builder.scheme(VenvySchemeUtil.SCHEME_LUA_VIEW)
                         .path(VenvySchemeUtil.PATH_LUA_VIEW)
@@ -298,7 +304,6 @@ public abstract class VideoPlusController implements VenvyObserver {
             mContentView.removeAllViews();
             mContentView.setVisibility(View.GONE);
         }
-
     }
 
     void destroy() {
@@ -356,6 +361,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         platform.setWidgetCloseListener(videoOSAdapter.buildWidgetCloseListener());
         platform.setMediaControlListener(videoOSAdapter.buildMediaController());
         platform.setPlatformLoginInterface(videoOSAdapter.buildLoginInterface());
+        platform.setPlatformRecordInterface(videoOSAdapter.buildRecordInterface());
         platform.setTagKeyListener(videoOSAdapter.buildOttKeyListener());
         platform.setWedgeListener(videoOSAdapter.buildWedgeListener());
         if (mAppletListener != null) {
@@ -403,9 +409,11 @@ public abstract class VideoPlusController implements VenvyObserver {
             return;
         }
 
-        if (mPlatform == null) {
-            mPlatform = initPlatform(mVideoPlusAdapter);
+        if (mContentView.getVisibility() == View.GONE || mContentView.getVisibility() == View.INVISIBLE) {
+            mContentView.setVisibility(View.VISIBLE);
         }
+
+        mPlatform = initPlatform(mVideoPlusAdapter);
 
         PostInfo postInfo = VenvyRouterManager.getInstance().setUri(uri)
                 .withTargetPlatform("platform", mPlatform)
@@ -688,9 +696,7 @@ public abstract class VideoPlusController implements VenvyObserver {
         if (mContentView != null) {
             mContentView.setVisibility(View.VISIBLE);
         }
-        if (this.mPlatform == null) {
-            this.mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
         VisionProgramConfigModel model = new VisionProgramConfigModel(mPlatform, appletId, isH5Type, new VisionProgramConfigModel.VisionProgramConfigCallback() {
 
             @Override
@@ -770,9 +776,7 @@ public abstract class VideoPlusController implements VenvyObserver {
     }
 
     public void downloadAdsRes(Bundle bundle) {
-        if (this.mPlatform == null) {
-            this.mPlatform = initPlatform(mVideoPlusAdapter);
-        }
+        this.mPlatform = initPlatform(mVideoPlusAdapter);
         if (videoAdsHandler == null) {
             videoAdsHandler = new VideoAdsHandler(mPlatform);
         }
