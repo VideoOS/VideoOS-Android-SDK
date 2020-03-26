@@ -570,6 +570,36 @@ public class VideoOsAdapter extends VideoPlusAdapter {
 
 ```
 
+## Acr 灵听小程序
+
+```
+    // 需在对应module 的gradle中额外引用
+    provided "com.videoli:venvy_acr:1.0.0"
+
+    // 在VideoOsAdapter中实现对应插件
+    // 灵听小程序插件
+    @Override
+    public Class<? extends IACRCloud> buildACRCloud() {
+        return VenvyACRCloud.class;
+    }
+
+    //录制回调监听
+    @Override
+    public IPlatformRecordInterface buildRecordInterface() {
+        return new IPlatformRecordInterface() {
+            @Override
+            public void startRecord() {
+                
+            }
+
+            @Override
+            public void endRecord(final RecordCallback loginCallback) {
+                
+            }
+        };
+    }
+
+```
 
 
 ## 其他
