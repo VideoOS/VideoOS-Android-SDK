@@ -655,8 +655,14 @@ public class VenvyUIUtil {
     }
 
     public static int getScreenPPI(@Nullable Context context) {
-        DisplayMetrics dm = new DisplayMetrics();
-        return dm.densityDpi;
+        WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            windowManager.getDefaultDisplay().getRealMetrics(displayMetrics);
+        }else{
+            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        }
+        return displayMetrics.densityDpi;
     }
 
     /**
