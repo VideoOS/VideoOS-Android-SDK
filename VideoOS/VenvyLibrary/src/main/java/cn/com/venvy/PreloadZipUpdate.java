@@ -16,6 +16,7 @@ import java.util.Map;
 import cn.com.venvy.common.download.DownloadTask;
 import cn.com.venvy.common.download.DownloadTaskRunner;
 import cn.com.venvy.common.download.TaskListener;
+import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyFileUtil;
@@ -289,6 +290,7 @@ public class PreloadZipUpdate {
                     CacheZipUpdateCallback callback = getCacheLuaUpdateCallback();
                     if (callback != null) {
                         callback.updateError(new Exception("update error,because downloadTask error"));
+                        Report.report(Report.ReportLevel.w, PreloadZipUpdate.class.getName(), buildReportString(failedTasks));
                     }
                     return;
                 }
@@ -352,5 +354,18 @@ public class PreloadZipUpdate {
      */
     private String getUnZipAbsolutePath() {
         return VenvyFileUtil.getCachePath(App.getContext()) + UN_ZIP_PATH;
+    }
+    private static String buildReportString(List<DownloadTask> failedTasks) {
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("[download zip failed],");
+        builder.append("\\n");
+        if (failedTasks != null) {
+            for (DownloadTask downloadTask : failedTasks) {
+                builder.append("url = ").append(downloadTask.getDownloadUrl());
+                builder.append("\\n");
+            }
+        }
+        return builder.toString();
     }
 }
