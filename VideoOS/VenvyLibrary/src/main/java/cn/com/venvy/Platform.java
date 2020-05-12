@@ -27,6 +27,7 @@ import cn.com.venvy.common.interf.OnTagKeyListener;
 import cn.com.venvy.common.interf.WedgeListener;
 import cn.com.venvy.common.media.StorageUtils;
 import cn.com.venvy.common.media.file.Md5FileNameGenerator;
+import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.statistics.VenvyStatisticsManager;
 import cn.com.venvy.common.track.TrackHelper;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
