@@ -71,7 +71,7 @@ public class Platform implements Serializable {
             mPlatformInfo = platformInfo;
         }
         TrackHelper.init(this);
-//        Report.initReport(this);
+        Report.initReport(this);
     }
 
     public void setContentViewGroup(ViewGroup contentViewGroup) {
